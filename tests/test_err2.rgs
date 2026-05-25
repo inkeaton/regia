@@ -1,0 +1,51 @@
+STORY     alert    PRIORITY 2.
+ACTION    run.
+EVENT     spotted  ENVIRONMENT.
+EVENT     lost     ENVIRONMENT.
+CONDITION is_tired MYSELF.
+CONDITION is_armed MYSELF.
+
+# undeclared story in DURING
+DURING patrol:
+    WHEN spotted ENVIRONMENT:
+        DO run.
+
+# wrong origin on event
+DURING alert:
+    WHEN spotted MYSELF:
+        DO run.
+
+# undeclared event in WHEN
+DURING alert:
+    WHEN exploded ENVIRONMENT:
+        DO run.
+
+# undeclared action in DO
+DURING alert:
+    WHEN spotted ENVIRONMENT:
+        DO fly.
+
+# wrong origin on condition in IF
+DURING alert:
+    WHEN spotted ENVIRONMENT IF is_armed DIRECTOR:
+        DO run.
+
+# undeclared condition in IF
+DURING alert:
+    WHEN spotted ENVIRONMENT IF is_hungry MYSELF:
+        DO run.
+
+# undeclared condition in DO BELIEVE
+DURING alert:
+    WHEN lost ENVIRONMENT:
+        DO BELIEVE is_hungry.
+
+# undeclared condition in DO FORGET
+DURING alert:
+    WHEN lost ENVIRONMENT:
+        DO FORGET is_hungry.
+
+# valid plan to ensure partial output still works
+DURING ALWAYS:
+    WHEN spotted ENVIRONMENT IF NOT is_tired MYSELF:
+        DO run.

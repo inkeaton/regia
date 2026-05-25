@@ -1,0 +1,6 @@
+ACTION run.
+EVENT order DIRECTOR.
+CONDITION approved DIRECTOR.
+DURING ALWAYS:
+    WHEN order DIRECTOR IF approved DIRECTOR:
+        DO run.

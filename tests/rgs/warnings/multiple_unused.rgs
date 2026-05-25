@@ -1,0 +1,8 @@
+ACTION run.
+ACTION dance.
+ACTION hide.
+EVENT spotted ENVIRONMENT.
+CONDITION is_tired MYSELF.
+DURING ALWAYS:
+    WHEN spotted ENVIRONMENT:
+        DO run.

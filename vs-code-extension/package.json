@@ -1,0 +1,35 @@
+{
+    "name": "regiascript",
+    "displayName": "RegiaScript",
+    "description": "Syntax highlighting for RegiaScript (.rgs) agent behaviour language",
+    "version": "0.1.0",
+    "publisher": "regiascript",
+    "engines": {
+        "vscode": "^1.75.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "regiascript",
+                "aliases": [
+                    "RegiaScript",
+                    "rgs"
+                ],
+                "extensions": [
+                    ".rgs"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "regiascript",
+                "scopeName": "source.regiascript",
+                "path": "./syntaxes/regiascript.tmLanguage.json"
+            }
+        ]
+    }
+}

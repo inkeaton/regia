@@ -1,0 +1,15 @@
+ACTION run.
+EVENT  env_event  ENVIRONMENT.
+EVENT  dir_event  DIRECTOR.
+EVENT  self_event MYSELF.
+CONDITION env_cond  ENVIRONMENT.
+CONDITION dir_cond  DIRECTOR.
+CONDITION self_cond MYSELF.
+
+DURING ALWAYS:
+    WHEN env_event  ENVIRONMENT IF env_cond  ENVIRONMENT:
+        DO run.
+    WHEN dir_event  DIRECTOR    IF dir_cond  DIRECTOR:
+        DO run.
+    WHEN self_event MYSELF      IF self_cond MYSELF:
+        DO run.

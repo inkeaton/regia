@@ -1,0 +1,6 @@
+ACTION run.
+EVENT ready MYSELF.
+CONDITION is_armed MYSELF.
+DURING ALWAYS:
+    WHEN ready MYSELF IF is_armed MYSELF:
+        DO run.

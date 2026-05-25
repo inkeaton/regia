@@ -1,0 +1,9 @@
+STORY  alert  PRIORITY 2.
+STORY  alert  PRIORITY 1.    # duplicate story
+
+ACTION run.
+ACTION run.                  # duplicate action
+
+EVENT     spotted   ENVIRONMENT.
+CONDITION is_tired  MYSELF.
+CONDITION is_armed  MYSELF.

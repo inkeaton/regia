@@ -1,0 +1,5 @@
+EVENT lost ENVIRONMENT.
+CONDITION is_armed MYSELF.
+DURING ALWAYS:
+    WHEN lost ENVIRONMENT:
+        DO FORGET is_armed.

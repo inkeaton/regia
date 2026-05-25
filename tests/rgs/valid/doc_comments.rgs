@@ -1,0 +1,23 @@
+# @NAME: Main story
+# @MEANING: The primary narrative context
+STORY  a PRIORITY 1.
+
+# @NAME: Run action
+# @MEANING: Makes the agent run
+ACTION run.
+
+# @NAME: Spotted event
+# @MEANING: Enemy entered view
+EVENT  spotted ENVIRONMENT.
+
+# @NAME: Tiredness
+# @MEANING: Whether the agent is tired
+CONDITION is_tired MYSELF.
+
+# @NAME: Alert behaviour
+# @MEANING: What to do during alert
+DURING a:
+    # @NAME: React to sighting
+    # @MEANING: Run when spotted unless tired
+    WHEN spotted ENVIRONMENT IF NOT is_tired MYSELF:
+        DO run.

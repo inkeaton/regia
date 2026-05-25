@@ -1,0 +1,6 @@
+ACTION run.
+EVENT spotted ENVIRONMENT.
+CONDITION door_open ENVIRONMENT.
+DURING ALWAYS:
+    WHEN spotted ENVIRONMENT IF door_open ENVIRONMENT:
+        DO run.

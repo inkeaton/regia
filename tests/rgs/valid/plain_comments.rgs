@@ -1,0 +1,12 @@
+# This is a plain comment
+STORY  a PRIORITY 1.
+# Another comment
+ACTION run.
+EVENT  spotted ENVIRONMENT. # inline comment
+CONDITION is_tired MYSELF.
+
+# Comment before during
+DURING a:
+    # Comment before when
+    WHEN spotted ENVIRONMENT:
+        DO run. # comment after action

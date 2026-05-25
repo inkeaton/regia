@@ -1,0 +1,10 @@
+ACTION run.
+ACTION hide.
+ACTION dance.
+EVENT  spotted ENVIRONMENT.
+
+DURING ALWAYS:
+    WHEN spotted ENVIRONMENT:
+        DO run,
+        DO hide,
+        DO dance.

@@ -1,0 +1,9 @@
+STORY a PRIORITY 1.
+ACTION run.
+EVENT spotted ENVIRONMENT.
+CONDITION is_tired  MYSELF.
+CONDITION door_open ENVIRONMENT.
+CONDITION is_armed  MYSELF.
+DURING a:
+    WHEN spotted ENVIRONMENT IF (is_tired MYSELF OR door_open ENVIRONMENT) AND NOT is_armed MYSELF:
+        DO run.

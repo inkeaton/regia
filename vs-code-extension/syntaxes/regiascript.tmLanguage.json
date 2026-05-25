@@ -1,0 +1,112 @@
+{
+    "name": "RegiaScript",
+    "scopeName": "source.regiascript",
+    "fileTypes": ["rgs"],
+    "patterns": [
+        { "include": "#doc_comment" },
+        { "include": "#plain_comment" },
+        { "include": "#declaration_keywords" },
+        { "include": "#control_keywords" },
+        { "include": "#operator_keywords" },
+        { "include": "#origin_tags" },
+        { "include": "#builtin_actions" },
+        { "include": "#constants" },
+        { "include": "#numbers" },
+        { "include": "#punctuation" },
+        { "include": "#identifiers" }
+    ],
+    "repository": {
+
+        "doc_comment": {
+            "comment": "Documentation comment lines: # @KEY: value",
+            "begin": "(#)[ \\t]*(@[A-Z]+)(:)",
+            "end": "$",
+            "beginCaptures": {
+                "1": { "name": "punctuation.definition.comment.regiascript" },
+                "2": { "name": "entity.name.tag.regiascript" },
+                "3": { "name": "punctuation.separator.regiascript" }
+            },
+            "contentName": "string.unquoted.doc.regiascript",
+            "name": "comment.documentation.regiascript"
+        },
+
+        "plain_comment": {
+            "comment": "Plain comment lines: # anything",
+            "match": "#[^@].*$|#$",
+            "name": "comment.line.number-sign.regiascript"
+        },
+
+        "declaration_keywords": {
+            "comment": "Keywords that declare named elements",
+            "match": "\\b(STORY|ACTION|EVENT|CONDITION|PRIORITY)\\b",
+            "name": "keyword.declaration.regiascript"
+        },
+
+        "control_keywords": {
+            "comment": "Keywords that define structure and flow",
+            "match": "\\b(DURING|ALWAYS|WHEN|IF|DO|BELIEVE|FORGET)\\b",
+            "name": "keyword.control.regiascript"
+        },
+
+        "operator_keywords": {
+            "comment": "Logical operators",
+            "match": "\\b(AND|OR|NOT)\\b",
+            "name": "keyword.operator.logical.regiascript"
+        },
+
+        "origin_tags": {
+            "comment": "Origin specifiers for events and conditions",
+            "match": "\\b(ENVIRONMENT|DIRECTOR|MYSELF)\\b",
+            "name": "support.type.regiascript"
+        },
+
+        "builtin_actions": {
+            "comment": "Built-in DO primitives — not user-declared",
+            "match": "\\b(BELIEVE|FORGET)\\b",
+            "name": "support.function.builtin.regiascript"
+        },
+
+        "constants": {
+            "comment": "Boolean constants",
+            "match": "\\b(TRUE|FALSE)\\b",
+            "name": "constant.language.regiascript"
+        },
+
+        "numbers": {
+            "comment": "Priority values and other integers",
+            "match": "\\b([0-9]+)\\b",
+            "name": "constant.numeric.regiascript"
+        },
+
+        "punctuation": {
+            "patterns": [
+                {
+                    "comment": "Period — ends a declaration or do-sequence",
+                    "match": "\\.",
+                    "name": "punctuation.terminator.regiascript"
+                },
+                {
+                    "comment": "Colon — opens a block",
+                    "match": ":",
+                    "name": "punctuation.separator.regiascript"
+                },
+                {
+                    "comment": "Comma — separates actions in a do-sequence",
+                    "match": ",",
+                    "name": "punctuation.separator.regiascript"
+                },
+                {
+                    "comment": "Parentheses — condition grouping",
+                    "match": "[()]",
+                    "name": "punctuation.brackets.regiascript"
+                }
+            ]
+        },
+
+        "identifiers": {
+            "comment": "User-defined names for stories, actions, events, conditions",
+            "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+            "name": "variable.other.regiascript"
+        }
+    }
+}
