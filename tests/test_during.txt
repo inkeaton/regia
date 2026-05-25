@@ -1,0 +1,40 @@
+# RegiaScript grammar test
+
+STORY  a PRIORITY 1.
+STORY  b PRIORITY 2.
+ACTION run.
+ACTION dance.
+ACTION hide.
+
+EVENT  spotted   ENVIRONMENT.
+EVENT  order     DIRECTOR.
+EVENT  lost      ENVIRONMENT.
+
+CONDITION is_tired  MYSELF.
+CONDITION is_armed  MYSELF.
+CONDITION door_open ENVIRONMENT.
+
+# Global plans always active
+DURING ALWAYS:
+    WHEN spotted ENVIRONMENT IF NOT is_tired MYSELF:
+        DO run.
+    WHEN order DIRECTOR:
+        DO dance.
+
+# Story a tests AND, OR, parentheses
+DURING a:
+    WHEN spotted ENVIRONMENT IF is_armed MYSELF AND NOT is_tired MYSELF:
+        DO run,
+        DO dance.
+    WHEN spotted ENVIRONMENT IF (is_tired MYSELF OR door_open ENVIRONMENT) AND NOT is_armed MYSELF:
+        DO hide.
+    WHEN lost ENVIRONMENT:
+        DO BELIEVE is_tired,
+        DO FORGET is_armed.
+
+# Story b tests nested parentheses and OR chains
+DURING b:
+    WHEN spotted ENVIRONMENT IF is_armed MYSELF OR is_tired MYSELF OR door_open ENVIRONMENT:
+        DO hide.
+    WHEN order DIRECTOR IF NOT (is_tired MYSELF AND is_armed MYSELF):
+        DO dance.

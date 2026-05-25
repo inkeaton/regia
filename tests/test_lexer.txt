@@ -1,0 +1,10 @@
+# This is a comment
+
+STORY a PRIORITY 1.
+ACTION run.
+EVENT spotted.
+CONDITION is_tired.
+
+DURING ALWAYS:
+    WHEN spotted IF NOT is_tired:
+        DO run.
