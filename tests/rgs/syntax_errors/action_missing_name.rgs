@@ -1,1 +1,7 @@
-ACTION.
+STORY DEFAULT.
+    AGENT Guard:
+        ACTION.
+        EVENT idle MYSELF.
+        DURING ALWAYS:
+            WHEN idle MYSELF:
+                DO patrol.

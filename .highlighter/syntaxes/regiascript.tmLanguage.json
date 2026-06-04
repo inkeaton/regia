@@ -61,7 +61,7 @@
         },
 
         "builtin_actions": {
-            "comment": "Built-in DO primitives — not user-declared",
+            "comment": "Built-in DO primitives - not user-declared",
             "match": "\\b(BELIEVE|FORGET)\\b",
             "name": "support.function.builtin.regiascript"
         },
@@ -81,22 +81,22 @@
         "punctuation": {
             "patterns": [
                 {
-                    "comment": "Period — ends a declaration or do-sequence",
+                    "comment": "Period - ends a declaration or do-sequence",
                     "match": "\\.",
                     "name": "punctuation.terminator.regiascript"
                 },
                 {
-                    "comment": "Colon — opens a block",
+                    "comment": "Colon - opens a block",
                     "match": ":",
                     "name": "punctuation.separator.regiascript"
                 },
                 {
-                    "comment": "Comma — separates actions in a do-sequence",
+                    "comment": "Comma - separates actions in a do-sequence",
                     "match": ",",
                     "name": "punctuation.separator.regiascript"
                 },
                 {
-                    "comment": "Parentheses — condition grouping",
+                    "comment": "Parentheses - condition grouping",
                     "match": "[()]",
                     "name": "punctuation.brackets.regiascript"
                 }

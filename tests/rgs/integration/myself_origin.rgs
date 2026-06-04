@@ -1,6 +1,8 @@
-ACTION run.
-EVENT ready MYSELF.
-CONDITION is_armed MYSELF.
-DURING ALWAYS:
-    WHEN ready MYSELF IF is_armed MYSELF:
-        DO run.
+STORY quest PRIORITY 1.
+    ACTION run.
+    EVENT ready MYSELF.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN ready MYSELF:
+                DO run.

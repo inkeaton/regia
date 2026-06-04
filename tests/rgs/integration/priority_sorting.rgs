@@ -1,17 +1,17 @@
 STORY low    PRIORITY 1.
-STORY high   PRIORITY 3.
-STORY medium PRIORITY 2.
-ACTION run.
-EVENT spotted ENVIRONMENT.
-DURING ALWAYS:
-    WHEN spotted ENVIRONMENT:
-        DO run.
-DURING low:
-    WHEN spotted ENVIRONMENT:
-        DO run.
-DURING medium:
-    WHEN spotted ENVIRONMENT:
-        DO run.
-DURING high:
-    WHEN spotted ENVIRONMENT:
-        DO run.
+    ACTION run.
+    EVENT spotted ENVIRONMENT.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted ENVIRONMENT:
+                DO run.
+
+STORY high PRIORITY 3.
+    ACTION run.
+    EVENT spotted ENVIRONMENT.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted ENVIRONMENT:
+                DO run.

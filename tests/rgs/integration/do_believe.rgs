@@ -1,5 +1,8 @@
-EVENT spotted ENVIRONMENT.
-CONDITION is_armed MYSELF.
-DURING ALWAYS:
-    WHEN spotted ENVIRONMENT:
-        DO BELIEVE is_armed.
+STORY quest PRIORITY 1.
+    EVENT spotted ENVIRONMENT.
+    CONDITION is_armed MYSELF.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted ENVIRONMENT:
+                DO BELIEVE is_armed.

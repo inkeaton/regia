@@ -1,4 +1,4 @@
-# Generated from c:/Users/inkeaton/Codice/cinzia/grammars/RegiaScript.g4 by ANTLR 4.13.1
+# Generated from /home/inkeaton/Codice/regia/grammars/RegiaScript.g4 by ANTLR 4.13.1
 from antlr4 import *
 if "." in __name__:
     from .RegiaScriptParser import RegiaScriptParser
@@ -14,13 +14,23 @@ class RegiaScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by RegiaScriptParser#declaration.
-    def visitDeclaration(self, ctx:RegiaScriptParser.DeclarationContext):
+    # Visit a parse tree produced by RegiaScriptParser#storyDef.
+    def visitStoryDef(self, ctx:RegiaScriptParser.StoryDefContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by RegiaScriptParser#storyDecl.
-    def visitStoryDecl(self, ctx:RegiaScriptParser.StoryDeclContext):
+    # Visit a parse tree produced by RegiaScriptParser#defaultStory.
+    def visitDefaultStory(self, ctx:RegiaScriptParser.DefaultStoryContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by RegiaScriptParser#namedStory.
+    def visitNamedStory(self, ctx:RegiaScriptParser.NamedStoryContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by RegiaScriptParser#declaration.
+    def visitDeclaration(self, ctx:RegiaScriptParser.DeclarationContext):
         return self.visitChildren(ctx)
 
 
@@ -44,13 +54,28 @@ class RegiaScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by RegiaScriptParser#phaseDecl.
+    def visitPhaseDecl(self, ctx:RegiaScriptParser.PhaseDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by RegiaScriptParser#agentBlock.
+    def visitAgentBlock(self, ctx:RegiaScriptParser.AgentBlockContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by RegiaScriptParser#agentSection.
+    def visitAgentSection(self, ctx:RegiaScriptParser.AgentSectionContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by RegiaScriptParser#duringBlock.
     def visitDuringBlock(self, ctx:RegiaScriptParser.DuringBlockContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by RegiaScriptParser#storyRef.
-    def visitStoryRef(self, ctx:RegiaScriptParser.StoryRefContext):
+    # Visit a parse tree produced by RegiaScriptParser#phaseRef.
+    def visitPhaseRef(self, ctx:RegiaScriptParser.PhaseRefContext):
         return self.visitChildren(ctx)
 
 

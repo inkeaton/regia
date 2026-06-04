@@ -1,6 +1,9 @@
-ACTION run.
-ACTION dance.
-EVENT spotted ENVIRONMENT.
-DURING ALWAYS:
-    WHEN spotted ENVIRONMENT:
-        DO run.
+STORY quest PRIORITY 1.
+    ACTION run.
+    ACTION dance.
+    EVENT spotted ENVIRONMENT.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted ENVIRONMENT:
+                DO run.

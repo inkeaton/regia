@@ -1,0 +1,74 @@
+# @NAME: Bring Me Item
+# @MEANING: Full quest test for the new grammar structure
+
+# Default story - baseline agent behaviour
+STORY DEFAULT.
+
+    AGENT Guard:
+        ACTION patrol.
+        EVENT idle MYSELF.
+
+        DURING ALWAYS:
+            WHEN idle MYSELF:
+                DO patrol.
+
+    AGENT Citizen:
+        ACTION greet.
+        EVENT player_nearby ENVIRONMENT.
+
+        DURING ALWAYS:
+            WHEN player_nearby ENVIRONMENT:
+                DO greet.
+
+# Named story - full quest with phases
+# @NAME: Bring Me Item Quest
+STORY bring_item PRIORITY 1.
+
+    # Story-level shared vocabulary
+    ACTION reward_player.
+    ACTION express_disappointment.
+    EVENT player_accepts  PLAYER.
+    EVENT item_delivered  ENVIRONMENT.
+    EVENT timer_expired   TIMER.
+    EVENT citizen_dies    ENVIRONMENT.
+    CONDITION is_tired    MYSELF.
+
+    # Story phases - first is initial
+    PHASE waiting.
+    PHASE item_requested.
+    PHASE quest_complete.
+    PHASE quest_failed.
+
+    # @NAME: Citizen behaviour
+    AGENT Citizen:
+        # Agent-local vocabulary
+        ACTION farewell.
+
+        DURING ALWAYS:
+            WHEN citizen_dies ENVIRONMENT:
+                ENTER quest_failed.
+
+        DURING waiting:
+            WHEN player_accepts PLAYER:
+                ENTER item_requested.
+
+        DURING item_requested:
+            WHEN item_delivered ENVIRONMENT IF NOT is_tired MYSELF:
+                DO reward_player,
+                ENTER quest_complete.
+            WHEN timer_expired TIMER:
+                DO express_disappointment,
+                ENTER quest_failed.
+            WHEN citizen_dies ENVIRONMENT:
+                DO farewell,
+                ENTER quest_failed.
+
+    # @NAME: Player behaviour
+    AGENT Player:
+        DURING waiting:
+            WHEN player_accepts PLAYER:
+                DO BELIEVE is_tired.
+
+        DURING item_requested:
+            WHEN item_delivered ENVIRONMENT IF NOT is_tired MYSELF:
+                DO FORGET is_tired.

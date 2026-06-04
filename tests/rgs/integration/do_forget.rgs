@@ -1,5 +1,8 @@
-EVENT lost ENVIRONMENT.
-CONDITION is_armed MYSELF.
-DURING ALWAYS:
-    WHEN lost ENVIRONMENT:
-        DO FORGET is_armed.
+STORY quest PRIORITY 1.
+    EVENT lost ENVIRONMENT.
+    CONDITION is_armed MYSELF.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN lost ENVIRONMENT:
+                DO FORGET is_armed.

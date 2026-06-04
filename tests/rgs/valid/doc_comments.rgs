@@ -1,23 +1,16 @@
-# @NAME: Main story
-# @MEANING: The primary narrative context
-STORY  a PRIORITY 1.
-
-# @NAME: Run action
-# @MEANING: Makes the agent run
-ACTION run.
-
-# @NAME: Spotted event
-# @MEANING: Enemy entered view
-EVENT  spotted ENVIRONMENT.
-
-# @NAME: Tiredness
-# @MEANING: Whether the agent is tired
-CONDITION is_tired MYSELF.
-
-# @NAME: Alert behaviour
-# @MEANING: What to do during alert
-DURING a:
-    # @NAME: React to sighting
-    # @MEANING: Run when spotted unless tired
-    WHEN spotted ENVIRONMENT IF NOT is_tired MYSELF:
-        DO run.
+# @NAME: Main quest
+# @MEANING: The primary narrative
+STORY quest PRIORITY 1.
+    # @NAME: Finish event
+    EVENT done ENVIRONMENT.
+    ACTION complete.
+    # @NAME: Active phase
+    PHASE active.
+    PHASE finished.
+    # @NAME: Hero agent
+    AGENT Hero:
+        # @NAME: Completion plan
+        DURING active:
+            WHEN done ENVIRONMENT:
+                DO complete,
+                ENTER finished.

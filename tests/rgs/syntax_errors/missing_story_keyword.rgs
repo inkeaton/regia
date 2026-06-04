@@ -1,0 +1,7 @@
+DEFAULT.
+    AGENT Guard:
+        ACTION patrol.
+        EVENT idle MYSELF.
+        DURING ALWAYS:
+            WHEN idle MYSELF:
+                DO patrol.

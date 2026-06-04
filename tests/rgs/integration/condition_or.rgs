@@ -1,7 +1,10 @@
-ACTION run.
-EVENT spotted ENVIRONMENT.
-CONDITION is_tired MYSELF.
-CONDITION is_armed MYSELF.
-DURING ALWAYS:
-    WHEN spotted ENVIRONMENT IF is_tired MYSELF OR is_armed MYSELF:
-        DO run.
+STORY quest PRIORITY 1.
+    ACTION run.
+    EVENT spotted ENVIRONMENT.
+    CONDITION is_tired MYSELF.
+    CONDITION is_armed MYSELF.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted ENVIRONMENT IF is_tired MYSELF OR is_armed MYSELF:
+                DO run.

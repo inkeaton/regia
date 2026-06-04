@@ -1,0 +1,14 @@
+STORY quest PRIORITY 1.
+    ACTION reward.
+    EVENT done ENVIRONMENT.
+    PHASE active.
+    PHASE complete.
+    AGENT Citizen:
+        DURING active:
+            WHEN done ENVIRONMENT:
+                DO reward,
+                ENTER complete.
+    AGENT Player:
+        DURING active:
+            WHEN done ENVIRONMENT:
+                ENTER complete.

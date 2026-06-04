@@ -1,0 +1,8 @@
+STORY quest PRIORITY 1.
+    ACTION give_up.
+    EVENT expired TIMER.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN expired TIMER:
+                DO give_up.

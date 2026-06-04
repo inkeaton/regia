@@ -10,30 +10,25 @@ from src.symbol_table                 import SymbolTableBuilder
 from src.emitter                      import AgentSpeakEmitter
 
 
-# ── Result type ───────────────────────────────────────────────────────────────
+# == Result type ===============================================================
 
 @dataclass
 class CompileResult:
     success:       bool
-    output:        str | None              # AgentSpeak string, or None on failure
+    outputs:       dict[str, str]          # agent_name → AgentSpeak string
     error_count:   int
     warning_count: int
-    messages:      list[CompilerMessage]   # all errors and warnings
+    messages:      list[CompilerMessage]
 
 
-# ── Core compile function ─────────────────────────────────────────────────────
+# == Core compile function =====================================================
 
 def compile_file(filepath: str | Path) -> CompileResult:
-    """
-    Compiles a RegiaScript source file.
-    Never prints or exits — returns a CompileResult instead.
-    All errors and warnings are collected in result.messages.
-    """
     filepath = Path(filepath)
     source   = filepath.read_text(encoding="utf-8")
     reporter = ErrorReporter(source)
 
-    # ── Parse ─────────────────────────────────────────────────────────────────
+    # == Parse =================================================================
     input_stream = FileStream(str(filepath), encoding="utf-8")
     lexer        = RegiaScriptLexer(input_stream)
     stream       = CommonTokenStream(lexer)
@@ -49,14 +44,14 @@ def compile_file(filepath: str | Path) -> CompileResult:
     if reporter.has_errors():
         return _failure(reporter)
 
-    # ── Pass 1 — Symbol table ─────────────────────────────────────────────────
+    # == Pass 1 - Symbol table =================================================
     builder = SymbolTableBuilder(reporter)
     table   = builder.visit(tree)
 
     if reporter.has_errors():
         return _failure(reporter)
 
-    # ── Pass 2 — Emit AgentSpeak ──────────────────────────────────────────────
+    # == Pass 2 - Emit AgentSpeak ==============================================
     emitter = AgentSpeakEmitter(table, reporter)
     emitter.visit(tree)
     emitter.check_unused()
@@ -66,7 +61,7 @@ def compile_file(filepath: str | Path) -> CompileResult:
 
     return CompileResult(
         success       = True,
-        output        = emitter.get_output(),
+        outputs       = emitter.get_outputs(),
         error_count   = reporter.error_count(),
         warning_count = reporter.warning_count(),
         messages      = reporter._messages,
@@ -76,7 +71,7 @@ def compile_file(filepath: str | Path) -> CompileResult:
 def _failure(reporter: ErrorReporter) -> CompileResult:
     return CompileResult(
         success       = False,
-        output        = None,
+        outputs       = {},
         error_count   = reporter.error_count(),
         warning_count = reporter.warning_count(),
         messages      = reporter._messages,

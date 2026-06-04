@@ -1,4 +1,4 @@
-# Generated from grammars/RegiaScript.g4 by ANTLR 4.13.2
+# Generated from grammars/RegiaScript.g4 by ANTLR 4.13.1
 from antlr4 import *
 if "." in __name__:
     from .RegiaScriptParser import RegiaScriptParser
@@ -17,21 +17,39 @@ class RegiaScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by RegiaScriptParser#storyDef.
+    def enterStoryDef(self, ctx:RegiaScriptParser.StoryDefContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#storyDef.
+    def exitStoryDef(self, ctx:RegiaScriptParser.StoryDefContext):
+        pass
+
+
+    # Enter a parse tree produced by RegiaScriptParser#defaultStory.
+    def enterDefaultStory(self, ctx:RegiaScriptParser.DefaultStoryContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#defaultStory.
+    def exitDefaultStory(self, ctx:RegiaScriptParser.DefaultStoryContext):
+        pass
+
+
+    # Enter a parse tree produced by RegiaScriptParser#namedStory.
+    def enterNamedStory(self, ctx:RegiaScriptParser.NamedStoryContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#namedStory.
+    def exitNamedStory(self, ctx:RegiaScriptParser.NamedStoryContext):
+        pass
+
+
     # Enter a parse tree produced by RegiaScriptParser#declaration.
     def enterDeclaration(self, ctx:RegiaScriptParser.DeclarationContext):
         pass
 
     # Exit a parse tree produced by RegiaScriptParser#declaration.
     def exitDeclaration(self, ctx:RegiaScriptParser.DeclarationContext):
-        pass
-
-
-    # Enter a parse tree produced by RegiaScriptParser#storyDecl.
-    def enterStoryDecl(self, ctx:RegiaScriptParser.StoryDeclContext):
-        pass
-
-    # Exit a parse tree produced by RegiaScriptParser#storyDecl.
-    def exitStoryDecl(self, ctx:RegiaScriptParser.StoryDeclContext):
         pass
 
 
@@ -71,6 +89,33 @@ class RegiaScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by RegiaScriptParser#phaseDecl.
+    def enterPhaseDecl(self, ctx:RegiaScriptParser.PhaseDeclContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#phaseDecl.
+    def exitPhaseDecl(self, ctx:RegiaScriptParser.PhaseDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by RegiaScriptParser#agentBlock.
+    def enterAgentBlock(self, ctx:RegiaScriptParser.AgentBlockContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#agentBlock.
+    def exitAgentBlock(self, ctx:RegiaScriptParser.AgentBlockContext):
+        pass
+
+
+    # Enter a parse tree produced by RegiaScriptParser#agentSection.
+    def enterAgentSection(self, ctx:RegiaScriptParser.AgentSectionContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#agentSection.
+    def exitAgentSection(self, ctx:RegiaScriptParser.AgentSectionContext):
+        pass
+
+
     # Enter a parse tree produced by RegiaScriptParser#duringBlock.
     def enterDuringBlock(self, ctx:RegiaScriptParser.DuringBlockContext):
         pass
@@ -80,12 +125,12 @@ class RegiaScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by RegiaScriptParser#storyRef.
-    def enterStoryRef(self, ctx:RegiaScriptParser.StoryRefContext):
+    # Enter a parse tree produced by RegiaScriptParser#phaseRef.
+    def enterPhaseRef(self, ctx:RegiaScriptParser.PhaseRefContext):
         pass
 
-    # Exit a parse tree produced by RegiaScriptParser#storyRef.
-    def exitStoryRef(self, ctx:RegiaScriptParser.StoryRefContext):
+    # Exit a parse tree produced by RegiaScriptParser#phaseRef.
+    def exitPhaseRef(self, ctx:RegiaScriptParser.PhaseRefContext):
         pass
 
 

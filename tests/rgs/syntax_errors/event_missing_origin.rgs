@@ -1,1 +1,7 @@
-EVENT spotted.
+STORY DEFAULT.
+    AGENT Guard:
+        ACTION patrol.
+        EVENT idle.
+        DURING ALWAYS:
+            WHEN idle MYSELF:
+                DO patrol.

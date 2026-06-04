@@ -24,7 +24,7 @@ DURING ALWAYS:
     WHEN order DIRECTOR:
         DO dance.
 
-# Alert story — higher priority
+# Alert story - higher priority
 DURING alert:
     WHEN spotted ENVIRONMENT IF is_armed MYSELF AND NOT is_tired MYSELF:
         DO run,
@@ -35,7 +35,7 @@ DURING alert:
         DO FORGET is_armed,
         DO BELIEVE is_tired.
 
-# Patrol story — lower priority
+# Patrol story - lower priority
 DURING patrol:
     WHEN spotted ENVIRONMENT IF is_armed MYSELF OR is_tired MYSELF:
         DO hide.

@@ -1,6 +1,8 @@
-STORY a PRIORITY 1.
-ACTION run.
-EVENT spotted ENVIRONMENT.
-DURING a:
-    WHEN spotted ENVIRONMENT:
-        DO run.
+STORY quest PRIORITY 1.
+    ACTION run.
+    EVENT spotted ENVIRONMENT.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted ENVIRONMENT:
+                DO run.

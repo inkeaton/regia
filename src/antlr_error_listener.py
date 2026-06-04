@@ -13,8 +13,15 @@ class RegiaScriptErrorListener(ErrorListener):
         super().__init__()
         self.reporter = reporter
 
+    # a syntax error is translated in our format and forwarded to the ErrorReporter
     def syntaxError(
-        self, recognizer, offendingSymbol, line, column, msg, e
+        self, 
+        recognizer, 
+        offendingSymbol, 
+        line, 
+        column, 
+        msg, 
+        e
     ):
         text   = offendingSymbol.text if offendingSymbol else "?"
         length = len(text) if text != "<EOF>" else 1
@@ -22,14 +29,17 @@ class RegiaScriptErrorListener(ErrorListener):
         message, hint = self._humanise(msg, text)
         self.reporter.error(line, column, length, message, hint)
 
-    # ── Message humaniser ────────────────────────────────────────────────────
+    # == Message humaniser ====================================================
 
     def _humanise(self, antlr_msg: str, text: str) -> tuple[str, str]:
         """
         Converts ANTLR's raw error messages into plain English.
+        SImple heuristics based on common ANTLR error patterns are 
+        used to generate more user-friendly messages and hints.
         Returns (message, hint).
         """
 
+        # mismatched input 'foo' expecting 'bar'
         if "mismatched input" in antlr_msg and "expecting" in antlr_msg:
             raw_expected = antlr_msg.split("expecting")[-1].strip()
             expected     = self._friendly_token(raw_expected)
@@ -38,6 +48,7 @@ class RegiaScriptErrorListener(ErrorListener):
                 f"Expected {expected}.",
             )
 
+        # missing 'foo' at 'bar'
         if "missing" in antlr_msg and "at" in antlr_msg:
             raw_expected = antlr_msg.split("missing")[-1].split("at")[0].strip()
             expected     = self._friendly_token(raw_expected)
@@ -46,6 +57,7 @@ class RegiaScriptErrorListener(ErrorListener):
                 f"Expected {expected} here.",
             )
 
+        # extraneous input 'foo' expecting 'bar'
         if "extraneous input" in antlr_msg and "expecting" in antlr_msg:
             raw_expected = antlr_msg.split("expecting")[-1].strip()
             expected     = self._friendly_token(raw_expected)
@@ -54,25 +66,25 @@ class RegiaScriptErrorListener(ErrorListener):
                 f"Remove it, or check that {expected} follows.",
             )
 
+        # no viable alternative at input 'foo'
         if "no viable alternative" in antlr_msg:
             return (
                 f"'{text}' is not valid in this position.",
                 "Check the surrounding syntax for a missing keyword or punctuation.",
             )
 
+        # mismatched input 'foo' expecting {rule ...}
         if "rule" in antlr_msg and "missing" in antlr_msg:
             return (
                 f"Incomplete statement ending at '{text}'.",
                 "Check that this line is complete.",
             )
 
-        # Fallback — clean up ANTLR's raw message minimally
+        # Fallback, clean up ANTLR's raw message minimally
         return (antlr_msg, "")
 
+    # maps raw ANTLR token descriptions to more user-friendly explanations
     def _friendly_token(self, raw: str) -> str:
-        """
-        Translates ANTLR token names into plain English descriptions.
-        """
         mapping = {
             "ID"          : "a name (e.g. 'run', 'enemy_spotted')",
             "NUMBER"      : "a whole number (e.g. '1', '2')",
@@ -85,9 +97,11 @@ class RegiaScriptErrorListener(ErrorListener):
             "DO"          : "the keyword 'DO'",
             "PRIORITY"    : "the keyword 'PRIORITY'",
             "ALWAYS"      : "the keyword 'ALWAYS' or a story name",
-            "ENVIRONMENT" : "an origin tag: ENVIRONMENT, DIRECTOR, or MYSELF",
-            "DIRECTOR"    : "an origin tag: ENVIRONMENT, DIRECTOR, or MYSELF",
-            "MYSELF"      : "an origin tag: ENVIRONMENT, DIRECTOR, or MYSELF",
+            "ENVIRONMENT" : "an origin tag: ENVIRONMENT, DIRECTOR, MYSELF, PLAYER, or TIMER",
+            "DIRECTOR"    : "an origin tag: ENVIRONMENT, DIRECTOR, MYSELF, PLAYER, or TIMER",
+            "MYSELF"      : "an origin tag: ENVIRONMENT, DIRECTOR, MYSELF, PLAYER, or TIMER",
+            "PLAYER"      : "an origin tag: ENVIRONMENT, DIRECTOR, MYSELF, PLAYER, or TIMER",
+            "TIMER"       : "an origin tag: ENVIRONMENT, DIRECTOR, MYSELF, PLAYER, or TIMER",
             "EOF"         : "the end of file",
         }
         for key, val in mapping.items():

@@ -1,5 +1,8 @@
-ACTION run.
-EVENT spotted ENVIRONMENT.
-DURING ALWAYS:
-    WHEN spotted MYSELF:
-        DO run.
+STORY quest PRIORITY 1.
+    ACTION run.
+    EVENT spotted ENVIRONMENT.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN spotted MYSELF:
+                DO run.

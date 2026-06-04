@@ -1,6 +1,8 @@
-ACTION run.
-EVENT order DIRECTOR.
-CONDITION approved DIRECTOR.
-DURING ALWAYS:
-    WHEN order DIRECTOR IF approved DIRECTOR:
-        DO run.
+STORY quest PRIORITY 1.
+    ACTION run.
+    EVENT order DIRECTOR.
+    PHASE active.
+    AGENT Hero:
+        DURING active:
+            WHEN order DIRECTOR:
+                DO run.

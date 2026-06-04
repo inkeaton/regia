@@ -1,0 +1,57 @@
+# @NAME: Bring Me Item
+# @MEANING: Generic fetch quest
+
+ACTION reward_player.
+ACTION express_disappointment.
+
+EVENT player_accepts  PLAYER.
+EVENT item_delivered  ENVIRONMENT.
+EVENT timer_expired   TIMER.
+EVENT citizen_dies    ENVIRONMENT.
+
+CONDITION is_tired MYSELF.
+
+# @NAME: Bring Me Item Story
+STORY bring_item PRIORITY 1.
+
+    # @NAME: Citizen participant
+    AGENT Citizen:
+        STATE waiting.
+        STATE item_requested.
+        STATE quest_complete.
+        STATE quest_failed.
+
+        DURING ALWAYS:
+            WHEN player_accepts PLAYER IF waiting STATE:
+                ENTER item_requested.
+            WHEN citizen_dies ENVIRONMENT IF item_requested STATE:
+                ENTER quest_failed.
+
+        DURING bring_item:
+            WHEN item_delivered ENVIRONMENT IF item_requested STATE AND NOT is_tired MYSELF:
+                DO reward_player,
+                ENTER quest_complete.
+            WHEN timer_expired TIMER IF item_requested STATE:
+                DO express_disappointment,
+                ENTER quest_failed.
+
+    # @NAME: Player participant
+    AGENT Player:
+        STATE idle.
+        STATE carrying.
+
+        DURING ALWAYS:
+            WHEN player_accepts PLAYER IF idle STATE:
+                ENTER carrying.
+
+        DURING bring_item:
+            WHEN item_delivered ENVIRONMENT IF carrying STATE:
+                ENTER idle.
+
+# Single-agent story - backward compatibility
+STORY combat PRIORITY 3.
+
+# Global plans - no story scope
+DURING ALWAYS:
+    WHEN player_accepts PLAYER IF is_tired MYSELF:
+        DO express_disappointment.

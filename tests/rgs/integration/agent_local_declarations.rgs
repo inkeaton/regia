@@ -1,0 +1,9 @@
+STORY quest PRIORITY 1.
+    EVENT spotted ENVIRONMENT.
+    PHASE active.
+    AGENT Hero:
+        ACTION local_run.
+        CONDITION local_cond MYSELF.
+        DURING active:
+            WHEN spotted ENVIRONMENT IF local_cond MYSELF:
+                DO local_run.
