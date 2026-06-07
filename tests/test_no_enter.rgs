@@ -1,0 +1,51 @@
+# @NAME: Bring Me Item — External Phase Control
+# @MEANING: Tests the new model where phases are controlled externally
+
+STORY DEFAULT.
+    AGENT Citizen:
+        ACTION greet.
+        EVENT player_nearby ENVIRONMENT.
+        DURING ALWAYS:
+            WHEN player_nearby ENVIRONMENT:
+                DO greet.
+
+STORY bring_item PRIORITY 1.
+
+    ACTION reward_player.
+    ACTION express_disappointment.
+    ACTION celebrate.
+
+    EVENT item_delivered    ENVIRONMENT.
+    EVENT timer_expired     TIMER.
+    EVENT citizen_dies      ENVIRONMENT.
+
+    CONDITION is_tired      MYSELF.
+
+    PHASE waiting.
+    PHASE item_requested.
+    PHASE quest_complete.
+    PHASE quest_failed.
+
+    AGENT Citizen:
+        ACTION farewell.
+
+        DURING ALWAYS:
+            WHEN citizen_dies ENVIRONMENT:
+                DO farewell.
+
+        DURING item_requested:
+            WHEN item_delivered ENVIRONMENT IF NOT is_tired MYSELF:
+                DO reward_player.
+            WHEN item_delivered ENVIRONMENT IF is_tired MYSELF:
+                DO express_disappointment.
+            WHEN timer_expired TIMER:
+                DO express_disappointment.
+            WHEN citizen_dies ENVIRONMENT:
+                DO farewell.
+
+    AGENT Player:
+        DURING item_requested:
+            WHEN item_delivered ENVIRONMENT IF NOT is_tired MYSELF:
+                DO celebrate.
+            WHEN timer_expired TIMER:
+                DO express_disappointment.

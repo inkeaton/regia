@@ -141,7 +141,6 @@ doAction
     : DO BELIEVE ID
     | DO FORGET  ID
     | DO ID
-    | ENTER ID
     ;
 
 //  ──────────────────────────────────────────
@@ -166,7 +165,6 @@ NOT         : 'NOT'         ;
 DO          : 'DO'          ;
 BELIEVE     : 'BELIEVE'     ;
 FORGET      : 'FORGET'      ;
-ENTER       : 'ENTER'       ;
 ENVIRONMENT : 'ENVIRONMENT' ;
 DIRECTOR    : 'DIRECTOR'    ;
 MYSELF      : 'MYSELF'      ;

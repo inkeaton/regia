@@ -10,7 +10,6 @@
         { "include": "#operator_keywords" },
         { "include": "#origin_tags" },
         { "include": "#builtin_actions" },
-        { "include": "#constants" },
         { "include": "#numbers" },
         { "include": "#punctuation" },
         { "include": "#identifiers" }
@@ -31,14 +30,14 @@
         },
 
         "plain_comment": {
-            "comment": "Plain comment lines: # anything",
+            "comment": "Plain comment lines: # anything without @",
             "match": "#[^@].*$|#$",
             "name": "comment.line.number-sign.regiascript"
         },
 
         "declaration_keywords": {
-            "comment": "Keywords that declare named elements",
-            "match": "\\b(STORY|ACTION|EVENT|CONDITION|PRIORITY)\\b",
+            "comment": "Keywords that declare or open named elements",
+            "match": "\\b(STORY|DEFAULT|AGENT|PHASE|ACTION|EVENT|CONDITION|PRIORITY)\\b",
             "name": "keyword.declaration.regiascript"
         },
 
@@ -49,27 +48,21 @@
         },
 
         "operator_keywords": {
-            "comment": "Logical operators",
+            "comment": "Logical operators used in IF condition expressions",
             "match": "\\b(AND|OR|NOT)\\b",
             "name": "keyword.operator.logical.regiascript"
         },
 
         "origin_tags": {
             "comment": "Origin specifiers for events and conditions",
-            "match": "\\b(ENVIRONMENT|DIRECTOR|MYSELF)\\b",
+            "match": "\\b(ENVIRONMENT|DIRECTOR|MYSELF|PLAYER|TIMER)\\b",
             "name": "support.type.regiascript"
         },
 
         "builtin_actions": {
-            "comment": "Built-in DO primitives - not user-declared",
+            "comment": "Built-in DO primitives - not user-declared actions",
             "match": "\\b(BELIEVE|FORGET)\\b",
             "name": "support.function.builtin.regiascript"
-        },
-
-        "constants": {
-            "comment": "Boolean constants",
-            "match": "\\b(TRUE|FALSE)\\b",
-            "name": "constant.language.regiascript"
         },
 
         "numbers": {
@@ -104,7 +97,7 @@
         },
 
         "identifiers": {
-            "comment": "User-defined names for stories, actions, events, conditions",
+            "comment": "User-defined names for stories, agents, phases, actions, events, conditions",
             "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b",
             "name": "variable.other.regiascript"
         }

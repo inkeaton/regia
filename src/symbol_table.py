@@ -345,23 +345,3 @@ class SymbolTableBuilder(RegiaScriptVisitor):
                         f"Add 'PHASE {phase_name}.' to the story "
                         f"declarations, or check the spelling."
                     )
-            # Validate ENTER inside DEFAULT story
-            if story.is_default:
-                self._check_no_enter(block, story.name)
-
-    def _check_no_enter(
-        self,
-        ctx:        RegiaScriptParser.DuringBlockContext,
-        story_name: str
-    ):
-        for when in ctx.whenBlock():
-            for action in when.doSequence().doAction():
-                if action.ENTER():
-                    self.reporter.error(
-                        action.start.line,
-                        action.start.column,
-                        len("ENTER"),
-                        f"ENTER is not valid inside STORY DEFAULT.",
-                        "Phase transitions only apply to named stories "
-                        "with PHASE declarations."
-                    )

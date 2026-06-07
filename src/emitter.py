@@ -40,12 +40,13 @@ class AgentBuffer:
             for b in self.initial_beliefs:
                 parts.append(f"{b}.")
             parts.append("")
-
+        
         if self.transition_plans:
-            parts.append("// == Atomic state transition plans " + "=" * 26)
+            parts.append("// == Phase transition plans " + "=" * 33)
             for t in self.transition_plans:
                 parts.append(t)
             parts.append("")
+
 
         if sorted_plans:
             parts.append("// == Plans " + "=" * 49)
@@ -156,11 +157,6 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
             merged.update(self._current_agent.conditions)
         return merged
 
-    def _effective_phases(self) -> dict:
-        if self._current_story:
-            return self._current_story.phases
-        return {}
-
     def _error(
         self,
         ctx:     ParserRuleContext,
@@ -238,40 +234,22 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
                         buffer.initial_beliefs.append(phase.name)
                     break
 
-            # Generate @atomic transition plans for this story's phases
+            # Generate @atomic transition plans, one per phase
+            # Triggered by director: .send(agent, achieve, enter_story_phase)
             all_phases = list(story.phases.keys())
-            # Generate reception handlers with guard to prevent double-update
-            # Generate @atomic transition plans (for when this agent triggers a transition)
-        all_phases = list(story.phases.keys())
-        for phase_name in all_phases:
-            goal_name = f"enter_{story.name}_{phase_name}"
-            removals  = "; ".join(
-                f"-{p}" for p in all_phases if p != phase_name
-            )
-            addition  = f"+{phase_name}"
-            body      = f"{removals}; {addition}" if removals else addition
-            broadcast = f".broadcast(tell, {goal_name})"
-            plan      = (
-                f"@atomic\n"
-                f"+!{goal_name}\n"
-                f"    <- {body}; {broadcast}."
-            )
-            buffer.transition_plans.append(plan)
-
-        # Generate reception handlers (for when another agent broadcasts a transition)
-        # Guard 'not phaseName' prevents double-update if agent receives own broadcast
-        for phase_name in all_phases:
-            goal_name = f"enter_{story.name}_{phase_name}"
-            removals  = "; ".join(
-                f"-{p}" for p in all_phases if p != phase_name
-            )
-            addition  = f"+{phase_name}"
-            body      = f"{removals}; {addition}" if removals else addition
-            handler   = (
-                f"+{goal_name}[source(percept)] : not {phase_name}\n"
-                f"    <- {body}."
-            )
-            buffer.transition_plans.append(handler)
+            for phase_name in all_phases:
+                goal_name = f"enter_{story.name}_{phase_name}"
+                removals  = "; ".join(
+                    f"-{p}" for p in all_phases if p != phase_name
+                )
+                addition  = f"+{phase_name}"
+                body      = f"{removals}; {addition}" if removals else addition
+                plan      = (
+                    f"@atomic\n"
+                    f"+!{goal_name}\n"
+                    f"    <- {body}."
+                )
+                buffer.transition_plans.append(plan)
 
         # Walk during blocks
         for section in ctx.agentSection():
@@ -523,23 +501,6 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
                 return None
             self._used_conditions.add(name)
             return f"-{name}"
-
-        # ENTER phase
-        if ctx.ENTER():
-            name   = ctx.ID().getText()
-            phases = self._effective_phases()
-            if name not in phases:
-                self.reporter.error(
-                    ctx.start.line,
-                    ctx.ID().symbol.column,
-                    len(name),
-                    f"Phase '{name}' is not declared in story "
-                    f"'{story.name}'.",
-                    f"Add 'PHASE {name}.' to the story declarations."
-                )
-                return None
-            goal = f"enter_{story.name}_{name}"
-            return f"!{goal}"
 
         # DO action
         name    = ctx.ID().getText()
