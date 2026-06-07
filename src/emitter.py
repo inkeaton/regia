@@ -9,6 +9,23 @@ from src.symbol_table                 import (
 )
 from src.errors import ErrorReporter
 
+# == Generic infrastructure plans ================================================
+# Emitted once per agent file, regardless of which stories/phases are defined.
+# Triggered by the director via .send(agent, achieve, enter_phase(Story, Phase))
+
+_GENERIC_PLANS = """\
+@atomic
++!enter_phase(Story, Phase)
+    <- -current_phase(Story, _); +current_phase(Story, Phase).
+
+@atomic
++!activate_story(Name, Priority)
+    <- +story(Name, Priority).
+
+@atomic
++!deactivate_story(Name)
+    <- -story(Name, _)."""
+
 
 # == Compiled plan =============================================================
 
@@ -22,16 +39,12 @@ class CompiledPlan:
 
 @dataclass
 class AgentBuffer:
-    name:             str
-    plans:            list[CompiledPlan] = field(default_factory=list)
-    initial_beliefs:  list[str]          = field(default_factory=list)
-    transition_plans: list[str]          = field(default_factory=list)
+    name:            str
+    plans:           list[CompiledPlan] = field(default_factory=list)
+    initial_beliefs: list[str]          = field(default_factory=list)
+    has_phases:      bool               = False
 
     def get_output(self) -> str:
-        """
-        The get_output method merges the initial beliefs, transition plans, and regular plans
-        into a single AgentSpeak program string, with sections separated by comments.
-        """
         sorted_plans = sorted(self.plans, key=lambda p: -p.priority)
         parts = []
 
@@ -40,13 +53,11 @@ class AgentBuffer:
             for b in self.initial_beliefs:
                 parts.append(f"{b}.")
             parts.append("")
-        
-        if self.transition_plans:
-            parts.append("// == Phase transition plans " + "=" * 33)
-            for t in self.transition_plans:
-                parts.append(t)
-            parts.append("")
 
+        # Always emit the generic infrastructure plans
+        parts.append("// == Infrastructure plans " + "=" * 35)
+        parts.append(_GENERIC_PLANS)
+        parts.append("")
 
         if sorted_plans:
             parts.append("// == Plans " + "=" * 49)
@@ -230,26 +241,12 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
         if not story.is_default and story.phases:
             for phase in story.phases.values():
                 if phase.initial:
-                    if phase.name not in buffer.initial_beliefs:
-                        buffer.initial_beliefs.append(phase.name)
+                    initial = (
+                        f"current_phase({story.name}, {phase.name})"
+                    )
+                    if initial not in buffer.initial_beliefs:
+                        buffer.initial_beliefs.append(initial)
                     break
-
-            # Generate @atomic transition plans, one per phase
-            # Triggered by director: .send(agent, achieve, enter_story_phase)
-            all_phases = list(story.phases.keys())
-            for phase_name in all_phases:
-                goal_name = f"enter_{story.name}_{phase_name}"
-                removals  = "; ".join(
-                    f"-{p}" for p in all_phases if p != phase_name
-                )
-                addition  = f"+{phase_name}"
-                body      = f"{removals}; {addition}" if removals else addition
-                plan      = (
-                    f"@atomic\n"
-                    f"+!{goal_name}\n"
-                    f"    <- {body}."
-                )
-                buffer.transition_plans.append(plan)
 
         # Walk during blocks
         for section in ctx.agentSection():
@@ -271,9 +268,7 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
         phase_ref  = ctx.phaseRef()
         is_always  = bool(phase_ref.ALWAYS())
         phase_name = None if is_always else phase_ref.ID().getText()
-
-        # Priority: named story priority, or 0 for DEFAULT
-        priority = story.priority if not story.is_default else 0
+        priority   = story.priority if not story.is_default else 0
 
         for when in ctx.whenBlock():
             plan = self._emit_when(
@@ -339,14 +334,15 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
 
         # Phase conjunct - DURING phaseName only, not DURING ALWAYS
         if phase_name is not None:
-            context_parts.append(phase_name)
+            context_parts.append(
+                f"current_phase({story.name}, {phase_name})"   # ← changed
+            )
 
         # IF clause
         if ctx.IF():
             cond = self._emit_condExpr(ctx.condExpr())
             if cond is None:
                 return None
-            # Wrap top-level OR when joined with preceding context
             if context_parts and len(ctx.condExpr().condAnd()) > 1:
                 cond = f"({cond})"
             context_parts.append(cond)
