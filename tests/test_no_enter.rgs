@@ -1,5 +1,5 @@
-# @NAME: Bring Me Item — External Phase Control
-# @MEANING: Tests the new model where phases are controlled externally
+# @NAME: Bring Me Item
+# @MEANING: tests the new type where phases are controlled externally
 
 STORY DEFAULT.
     AGENT Citizen:
