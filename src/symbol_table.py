@@ -48,6 +48,16 @@ class AgentInfo:
     doc:        dict                     = field(default_factory=dict)
 
 @dataclass
+class TransitionInfo:
+    from_phase:    str
+    to_phase:      str | None
+    is_terminal:   bool
+    event_name:    str
+    event_origin:  str
+    cond_ctx:      object | None   # RegiaScriptParser.CondExprContext or None
+    line:          int
+
+@dataclass
 class StoryInfo:
     name:       str
     priority:   int | None              # None for DEFAULT story
@@ -59,6 +69,9 @@ class StoryInfo:
     phases:     dict[str, PhaseInfo]    = field(default_factory=dict)
     agents:     dict[str, AgentInfo]    = field(default_factory=dict)
     doc:        dict                    = field(default_factory=dict)
+    transitions: list[TransitionInfo] = field(default_factory=list)
+    participants: dict[str, list[str]] = field(default_factory=dict)
+    agent_names: list[str]              = field(default_factory=list)
 
 
 # == Symbol table ==============================================================
@@ -265,23 +278,72 @@ class SymbolTableBuilder(RegiaScriptVisitor):
             self._visit_during_block(during, story)
     
     def _visit_during_block(self, ctx, story):
+        phase_ref  = ctx.phaseRef()
+        is_always  = bool(phase_ref.ALWAYS())
+        phase_name = None if is_always else phase_ref.ID().getText()
+
         # Validate phase reference
-        phase_ref = ctx.phaseRef()
-        if not phase_ref.ALWAYS():
-            phase_name = phase_ref.ID().getText()
-            if phase_name not in story.phases:
-                self.reporter.error(
-                    ctx.start.line,
-                    phase_ref.start.column,
-                    len(phase_name),
-                    f"Phase '{phase_name}' is not declared "
-                    f"in story '{story.name}'.",
-                    f"Add 'PHASE {phase_name}.' to the story declarations."
-                )
-        
-        # Visit agent blocks inside this during block
+        if not is_always and phase_name not in story.phases:
+            self.reporter.error(
+                ctx.start.line,
+                phase_ref.start.column,
+                len(phase_name),
+                f"Phase '{phase_name}' is not declared in story '{story.name}'.",
+                f"Add 'PHASE {phase_name}.' to the story declarations."
+            )
+
+        # Collect transition rules
+        for rule in ctx.transitionRule():
+            self._visit_transition_rule(rule, story, phase_name)
+
+        # Visit agent blocks
         for agent_block in ctx.agentBlock():
             self._visit_agent_block(agent_block, story)
+
+    def _visit_transition_rule(self, ctx, story, from_phase):
+        target     = ctx.phaseTarget()
+        is_terminal = bool(target.END())
+        to_phase   = None if is_terminal else target.ID().getText()
+        event_name = ctx.ID().getText()
+        origin     = ctx.origin().start.text
+        line       = ctx.start.line
+
+        # Validate: cannot have TRANSITION in DURING ALWAYS
+        if from_phase is None:
+            self.reporter.error(
+                line, ctx.start.column, len("TRANSITION"),
+                "TRANSITION rules are not allowed in DURING ALWAYS.",
+                "Move this transition into a named phase block."
+            )
+            return
+
+        # Validate: to_phase must be declared
+        if not is_terminal and to_phase not in story.phases:
+            self.reporter.error(
+                line, target.start.column, len(to_phase),
+                f"Phase '{to_phase}' is not declared in story '{story.name}'.",
+                f"Add 'PHASE {to_phase}.' to the story declarations."
+            )
+            return
+
+        # Validate: event must be declared
+        if event_name not in story.events:
+            self.reporter.error(
+                line, ctx.ID().symbol.column, len(event_name),
+                f"Event '{event_name}' is not declared.",
+                f"Add 'EVENT {event_name} {origin}.' to the story declarations."
+            )
+            return
+
+        story.transitions.append(TransitionInfo(
+            from_phase   = from_phase,
+            to_phase     = to_phase,
+            is_terminal  = is_terminal,
+            event_name   = event_name,
+            event_origin = origin,
+            cond_ctx = ctx.condExpr() if ctx.IF() else None,
+            line         = line,
+        ))
 
     
 
@@ -311,6 +373,9 @@ class SymbolTableBuilder(RegiaScriptVisitor):
         doc  = parse_doc_comments(ctx.DOC_COMMENT())
         name = ctx.ID().getText()
         line = ctx.start.line
+
+        if name not in story.agent_names:
+            story.agent_names.append(name)
 
         if name in story.agents:
             # Don't error on duplicate, same agent can appear

@@ -187,6 +187,7 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
     def visitProgram(self, ctx: RegiaScriptParser.ProgramContext):
         for story_def in ctx.storyDef():
             self.visit(story_def)
+        self._emit_director() 
 
     # == Story definitions =====================================================
 
@@ -220,6 +221,33 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
         self._current_story = None
 
     # == Agent block ===========================================================
+
+    def _emit_director(self):
+        buffer = self._get_buffer("Director")
+        
+        # Infrastructure plans
+        # (already added by get_output — same as agents)
+        
+        for story in self.table.stories.values():
+            if story.is_default or not story.transitions:
+                continue
+            
+            # Initial beliefs — director tracks phase for every story
+            for phase in story.phases.values():
+                if phase.initial:
+                    belief = f"current_phase({story.name}, {phase.name})"
+                    if belief not in buffer.initial_beliefs:
+                        buffer.initial_beliefs.append(belief)
+                    break
+            
+            # Transition plans
+            for trans in story.transitions:
+                plan = self._emit_transition_plan(trans, story)
+                if plan:
+                    buffer.plans.append(CompiledPlan(
+                        priority=story.priority,
+                        agentspeak=plan
+                    ))
 
     def _emit_agent_block(
         self,
@@ -319,6 +347,56 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
                     ))
 
         self._current_agent = None
+
+    # == Transition block ======================================================
+
+    def _emit_transition_plan(self, trans, story):
+        # Trigger
+        trigger = self._emit_trigger(trans.event_name, trans.event_origin)
+
+        # Context
+        context_parts = [
+            f"story({story.name}, {story.priority})",
+            f"current_phase({story.name}, {trans.from_phase})"
+        ]
+        if trans.cond_ctx is not None:
+            # Temporarily set story context for condition validation
+            self._current_story = story
+            self._current_agent = None
+            cond = self._emit_condExpr(trans.cond_ctx)
+            self._current_story = None
+            if cond is None:
+                return None
+            if len(trans.cond_ctx.condAnd()) > 1:
+                cond = f"({cond})"
+            context_parts.append(cond)
+
+        context = " & ".join(context_parts)
+
+        # Body — update director's own phase, then send to all agents
+        if trans.is_terminal:
+            # TO END — deactivate story for all participants
+            sends = "\n       ".join(
+                f".send({name.lower()}, achieve, deactivate_story({story.name}))"
+                for name in story.agent_names
+            )
+            body = (
+                f"!deactivate_story({story.name});\n"
+                f"       {sends}"
+            )
+        else:
+            # TO phase — advance phase for all participants
+            sends = "\n       ".join(
+                f".send({name.lower()}, achieve, "
+                f"enter_phase({story.name}, {trans.to_phase}))"
+                for name in story.agent_names
+            )
+            body = (
+                f"!enter_phase({story.name}, {trans.to_phase});\n"
+                f"       {sends}"
+            )
+
+        return f"{trigger} : {context} <- {body}."
 
     # == When block ============================================================
 

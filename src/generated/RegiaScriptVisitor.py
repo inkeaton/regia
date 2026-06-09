@@ -74,6 +74,16 @@ class RegiaScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by RegiaScriptParser#transitionRule.
+    def visitTransitionRule(self, ctx:RegiaScriptParser.TransitionRuleContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by RegiaScriptParser#phaseTarget.
+    def visitPhaseTarget(self, ctx:RegiaScriptParser.PhaseTargetContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by RegiaScriptParser#phaseRef.
     def visitPhaseRef(self, ctx:RegiaScriptParser.PhaseRefContext):
         return self.visitChildren(ctx)

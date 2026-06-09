@@ -125,6 +125,24 @@ class RegiaScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by RegiaScriptParser#transitionRule.
+    def enterTransitionRule(self, ctx:RegiaScriptParser.TransitionRuleContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#transitionRule.
+    def exitTransitionRule(self, ctx:RegiaScriptParser.TransitionRuleContext):
+        pass
+
+
+    # Enter a parse tree produced by RegiaScriptParser#phaseTarget.
+    def enterPhaseTarget(self, ctx:RegiaScriptParser.PhaseTargetContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#phaseTarget.
+    def exitPhaseTarget(self, ctx:RegiaScriptParser.PhaseTargetContext):
+        pass
+
+
     # Enter a parse tree produced by RegiaScriptParser#phaseRef.
     def enterPhaseRef(self, ctx:RegiaScriptParser.PhaseRefContext):
         pass

@@ -93,7 +93,17 @@ agentSection
 
 // during blocks represent the behaviour of an agent during a specific phase of the story.
 duringBlock
-    : DOC_COMMENT* DURING phaseRef COLON agentBlock+
+    : DOC_COMMENT* DURING phaseRef COLON transitionRule* agentBlock+
+    ;
+
+transitionRule
+    : DOC_COMMENT* TRANSITION TO phaseTarget WHEN ID origin
+      (IF condExpr)? PERIOD
+    ;
+
+phaseTarget
+    : ID
+    | END
     ;
 
 // the phase can be a named one or the default ALWAYS
@@ -169,6 +179,9 @@ DIRECTOR    : 'DIRECTOR'    ;
 MYSELF      : 'MYSELF'      ;
 PLAYER      : 'PLAYER'      ;
 TIMER       : 'TIMER'       ;
+TRANSITION  : 'TRANSITION' ;
+TO          : 'TO'         ;
+END         : 'END'        ;
 
 //  ──────────────────────────────────────────
 //  PUNCTUATION

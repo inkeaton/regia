@@ -10,99 +10,110 @@ else:
 
 def serializedATN():
     return [
-        4,1,33,265,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,36,295,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
-        7,20,1,0,4,0,44,8,0,11,0,12,0,45,1,0,1,0,1,1,1,1,3,1,52,8,1,1,2,
-        5,2,55,8,2,10,2,12,2,58,9,2,1,2,1,2,1,2,1,2,4,2,64,8,2,11,2,12,2,
-        65,1,3,5,3,69,8,3,10,3,12,3,72,9,3,1,3,1,3,1,3,1,3,1,3,1,3,5,3,80,
-        8,3,10,3,12,3,83,9,3,1,3,5,3,86,8,3,10,3,12,3,89,9,3,1,3,4,3,92,
-        8,3,11,3,12,3,93,1,4,5,4,97,8,4,10,4,12,4,100,9,4,1,4,1,4,5,4,104,
-        8,4,10,4,12,4,107,9,4,1,4,1,4,5,4,111,8,4,10,4,12,4,114,9,4,1,4,
-        3,4,117,8,4,1,5,1,5,1,5,1,5,1,6,1,6,1,6,1,6,1,6,1,7,1,7,1,7,1,7,
-        1,7,1,8,1,8,1,9,5,9,136,8,9,10,9,12,9,139,9,9,1,9,1,9,1,9,1,9,1,
-        10,5,10,146,8,10,10,10,12,10,149,9,10,1,10,1,10,1,10,1,10,5,10,155,
-        8,10,10,10,12,10,158,9,10,1,11,5,11,161,8,11,10,11,12,11,164,9,11,
-        1,11,1,11,5,11,168,8,11,10,11,12,11,171,9,11,1,11,1,11,5,11,175,
-        8,11,10,11,12,11,178,9,11,1,11,1,11,3,11,182,8,11,1,12,5,12,185,
-        8,12,10,12,12,12,188,9,12,1,12,1,12,1,12,1,12,4,12,194,8,12,11,12,
-        12,12,195,1,13,1,13,1,14,5,14,201,8,14,10,14,12,14,204,9,14,1,14,
-        1,14,1,14,1,14,1,14,3,14,211,8,14,1,14,1,14,1,14,1,15,1,15,1,15,
-        5,15,219,8,15,10,15,12,15,222,9,15,1,16,1,16,1,16,5,16,227,8,16,
-        10,16,12,16,230,9,16,1,17,3,17,233,8,17,1,17,1,17,1,18,1,18,1,18,
-        1,18,1,18,1,18,3,18,243,8,18,1,19,1,19,1,19,5,19,248,8,19,10,19,
-        12,19,251,9,19,1,19,1,19,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,
-        3,20,263,8,20,1,20,0,0,21,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,
-        30,32,34,36,38,40,0,2,1,0,19,23,2,0,10,10,30,30,276,0,43,1,0,0,0,
-        2,51,1,0,0,0,4,56,1,0,0,0,6,70,1,0,0,0,8,116,1,0,0,0,10,118,1,0,
-        0,0,12,122,1,0,0,0,14,127,1,0,0,0,16,132,1,0,0,0,18,137,1,0,0,0,
-        20,147,1,0,0,0,22,181,1,0,0,0,24,186,1,0,0,0,26,197,1,0,0,0,28,202,
-        1,0,0,0,30,215,1,0,0,0,32,223,1,0,0,0,34,232,1,0,0,0,36,242,1,0,
-        0,0,38,244,1,0,0,0,40,262,1,0,0,0,42,44,3,2,1,0,43,42,1,0,0,0,44,
-        45,1,0,0,0,45,43,1,0,0,0,45,46,1,0,0,0,46,47,1,0,0,0,47,48,5,0,0,
-        1,48,1,1,0,0,0,49,52,3,4,2,0,50,52,3,6,3,0,51,49,1,0,0,0,51,50,1,
-        0,0,0,52,3,1,0,0,0,53,55,5,31,0,0,54,53,1,0,0,0,55,58,1,0,0,0,56,
-        54,1,0,0,0,56,57,1,0,0,0,57,59,1,0,0,0,58,56,1,0,0,0,59,60,5,1,0,
-        0,60,61,5,2,0,0,61,63,5,24,0,0,62,64,3,24,12,0,63,62,1,0,0,0,64,
-        65,1,0,0,0,65,63,1,0,0,0,65,66,1,0,0,0,66,5,1,0,0,0,67,69,5,31,0,
-        0,68,67,1,0,0,0,69,72,1,0,0,0,70,68,1,0,0,0,70,71,1,0,0,0,71,73,
-        1,0,0,0,72,70,1,0,0,0,73,74,5,1,0,0,74,75,5,30,0,0,75,76,5,3,0,0,
-        76,77,5,29,0,0,77,81,5,24,0,0,78,80,3,8,4,0,79,78,1,0,0,0,80,83,
-        1,0,0,0,81,79,1,0,0,0,81,82,1,0,0,0,82,87,1,0,0,0,83,81,1,0,0,0,
-        84,86,3,18,9,0,85,84,1,0,0,0,86,89,1,0,0,0,87,85,1,0,0,0,87,88,1,
-        0,0,0,88,91,1,0,0,0,89,87,1,0,0,0,90,92,3,24,12,0,91,90,1,0,0,0,
-        92,93,1,0,0,0,93,91,1,0,0,0,93,94,1,0,0,0,94,7,1,0,0,0,95,97,5,31,
-        0,0,96,95,1,0,0,0,97,100,1,0,0,0,98,96,1,0,0,0,98,99,1,0,0,0,99,
-        101,1,0,0,0,100,98,1,0,0,0,101,117,3,10,5,0,102,104,5,31,0,0,103,
-        102,1,0,0,0,104,107,1,0,0,0,105,103,1,0,0,0,105,106,1,0,0,0,106,
-        108,1,0,0,0,107,105,1,0,0,0,108,117,3,12,6,0,109,111,5,31,0,0,110,
-        109,1,0,0,0,111,114,1,0,0,0,112,110,1,0,0,0,112,113,1,0,0,0,113,
-        115,1,0,0,0,114,112,1,0,0,0,115,117,3,14,7,0,116,98,1,0,0,0,116,
-        105,1,0,0,0,116,112,1,0,0,0,117,9,1,0,0,0,118,119,5,6,0,0,119,120,
-        5,30,0,0,120,121,5,24,0,0,121,11,1,0,0,0,122,123,5,7,0,0,123,124,
-        5,30,0,0,124,125,3,16,8,0,125,126,5,24,0,0,126,13,1,0,0,0,127,128,
-        5,8,0,0,128,129,5,30,0,0,129,130,3,16,8,0,130,131,5,24,0,0,131,15,
-        1,0,0,0,132,133,7,0,0,0,133,17,1,0,0,0,134,136,5,31,0,0,135,134,
-        1,0,0,0,136,139,1,0,0,0,137,135,1,0,0,0,137,138,1,0,0,0,138,140,
-        1,0,0,0,139,137,1,0,0,0,140,141,5,4,0,0,141,142,5,30,0,0,142,143,
-        5,24,0,0,143,19,1,0,0,0,144,146,5,31,0,0,145,144,1,0,0,0,146,149,
-        1,0,0,0,147,145,1,0,0,0,147,148,1,0,0,0,148,150,1,0,0,0,149,147,
-        1,0,0,0,150,151,5,5,0,0,151,152,5,30,0,0,152,156,5,25,0,0,153,155,
-        3,22,11,0,154,153,1,0,0,0,155,158,1,0,0,0,156,154,1,0,0,0,156,157,
-        1,0,0,0,157,21,1,0,0,0,158,156,1,0,0,0,159,161,5,31,0,0,160,159,
-        1,0,0,0,161,164,1,0,0,0,162,160,1,0,0,0,162,163,1,0,0,0,163,165,
-        1,0,0,0,164,162,1,0,0,0,165,182,3,10,5,0,166,168,5,31,0,0,167,166,
-        1,0,0,0,168,171,1,0,0,0,169,167,1,0,0,0,169,170,1,0,0,0,170,172,
-        1,0,0,0,171,169,1,0,0,0,172,182,3,12,6,0,173,175,5,31,0,0,174,173,
-        1,0,0,0,175,178,1,0,0,0,176,174,1,0,0,0,176,177,1,0,0,0,177,179,
-        1,0,0,0,178,176,1,0,0,0,179,182,3,14,7,0,180,182,3,28,14,0,181,162,
-        1,0,0,0,181,169,1,0,0,0,181,176,1,0,0,0,181,180,1,0,0,0,182,23,1,
-        0,0,0,183,185,5,31,0,0,184,183,1,0,0,0,185,188,1,0,0,0,186,184,1,
-        0,0,0,186,187,1,0,0,0,187,189,1,0,0,0,188,186,1,0,0,0,189,190,5,
-        9,0,0,190,191,3,26,13,0,191,193,5,25,0,0,192,194,3,20,10,0,193,192,
-        1,0,0,0,194,195,1,0,0,0,195,193,1,0,0,0,195,196,1,0,0,0,196,25,1,
-        0,0,0,197,198,7,1,0,0,198,27,1,0,0,0,199,201,5,31,0,0,200,199,1,
-        0,0,0,201,204,1,0,0,0,202,200,1,0,0,0,202,203,1,0,0,0,203,205,1,
-        0,0,0,204,202,1,0,0,0,205,206,5,11,0,0,206,207,5,30,0,0,207,210,
-        3,16,8,0,208,209,5,12,0,0,209,211,3,30,15,0,210,208,1,0,0,0,210,
-        211,1,0,0,0,211,212,1,0,0,0,212,213,5,25,0,0,213,214,3,38,19,0,214,
-        29,1,0,0,0,215,220,3,32,16,0,216,217,5,14,0,0,217,219,3,32,16,0,
-        218,216,1,0,0,0,219,222,1,0,0,0,220,218,1,0,0,0,220,221,1,0,0,0,
-        221,31,1,0,0,0,222,220,1,0,0,0,223,228,3,34,17,0,224,225,5,13,0,
-        0,225,227,3,34,17,0,226,224,1,0,0,0,227,230,1,0,0,0,228,226,1,0,
-        0,0,228,229,1,0,0,0,229,33,1,0,0,0,230,228,1,0,0,0,231,233,5,15,
-        0,0,232,231,1,0,0,0,232,233,1,0,0,0,233,234,1,0,0,0,234,235,3,36,
-        18,0,235,35,1,0,0,0,236,237,5,30,0,0,237,243,3,16,8,0,238,239,5,
-        27,0,0,239,240,3,30,15,0,240,241,5,28,0,0,241,243,1,0,0,0,242,236,
-        1,0,0,0,242,238,1,0,0,0,243,37,1,0,0,0,244,249,3,40,20,0,245,246,
-        5,26,0,0,246,248,3,40,20,0,247,245,1,0,0,0,248,251,1,0,0,0,249,247,
-        1,0,0,0,249,250,1,0,0,0,250,252,1,0,0,0,251,249,1,0,0,0,252,253,
-        5,24,0,0,253,39,1,0,0,0,254,255,5,16,0,0,255,256,5,17,0,0,256,263,
-        5,30,0,0,257,258,5,16,0,0,258,259,5,18,0,0,259,263,5,30,0,0,260,
-        261,5,16,0,0,261,263,5,30,0,0,262,254,1,0,0,0,262,257,1,0,0,0,262,
-        260,1,0,0,0,263,41,1,0,0,0,29,45,51,56,65,70,81,87,93,98,105,112,
-        116,137,147,156,162,169,176,181,186,195,202,210,220,228,232,242,
-        249,262
+        7,20,2,21,7,21,2,22,7,22,1,0,4,0,48,8,0,11,0,12,0,49,1,0,1,0,1,1,
+        1,1,3,1,56,8,1,1,2,5,2,59,8,2,10,2,12,2,62,9,2,1,2,1,2,1,2,1,2,4,
+        2,68,8,2,11,2,12,2,69,1,3,5,3,73,8,3,10,3,12,3,76,9,3,1,3,1,3,1,
+        3,1,3,1,3,1,3,5,3,84,8,3,10,3,12,3,87,9,3,1,3,5,3,90,8,3,10,3,12,
+        3,93,9,3,1,3,4,3,96,8,3,11,3,12,3,97,1,4,5,4,101,8,4,10,4,12,4,104,
+        9,4,1,4,1,4,5,4,108,8,4,10,4,12,4,111,9,4,1,4,1,4,5,4,115,8,4,10,
+        4,12,4,118,9,4,1,4,3,4,121,8,4,1,5,1,5,1,5,1,5,1,6,1,6,1,6,1,6,1,
+        6,1,7,1,7,1,7,1,7,1,7,1,8,1,8,1,9,5,9,140,8,9,10,9,12,9,143,9,9,
+        1,9,1,9,1,9,1,9,1,10,5,10,150,8,10,10,10,12,10,153,9,10,1,10,1,10,
+        1,10,1,10,5,10,159,8,10,10,10,12,10,162,9,10,1,11,5,11,165,8,11,
+        10,11,12,11,168,9,11,1,11,1,11,5,11,172,8,11,10,11,12,11,175,9,11,
+        1,11,1,11,5,11,179,8,11,10,11,12,11,182,9,11,1,11,1,11,3,11,186,
+        8,11,1,12,5,12,189,8,12,10,12,12,12,192,9,12,1,12,1,12,1,12,1,12,
+        5,12,198,8,12,10,12,12,12,201,9,12,1,12,4,12,204,8,12,11,12,12,12,
+        205,1,13,5,13,209,8,13,10,13,12,13,212,9,13,1,13,1,13,1,13,1,13,
+        1,13,1,13,1,13,1,13,3,13,222,8,13,1,13,1,13,1,14,1,14,1,15,1,15,
+        1,16,5,16,231,8,16,10,16,12,16,234,9,16,1,16,1,16,1,16,1,16,1,16,
+        3,16,241,8,16,1,16,1,16,1,16,1,17,1,17,1,17,5,17,249,8,17,10,17,
+        12,17,252,9,17,1,18,1,18,1,18,5,18,257,8,18,10,18,12,18,260,9,18,
+        1,19,3,19,263,8,19,1,19,1,19,1,20,1,20,1,20,1,20,1,20,1,20,3,20,
+        273,8,20,1,21,1,21,1,21,5,21,278,8,21,10,21,12,21,281,9,21,1,21,
+        1,21,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,3,22,293,8,22,1,22,
+        0,0,23,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,
+        42,44,0,3,1,0,19,23,2,0,26,26,33,33,2,0,10,10,33,33,307,0,47,1,0,
+        0,0,2,55,1,0,0,0,4,60,1,0,0,0,6,74,1,0,0,0,8,120,1,0,0,0,10,122,
+        1,0,0,0,12,126,1,0,0,0,14,131,1,0,0,0,16,136,1,0,0,0,18,141,1,0,
+        0,0,20,151,1,0,0,0,22,185,1,0,0,0,24,190,1,0,0,0,26,210,1,0,0,0,
+        28,225,1,0,0,0,30,227,1,0,0,0,32,232,1,0,0,0,34,245,1,0,0,0,36,253,
+        1,0,0,0,38,262,1,0,0,0,40,272,1,0,0,0,42,274,1,0,0,0,44,292,1,0,
+        0,0,46,48,3,2,1,0,47,46,1,0,0,0,48,49,1,0,0,0,49,47,1,0,0,0,49,50,
+        1,0,0,0,50,51,1,0,0,0,51,52,5,0,0,1,52,1,1,0,0,0,53,56,3,4,2,0,54,
+        56,3,6,3,0,55,53,1,0,0,0,55,54,1,0,0,0,56,3,1,0,0,0,57,59,5,34,0,
+        0,58,57,1,0,0,0,59,62,1,0,0,0,60,58,1,0,0,0,60,61,1,0,0,0,61,63,
+        1,0,0,0,62,60,1,0,0,0,63,64,5,1,0,0,64,65,5,2,0,0,65,67,5,27,0,0,
+        66,68,3,24,12,0,67,66,1,0,0,0,68,69,1,0,0,0,69,67,1,0,0,0,69,70,
+        1,0,0,0,70,5,1,0,0,0,71,73,5,34,0,0,72,71,1,0,0,0,73,76,1,0,0,0,
+        74,72,1,0,0,0,74,75,1,0,0,0,75,77,1,0,0,0,76,74,1,0,0,0,77,78,5,
+        1,0,0,78,79,5,33,0,0,79,80,5,3,0,0,80,81,5,32,0,0,81,85,5,27,0,0,
+        82,84,3,8,4,0,83,82,1,0,0,0,84,87,1,0,0,0,85,83,1,0,0,0,85,86,1,
+        0,0,0,86,91,1,0,0,0,87,85,1,0,0,0,88,90,3,18,9,0,89,88,1,0,0,0,90,
+        93,1,0,0,0,91,89,1,0,0,0,91,92,1,0,0,0,92,95,1,0,0,0,93,91,1,0,0,
+        0,94,96,3,24,12,0,95,94,1,0,0,0,96,97,1,0,0,0,97,95,1,0,0,0,97,98,
+        1,0,0,0,98,7,1,0,0,0,99,101,5,34,0,0,100,99,1,0,0,0,101,104,1,0,
+        0,0,102,100,1,0,0,0,102,103,1,0,0,0,103,105,1,0,0,0,104,102,1,0,
+        0,0,105,121,3,10,5,0,106,108,5,34,0,0,107,106,1,0,0,0,108,111,1,
+        0,0,0,109,107,1,0,0,0,109,110,1,0,0,0,110,112,1,0,0,0,111,109,1,
+        0,0,0,112,121,3,12,6,0,113,115,5,34,0,0,114,113,1,0,0,0,115,118,
+        1,0,0,0,116,114,1,0,0,0,116,117,1,0,0,0,117,119,1,0,0,0,118,116,
+        1,0,0,0,119,121,3,14,7,0,120,102,1,0,0,0,120,109,1,0,0,0,120,116,
+        1,0,0,0,121,9,1,0,0,0,122,123,5,6,0,0,123,124,5,33,0,0,124,125,5,
+        27,0,0,125,11,1,0,0,0,126,127,5,7,0,0,127,128,5,33,0,0,128,129,3,
+        16,8,0,129,130,5,27,0,0,130,13,1,0,0,0,131,132,5,8,0,0,132,133,5,
+        33,0,0,133,134,3,16,8,0,134,135,5,27,0,0,135,15,1,0,0,0,136,137,
+        7,0,0,0,137,17,1,0,0,0,138,140,5,34,0,0,139,138,1,0,0,0,140,143,
+        1,0,0,0,141,139,1,0,0,0,141,142,1,0,0,0,142,144,1,0,0,0,143,141,
+        1,0,0,0,144,145,5,4,0,0,145,146,5,33,0,0,146,147,5,27,0,0,147,19,
+        1,0,0,0,148,150,5,34,0,0,149,148,1,0,0,0,150,153,1,0,0,0,151,149,
+        1,0,0,0,151,152,1,0,0,0,152,154,1,0,0,0,153,151,1,0,0,0,154,155,
+        5,5,0,0,155,156,5,33,0,0,156,160,5,28,0,0,157,159,3,22,11,0,158,
+        157,1,0,0,0,159,162,1,0,0,0,160,158,1,0,0,0,160,161,1,0,0,0,161,
+        21,1,0,0,0,162,160,1,0,0,0,163,165,5,34,0,0,164,163,1,0,0,0,165,
+        168,1,0,0,0,166,164,1,0,0,0,166,167,1,0,0,0,167,169,1,0,0,0,168,
+        166,1,0,0,0,169,186,3,10,5,0,170,172,5,34,0,0,171,170,1,0,0,0,172,
+        175,1,0,0,0,173,171,1,0,0,0,173,174,1,0,0,0,174,176,1,0,0,0,175,
+        173,1,0,0,0,176,186,3,12,6,0,177,179,5,34,0,0,178,177,1,0,0,0,179,
+        182,1,0,0,0,180,178,1,0,0,0,180,181,1,0,0,0,181,183,1,0,0,0,182,
+        180,1,0,0,0,183,186,3,14,7,0,184,186,3,32,16,0,185,166,1,0,0,0,185,
+        173,1,0,0,0,185,180,1,0,0,0,185,184,1,0,0,0,186,23,1,0,0,0,187,189,
+        5,34,0,0,188,187,1,0,0,0,189,192,1,0,0,0,190,188,1,0,0,0,190,191,
+        1,0,0,0,191,193,1,0,0,0,192,190,1,0,0,0,193,194,5,9,0,0,194,195,
+        3,30,15,0,195,199,5,28,0,0,196,198,3,26,13,0,197,196,1,0,0,0,198,
+        201,1,0,0,0,199,197,1,0,0,0,199,200,1,0,0,0,200,203,1,0,0,0,201,
+        199,1,0,0,0,202,204,3,20,10,0,203,202,1,0,0,0,204,205,1,0,0,0,205,
+        203,1,0,0,0,205,206,1,0,0,0,206,25,1,0,0,0,207,209,5,34,0,0,208,
+        207,1,0,0,0,209,212,1,0,0,0,210,208,1,0,0,0,210,211,1,0,0,0,211,
+        213,1,0,0,0,212,210,1,0,0,0,213,214,5,24,0,0,214,215,5,25,0,0,215,
+        216,3,28,14,0,216,217,5,11,0,0,217,218,5,33,0,0,218,221,3,16,8,0,
+        219,220,5,12,0,0,220,222,3,34,17,0,221,219,1,0,0,0,221,222,1,0,0,
+        0,222,223,1,0,0,0,223,224,5,27,0,0,224,27,1,0,0,0,225,226,7,1,0,
+        0,226,29,1,0,0,0,227,228,7,2,0,0,228,31,1,0,0,0,229,231,5,34,0,0,
+        230,229,1,0,0,0,231,234,1,0,0,0,232,230,1,0,0,0,232,233,1,0,0,0,
+        233,235,1,0,0,0,234,232,1,0,0,0,235,236,5,11,0,0,236,237,5,33,0,
+        0,237,240,3,16,8,0,238,239,5,12,0,0,239,241,3,34,17,0,240,238,1,
+        0,0,0,240,241,1,0,0,0,241,242,1,0,0,0,242,243,5,28,0,0,243,244,3,
+        42,21,0,244,33,1,0,0,0,245,250,3,36,18,0,246,247,5,14,0,0,247,249,
+        3,36,18,0,248,246,1,0,0,0,249,252,1,0,0,0,250,248,1,0,0,0,250,251,
+        1,0,0,0,251,35,1,0,0,0,252,250,1,0,0,0,253,258,3,38,19,0,254,255,
+        5,13,0,0,255,257,3,38,19,0,256,254,1,0,0,0,257,260,1,0,0,0,258,256,
+        1,0,0,0,258,259,1,0,0,0,259,37,1,0,0,0,260,258,1,0,0,0,261,263,5,
+        15,0,0,262,261,1,0,0,0,262,263,1,0,0,0,263,264,1,0,0,0,264,265,3,
+        40,20,0,265,39,1,0,0,0,266,267,5,33,0,0,267,273,3,16,8,0,268,269,
+        5,30,0,0,269,270,3,34,17,0,270,271,5,31,0,0,271,273,1,0,0,0,272,
+        266,1,0,0,0,272,268,1,0,0,0,273,41,1,0,0,0,274,279,3,44,22,0,275,
+        276,5,29,0,0,276,278,3,44,22,0,277,275,1,0,0,0,278,281,1,0,0,0,279,
+        277,1,0,0,0,279,280,1,0,0,0,280,282,1,0,0,0,281,279,1,0,0,0,282,
+        283,5,27,0,0,283,43,1,0,0,0,284,285,5,16,0,0,285,286,5,17,0,0,286,
+        293,5,33,0,0,287,288,5,16,0,0,288,289,5,18,0,0,289,293,5,33,0,0,
+        290,291,5,16,0,0,291,293,5,33,0,0,292,284,1,0,0,0,292,287,1,0,0,
+        0,292,290,1,0,0,0,293,45,1,0,0,0,32,49,55,60,69,74,85,91,97,102,
+        109,116,120,141,151,160,166,173,180,185,190,199,205,210,221,232,
+        240,250,258,262,272,279,292
     ]
 
 class RegiaScriptParser ( Parser ):
@@ -119,16 +130,16 @@ class RegiaScriptParser ( Parser ):
                      "'PHASE'", "'AGENT'", "'ACTION'", "'EVENT'", "'CONDITION'", 
                      "'DURING'", "'ALWAYS'", "'WHEN'", "'IF'", "'AND'", 
                      "'OR'", "'NOT'", "'DO'", "'BELIEVE'", "'FORGET'", "'ENVIRONMENT'", 
-                     "'DIRECTOR'", "'MYSELF'", "'PLAYER'", "'TIMER'", "'.'", 
-                     "':'", "','", "'('", "')'" ]
+                     "'DIRECTOR'", "'MYSELF'", "'PLAYER'", "'TIMER'", "'TRANSITION'", 
+                     "'TO'", "'END'", "'.'", "':'", "','", "'('", "')'" ]
 
     symbolicNames = [ "<INVALID>", "STORY", "DEFAULT", "PRIORITY", "PHASE", 
                       "AGENT", "ACTION", "EVENT", "CONDITION", "DURING", 
                       "ALWAYS", "WHEN", "IF", "AND", "OR", "NOT", "DO", 
                       "BELIEVE", "FORGET", "ENVIRONMENT", "DIRECTOR", "MYSELF", 
-                      "PLAYER", "TIMER", "PERIOD", "COLON", "COMMA", "LPAREN", 
-                      "RPAREN", "NUMBER", "ID", "DOC_COMMENT", "COMMENT", 
-                      "WS" ]
+                      "PLAYER", "TIMER", "TRANSITION", "TO", "END", "PERIOD", 
+                      "COLON", "COMMA", "LPAREN", "RPAREN", "NUMBER", "ID", 
+                      "DOC_COMMENT", "COMMENT", "WS" ]
 
     RULE_program = 0
     RULE_storyDef = 1
@@ -143,20 +154,23 @@ class RegiaScriptParser ( Parser ):
     RULE_agentBlock = 10
     RULE_agentSection = 11
     RULE_duringBlock = 12
-    RULE_phaseRef = 13
-    RULE_whenBlock = 14
-    RULE_condExpr = 15
-    RULE_condAnd = 16
-    RULE_condTerm = 17
-    RULE_condAtom = 18
-    RULE_doSequence = 19
-    RULE_doAction = 20
+    RULE_transitionRule = 13
+    RULE_phaseTarget = 14
+    RULE_phaseRef = 15
+    RULE_whenBlock = 16
+    RULE_condExpr = 17
+    RULE_condAnd = 18
+    RULE_condTerm = 19
+    RULE_condAtom = 20
+    RULE_doSequence = 21
+    RULE_doAction = 22
 
     ruleNames =  [ "program", "storyDef", "defaultStory", "namedStory", 
                    "declaration", "actionDecl", "eventDecl", "conditionDecl", 
                    "origin", "phaseDecl", "agentBlock", "agentSection", 
-                   "duringBlock", "phaseRef", "whenBlock", "condExpr", "condAnd", 
-                   "condTerm", "condAtom", "doSequence", "doAction" ]
+                   "duringBlock", "transitionRule", "phaseTarget", "phaseRef", 
+                   "whenBlock", "condExpr", "condAnd", "condTerm", "condAtom", 
+                   "doSequence", "doAction" ]
 
     EOF = Token.EOF
     STORY=1
@@ -182,16 +196,19 @@ class RegiaScriptParser ( Parser ):
     MYSELF=21
     PLAYER=22
     TIMER=23
-    PERIOD=24
-    COLON=25
-    COMMA=26
-    LPAREN=27
-    RPAREN=28
-    NUMBER=29
-    ID=30
-    DOC_COMMENT=31
-    COMMENT=32
-    WS=33
+    TRANSITION=24
+    TO=25
+    END=26
+    PERIOD=27
+    COLON=28
+    COMMA=29
+    LPAREN=30
+    RPAREN=31
+    NUMBER=32
+    ID=33
+    DOC_COMMENT=34
+    COMMENT=35
+    WS=36
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -238,19 +255,19 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 43 
+            self.state = 47 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 42
+                self.state = 46
                 self.storyDef()
-                self.state = 45 
+                self.state = 49 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not (_la==1 or _la==31):
+                if not (_la==1 or _la==34):
                     break
 
-            self.state = 47
+            self.state = 51
             self.match(RegiaScriptParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -293,18 +310,18 @@ class RegiaScriptParser ( Parser ):
         localctx = RegiaScriptParser.StoryDefContext(self, self._ctx, self.state)
         self.enterRule(localctx, 2, self.RULE_storyDef)
         try:
-            self.state = 51
+            self.state = 55
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,1,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 49
+                self.state = 53
                 self.defaultStory()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 50
+                self.state = 54
                 self.namedStory()
                 pass
 
@@ -366,33 +383,33 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 56
+            self.state = 60
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==31:
-                self.state = 53
+            while _la==34:
+                self.state = 57
                 self.match(RegiaScriptParser.DOC_COMMENT)
-                self.state = 58
+                self.state = 62
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 59
+            self.state = 63
             self.match(RegiaScriptParser.STORY)
-            self.state = 60
+            self.state = 64
             self.match(RegiaScriptParser.DEFAULT)
-            self.state = 61
+            self.state = 65
             self.match(RegiaScriptParser.PERIOD)
-            self.state = 63 
+            self.state = 67 
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
-                    self.state = 62
+                    self.state = 66
                     self.duringBlock()
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 65 
+                self.state = 69 
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
 
@@ -473,59 +490,59 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 70
+            self.state = 74
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==31:
-                self.state = 67
+            while _la==34:
+                self.state = 71
                 self.match(RegiaScriptParser.DOC_COMMENT)
-                self.state = 72
+                self.state = 76
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 73
-            self.match(RegiaScriptParser.STORY)
-            self.state = 74
-            self.match(RegiaScriptParser.ID)
-            self.state = 75
-            self.match(RegiaScriptParser.PRIORITY)
-            self.state = 76
-            self.match(RegiaScriptParser.NUMBER)
             self.state = 77
-            self.match(RegiaScriptParser.PERIOD)
+            self.match(RegiaScriptParser.STORY)
+            self.state = 78
+            self.match(RegiaScriptParser.ID)
+            self.state = 79
+            self.match(RegiaScriptParser.PRIORITY)
+            self.state = 80
+            self.match(RegiaScriptParser.NUMBER)
             self.state = 81
+            self.match(RegiaScriptParser.PERIOD)
+            self.state = 85
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,5,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 78
+                    self.state = 82
                     self.declaration() 
-                self.state = 83
+                self.state = 87
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,5,self._ctx)
 
-            self.state = 87
+            self.state = 91
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 84
+                    self.state = 88
                     self.phaseDecl() 
-                self.state = 89
+                self.state = 93
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
 
-            self.state = 91 
+            self.state = 95 
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
-                    self.state = 90
+                    self.state = 94
                     self.duringBlock()
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 93 
+                self.state = 97 
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
 
@@ -581,54 +598,54 @@ class RegiaScriptParser ( Parser ):
         self.enterRule(localctx, 8, self.RULE_declaration)
         self._la = 0 # Token type
         try:
-            self.state = 116
+            self.state = 120
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 98
+                self.state = 102
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==31:
-                    self.state = 95
+                while _la==34:
+                    self.state = 99
                     self.match(RegiaScriptParser.DOC_COMMENT)
-                    self.state = 100
+                    self.state = 104
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 101
+                self.state = 105
                 self.actionDecl()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 105
+                self.state = 109
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==31:
-                    self.state = 102
+                while _la==34:
+                    self.state = 106
                     self.match(RegiaScriptParser.DOC_COMMENT)
-                    self.state = 107
+                    self.state = 111
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 108
+                self.state = 112
                 self.eventDecl()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 112
+                self.state = 116
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==31:
-                    self.state = 109
+                while _la==34:
+                    self.state = 113
                     self.match(RegiaScriptParser.DOC_COMMENT)
-                    self.state = 114
+                    self.state = 118
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 115
+                self.state = 119
                 self.conditionDecl()
                 pass
 
@@ -676,11 +693,11 @@ class RegiaScriptParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_actionDecl)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 118
+            self.state = 122
             self.match(RegiaScriptParser.ACTION)
-            self.state = 119
+            self.state = 123
             self.match(RegiaScriptParser.ID)
-            self.state = 120
+            self.state = 124
             self.match(RegiaScriptParser.PERIOD)
         except RecognitionException as re:
             localctx.exception = re
@@ -729,13 +746,13 @@ class RegiaScriptParser ( Parser ):
         self.enterRule(localctx, 12, self.RULE_eventDecl)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 122
+            self.state = 126
             self.match(RegiaScriptParser.EVENT)
-            self.state = 123
+            self.state = 127
             self.match(RegiaScriptParser.ID)
-            self.state = 124
+            self.state = 128
             self.origin()
-            self.state = 125
+            self.state = 129
             self.match(RegiaScriptParser.PERIOD)
         except RecognitionException as re:
             localctx.exception = re
@@ -784,13 +801,13 @@ class RegiaScriptParser ( Parser ):
         self.enterRule(localctx, 14, self.RULE_conditionDecl)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 127
+            self.state = 131
             self.match(RegiaScriptParser.CONDITION)
-            self.state = 128
+            self.state = 132
             self.match(RegiaScriptParser.ID)
-            self.state = 129
+            self.state = 133
             self.origin()
-            self.state = 130
+            self.state = 134
             self.match(RegiaScriptParser.PERIOD)
         except RecognitionException as re:
             localctx.exception = re
@@ -842,7 +859,7 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 132
+            self.state = 136
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 16252928) != 0)):
                 self._errHandler.recoverInline(self)
@@ -899,21 +916,21 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 137
+            self.state = 141
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==31:
-                self.state = 134
+            while _la==34:
+                self.state = 138
                 self.match(RegiaScriptParser.DOC_COMMENT)
-                self.state = 139
+                self.state = 143
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 140
+            self.state = 144
             self.match(RegiaScriptParser.PHASE)
-            self.state = 141
+            self.state = 145
             self.match(RegiaScriptParser.ID)
-            self.state = 142
+            self.state = 146
             self.match(RegiaScriptParser.PERIOD)
         except RecognitionException as re:
             localctx.exception = re
@@ -972,30 +989,30 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 147
+            self.state = 151
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==31:
-                self.state = 144
+            while _la==34:
+                self.state = 148
                 self.match(RegiaScriptParser.DOC_COMMENT)
-                self.state = 149
+                self.state = 153
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 150
+            self.state = 154
             self.match(RegiaScriptParser.AGENT)
-            self.state = 151
+            self.state = 155
             self.match(RegiaScriptParser.ID)
-            self.state = 152
-            self.match(RegiaScriptParser.COLON)
             self.state = 156
+            self.match(RegiaScriptParser.COLON)
+            self.state = 160
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,14,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 153
+                    self.state = 157
                     self.agentSection() 
-                self.state = 158
+                self.state = 162
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,14,self._ctx)
 
@@ -1055,60 +1072,60 @@ class RegiaScriptParser ( Parser ):
         self.enterRule(localctx, 22, self.RULE_agentSection)
         self._la = 0 # Token type
         try:
-            self.state = 181
+            self.state = 185
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,18,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 162
+                self.state = 166
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==31:
-                    self.state = 159
+                while _la==34:
+                    self.state = 163
                     self.match(RegiaScriptParser.DOC_COMMENT)
-                    self.state = 164
+                    self.state = 168
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 165
+                self.state = 169
                 self.actionDecl()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 169
+                self.state = 173
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==31:
-                    self.state = 166
+                while _la==34:
+                    self.state = 170
                     self.match(RegiaScriptParser.DOC_COMMENT)
-                    self.state = 171
+                    self.state = 175
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 172
+                self.state = 176
                 self.eventDecl()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 176
+                self.state = 180
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==31:
-                    self.state = 173
+                while _la==34:
+                    self.state = 177
                     self.match(RegiaScriptParser.DOC_COMMENT)
-                    self.state = 178
+                    self.state = 182
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 179
+                self.state = 183
                 self.conditionDecl()
                 pass
 
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 180
+                self.state = 184
                 self.whenBlock()
                 pass
 
@@ -1145,6 +1162,13 @@ class RegiaScriptParser ( Parser ):
             else:
                 return self.getToken(RegiaScriptParser.DOC_COMMENT, i)
 
+        def transitionRule(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(RegiaScriptParser.TransitionRuleContext)
+            else:
+                return self.getTypedRuleContext(RegiaScriptParser.TransitionRuleContext,i)
+
+
         def agentBlock(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(RegiaScriptParser.AgentBlockContext)
@@ -1171,36 +1195,200 @@ class RegiaScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 186
+            self.state = 190
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==31:
-                self.state = 183
+            while _la==34:
+                self.state = 187
                 self.match(RegiaScriptParser.DOC_COMMENT)
-                self.state = 188
+                self.state = 192
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 189
+            self.state = 193
             self.match(RegiaScriptParser.DURING)
-            self.state = 190
+            self.state = 194
             self.phaseRef()
-            self.state = 191
+            self.state = 195
             self.match(RegiaScriptParser.COLON)
-            self.state = 193 
+            self.state = 199
+            self._errHandler.sync(self)
+            _alt = self._interp.adaptivePredict(self._input,20,self._ctx)
+            while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
+                if _alt==1:
+                    self.state = 196
+                    self.transitionRule() 
+                self.state = 201
+                self._errHandler.sync(self)
+                _alt = self._interp.adaptivePredict(self._input,20,self._ctx)
+
+            self.state = 203 
             self._errHandler.sync(self)
             _alt = 1
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
-                    self.state = 192
+                    self.state = 202
                     self.agentBlock()
 
                 else:
                     raise NoViableAltException(self)
-                self.state = 195 
+                self.state = 205 
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,20,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,21,self._ctx)
 
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class TransitionRuleContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def TRANSITION(self):
+            return self.getToken(RegiaScriptParser.TRANSITION, 0)
+
+        def TO(self):
+            return self.getToken(RegiaScriptParser.TO, 0)
+
+        def phaseTarget(self):
+            return self.getTypedRuleContext(RegiaScriptParser.PhaseTargetContext,0)
+
+
+        def WHEN(self):
+            return self.getToken(RegiaScriptParser.WHEN, 0)
+
+        def ID(self):
+            return self.getToken(RegiaScriptParser.ID, 0)
+
+        def origin(self):
+            return self.getTypedRuleContext(RegiaScriptParser.OriginContext,0)
+
+
+        def PERIOD(self):
+            return self.getToken(RegiaScriptParser.PERIOD, 0)
+
+        def DOC_COMMENT(self, i:int=None):
+            if i is None:
+                return self.getTokens(RegiaScriptParser.DOC_COMMENT)
+            else:
+                return self.getToken(RegiaScriptParser.DOC_COMMENT, i)
+
+        def IF(self):
+            return self.getToken(RegiaScriptParser.IF, 0)
+
+        def condExpr(self):
+            return self.getTypedRuleContext(RegiaScriptParser.CondExprContext,0)
+
+
+        def getRuleIndex(self):
+            return RegiaScriptParser.RULE_transitionRule
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitTransitionRule" ):
+                return visitor.visitTransitionRule(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def transitionRule(self):
+
+        localctx = RegiaScriptParser.TransitionRuleContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 26, self.RULE_transitionRule)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 210
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            while _la==34:
+                self.state = 207
+                self.match(RegiaScriptParser.DOC_COMMENT)
+                self.state = 212
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+
+            self.state = 213
+            self.match(RegiaScriptParser.TRANSITION)
+            self.state = 214
+            self.match(RegiaScriptParser.TO)
+            self.state = 215
+            self.phaseTarget()
+            self.state = 216
+            self.match(RegiaScriptParser.WHEN)
+            self.state = 217
+            self.match(RegiaScriptParser.ID)
+            self.state = 218
+            self.origin()
+            self.state = 221
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            if _la==12:
+                self.state = 219
+                self.match(RegiaScriptParser.IF)
+                self.state = 220
+                self.condExpr()
+
+
+            self.state = 223
+            self.match(RegiaScriptParser.PERIOD)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class PhaseTargetContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def ID(self):
+            return self.getToken(RegiaScriptParser.ID, 0)
+
+        def END(self):
+            return self.getToken(RegiaScriptParser.END, 0)
+
+        def getRuleIndex(self):
+            return RegiaScriptParser.RULE_phaseTarget
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPhaseTarget" ):
+                return visitor.visitPhaseTarget(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def phaseTarget(self):
+
+        localctx = RegiaScriptParser.PhaseTargetContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 28, self.RULE_phaseTarget)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 225
+            _la = self._input.LA(1)
+            if not(_la==26 or _la==33):
+                self._errHandler.recoverInline(self)
+            else:
+                self._errHandler.reportMatch(self)
+                self.consume()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1238,13 +1426,13 @@ class RegiaScriptParser ( Parser ):
     def phaseRef(self):
 
         localctx = RegiaScriptParser.PhaseRefContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 26, self.RULE_phaseRef)
+        self.enterRule(localctx, 30, self.RULE_phaseRef)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 197
+            self.state = 227
             _la = self._input.LA(1)
-            if not(_la==10 or _la==30):
+            if not(_la==10 or _la==33):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1310,39 +1498,39 @@ class RegiaScriptParser ( Parser ):
     def whenBlock(self):
 
         localctx = RegiaScriptParser.WhenBlockContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 28, self.RULE_whenBlock)
+        self.enterRule(localctx, 32, self.RULE_whenBlock)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 202
+            self.state = 232
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==31:
-                self.state = 199
+            while _la==34:
+                self.state = 229
                 self.match(RegiaScriptParser.DOC_COMMENT)
-                self.state = 204
+                self.state = 234
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 205
+            self.state = 235
             self.match(RegiaScriptParser.WHEN)
-            self.state = 206
+            self.state = 236
             self.match(RegiaScriptParser.ID)
-            self.state = 207
+            self.state = 237
             self.origin()
-            self.state = 210
+            self.state = 240
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==12:
-                self.state = 208
+                self.state = 238
                 self.match(RegiaScriptParser.IF)
-                self.state = 209
+                self.state = 239
                 self.condExpr()
 
 
-            self.state = 212
+            self.state = 242
             self.match(RegiaScriptParser.COLON)
-            self.state = 213
+            self.state = 243
             self.doSequence()
         except RecognitionException as re:
             localctx.exception = re
@@ -1388,21 +1576,21 @@ class RegiaScriptParser ( Parser ):
     def condExpr(self):
 
         localctx = RegiaScriptParser.CondExprContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 30, self.RULE_condExpr)
+        self.enterRule(localctx, 34, self.RULE_condExpr)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 215
+            self.state = 245
             self.condAnd()
-            self.state = 220
+            self.state = 250
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==14:
-                self.state = 216
+                self.state = 246
                 self.match(RegiaScriptParser.OR)
-                self.state = 217
+                self.state = 247
                 self.condAnd()
-                self.state = 222
+                self.state = 252
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1450,21 +1638,21 @@ class RegiaScriptParser ( Parser ):
     def condAnd(self):
 
         localctx = RegiaScriptParser.CondAndContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 32, self.RULE_condAnd)
+        self.enterRule(localctx, 36, self.RULE_condAnd)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 223
+            self.state = 253
             self.condTerm()
-            self.state = 228
+            self.state = 258
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==13:
-                self.state = 224
+                self.state = 254
                 self.match(RegiaScriptParser.AND)
-                self.state = 225
+                self.state = 255
                 self.condTerm()
-                self.state = 230
+                self.state = 260
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1506,19 +1694,19 @@ class RegiaScriptParser ( Parser ):
     def condTerm(self):
 
         localctx = RegiaScriptParser.CondTermContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 34, self.RULE_condTerm)
+        self.enterRule(localctx, 38, self.RULE_condTerm)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 232
+            self.state = 262
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==15:
-                self.state = 231
+                self.state = 261
                 self.match(RegiaScriptParser.NOT)
 
 
-            self.state = 234
+            self.state = 264
             self.condAtom()
         except RecognitionException as re:
             localctx.exception = re
@@ -1568,25 +1756,25 @@ class RegiaScriptParser ( Parser ):
     def condAtom(self):
 
         localctx = RegiaScriptParser.CondAtomContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 36, self.RULE_condAtom)
+        self.enterRule(localctx, 40, self.RULE_condAtom)
         try:
-            self.state = 242
+            self.state = 272
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [30]:
+            if token in [33]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 236
+                self.state = 266
                 self.match(RegiaScriptParser.ID)
-                self.state = 237
+                self.state = 267
                 self.origin()
                 pass
-            elif token in [27]:
+            elif token in [30]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 238
+                self.state = 268
                 self.match(RegiaScriptParser.LPAREN)
-                self.state = 239
+                self.state = 269
                 self.condExpr()
-                self.state = 240
+                self.state = 270
                 self.match(RegiaScriptParser.RPAREN)
                 pass
             else:
@@ -1639,25 +1827,25 @@ class RegiaScriptParser ( Parser ):
     def doSequence(self):
 
         localctx = RegiaScriptParser.DoSequenceContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 38, self.RULE_doSequence)
+        self.enterRule(localctx, 42, self.RULE_doSequence)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 244
+            self.state = 274
             self.doAction()
-            self.state = 249
+            self.state = 279
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==26:
-                self.state = 245
+            while _la==29:
+                self.state = 275
                 self.match(RegiaScriptParser.COMMA)
-                self.state = 246
+                self.state = 276
                 self.doAction()
-                self.state = 251
+                self.state = 281
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 252
+            self.state = 282
             self.match(RegiaScriptParser.PERIOD)
         except RecognitionException as re:
             localctx.exception = re
@@ -1702,36 +1890,36 @@ class RegiaScriptParser ( Parser ):
     def doAction(self):
 
         localctx = RegiaScriptParser.DoActionContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 40, self.RULE_doAction)
+        self.enterRule(localctx, 44, self.RULE_doAction)
         try:
-            self.state = 262
+            self.state = 292
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,28,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,31,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 254
+                self.state = 284
                 self.match(RegiaScriptParser.DO)
-                self.state = 255
+                self.state = 285
                 self.match(RegiaScriptParser.BELIEVE)
-                self.state = 256
+                self.state = 286
                 self.match(RegiaScriptParser.ID)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 257
+                self.state = 287
                 self.match(RegiaScriptParser.DO)
-                self.state = 258
+                self.state = 288
                 self.match(RegiaScriptParser.FORGET)
-                self.state = 259
+                self.state = 289
                 self.match(RegiaScriptParser.ID)
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 260
+                self.state = 290
                 self.match(RegiaScriptParser.DO)
-                self.state = 261
+                self.state = 291
                 self.match(RegiaScriptParser.ID)
                 pass
 
