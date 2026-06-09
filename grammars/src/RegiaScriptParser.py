@@ -43,14 +43,14 @@ def serializedATN():
         1,48,1,1,0,0,0,49,52,3,4,2,0,50,52,3,6,3,0,51,49,1,0,0,0,51,50,1,
         0,0,0,52,3,1,0,0,0,53,55,5,31,0,0,54,53,1,0,0,0,55,58,1,0,0,0,56,
         54,1,0,0,0,56,57,1,0,0,0,57,59,1,0,0,0,58,56,1,0,0,0,59,60,5,1,0,
-        0,60,61,5,2,0,0,61,63,5,24,0,0,62,64,3,20,10,0,63,62,1,0,0,0,64,
+        0,60,61,5,2,0,0,61,63,5,24,0,0,62,64,3,24,12,0,63,62,1,0,0,0,64,
         65,1,0,0,0,65,63,1,0,0,0,65,66,1,0,0,0,66,5,1,0,0,0,67,69,5,31,0,
         0,68,67,1,0,0,0,69,72,1,0,0,0,70,68,1,0,0,0,70,71,1,0,0,0,71,73,
         1,0,0,0,72,70,1,0,0,0,73,74,5,1,0,0,74,75,5,30,0,0,75,76,5,3,0,0,
         76,77,5,29,0,0,77,81,5,24,0,0,78,80,3,8,4,0,79,78,1,0,0,0,80,83,
         1,0,0,0,81,79,1,0,0,0,81,82,1,0,0,0,82,87,1,0,0,0,83,81,1,0,0,0,
         84,86,3,18,9,0,85,84,1,0,0,0,86,89,1,0,0,0,87,85,1,0,0,0,87,88,1,
-        0,0,0,88,91,1,0,0,0,89,87,1,0,0,0,90,92,3,20,10,0,91,90,1,0,0,0,
+        0,0,0,88,91,1,0,0,0,89,87,1,0,0,0,90,92,3,24,12,0,91,90,1,0,0,0,
         92,93,1,0,0,0,93,91,1,0,0,0,93,94,1,0,0,0,94,7,1,0,0,0,95,97,5,31,
         0,0,96,95,1,0,0,0,97,100,1,0,0,0,98,96,1,0,0,0,98,99,1,0,0,0,99,
         101,1,0,0,0,100,98,1,0,0,0,101,117,3,10,5,0,102,104,5,31,0,0,103,
@@ -75,11 +75,11 @@ def serializedATN():
         1,0,0,0,168,171,1,0,0,0,169,167,1,0,0,0,169,170,1,0,0,0,170,172,
         1,0,0,0,171,169,1,0,0,0,172,182,3,12,6,0,173,175,5,31,0,0,174,173,
         1,0,0,0,175,178,1,0,0,0,176,174,1,0,0,0,176,177,1,0,0,0,177,179,
-        1,0,0,0,178,176,1,0,0,0,179,182,3,14,7,0,180,182,3,24,12,0,181,162,
+        1,0,0,0,178,176,1,0,0,0,179,182,3,14,7,0,180,182,3,28,14,0,181,162,
         1,0,0,0,181,169,1,0,0,0,181,176,1,0,0,0,181,180,1,0,0,0,182,23,1,
         0,0,0,183,185,5,31,0,0,184,183,1,0,0,0,185,188,1,0,0,0,186,184,1,
         0,0,0,186,187,1,0,0,0,187,189,1,0,0,0,188,186,1,0,0,0,189,190,5,
-        9,0,0,190,191,3,26,13,0,191,193,5,25,0,0,192,194,3,28,14,0,193,192,
+        9,0,0,190,191,3,26,13,0,191,193,5,25,0,0,192,194,3,20,10,0,193,192,
         1,0,0,0,194,195,1,0,0,0,195,193,1,0,0,0,195,196,1,0,0,0,196,25,1,
         0,0,0,197,198,7,1,0,0,198,27,1,0,0,0,199,201,5,31,0,0,200,199,1,
         0,0,0,201,204,1,0,0,0,202,200,1,0,0,0,202,203,1,0,0,0,203,205,1,
@@ -340,11 +340,11 @@ class RegiaScriptParser ( Parser ):
             else:
                 return self.getToken(RegiaScriptParser.DOC_COMMENT, i)
 
-        def agentBlock(self, i:int=None):
+        def duringBlock(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(RegiaScriptParser.AgentBlockContext)
+                return self.getTypedRuleContexts(RegiaScriptParser.DuringBlockContext)
             else:
-                return self.getTypedRuleContext(RegiaScriptParser.AgentBlockContext,i)
+                return self.getTypedRuleContext(RegiaScriptParser.DuringBlockContext,i)
 
 
         def getRuleIndex(self):
@@ -388,7 +388,7 @@ class RegiaScriptParser ( Parser ):
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
                     self.state = 62
-                    self.agentBlock()
+                    self.duringBlock()
 
                 else:
                     raise NoViableAltException(self)
@@ -447,11 +447,11 @@ class RegiaScriptParser ( Parser ):
                 return self.getTypedRuleContext(RegiaScriptParser.PhaseDeclContext,i)
 
 
-        def agentBlock(self, i:int=None):
+        def duringBlock(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(RegiaScriptParser.AgentBlockContext)
+                return self.getTypedRuleContexts(RegiaScriptParser.DuringBlockContext)
             else:
-                return self.getTypedRuleContext(RegiaScriptParser.AgentBlockContext,i)
+                return self.getTypedRuleContext(RegiaScriptParser.DuringBlockContext,i)
 
 
         def getRuleIndex(self):
@@ -521,7 +521,7 @@ class RegiaScriptParser ( Parser ):
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
                     self.state = 90
-                    self.agentBlock()
+                    self.duringBlock()
 
                 else:
                     raise NoViableAltException(self)
@@ -1033,8 +1033,8 @@ class RegiaScriptParser ( Parser ):
             return self.getTypedRuleContext(RegiaScriptParser.ConditionDeclContext,0)
 
 
-        def duringBlock(self):
-            return self.getTypedRuleContext(RegiaScriptParser.DuringBlockContext,0)
+        def whenBlock(self):
+            return self.getTypedRuleContext(RegiaScriptParser.WhenBlockContext,0)
 
 
         def getRuleIndex(self):
@@ -1109,7 +1109,7 @@ class RegiaScriptParser ( Parser ):
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 180
-                self.duringBlock()
+                self.whenBlock()
                 pass
 
 
@@ -1145,11 +1145,11 @@ class RegiaScriptParser ( Parser ):
             else:
                 return self.getToken(RegiaScriptParser.DOC_COMMENT, i)
 
-        def whenBlock(self, i:int=None):
+        def agentBlock(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(RegiaScriptParser.WhenBlockContext)
+                return self.getTypedRuleContexts(RegiaScriptParser.AgentBlockContext)
             else:
-                return self.getTypedRuleContext(RegiaScriptParser.WhenBlockContext,i)
+                return self.getTypedRuleContext(RegiaScriptParser.AgentBlockContext,i)
 
 
         def getRuleIndex(self):
@@ -1193,7 +1193,7 @@ class RegiaScriptParser ( Parser ):
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt == 1:
                     self.state = 192
-                    self.whenBlock()
+                    self.agentBlock()
 
                 else:
                     raise NoViableAltException(self)

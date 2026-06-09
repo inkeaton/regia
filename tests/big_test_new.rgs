@@ -1,0 +1,117 @@
+# @NAME: Mozga District — Restructured
+# @MEANING: Same scenario as complex_test but with new story→phase→agent hierarchy
+
+STORY DEFAULT.
+
+    DURING ALWAYS:
+        AGENT Crackhead:
+            ACTION wander.
+            EVENT idle MYSELF.
+            WHEN idle MYSELF:
+                DO wander.
+
+        AGENT Citizen:
+            ACTION greet.
+            EVENT player_nearby ENVIRONMENT.
+            WHEN player_nearby ENVIRONMENT:
+                DO greet.
+
+STORY bring_me_item PRIORITY 1.
+
+    ACTION thank_player.
+    ACTION express_disappointment.
+    ACTION explore.
+    ACTION note_citizen_gone.
+
+    EVENT item_delivered  ENVIRONMENT.
+    EVENT quest_timed_out TIMER.
+    EVENT citizen_dies    ENVIRONMENT.
+    EVENT player_accepts  PLAYER.
+    EVENT player_rejects  PLAYER.
+    EVENT idle            MYSELF.
+    EVENT player_nearby   ENVIRONMENT.
+
+    CONDITION item_is_rare    ENVIRONMENT.
+    CONDITION player_has_item ENVIRONMENT.
+
+    PHASE asking.
+    PHASE searching.
+    PHASE success.
+    PHASE failed.
+
+    # @NAME: Asking phase
+    # @MEANING: Citizen proposes the task, player decides
+    DURING asking:
+
+        # @NAME: Citizen in asking phase
+        AGENT Citizen:
+            CONDITION citizen_is_known MYSELF.
+            WHEN player_accepts PLAYER IF citizen_is_known MYSELF:
+                DO thank_player.
+            WHEN player_rejects PLAYER:
+                DO express_disappointment.
+
+        # @NAME: Player in asking phase
+        AGENT Player:
+            CONDITION is_busy MYSELF.
+            WHEN player_accepts PLAYER IF NOT is_busy MYSELF:
+                DO thank_player.
+            WHEN player_rejects PLAYER IF is_busy MYSELF:
+                DO explore.
+
+    # @NAME: Searching phase
+    # @MEANING: Player looks for the item
+    DURING searching:
+
+        AGENT Citizen:
+            WHEN item_delivered ENVIRONMENT IF player_has_item ENVIRONMENT AND NOT item_is_rare ENVIRONMENT:
+                DO thank_player.
+            WHEN item_delivered ENVIRONMENT IF player_has_item ENVIRONMENT AND item_is_rare ENVIRONMENT:
+                DO thank_player,
+                DO express_disappointment.
+            WHEN quest_timed_out TIMER:
+                DO express_disappointment.
+            WHEN citizen_dies ENVIRONMENT:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN item_delivered ENVIRONMENT IF player_has_item ENVIRONMENT:
+                DO thank_player.
+            WHEN quest_timed_out TIMER:
+                DO express_disappointment.
+            WHEN citizen_dies ENVIRONMENT:
+                DO note_citizen_gone.
+
+    # @NAME: Success phase
+    DURING success:
+
+        AGENT Citizen:
+            WHEN player_nearby ENVIRONMENT:
+                DO thank_player.
+
+        AGENT Player:
+            WHEN idle MYSELF:
+                DO explore.
+
+    # @NAME: Failed phase
+    DURING failed:
+
+        AGENT Citizen:
+            WHEN idle MYSELF:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN idle MYSELF:
+                DO explore.
+
+    # @NAME: Always active within story
+    # @MEANING: React to citizen death regardless of phase
+    DURING ALWAYS:
+
+        AGENT Citizen:
+            WHEN citizen_dies ENVIRONMENT:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN citizen_dies ENVIRONMENT:
+                DO note_citizen_gone.

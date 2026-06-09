@@ -202,23 +202,20 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
 
         self._current_story = story
 
-        for agent_block in ctx.agentBlock():
-            self._emit_agent_block(agent_block, story)
+        for during in ctx.duringBlock():
+            self._emit_during_block_new(during, story)
 
         self._current_story = None
 
-    def visitNamedStory(
-        self, ctx: RegiaScriptParser.NamedStoryContext
-    ):
+    def visitNamedStory(self, ctx):
         story_name = ctx.ID().getText()
-        story      = self.table.stories.get(story_name)
+        story = self.table.stories.get(story_name)
         if story is None:
             return
-
         self._current_story = story
 
-        for agent_block in ctx.agentBlock():
-            self._emit_agent_block(agent_block, story)
+        for during in ctx.duringBlock():
+            self._emit_during_block_new(during, story)
 
         self._current_story = None
 
@@ -279,6 +276,49 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
                     priority=priority,
                     agentspeak=plan
                 ))
+
+    def _emit_during_block_new(self, ctx, story):
+        phase_ref  = ctx.phaseRef()
+        is_always  = bool(phase_ref.ALWAYS())
+        phase_name = None if is_always else phase_ref.ID().getText()
+        priority   = story.priority if not story.is_default else 0
+
+        for agent_block in ctx.agentBlock():
+            self._emit_agent_in_during(
+                agent_block, story, phase_name, priority
+            )
+    
+    def _emit_agent_in_during(self, ctx, story, phase_name, priority):
+        agent_name = ctx.ID().getText()
+        agent      = story.agents.get(agent_name)
+        if agent is None:
+            return
+
+        buffer = self._get_buffer(agent_name)
+        self._current_agent = agent
+
+        # Emit initial phase belief — only once per agent per story
+        if not story.is_default and story.phases:
+            for phase in story.phases.values():
+                if phase.initial:
+                    initial = f"current_phase({story.name}, {phase.name})"
+                    if initial not in buffer.initial_beliefs:
+                        buffer.initial_beliefs.append(initial)
+                    break
+
+        # Emit plans from whenBlock sections
+        for section in ctx.agentSection():
+            if section.whenBlock():
+                plan = self._emit_when(
+                    section.whenBlock(), story, phase_name, priority
+                )
+                if plan is not None:
+                    buffer.plans.append(CompiledPlan(
+                        priority=priority,
+                        agentspeak=plan
+                    ))
+
+        self._current_agent = None
 
     # == When block ============================================================
 

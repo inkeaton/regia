@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='utf8'?>
+<nuitka-compilation-report nuitka_version="4.1.2" nuitka_commercial_version="not installed" mode="onefile" completion="exception">
+  <exception exception_type="AssertionError" exception_value="../src/generated">
+Traceback (most recent call last):
+  File "/home/inkeaton/Codice/regia/.venv/lib/python3.14/site-packages/nuitka/MainControl.py", line 1385, in main
+    _main()
+    ~~~~~^^
+  File "/home/inkeaton/Codice/regia/.venv/lib/python3.14/site-packages/nuitka/MainControl.py", line 1198, in _main
+    addIncludedDataFilesFromFileOptions()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/inkeaton/Codice/regia/.venv/lib/python3.14/site-packages/nuitka/freezer/IncludedDataFiles.py", line 734, in addIncludedDataFilesFromFileOptions
+    for included_datafile in _addIncludedDataFilesFromFileOptions():
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/inkeaton/Codice/regia/.venv/lib/python3.14/site-packages/nuitka/freezer/IncludedDataFiles.py", line 645, in _addIncludedDataFilesFromFileOptions
+    for included_datafile in makeIncludedDataDirectory(
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        source_path=source_path,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...&lt;3 lines&gt;...
+        tags="user",
+        ^^^^^^^^^^^^
+    ):
+    ^
+  File "/home/inkeaton/Codice/regia/.venv/lib/python3.14/site-packages/nuitka/freezer/IncludedDataFiles.py", line 349, in makeIncludedDataDirectory
+    assert isRelativePath(dest_path), dest_path
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: ../src/generated
+</exception>
+  <performance>
+    <memory_usage name="after_launch" value="46837760" />
+  </performance>
+  <data_composer blob_size="None" />
+  <performance-totals>
+    <optimization-time pass="all" time="0.0000" module_count="0" />
+    <code-generation-time time="0.0000" module_count="0" />
+  </performance-totals>
+  <command_line>
+    <option value="--onefile" />
+    <option value="--output-filename=regiascript" />
+    <option value="--include-package=antlr4" />
+    <option value="--include-package=src" />
+    <option value="--include-data-dir=../src/generated=../src/generated" />
+    <option value="--follow-imports" />
+    <option value="../main.py" />
+  </command_line>
+  <plugins>
+    <plugin name="anti-bloat" user_enabled="no" />
+    <plugin name="data-files" user_enabled="no" />
+    <plugin name="delvewheel" user_enabled="no" />
+    <plugin name="dll-files" user_enabled="no" />
+    <plugin name="gevent" user_enabled="no" />
+    <plugin name="gi" user_enabled="no" />
+    <plugin name="glfw" user_enabled="no" />
+    <plugin name="implicit-imports" user_enabled="no" />
+    <plugin name="kivy" user_enabled="no" />
+    <plugin name="matplotlib" user_enabled="no" />
+    <plugin name="multiprocessing" user_enabled="no" />
+    <plugin name="options-nanny" user_enabled="no" />
+    <plugin name="pbr-compat" user_enabled="no" />
+    <plugin name="pkg-resources" user_enabled="no" />
+    <plugin name="playwright" user_enabled="no" />
+    <plugin name="pywebview" user_enabled="no" />
+    <plugin name="spacy" user_enabled="no" />
+    <plugin name="torch-jit" user_enabled="no" />
+    <plugin name="transformers" user_enabled="no" />
+  </plugins>
+  <onefile cache_mode="temporary" unpack_dir="{TEMP}/onefile_{PID}_{TIME_US}_{RANDOM}" />
+  <distributions />
+  <python python_exe="${sys.prefix}/bin/python" python_flavor="Arch Python" python_version="3.14.5" os_name="Linux" os_release="Arch" arch_name="x86_64" filesystem_encoding="utf-8" gil="yes">
+    <search_path>
+      <path value="${cwd}" />
+      <path value="~/Codice/regia" />
+      <path value="${sys.real_prefix}/lib/python3.14" />
+      <path value="${sys.real_prefix}/lib/python3.14/lib-dynload" />
+      <path value="${sys.prefix}/lib/python3.14/site-packages" />
+    </search_path>
+  </python>
+  <output />
+</nuitka-compilation-report>

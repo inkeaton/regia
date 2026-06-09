@@ -196,8 +196,8 @@ class SymbolTableBuilder(RegiaScriptVisitor):
         )
         self.table.stories[name] = story
 
-        for agent_block in ctx.agentBlock():
-            self._visit_agent_block(agent_block, story)
+        for during in ctx.duringBlock():
+            self._visit_during_block(during, story)
 
     def visitNamedStory(
         self, ctx: RegiaScriptParser.NamedStoryContext
@@ -260,9 +260,30 @@ class SymbolTableBuilder(RegiaScriptVisitor):
                 )
                 phase_index += 1
 
-        # Agent blocks
+        # Phases blocks
+        for during in ctx.duringBlock():
+            self._visit_during_block(during, story)
+    
+    def _visit_during_block(self, ctx, story):
+        # Validate phase reference
+        phase_ref = ctx.phaseRef()
+        if not phase_ref.ALWAYS():
+            phase_name = phase_ref.ID().getText()
+            if phase_name not in story.phases:
+                self.reporter.error(
+                    ctx.start.line,
+                    phase_ref.start.column,
+                    len(phase_name),
+                    f"Phase '{phase_name}' is not declared "
+                    f"in story '{story.name}'.",
+                    f"Add 'PHASE {phase_name}.' to the story declarations."
+                )
+        
+        # Visit agent blocks inside this during block
         for agent_block in ctx.agentBlock():
             self._visit_agent_block(agent_block, story)
+
+    
 
     # == Story-level declaration ===============================================
 
@@ -284,64 +305,35 @@ class SymbolTableBuilder(RegiaScriptVisitor):
 
     # == Agent block ===========================================================
 
-    def _visit_agent_block(
-        self,
-        ctx:   RegiaScriptParser.AgentBlockContext,
-        story: StoryInfo
-    ):
+    def _visit_agent_block(self, ctx, story):
+        # Same as before, register agent, collect local declarations
+        # but now agentSection contains whenBlock instead of duringBlock
         doc  = parse_doc_comments(ctx.DOC_COMMENT())
         name = ctx.ID().getText()
         line = ctx.start.line
 
         if name in story.agents:
-            self.reporter.error(
-                line, ctx.ID().symbol.column, len(name),
-                f"Agent '{name}' appears more than once in "
-                f"story '{story.name}'.",
-                f"Remove one of the AGENT {name} blocks."
-            )
-            return
-
-        agent = AgentInfo(name=name, line=line, doc=doc)
-        story.agents[name] = agent
+            # Don't error on duplicate, same agent can appear
+            # in multiple DURING blocks. Just retrieve existing.
+            agent = story.agents[name]
+        else:
+            agent = AgentInfo(name=name, line=line, doc=doc)
+            story.agents[name] = agent
 
         for section in ctx.agentSection():
             self._visit_agent_section(section, agent, story)
 
     # == Agent section =========================================================
 
-    def _visit_agent_section(
-        self,
-        ctx:   RegiaScriptParser.AgentSectionContext,
-        agent: AgentInfo,
-        story: StoryInfo
-    ):
+    def _visit_agent_section(self, ctx, agent, story):
         doc = parse_doc_comments(ctx.DOC_COMMENT())
-
         if ctx.actionDecl():
             _register_action(ctx.actionDecl(), agent.actions,
                             self.reporter, doc)
         elif ctx.eventDecl():
             _register_event(ctx.eventDecl(), agent.events,
-                           self.reporter, doc)
+                        self.reporter, doc)
         elif ctx.conditionDecl():
             _register_condition(ctx.conditionDecl(), agent.conditions,
-                               self.reporter, doc)
-        elif ctx.duringBlock():
-            # Validate phase reference
-            block     = ctx.duringBlock()
-            phase_ref = block.phaseRef()
+                            self.reporter, doc)
 
-            if not phase_ref.ALWAYS():
-                phase_name = phase_ref.ID().getText()
-                
-                if phase_name not in story.phases:
-                    self.reporter.error(
-                        block.start.line,
-                        phase_ref.start.column,
-                        len(phase_name),
-                        f"Phase '{phase_name}' is not declared "
-                        f"in story '{story.name}'.",
-                        f"Add 'PHASE {phase_name}.' to the story "
-                        f"declarations, or check the spelling."
-                    )

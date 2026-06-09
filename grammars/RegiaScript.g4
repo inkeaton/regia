@@ -20,8 +20,7 @@ storyDef
 // default stories are used to give default behaviour to agents. 
 // they do not have priority and cannot have phases.
 defaultStory
-    : DOC_COMMENT* STORY DEFAULT PERIOD 
-      agentBlock+
+    : DOC_COMMENT* STORY DEFAULT PERIOD duringBlock+
     ;
 
 // named stories are used to represent quests and other narrative sections.
@@ -30,7 +29,7 @@ namedStory
     : DOC_COMMENT* STORY ID PRIORITY NUMBER PERIOD
       declaration*
       phaseDecl*
-      agentBlock+
+      duringBlock+
     ;
 
 //  --- Declarations ---
@@ -87,14 +86,14 @@ agentSection
     : DOC_COMMENT* actionDecl
     | DOC_COMMENT* eventDecl
     | DOC_COMMENT* conditionDecl
-    | duringBlock
+    | whenBlock
     ;
 
 //  --- During Block ---
 
 // during blocks represent the behaviour of an agent during a specific phase of the story.
 duringBlock
-    : DOC_COMMENT* DURING phaseRef COLON whenBlock+
+    : DOC_COMMENT* DURING phaseRef COLON agentBlock+
     ;
 
 // the phase can be a named one or the default ALWAYS

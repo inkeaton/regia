@@ -1,0 +1,173 @@
+# @NAME: Bring Me Item
+# @MEANING: A citizen asks the player to retrieve an item.
+#           The quest can end in success, timeout, or citizen death/disappearance.
+#           Closely follows the Bring Me Item designer snippet.
+
+# ══════════════════════════════════════════════════════════════════
+# DEFAULT — Baseline behaviour
+# ══════════════════════════════════════════════════════════════════
+
+STORY DEFAULT.
+
+    DURING ALWAYS:
+
+        AGENT Citizen:
+            ACTION go_about_day.
+            EVENT daily_routine MYSELF.
+            WHEN daily_routine MYSELF:
+                DO go_about_day.
+
+        AGENT Player:
+            ACTION explore.
+            EVENT bored MYSELF.
+            WHEN bored MYSELF:
+                DO explore.
+
+# ══════════════════════════════════════════════════════════════════
+# BRING ME ITEM quest
+# ══════════════════════════════════════════════════════════════════
+
+# @NAME: Bring Me Item
+# @MEANING: Generic fetch quest between a Citizen and the Player.
+#           Four phases mirroring the designer's state machine:
+#           asking → searching → delivered (success) or failed (timeout/death)
+STORY bring_me_item PRIORITY 1.
+
+    # Shared actions
+    ACTION thank_player.
+    ACTION find_someone_else.
+    ACTION express_disappointment.
+    ACTION acknowledge.
+    ACTION note_citizen_gone.
+
+    # Baseline events and actions reused from default behaviour
+    ACTION explore.
+    EVENT daily_routine MYSELF.
+    EVENT bored         MYSELF.
+
+    # Shared events
+    EVENT player_accepts  PLAYER.
+    EVENT player_rejects  PLAYER.
+    EVENT item_delivered  ENVIRONMENT.
+    EVENT quest_timed_out TIMER.
+    EVENT citizen_dies    ENVIRONMENT.
+    EVENT citizen_missing ENVIRONMENT.
+
+    # Shared conditions
+    CONDITION player_has_item ENVIRONMENT.
+    CONDITION citizen_is_known MYSELF.
+
+    # @NAME: Quest phases
+    # asking        — citizen proposes, player decides
+    # searching     — player accepted, looking for item
+    # delivered     — item successfully handed over
+    # failed        — timed out, or citizen died/went missing
+    PHASE asking.
+    PHASE searching.
+    PHASE delivered.
+    PHASE failed.
+
+    # ── ASKING phase ───────────────────────────────────────────
+    # @NAME: Asking phase
+    # @MEANING: Citizen asks for a favour. Player can accept or reject.
+    #           If citizen is not known to player, quest cannot start.
+    DURING asking:
+
+        # @NAME: Citizen asking
+        AGENT Citizen:
+            WHEN player_accepts PLAYER IF citizen_is_known MYSELF:
+                DO acknowledge.
+            WHEN player_rejects PLAYER:
+                DO find_someone_else.
+            WHEN citizen_dies    ENVIRONMENT:
+                DO express_disappointment.
+            WHEN citizen_missing ENVIRONMENT:
+                DO express_disappointment.
+
+        # @NAME: Player being asked
+        AGENT Player:
+            CONDITION is_busy MYSELF.
+            WHEN player_accepts PLAYER IF NOT is_busy MYSELF:
+                DO acknowledge.
+            WHEN player_accepts PLAYER IF is_busy MYSELF:
+                DO express_disappointment.
+            WHEN player_rejects PLAYER:
+                DO explore.
+            WHEN citizen_dies    ENVIRONMENT:
+                DO note_citizen_gone.
+            WHEN citizen_missing ENVIRONMENT:
+                DO note_citizen_gone.
+
+    # ── SEARCHING phase ────────────────────────────────────────
+    # @NAME: Searching phase
+    # @MEANING: Player accepted and is looking for the item.
+    #           Quest fails after 3 days (TIMER) or if citizen disappears.
+    DURING searching:
+
+        # @NAME: Citizen waiting
+        AGENT Citizen:
+            WHEN item_delivered  ENVIRONMENT IF player_has_item ENVIRONMENT:
+                DO thank_player.
+            WHEN item_delivered  ENVIRONMENT IF NOT player_has_item ENVIRONMENT:
+                DO express_disappointment.
+            WHEN quest_timed_out TIMER:
+                DO express_disappointment.
+            WHEN citizen_dies    ENVIRONMENT:
+                DO express_disappointment.
+            WHEN citizen_missing ENVIRONMENT:
+                DO express_disappointment.
+
+        # @NAME: Player searching
+        AGENT Player:
+            WHEN item_delivered  ENVIRONMENT IF player_has_item ENVIRONMENT:
+                DO acknowledge.
+            WHEN quest_timed_out TIMER:
+                DO express_disappointment.
+            WHEN citizen_dies    ENVIRONMENT:
+                DO note_citizen_gone.
+            WHEN citizen_missing ENVIRONMENT:
+                DO note_citizen_gone.
+
+    # ── DELIVERED phase ────────────────────────────────────────
+    # @NAME: Delivered phase
+    # @MEANING: Item successfully delivered. Quest complete.
+    DURING delivered:
+
+        AGENT Citizen:
+            WHEN daily_routine MYSELF:
+                DO thank_player.
+
+        AGENT Player:
+            WHEN bored MYSELF:
+                DO explore.
+
+    # ── FAILED phase ───────────────────────────────────────────
+    # @NAME: Failed phase
+    # @MEANING: Quest failed — either timed out or citizen gone.
+    DURING failed:
+
+        AGENT Citizen:
+            WHEN daily_routine MYSELF:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN bored MYSELF:
+                DO explore.
+
+    # ── ALWAYS active within quest ─────────────────────────────
+    # @NAME: Always active
+    # @MEANING: React to citizen death regardless of current phase.
+    #           Mirrors the CITIZEN DEAD/MISSING box in the snippet.
+    DURING ALWAYS:
+
+        AGENT Citizen:
+            WHEN citizen_dies    ENVIRONMENT:
+                DO express_disappointment.
+            WHEN citizen_missing ENVIRONMENT:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN citizen_dies    ENVIRONMENT:
+                DO note_citizen_gone.
+            WHEN citizen_missing ENVIRONMENT:
+                DO note_citizen_gone.
