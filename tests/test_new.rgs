@@ -1,0 +1,167 @@
+# @NAME: Bring Me Item — With Transitions
+# @MEANING: Full bring me item quest with explicit phase transitions.
+#           The director agent handles all phase changes.
+
+# Definitions of agents, actions, events, conditions for the bring me item quest.
+
+AGENT Citizen.
+AGENT Player.
+
+ACTION thank_player.
+ACTION find_someone_else.
+ACTION express_disappointment.
+ACTION acknowledge.
+ACTION note_citizen_gone.
+ACTION explore.
+ACTION go_about_day.
+
+EVENT player_accepts   PLAYER.
+EVENT player_rejects   PLAYER.
+EVENT item_delivered   ENVIRONMENT.
+EVENT citizen_dies     ENVIRONMENT.
+EVENT citizen_missing  ENVIRONMENT.
+EVENT daily_routine    MYSELF.
+EVENT bored            MYSELF.
+EVENT quest_timed_out  TIMER.
+
+CONDITION player_has_item  ENVIRONMENT.
+CONDITION citizen_is_known MYSELF.
+CONDITION is_busy          MYSELF.
+
+# Stories define the narrative structure and behavior of agents in the game world.
+STORY DEFAULT.
+# Use during STORY instead of DURING ALWAYS to mean that these behaviours are active in every phase of this story, but not necessarily in other stories.
+    DURING STORY:
+        AGENT Citizen:
+            # removed action and events definitions, moved to the top
+            # removed origin id, only at definition
+            WHEN daily_routine:
+                DO go_about_day.
+
+        AGENT Player:
+            WHEN bored:
+                DO explore.
+
+STORY bring_me_item PRIORITY 1.
+
+    PHASE asking.
+    PHASE searching.
+    PHASE delivered.
+    PHASE failed.
+
+     # ── ALWAYS active within story ─────────────────────────────────
+    DURING STORY:
+
+        AGENT Citizen:
+            WHEN citizen_dies:
+                DO express_disappointment.
+
+            WHEN citizen_missing:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN citizen_dies:
+                DO note_citizen_gone.
+
+            WHEN citizen_missing:
+                DO note_citizen_gone.
+
+    # ── ASKING phase ───────────────────────────────────────────────
+    DURING asking:
+
+        # @NAME: Transitions from asking
+        # list all transitions from asking phase here, to make it clear that the director agent is responsible for phase changes. 
+        # This also makes it easier to see all possible paths through the story.
+        TRANSITION TO searching WHEN player_accepts IF citizen_is_known.
+        TRANSITION TO failed    WHEN player_rejects.
+        TRANSITION TO failed    WHEN citizen_dies.
+        TRANSITION TO failed    WHEN citizen_missing.
+
+        AGENT Citizen:
+            WHEN player_accepts IF citizen_is_known:
+                DO acknowledge.
+
+            WHEN player_rejects:
+                DO find_someone_else.
+
+            WHEN citizen_dies:
+                DO express_disappointment.
+
+            WHEN citizen_missing:
+                DO express_disappointment.
+
+        AGENT Player:
+
+            WHEN player_accepts IF NOT is_busy:
+                DO acknowledge.
+
+            WHEN player_rejects:
+                DO explore.
+
+            WHEN citizen_dies:
+                DO note_citizen_gone.
+
+            WHEN citizen_missing:
+                DO note_citizen_gone.
+
+    # ── SEARCHING phase ────────────────────────────────────────────
+    DURING searching:
+
+        TRANSITION TO delivered WHEN item_delivered  IF player_has_item.
+        TRANSITION TO failed    WHEN quest_timed_out.
+        TRANSITION TO failed    WHEN citizen_dies.
+        TRANSITION TO failed    WHEN citizen_missing.
+
+        AGENT Citizen:
+            WHEN item_delivered IF player_has_item:
+                DO thank_player.
+
+            WHEN item_delivered IF NOT player_has_item:
+                DO express_disappointment.
+
+            WHEN quest_timed_out:
+                DO express_disappointment.
+
+            WHEN citizen_dies:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN item_delivered IF player_has_item:
+                DO acknowledge.
+
+            WHEN quest_timed_out:
+                DO express_disappointment.
+
+            WHEN citizen_dies:
+                DO note_citizen_gone.
+
+            WHEN citizen_missing:
+                DO note_citizen_gone.
+
+    # ── DELIVERED phase ────────────────────────────────────────────
+    DURING delivered:
+
+        TRANSITION TO END WHEN daily_routine.
+
+        AGENT Citizen:
+            WHEN daily_routine:
+                DO thank_player.
+
+        AGENT Player:
+            WHEN bored:
+                DO explore.
+
+    # ── FAILED phase ───────────────────────────────────────────────
+    DURING failed:
+
+        TRANSITION TO END WHEN daily_routine.
+
+        AGENT Citizen:
+            WHEN daily_routine:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN bored:
+                DO explore.
+
+   

@@ -1,9 +1,0 @@
-STORY quest PRIORITY 1.
-    ACTION run.
-    EVENT spotted ENVIRONMENT.
-    CONDITION tired MYSELF.
-    PHASE active.
-    AGENT Hero:
-        DURING active:
-            WHEN spotted ENVIRONMENT IF tired MYSELF AND:
-                DO run.

@@ -1,7 +1,0 @@
-STORY DEFAULT.
-    AGENT Guard:
-        EVENT idle MYSELF.
-        CONDITION armed MYSELF.
-        DURING ALWAYS:
-            WHEN idle MYSELF:
-                DO BELIEVE.

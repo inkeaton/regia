@@ -376,7 +376,7 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
         # Body — update director's own phase, then send to all agents
         if trans.is_terminal:
             # TO END — deactivate story for all participants
-            sends = "\n       ".join(
+            sends = ";\n       ".join(
                 f".send({name.lower()}, achieve, deactivate_story({story.name}))"
                 for name in story.agent_names
             )
@@ -386,7 +386,7 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
             )
         else:
             # TO phase — advance phase for all participants
-            sends = "\n       ".join(
+            sends = ";\n       ".join(
                 f".send({name.lower()}, achieve, "
                 f"enter_phase({story.name}, {trans.to_phase}))"
                 for name in story.agent_names

@@ -1,9 +1,0 @@
-# This is a plain comment
-STORY DEFAULT. # inline
-    AGENT Guard:
-        ACTION patrol.
-        # another comment
-        EVENT idle MYSELF.
-        DURING ALWAYS:
-            WHEN idle MYSELF:
-                DO patrol. # end comment

@@ -1,8 +1,0 @@
-STORY quest PRIORITY 1.
-    ACTION run.
-    EVENT order DIRECTOR.
-    PHASE active.
-    AGENT Hero:
-        DURING active:
-            WHEN order DIRECTOR:
-                DO run.

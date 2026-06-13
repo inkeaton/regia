@@ -1,8 +1,0 @@
-STORY  a PRIORITY 1.
-ACTION run.
-EVENT  spotted ENVIRONMENT.
-CONDITION is_tired MYSELF.
-
-DURING a:
-    WHEN spotted ENVIRONMENT IF is_tired MYSELF:
-        DO run.

@@ -1,8 +1,0 @@
-STORY quest PRIORITY 1.
-    ACTION run.
-    EVENT accepted PLAYER.
-    PHASE active.
-    AGENT Hero:
-        DURING active:
-            WHEN accepted PLAYER:
-                DO run.

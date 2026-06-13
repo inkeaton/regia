@@ -1,7 +1,0 @@
-STORY quest 1.
-    ACTION run.
-    EVENT spotted ENVIRONMENT.
-    AGENT Hero:
-        DURING ALWAYS:
-            WHEN spotted ENVIRONMENT:
-                DO run.

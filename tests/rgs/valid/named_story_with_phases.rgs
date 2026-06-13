@@ -1,9 +1,0 @@
-STORY quest PRIORITY 1.
-    ACTION complete.
-    EVENT finished ENVIRONMENT.
-    PHASE active.
-    PHASE done.
-    AGENT Hero:
-        DURING active:
-            WHEN finished ENVIRONMENT:
-                ENTER done.

@@ -1,7 +1,0 @@
-STORY  a PRIORITY 1.
-ACTION run.
-EVENT  spotted ENVIRONMENT.
-
-DURING a:
-    WHEN spotted ENVIRONMENT:
-        DO run.

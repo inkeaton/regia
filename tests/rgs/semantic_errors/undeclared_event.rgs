@@ -1,8 +1,0 @@
-STORY quest PRIORITY 1.
-    ACTION run.
-    EVENT spotted ENVIRONMENT.
-    PHASE active.
-    AGENT Hero:
-        DURING active:
-            WHEN exploded ENVIRONMENT:
-                DO run.

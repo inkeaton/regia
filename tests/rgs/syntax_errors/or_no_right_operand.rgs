@@ -1,6 +1,0 @@
-ACTION run.
-EVENT spotted ENVIRONMENT.
-CONDITION is_tired MYSELF.
-DURING ALWAYS:
-    WHEN spotted ENVIRONMENT IF is_tired MYSELF OR:
-        DO run.

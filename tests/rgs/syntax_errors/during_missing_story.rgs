@@ -1,5 +1,0 @@
-ACTION run.
-EVENT spotted ENVIRONMENT.
-DURING:
-    WHEN spotted ENVIRONMENT:
-        DO run.

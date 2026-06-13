@@ -1,5 +1,0 @@
-ACTION run.
-EVENT spotted ENVIRONMENT.
-DURING patrol:
-    WHEN spotted ENVIRONMENT:
-        DO run.

@@ -1,8 +1,0 @@
-STORY quest PRIORITY 1.
-    ACTION flee.
-    EVENT danger ENVIRONMENT.
-    PHASE active.
-    AGENT Hero:
-        DURING ALWAYS:
-            WHEN danger ENVIRONMENT:
-                DO flee.
