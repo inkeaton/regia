@@ -14,7 +14,7 @@ interface EditorState {
   activePhaseId:  string | null
 
   // Project actions
-  setProject:     (project: RegiaProject) => void
+  setProject: (project: RegiaProject, resetSelection?: boolean) => void
 
   // Story actions
   addStory:       (isDefault?: boolean) => void
@@ -71,7 +71,13 @@ export const useStore = create<EditorState>((set, get) => ({
   activeStoryId: null,
   activePhaseId: null,
 
-  setProject: (project) => set({ project }),
+  setProject: (project, resetSelection = true) =>
+    set((s) => ({
+      project,
+      activeStoryId:      resetSelection ? null : s.activeStoryId,
+      activePhaseId:       resetSelection ? null : s.activePhaseId,
+      activeTransitionId:  resetSelection ? null : s.activeTransitionId,
+    })),
 
   addStory: (isDefault = false) => {
     const story: Story = {

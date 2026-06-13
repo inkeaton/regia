@@ -4,60 +4,94 @@ import { projectToRegiaScript } from '../../export/toRegiaScript'
 import { projectToJSON, jsonToProject, downloadText } from '../../export/projectIO'
 import { exportCanvasAsPng, exportCanvasAsSvg } from '../../export/toImage'
 import { motion, AnimatePresence } from 'framer-motion'
+import { parseRegiaScript } from '../../import/fromRegiaScript'
+import { ImportError } from '../../import/errors'
+import { clearHistory } from '../../store/history'
+import { useToastStore } from '../../store/useToastStore'
 
 export function ExportMenu() {
   const { project, setProject } = useStore()
   const [open, setOpen] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const push = useToastStore((s) => s.push)
 
-  const handleExportRgs = () => {
-    const text = projectToRegiaScript(project)
-    downloadText('story.rgs', text, 'text/plain')
-    setOpen(false)
+ const handleExportRgs = () => {
+  const text = projectToRegiaScript(project)
+  downloadText('story.rgs', text, 'text/plain')
+  push('success', 'Exported story.rgs')
+  setOpen(false)
+}
+
+const handleExportJson = () => {
+  downloadText('story.regia.json', projectToJSON(project), 'application/json')
+  push('success', 'Exported story.regia.json')
+  setOpen(false)
+}
+
+const handleExportPng = async () => {
+  try {
+    await exportCanvasAsPng('story.png')
+    push('success', 'Exported story.png')
+  } catch (e) {
+    push('error', e instanceof Error ? e.message : 'Export failed')
   }
+  setOpen(false)
+}
 
-  const handleExportJson = () => {
-    downloadText('story.regia.json', projectToJSON(project), 'application/json')
-    setOpen(false)
+const handleExportSvg = async () => {
+  try {
+    await exportCanvasAsSvg('story.svg')
+    push('success', 'Exported story.svg')
+  } catch (e) {
+    push('error', e instanceof Error ? e.message : 'Export failed')
   }
+  setOpen(false)
+}
 
-  const handleExportPng = async () => {
+const handleImportJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = () => {
     try {
-      await exportCanvasAsPng('story.png')
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Export failed')
+      const text = reader.result as string
+      const imported = jsonToProject(text)
+      setProject(imported)
+      clearHistory()
+      push('success', `Imported ${file.name}`)
+    } catch (err) {
+      push('error', err instanceof Error ? err.message : 'Invalid file')
     }
-    setOpen(false)
   }
+  reader.readAsText(file)
+  setOpen(false)
+  e.target.value = ''
+}
 
-  const handleExportSvg = async () => {
+const handleImportRgs = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = () => {
     try {
-      await exportCanvasAsSvg('story.svg')
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Export failed')
-    }
-    setOpen(false)
-  }
-
-  const handleImportJson = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        const text = reader.result as string
-        const imported = jsonToProject(text)
-        setProject(imported)
-        setError(null)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Invalid file')
+      const text = reader.result as string
+      const imported = parseRegiaScript(text)
+      setProject(imported)
+      clearHistory()
+      push('success', `Imported ${file.name}`)
+    } catch (err) {
+      if (err instanceof ImportError) {
+        push('error', err.message)
+      } else {
+        push('error', err instanceof Error ? err.message : 'Invalid RegiaScript file')
       }
     }
-    reader.readAsText(file)
-    setOpen(false)
-    e.target.value = ''  // allow re-selecting the same file
   }
+  reader.readAsText(file)
+  setOpen(false)
+  e.target.value = ''
+}
 
   return (
     <div className="relative">
@@ -118,23 +152,21 @@ export function ExportMenu() {
                   onChange={handleImportJson}
                 />
               </label>
+
+              <label className="block px-3 py-2 text-sm hover:bg-gray-50
+                   cursor-pointer transition-colors flex items-center gap-2">
+                <span>📄</span> RegiaScript (.rgs)
+                <input
+                  type="file"
+                  accept=".rgs,text/plain"
+                  className="hidden"
+                  onChange={handleImportRgs}
+                />
+              </label>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-
-      {error && (
-        <div className="absolute right-0 mt-1 w-64 bg-red-50 border border-red-200
-                        text-red-700 text-xs rounded px-3 py-2 z-20">
-          {error}
-          <button
-            onClick={() => setError(null)}
-            className="ml-2 text-red-400 hover:text-red-600"
-          >
-            ✕
-          </button>
-        </div>
-      )}
     </div>
   )
 }
