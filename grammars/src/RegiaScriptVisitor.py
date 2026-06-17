@@ -59,6 +59,11 @@ class RegiaScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by RegiaScriptParser#storyAgentDecl.
+    def visitStoryAgentDecl(self, ctx:RegiaScriptParser.StoryAgentDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by RegiaScriptParser#agentBlock.
     def visitAgentBlock(self, ctx:RegiaScriptParser.AgentBlockContext):
         return self.visitChildren(ctx)
@@ -91,6 +96,11 @@ class RegiaScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by RegiaScriptParser#whenBlock.
     def visitWhenBlock(self, ctx:RegiaScriptParser.WhenBlockContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by RegiaScriptParser#ifBranch.
+    def visitIfBranch(self, ctx:RegiaScriptParser.IfBranchContext):
         return self.visitChildren(ctx)
 
 

@@ -20,7 +20,7 @@ storyDef
 // default stories are used to give default behaviour to agents. 
 // they do not have priority and cannot have phases.
 defaultStory
-    : DOC_COMMENT* STORY DEFAULT PERIOD duringBlock+
+    : DOC_COMMENT* STORY DEFAULT PERIOD agentBlock+
     ;
 
 // named stories are used to represent quests and other narrative sections.
@@ -29,6 +29,7 @@ namedStory
     : DOC_COMMENT* STORY ID PRIORITY NUMBER PERIOD
       declaration*
       phaseDecl*
+      storyAgentDecl*
       duringBlock+
     ;
 
@@ -68,10 +69,13 @@ origin
 
 // a phase is a subsection of a story that can have its own set of rules and behaviours.
 phaseDecl
-    : DOC_COMMENT* PHASE ID PERIOD
+    : DOC_COMMENT* PHASE ID INITIAL? PERIOD
     ;
-
 //  --- Agent Block ---
+
+storyAgentDecl
+    : DOC_COMMENT* AGENT ID PLAYER? PERIOD
+    ;
 
 // agents are the characters or entities that participate in the story. 
 // each agent block defines the behaviour of a specific agent within the story.
@@ -97,8 +101,7 @@ duringBlock
     ;
 
 transitionRule
-    : DOC_COMMENT* TRANSITION TO phaseTarget WHEN ID origin
-      (IF condExpr)? PERIOD
+    : DOC_COMMENT* TRANSITION TO phaseTarget WHEN ID (IF condExpr)? PERIOD
     ;
 
 phaseTarget
@@ -109,14 +112,21 @@ phaseTarget
 // the phase can be a named one or the default ALWAYS
 phaseRef
     : ID
-    | ALWAYS
+    | STORY
     ;
 
 //  --- When Block ---
 
 // when blocks represent the reactions of an agent to specific events and conditions.
 whenBlock
-    : DOC_COMMENT* WHEN ID origin (IF condExpr)? COLON doSequence
+    : DOC_COMMENT* WHEN ID IF condExpr COLON doSequence
+    | DOC_COMMENT* WHEN ID COLON ifBranch+
+    | DOC_COMMENT* WHEN ID COLON doSequence
+    ;
+
+ifBranch
+    : IF condExpr COLON doSequence
+    | OTHERWISE COLON doSequence
     ;
 
 //  --- Condition Expressions ---
@@ -135,7 +145,7 @@ condTerm
     ;
 
 condAtom
-    : ID origin
+    : ID
     | LPAREN condExpr RPAREN
     ;
 
@@ -165,7 +175,6 @@ ACTION      : 'ACTION'      ;
 EVENT       : 'EVENT'       ;
 CONDITION   : 'CONDITION'   ;
 DURING      : 'DURING'      ;
-ALWAYS      : 'ALWAYS'      ;
 WHEN        : 'WHEN'        ;
 IF          : 'IF'          ;
 AND         : 'AND'         ;
@@ -182,6 +191,8 @@ TIMER       : 'TIMER'       ;
 TRANSITION  : 'TRANSITION' ;
 TO          : 'TO'         ;
 END         : 'END'        ;
+INITIAL     : 'INITIAL'     ;
+OTHERWISE   : 'OTHERWISE'   ;
 
 //  ──────────────────────────────────────────
 //  PUNCTUATION

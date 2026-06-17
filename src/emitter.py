@@ -194,17 +194,15 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
     def visitStoryDef(self, ctx: RegiaScriptParser.StoryDefContext):
         self.visitChildren(ctx)
 
-    def visitDefaultStory(
-        self, ctx: RegiaScriptParser.DefaultStoryContext
-    ):
+    def visitDefaultStory(self, ctx: RegiaScriptParser.DefaultStoryContext):
         story = self.table.stories.get("DEFAULT")
         if story is None:
             return
 
         self._current_story = story
 
-        for during in ctx.duringBlock():
-            self._emit_during_block_new(during, story)
+        for agent_block in ctx.agentBlock():
+            self._emit_agent_in_during(agent_block, story, None, 0)
 
         self._current_story = None
 
@@ -224,23 +222,18 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
 
     def _emit_director(self):
         buffer = self._get_buffer("Director")
-        
-        # Infrastructure plans
-        # (already added by get_output — same as agents)
-        
+
         for story in self.table.stories.values():
             if story.is_default or not story.transitions:
                 continue
-            
-            # Initial beliefs — director tracks phase for every story
+
             for phase in story.phases.values():
                 if phase.initial:
                     belief = f"current_phase({story.name}, {phase.name})"
                     if belief not in buffer.initial_beliefs:
                         buffer.initial_beliefs.append(belief)
                     break
-            
-            # Transition plans
+
             for trans in story.transitions:
                 plan = self._emit_transition_plan(trans, story)
                 if plan:
@@ -248,6 +241,51 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
                         priority=story.priority,
                         agentspeak=plan
                     ))
+
+    def _emit_transition_plan(self, trans, story):
+        trigger = self._emit_trigger(trans.event_name, trans.event_origin)
+
+        context_parts = [
+            f"story({story.name}, {story.priority})",
+            f"current_phase({story.name}, {trans.from_phase})"
+        ]
+        if trans.cond_ctx is not None:
+            self._current_story = story
+            self._current_agent = None
+            cond = self._emit_condExpr(trans.cond_ctx)
+            self._current_story = None
+            if cond is None:
+                return None
+            if len(trans.cond_ctx.condAnd()) > 1:
+                cond = f"({cond})"
+            context_parts.append(cond)
+
+        context = " & ".join(context_parts)
+
+        # Non-player agents only
+        participants = [
+            name for name in story.agent_names
+            if not story.agents[name].is_player
+        ]
+
+        if trans.is_terminal:
+            sends = ";\n       ".join(
+                f".send({n.lower()}, achieve, deactivate_story({story.name}))"
+                for n in participants
+            )
+            body = f"!deactivate_story({story.name});\n       {sends}"
+        else:
+            sends = ";\n       ".join(
+                f".send({n.lower()}, achieve, "
+                f"enter_phase({story.name}, {trans.to_phase}))"
+                for n in participants
+            )
+            body = (
+                f"!enter_phase({story.name}, {trans.to_phase});\n"
+                f"       {sends}"
+            )
+
+        return f"{trigger} : {context} <- {body}."
 
     def _emit_agent_block(
         self,
@@ -307,8 +345,8 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
 
     def _emit_during_block_new(self, ctx, story):
         phase_ref  = ctx.phaseRef()
-        is_always  = bool(phase_ref.ALWAYS())
-        phase_name = None if is_always else phase_ref.ID().getText()
+        is_story   = bool(phase_ref.STORY())
+        phase_name = None if is_story else phase_ref.ID().getText()
         priority   = story.priority if not story.is_default else 0
 
         for agent_block in ctx.agentBlock():
@@ -320,6 +358,10 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
         agent_name = ctx.ID().getText()
         agent      = story.agents.get(agent_name)
         if agent is None:
+            return
+
+        # Skip player agents — no .asl output
+        if agent.is_player:
             return
 
         buffer = self._get_buffer(agent_name)
@@ -337,14 +379,9 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
         # Emit plans from whenBlock sections
         for section in ctx.agentSection():
             if section.whenBlock():
-                plan = self._emit_when(
-                    section.whenBlock(), story, phase_name, priority
+                self._emit_when_block(
+                    section.whenBlock(), story, phase_name, priority, buffer
                 )
-                if plan is not None:
-                    buffer.plans.append(CompiledPlan(
-                        priority=priority,
-                        agentspeak=plan
-                    ))
 
         self._current_agent = None
 
@@ -400,63 +437,31 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
 
     # == When block ============================================================
 
-    def _emit_when(
-        self,
-        ctx:        RegiaScriptParser.WhenBlockContext,
-        story:      StoryInfo,
-        phase_name: str | None,
-        priority:   int
-    ) -> str | None:
+    # == When block ============================================================
 
+    def _emit_when(self, ctx, story, phase_name, priority):
         event_name = ctx.ID().getText()
-        origin     = ctx.origin().start.text
         events     = self._effective_events()
 
-        # Validate event reference
         if event_name not in events:
             self.reporter.error(
-                ctx.start.line,
-                ctx.ID().symbol.column,
-                len(event_name),
+                ctx.start.line, ctx.ID().symbol.column, len(event_name),
                 f"Event '{event_name}' is not declared.",
-                f"Add 'EVENT {event_name} {origin}.' to the story "
-                f"or agent declarations."
+                f"Add 'EVENT {event_name} <ORIGIN>.' to the story or agent declarations."
             )
             return None
 
         declared_event = events[event_name]
-        if declared_event.origin != origin:
-            self.reporter.error(
-                ctx.start.line,
-                ctx.origin().start.column,
-                len(origin),
-                f"Event '{event_name}' is declared as "
-                f"{declared_event.origin} but used here as {origin}.",
-                f"Change the origin here to {declared_event.origin}."
-            )
-            return None
-
         self._used_events.add(event_name)
 
-        # == Trigger ===========================================================
-        trigger = self._emit_trigger(event_name, origin)
+        trigger = self._emit_trigger(event_name, declared_event.origin)
 
-        # == Context ===========================================================
         context_parts = []
-
-        # Story conjunct - named stories only
         if not story.is_default:
-            context_parts.append(
-                f"story({story.name}, {story.priority})"
-            )
-
-        # Phase conjunct - DURING phaseName only, not DURING ALWAYS
+            context_parts.append(f"story({story.name}, {story.priority})")
         if phase_name is not None:
-            context_parts.append(
-                f"current_phase({story.name}, {phase_name})"   # ← changed
-            )
+            context_parts.append(f"current_phase({story.name}, {phase_name})")
 
-        # IF clause
         if ctx.IF():
             cond = self._emit_condExpr(ctx.condExpr())
             if cond is None:
@@ -467,13 +472,72 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
 
         context = " & ".join(context_parts) if context_parts else "true"
 
-        # == Body ==============================================================
         body = self._emit_doSequence(ctx.doSequence(), story)
         if body is None:
             return None
 
         return f"{trigger} : {context} <- {body}."
 
+    def _emit_when_block(self, ctx, story, phase_name, priority, buffer):
+        if ctx.IF():
+            # WHEN ID IF condExpr COLON doSequence — single conditional plan
+            plan = self._emit_when(ctx, story, phase_name, priority)
+            if plan is not None:
+                buffer.plans.append(CompiledPlan(priority=priority, agentspeak=plan))
+
+        elif ctx.ifBranch():
+            # WHEN ID COLON ifBranch+ — multi-branch
+            for branch in ctx.ifBranch():
+                plan = self._emit_if_branch(ctx, branch, story, phase_name, priority)
+                if plan is not None:
+                    buffer.plans.append(CompiledPlan(priority=priority, agentspeak=plan))
+
+        else:
+            # WHEN ID COLON doSequence — single unconditional plan
+            plan = self._emit_when(ctx, story, phase_name, priority)
+            if plan is not None:
+                buffer.plans.append(CompiledPlan(priority=priority, agentspeak=plan))
+
+    def _emit_if_branch(self, when_ctx, branch_ctx, story, phase_name, priority):
+        event_name = when_ctx.ID().getText()
+        events     = self._effective_events()
+
+        if event_name not in events:
+            self.reporter.error(
+                when_ctx.start.line, when_ctx.ID().symbol.column, len(event_name),
+                f"Event '{event_name}' is not declared.",
+                f"Add 'EVENT {event_name} <ORIGIN>.' to the story or agent declarations."
+            )
+            return None
+
+        declared_event = events[event_name]
+        self._used_events.add(event_name)
+
+        trigger = self._emit_trigger(event_name, declared_event.origin)
+
+        context_parts = []
+        if not story.is_default:
+            context_parts.append(f"story({story.name}, {story.priority})")
+        if phase_name is not None:
+            context_parts.append(f"current_phase({story.name}, {phase_name})")
+
+        # IF branch has a condition; OTHERWISE branch has none
+        if branch_ctx.IF():
+            cond = self._emit_condExpr(branch_ctx.condExpr())
+            if cond is None:
+                return None
+            if context_parts and len(branch_ctx.condExpr().condAnd()) > 1:
+                cond = f"({cond})"
+            context_parts.append(cond)
+
+        context = " & ".join(context_parts) if context_parts else "true"
+
+        body = self._emit_doSequence(branch_ctx.doSequence(), story)
+        if body is None:
+            return None
+
+        return f"{trigger} : {context} <- {body}."
+    
     # == Trigger ===============================================================
 
     def _emit_trigger(self, name: str, origin: str) -> str:
@@ -522,9 +586,7 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
             return None
         return f"~{atom}" if ctx.NOT() else atom
 
-    def _emit_condAtom(
-        self, ctx: RegiaScriptParser.CondAtomContext
-    ) -> str | None:
+    def _emit_condAtom(self, ctx) -> str | None:
         if ctx.LPAREN():
             inner = self._emit_condExpr(ctx.condExpr())
             if inner is None:
@@ -532,29 +594,13 @@ class AgentSpeakEmitter(RegiaScriptVisitor):
             return f"({inner})"
 
         name       = ctx.ID().getText()
-        origin     = ctx.origin().start.text
         conditions = self._effective_conditions()
 
         if name not in conditions:
             self.reporter.error(
-                ctx.start.line,
-                ctx.ID().symbol.column,
-                len(name),
+                ctx.start.line, ctx.ID().symbol.column, len(name),
                 f"Condition '{name}' is not declared.",
-                f"Add 'CONDITION {name} {origin}.' to the story "
-                f"or agent declarations."
-            )
-            return None
-
-        declared = conditions[name]
-        if declared.origin != origin:
-            self.reporter.error(
-                ctx.start.line,
-                ctx.origin().start.column,
-                len(origin),
-                f"Condition '{name}' is declared as "
-                f"{declared.origin} but used here as {origin}.",
-                f"Change the origin here to {declared.origin}."
+                f"Add 'CONDITION {name} <ORIGIN>.' to the story or agent declarations."
             )
             return None
 

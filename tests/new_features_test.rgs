@@ -1,0 +1,123 @@
+# @NAME: New Features Test
+# @MEANING: Tests all new grammar features together
+
+# ── DEFAULT story — flat structure, no DURING wrapper ──────────────────
+STORY DEFAULT.
+
+    AGENT Citizen:
+        ACTION go_about_day.
+        EVENT daily_routine MYSELF.
+        WHEN daily_routine:
+            DO go_about_day.
+
+    AGENT Player:
+        ACTION explore.
+        EVENT bored MYSELF.
+        WHEN bored:
+            DO explore.
+
+# ── Named story — all new features ────────────────────────────────────
+STORY bring_me_item PRIORITY 1.
+
+    ACTION thank_player.
+    ACTION find_someone_else.
+    ACTION express_disappointment.
+    ACTION acknowledge.
+    ACTION explore.
+
+    EVENT player_accepts   PLAYER.
+    EVENT player_rejects   PLAYER.
+    EVENT item_delivered   ENVIRONMENT.
+    EVENT quest_timed_out  TIMER.
+    EVENT citizen_dies     ENVIRONMENT.
+    EVENT daily_routine    MYSELF.
+
+    CONDITION player_has_item  ENVIRONMENT.
+    CONDITION citizen_is_known MYSELF.
+    CONDITION is_busy          MYSELF.
+
+    # INITIAL keyword marks the starting phase explicitly
+    PHASE asking    INITIAL.
+    PHASE searching.
+    PHASE delivered.
+    PHASE failed.
+
+    # Story-level agent declarations — Citizen is a full agent,
+    # Player is human-controlled (PLAYER tag = no .asl generated)
+    AGENT Citizen.
+    AGENT Player. # PLAYER.
+
+    # ── ASKING phase ───────────────────────────────────────────────────
+    DURING asking:
+
+        # Transitions — no origin needed, looked up from declaration
+        TRANSITION TO searching WHEN player_accepts IF citizen_is_known.
+        TRANSITION TO failed    WHEN player_rejects.
+        TRANSITION TO failed    WHEN citizen_dies.
+
+        AGENT Citizen:
+            # Single conditional — no origin in WHEN or IF
+            WHEN player_accepts IF citizen_is_known:
+                DO acknowledge.
+            WHEN player_rejects:
+                DO find_someone_else.
+            WHEN citizen_dies:
+                DO express_disappointment.
+
+        AGENT Player:
+            # Multi-branch WHEN with OTHERWISE
+            WHEN player_accepts:
+                IF NOT is_busy:
+                    DO acknowledge.
+                OTHERWISE:
+                    DO express_disappointment.
+            WHEN player_rejects:
+                DO explore.
+
+    # ── SEARCHING phase ────────────────────────────────────────────────
+    DURING searching:
+
+        TRANSITION TO delivered WHEN item_delivered   IF player_has_item.
+        TRANSITION TO failed    WHEN quest_timed_out.
+        TRANSITION TO failed    WHEN citizen_dies.
+
+        AGENT Citizen:
+            # Multi-branch with multiple IF conditions
+            WHEN item_delivered:
+                IF player_has_item:
+                    DO thank_player.
+                OTHERWISE:
+                    DO express_disappointment.
+            WHEN quest_timed_out:
+                DO express_disappointment.
+            WHEN citizen_dies:
+                DO express_disappointment.
+
+        AGENT Player:
+            WHEN item_delivered IF player_has_item:
+                DO acknowledge.
+
+    # ── DELIVERED phase ────────────────────────────────────────────────
+    DURING delivered:
+
+        TRANSITION TO END WHEN daily_routine.
+
+        AGENT Citizen:
+            WHEN daily_routine:
+                DO thank_player.
+
+    # ── FAILED phase ───────────────────────────────────────────────────
+    DURING failed:
+
+        TRANSITION TO END WHEN daily_routine.
+
+        AGENT Citizen:
+            WHEN daily_routine:
+                DO express_disappointment.
+
+    # ── DURING STORY — phase-independent behaviour ─────────────────────
+    DURING STORY:
+
+        AGENT Citizen:
+            WHEN citizen_dies:
+                DO express_disappointment.

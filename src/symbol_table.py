@@ -42,10 +42,11 @@ class PhaseInfo:
 class AgentInfo:
     name:       str
     line:       int
+    is_player:  bool                     = False
     actions:    dict[str, ActionInfo]    = field(default_factory=dict)
     events:     dict[str, EventInfo]     = field(default_factory=dict)
     conditions: dict[str, ConditionInfo] = field(default_factory=dict)
-    doc:        dict                     = field(default_factory=dict)
+    doc:        dict                     = field(default_factory=dict)            
 
 @dataclass
 class TransitionInfo:
@@ -187,9 +188,7 @@ class SymbolTableBuilder(RegiaScriptVisitor):
     def visitStoryDef(self, ctx: RegiaScriptParser.StoryDefContext):
         self.visitChildren(ctx)
 
-    def visitDefaultStory(
-        self, ctx: RegiaScriptParser.DefaultStoryContext
-    ):
+    def visitDefaultStory(self, ctx: RegiaScriptParser.DefaultStoryContext):
         doc  = parse_doc_comments(ctx.DOC_COMMENT())
         name = "DEFAULT"
         line = ctx.start.line
@@ -198,23 +197,19 @@ class SymbolTableBuilder(RegiaScriptVisitor):
             self.reporter.error(
                 line, 0, len(name),
                 "Only one DEFAULT story is allowed per file.",
-                "Merge all default agent behaviour into one "
-                "STORY DEFAULT block."
+                "Merge all default agent behaviour into one STORY DEFAULT block."
             )
             return
 
         story = StoryInfo(
-            name=name, priority=None,
-            line=line, is_default=True, doc=doc
+            name=name, priority=None, line=line, is_default=True, doc=doc
         )
         self.table.stories[name] = story
 
-        for during in ctx.duringBlock():
-            self._visit_during_block(during, story)
+        for agent_block in ctx.agentBlock():
+            self._visit_agent_block(agent_block, story)
 
-    def visitNamedStory(
-        self, ctx: RegiaScriptParser.NamedStoryContext
-    ):
+    def visitNamedStory(self, ctx: RegiaScriptParser.NamedStoryContext):
         doc      = parse_doc_comments(ctx.DOC_COMMENT())
         name     = ctx.ID().getText()
         priority = int(ctx.NUMBER().getText())
@@ -232,14 +227,12 @@ class SymbolTableBuilder(RegiaScriptVisitor):
             self.reporter.error(
                 line, ctx.ID().symbol.column, len(name),
                 f"Story '{name}' is declared more than once.",
-                f"First declared at line {prev}. "
-                f"Remove one of the declarations."
+                f"First declared at line {prev}. Remove one of the declarations."
             )
             return
 
         story = StoryInfo(
-            name=name, priority=priority,
-            line=line, is_default=False, doc=doc
+            name=name, priority=priority, line=line, is_default=False, doc=doc
         )
         self.table.stories[name] = story
 
@@ -247,77 +240,109 @@ class SymbolTableBuilder(RegiaScriptVisitor):
         for decl in ctx.declaration():
             self._visit_story_declaration(decl, story)
 
-        # Phase declarations
-        phase_index = 0
+        # Phase declarations — INITIAL keyword marks the initial phase
+        initial_seen = False
         for phase_ctx in ctx.phaseDecl():
-
-            phase_doc = parse_doc_comments(phase_ctx.DOC_COMMENT())
+            phase_doc  = parse_doc_comments(phase_ctx.DOC_COMMENT())
             phase_name = phase_ctx.ID().getText()
             phase_line = phase_ctx.start.line
+            has_initial = bool(phase_ctx.INITIAL())
 
             if phase_name in story.phases:
                 self.reporter.error(
-                    phase_line,
-                    phase_ctx.ID().symbol.column,
-                    len(phase_name),
-                    f"Phase '{phase_name}' is declared more than once "
-                    f"in story '{name}'.",
+                    phase_line, phase_ctx.ID().symbol.column, len(phase_name),
+                    f"Phase '{phase_name}' is declared more than once in story '{name}'.",
                     "Remove one of the PHASE declarations."
                 )
-            else:
-                story.phases[phase_name] = PhaseInfo(
-                    name=phase_name,
-                    line=phase_line,
-                    initial=(phase_index == 0),
-                    doc=phase_doc
-                )
-                phase_index += 1
+                continue
 
-        # Phases blocks
+            if has_initial:
+                if initial_seen:
+                    self.reporter.error(
+                        phase_line, phase_ctx.ID().symbol.column, len(phase_name),
+                        f"Phase '{phase_name}' is marked INITIAL but another phase "
+                        f"is already the initial phase.",
+                        "Only one phase per story can be marked INITIAL."
+                    )
+                initial_seen = True
+
+            story.phases[phase_name] = PhaseInfo(
+                name=phase_name,
+                line=phase_line,
+                initial=has_initial,
+                doc=phase_doc
+            )
+
+        if story.phases and not initial_seen:
+            self.reporter.error(
+                line, 0, len(name),
+                f"Story '{name}' has phases but none is marked INITIAL.",
+                "Add INITIAL after the starting phase name: 'PHASE asking INITIAL.'"
+            )
+
+        # Story-level agent declarations
+        for agent_decl in ctx.storyAgentDecl():
+            agent_doc  = parse_doc_comments(agent_decl.DOC_COMMENT())
+            agent_name = agent_decl.ID().getText()
+            agent_line = agent_decl.start.line
+            is_player  = bool(agent_decl.PLAYER())
+
+            if agent_name in story.agents:
+                self.reporter.error(
+                    agent_line, agent_decl.ID().symbol.column, len(agent_name),
+                    f"Agent '{agent_name}' is declared more than once in story '{name}'.",
+                    "Remove one of the AGENT declarations."
+                )
+                continue
+
+            agent = AgentInfo(
+                name=agent_name, line=agent_line, is_player=is_player, doc=agent_doc
+            )
+            story.agents[agent_name] = agent
+            story.agent_names.append(agent_name)
+
+        # During blocks
         for during in ctx.duringBlock():
             self._visit_during_block(during, story)
     
     def _visit_during_block(self, ctx, story):
-        phase_ref  = ctx.phaseRef()
-        is_always  = bool(phase_ref.ALWAYS())
-        phase_name = None if is_always else phase_ref.ID().getText()
+        phase_ref = ctx.phaseRef()
+        is_story  = bool(phase_ref.STORY())
+        phase_name = None if is_story else phase_ref.ID().getText()
 
-        # Validate phase reference
-        if not is_always and phase_name not in story.phases:
+        # Validate TRANSITION rules not allowed in DURING STORY
+        if is_story and ctx.transitionRule():
+            for rule in ctx.transitionRule():
+                self.reporter.error(
+                    rule.start.line, rule.start.column, len("TRANSITION"),
+                    "TRANSITION rules are not allowed in DURING STORY.",
+                    "Move this transition into a named phase block."
+                )
+
+        if not is_story and phase_name not in story.phases:
             self.reporter.error(
-                ctx.start.line,
-                phase_ref.start.column,
-                len(phase_name),
+                ctx.start.line, phase_ref.start.column, len(phase_name),
                 f"Phase '{phase_name}' is not declared in story '{story.name}'.",
-                f"Add 'PHASE {phase_name}.' to the story declarations."
+                f"Add 'PHASE {phase_name} INITIAL.' or 'PHASE {phase_name}.' "
+                f"to the story declarations."
             )
 
         # Collect transition rules
-        for rule in ctx.transitionRule():
-            self._visit_transition_rule(rule, story, phase_name)
+        if not is_story:
+            for rule in ctx.transitionRule():
+                self._visit_transition_rule(rule, story, phase_name)
 
         # Visit agent blocks
         for agent_block in ctx.agentBlock():
             self._visit_agent_block(agent_block, story)
 
     def _visit_transition_rule(self, ctx, story, from_phase):
-        target     = ctx.phaseTarget()
+        target      = ctx.phaseTarget()
         is_terminal = bool(target.END())
-        to_phase   = None if is_terminal else target.ID().getText()
-        event_name = ctx.ID().getText()
-        origin     = ctx.origin().start.text
-        line       = ctx.start.line
+        to_phase    = None if is_terminal else target.ID().getText()
+        event_name  = ctx.ID().getText()
+        line        = ctx.start.line
 
-        # Validate: cannot have TRANSITION in DURING ALWAYS
-        if from_phase is None:
-            self.reporter.error(
-                line, ctx.start.column, len("TRANSITION"),
-                "TRANSITION rules are not allowed in DURING ALWAYS.",
-                "Move this transition into a named phase block."
-            )
-            return
-
-        # Validate: to_phase must be declared
         if not is_terminal and to_phase not in story.phases:
             self.reporter.error(
                 line, target.start.column, len(to_phase),
@@ -326,26 +351,25 @@ class SymbolTableBuilder(RegiaScriptVisitor):
             )
             return
 
-        # Validate: event must be declared
         if event_name not in story.events:
             self.reporter.error(
                 line, ctx.ID().symbol.column, len(event_name),
                 f"Event '{event_name}' is not declared.",
-                f"Add 'EVENT {event_name} {origin}.' to the story declarations."
+                f"Add 'EVENT {event_name} <ORIGIN>.' to the story declarations."
             )
             return
+
+        event_origin = story.events[event_name].origin
 
         story.transitions.append(TransitionInfo(
             from_phase   = from_phase,
             to_phase     = to_phase,
             is_terminal  = is_terminal,
             event_name   = event_name,
-            event_origin = origin,
-            cond_ctx = ctx.condExpr() if ctx.IF() else None,
+            event_origin = event_origin,
+            cond_ctx     = ctx.condExpr() if ctx.IF() else None,
             line         = line,
         ))
-
-    
 
     # == Story-level declaration ===============================================
 
@@ -368,22 +392,24 @@ class SymbolTableBuilder(RegiaScriptVisitor):
     # == Agent block ===========================================================
 
     def _visit_agent_block(self, ctx, story):
-        # Same as before, register agent, collect local declarations
-        # but now agentSection contains whenBlock instead of duringBlock
         doc  = parse_doc_comments(ctx.DOC_COMMENT())
         name = ctx.ID().getText()
         line = ctx.start.line
 
-        if name not in story.agent_names:
-            story.agent_names.append(name)
+        if not story.is_default and name not in story.agents:
+            self.reporter.error(
+                line, ctx.ID().symbol.column, len(name),
+                f"Agent '{name}' is not declared in story '{story.name}'.",
+                f"Add 'AGENT {name}.' to the story declarations."
+            )
+            return
 
-        if name in story.agents:
-            # Don't error on duplicate, same agent can appear
-            # in multiple DURING blocks. Just retrieve existing.
-            agent = story.agents[name]
-        else:
+        if story.is_default and name not in story.agents:
             agent = AgentInfo(name=name, line=line, doc=doc)
             story.agents[name] = agent
+            story.agent_names.append(name)
+
+        agent = story.agents[name]
 
         for section in ctx.agentSection():
             self._visit_agent_section(section, agent, story)

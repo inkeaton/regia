@@ -98,6 +98,15 @@ class RegiaScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by RegiaScriptParser#storyAgentDecl.
+    def enterStoryAgentDecl(self, ctx:RegiaScriptParser.StoryAgentDeclContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#storyAgentDecl.
+    def exitStoryAgentDecl(self, ctx:RegiaScriptParser.StoryAgentDeclContext):
+        pass
+
+
     # Enter a parse tree produced by RegiaScriptParser#agentBlock.
     def enterAgentBlock(self, ctx:RegiaScriptParser.AgentBlockContext):
         pass
@@ -158,6 +167,15 @@ class RegiaScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by RegiaScriptParser#whenBlock.
     def exitWhenBlock(self, ctx:RegiaScriptParser.WhenBlockContext):
+        pass
+
+
+    # Enter a parse tree produced by RegiaScriptParser#ifBranch.
+    def enterIfBranch(self, ctx:RegiaScriptParser.IfBranchContext):
+        pass
+
+    # Exit a parse tree produced by RegiaScriptParser#ifBranch.
+    def exitIfBranch(self, ctx:RegiaScriptParser.IfBranchContext):
         pass
 
 

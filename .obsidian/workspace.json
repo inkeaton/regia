@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "manifesto.md",
+                "file": "docs/concepts.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "manifesto"
+              "title": "concepts"
             }
           }
         ]
@@ -185,5 +185,19 @@
     }
   },
   "active": "a5da3fcf6f962550",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "docs/snippets references/02_GenericBringMeItem.png",
+    "docs/snippets references/01_CrackheadAssault.png",
+    "docs/concepts.md",
+    "docs/snippets references/05_TurretPart2.png",
+    "docs/snippets references/05_TurretPart1.png",
+    "docs/snippets references/04_MissingScoutWithCompromisingDocuments.png",
+    "docs/snippets references/03_GatherInfoFromOMniforms.png",
+    "docs/snippets references",
+    "refs/05_TurretPart2.png",
+    "refs/05_TurretPart1.png",
+    "refs/04_MissingScoutWithCompromisingDocuments.png",
+    "refs/03_GatherInfoFromOMniforms.png",
+    "refs"
+  ]
 }
