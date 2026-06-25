@@ -1,20 +1,24 @@
 {
   "main": {
-    "id": "f6d3af20b43dcf37",
+    "id": "4dd32c51b00c404a",
     "type": "split",
     "children": [
       {
-        "id": "605ca698b1551360",
+        "id": "00592a95ed3fee59",
         "type": "tabs",
         "children": [
           {
-            "id": "4fa113af7f508cce",
+            "id": "a5da3fcf6f962550",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "docs/concepts.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nuova scheda"
+              "title": "concepts"
             }
           }
         ]
@@ -23,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "1f8e7b2081b1cf04",
+    "id": "942579f2556d1e92",
     "type": "split",
     "children": [
       {
-        "id": "fba5ca987a257f73",
+        "id": "ced1b6e9ac22b06d",
         "type": "tabs",
         "children": [
           {
-            "id": "f5b86eb8d8eaeb81",
+            "id": "a2cc74880a53938e",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,7 +48,7 @@
             }
           },
           {
-            "id": "d48130e295be4430",
+            "id": "36fb2222bf904f17",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,7 +65,7 @@
             }
           },
           {
-            "id": "d3089f2b36949049",
+            "id": "2e423eb3933527f0",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -74,22 +78,24 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "right": {
-    "id": "a7330ebfa90d45b1",
+    "id": "5f4a4383c2504e40",
     "type": "split",
     "children": [
       {
-        "id": "b77c90bcfc140017",
+        "id": "7a3855526ea8a732",
         "type": "tabs",
         "children": [
           {
-            "id": "e524cd56cf089be7",
+            "id": "f974caed30be7735",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
+                "file": "manifesto.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,24 +105,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Riferimenti"
+              "title": "Riferimenti a manifesto"
             }
           },
           {
-            "id": "c1dc6244118d78a4",
+            "id": "cbf44e764f85067e",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "manifesto.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Collegamenti in uscita"
+              "title": "Collegamenti in uscita da manifesto"
             }
           },
           {
-            "id": "4231d102687433fb",
+            "id": "b0ceb1ffc3638549",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -131,7 +138,7 @@
             }
           },
           {
-            "id": "7d216930a0b85f2d",
+            "id": "8b8b0f19bab18793",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -145,17 +152,18 @@
             }
           },
           {
-            "id": "26a60189e35e6848",
+            "id": "cfe85db1181e4fce",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
+                "file": "manifesto.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Struttura"
+              "title": "Struttura di manifesto"
             }
           }
         ]
@@ -176,6 +184,20 @@
       "bases:Crea nuova Base": false
     }
   },
-  "active": "4fa113af7f508cce",
-  "lastOpenFiles": []
+  "active": "a5da3fcf6f962550",
+  "lastOpenFiles": [
+    "docs/snippets references/02_GenericBringMeItem.png",
+    "docs/snippets references/01_CrackheadAssault.png",
+    "docs/concepts.md",
+    "docs/snippets references/05_TurretPart2.png",
+    "docs/snippets references/05_TurretPart1.png",
+    "docs/snippets references/04_MissingScoutWithCompromisingDocuments.png",
+    "docs/snippets references/03_GatherInfoFromOMniforms.png",
+    "docs/snippets references",
+    "refs/05_TurretPart2.png",
+    "refs/05_TurretPart1.png",
+    "refs/04_MissingScoutWithCompromisingDocuments.png",
+    "refs/03_GatherInfoFromOMniforms.png",
+    "refs"
+  ]
 }

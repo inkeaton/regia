@@ -1,0 +1,114 @@
+// =============================================================================
+// REGIA v0.2 EXAMPLE
+// =============================================================================
+
+// =============================================================================
+// 1. BASE ELEMENTS
+// The shared vocabulary for Playbooks and Plots.
+// =============================================================================
+
+// Actions the agents can perform
+ACTION greet_back.
+ACTION curse.
+ACTION ignore.
+ACTION flee.
+ACTION acknowledge.
+ACTION bow.
+
+// Special/director actions
+ACTION perform_song.
+ACTION trigger_alarm.
+ACTION add_waiting_for_concert.
+ACTION announce_concert.
+ACTION start_music.
+
+// Events the agents can perceive
+EVENT fan_greets.
+EVENT player_asks_about_quest.
+EVENT time_to_start.
+EVENT emergency.
+EVENT song_ends.
+EVENT audience_cheers.
+
+// Facts the agents can believe (optionally with parameters)
+FACT happy.
+FACT angry.
+FACT audience_satisfied.
+
+
+// =============================================================================
+// 2. PLAYBOOKS
+// Reusable, context-free bundles of reactive plans.
+// Used to define character behaviors (self-directed DO and SIGNAL).
+// =============================================================================
+
+PLAYBOOK SingerInBackstage:
+    // Basic conditional logic
+    WHEN fan_greets:
+        IF happy:
+            DO greet_back.
+        IF angry:
+            DO curse.
+        ELSE:
+            DO ignore.
+
+    // A higher priority rule with a special action (TELL)
+    WHEN player_asks_about_quest PRIORITY 7:
+        DO TELL(player, busy_message).
+
+    // Mixed unconditional and signaling
+    WHEN emergency:
+        DO flee.
+        SIGNAL emergency.
+
+PLAYBOOK SingerOnStage:
+    WHEN audience_cheers:
+        DO bow.
+        DO ACHIEVE(perform_song).
+
+
+// =============================================================================
+// 3. PLOTS
+// Narrative scenarios written from the Director's perspective.
+// Maps roles to playbooks based on phases, and controls world flow.
+// =============================================================================
+
+PLOT Concert.
+    // Declare the phases of the plot (one must be INITIAL)
+    PHASE backstage INITIAL.
+    PHASE performing.
+    PHASE aftermath.
+    
+    // Declare the roles involved in this plot
+    ROLE Singer.
+    ROLE AudienceMember.
+
+    // Plot-wide behaviors active in all phases
+    DURING PLOT:
+        WHEN emergency PRIORITY 9:
+            WORLD DO trigger_alarm.
+            Singer DO acknowledge.
+            AudienceMember DO acknowledge.
+
+    // Phase-specific behaviors
+    DURING backstage:
+        // Transition to the next phase when an event occurs
+        TRANSITION TO performing WHEN time_to_start.
+        
+        // Hooks that run when entering or exiting the phase
+        ON ENTER:
+            ASSIGN SingerInBackstage TO Singer.
+            WORLD DO add_waiting_for_concert.
+        ON EXIT:
+            UNASSIGN SingerInBackstage FROM Singer.
+            WORLD DO announce_concert.
+
+    DURING performing:
+        // A guarded transition (requires a condition to be met)
+        TRANSITION TO aftermath WHEN song_ends IF audience_satisfied.
+        
+        ON ENTER:
+            ASSIGN SingerOnStage TO Singer.
+            WORLD DO start_music.
+        ON EXIT:
+            UNASSIGN SingerOnStage FROM Singer.
