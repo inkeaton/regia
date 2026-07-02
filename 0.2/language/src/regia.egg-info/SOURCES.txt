@@ -4,9 +4,11 @@ src/regia/ast_builder.py
 src/regia/ast_nodes.py
 src/regia/cli.py
 src/regia/compiler.py
+src/regia/emitter.py
 src/regia/errors.py
 src/regia/parser.py
 src/regia/syntax_errors.py
+src/regia/validator.py
 src/regia.egg-info/PKG-INFO
 src/regia.egg-info/SOURCES.txt
 src/regia.egg-info/dependency_links.txt
@@ -14,4 +16,8 @@ src/regia.egg-info/entry_points.txt
 src/regia.egg-info/requires.txt
 src/regia.egg-info/top_level.txt
 src/regia/grammars/regia.lark
+tests/test_ast_builder.py
 tests/test_compiler.py
+tests/test_emitter.py
+tests/test_grammar.py
+tests/test_validator.py

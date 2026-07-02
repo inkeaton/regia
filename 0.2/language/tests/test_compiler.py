@@ -20,8 +20,11 @@ class TestSmoke:
         assert result.error_count == 0
 
     def test_playbook_compiles(self) -> None:
-        """A simple playbook should compile without errors."""
+        """A simple playbook with all elements declared."""
         source = """
+        ACTION run_to_post.
+        EVENT alarm.
+
         PLAYBOOK Guard:
             WHEN alarm:
                 DO run_to_post.
@@ -31,8 +34,10 @@ class TestSmoke:
         assert result.error_count == 0
 
     def test_plot_compiles(self) -> None:
-        """A simple plot should compile without errors."""
+        """A simple plot with all elements declared."""
         source = """
+        ACTION begin_quest.
+
         PLOT Quest.
             PHASE start INITIAL.
             ROLE Hero.
@@ -51,6 +56,17 @@ class TestSmoke:
         assert not result.success
         assert result.error_count > 0
         assert len(result.messages) > 0
+
+    def test_semantic_error_reports_cleanly(self) -> None:
+        """Undeclared references should produce errors."""
+        source = """
+        PLAYBOOK P:
+            WHEN ghost_event:
+                DO ghost_action.
+        """
+        result = compile_source(source)
+        assert not result.success
+        assert result.error_count >= 2  # undeclared event + action
 
 
 class TestSnapshots:

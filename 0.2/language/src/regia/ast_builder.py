@@ -196,19 +196,24 @@ class ASTBuilder(Transformer):
 
     # == Arguments and action names ============================================
 
-    @v_args(inline=True)
-    def arg(self, token: Token) -> Arg:
-        """ID or NUMBER token -> typed Arg.
+    @v_args(inline=True, meta=True)
+    def arg(self, meta: Any, token: Token) -> Arg:
+        """ID | NUMBER | STRING -> Arg.
 
         Args:
-            token: An ID or NUMBER terminal token.
+            meta:  Position of the argument.
+            token: The terminal token.
 
         Returns:
-            An Arg with str value (for IDs) or int value (for NUMBERs).
+            An Arg AST node.
         """
         if token.type == "NUMBER":
-            return Arg(value=int(token), loc=_token_loc(token))
-        return Arg(value=str(token), loc=_token_loc(token))
+            return Arg(value=int(token), is_string=False, loc=_meta_loc(meta))
+        elif token.type == "STRING":
+            # Strip the surrounding quotes
+            val = str(token)[1:-1]
+            return Arg(value=val, is_string=True, loc=_meta_loc(meta))
+        return Arg(value=str(token), is_string=False, loc=_meta_loc(meta))
 
     def arg_list(self, children: List[Arg]) -> List[Arg]:
         """(arg1, arg2, ...) -> list of Args.

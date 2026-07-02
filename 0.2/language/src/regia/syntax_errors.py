@@ -33,6 +33,8 @@ _FRIENDLY: Dict[str, str] = {
     "ACHIEVE":     "the keyword 'ACHIEVE'",
     "BELIEVE":     "the keyword 'BELIEVE'",
     "FORGET":      "the keyword 'FORGET'",
+    "PRINT":       "the keyword 'PRINT'",
+    "STRING":      "a text string (e.g. \"hello\")",
 }
 
 

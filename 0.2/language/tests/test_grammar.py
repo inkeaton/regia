@@ -151,6 +151,8 @@ class TestPlaybook:
                     DO BELIEVE(informed).
                 WHEN forgot:
                     DO FORGET(old_info).
+                WHEN debug:
+                    DO PRINT("Found item", item, 42).
         """)
 
 

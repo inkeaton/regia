@@ -1,0 +1,34 @@
+EVENT start_event.
+EVENT next_phase.
+EVENT end_event.
+
+PLAYBOOK PbOne:
+    WHEN start_event:
+        DO PRINT("PbOne started").
+
+PLAYBOOK PbTwo:
+    WHEN end_event:
+        DO PRINT("PbTwo ended").
+
+PLOT SimplePlot.
+    PHASE first INITIAL.
+    PHASE second.
+    
+    ROLE RoleA.
+    ROLE RoleB.
+    
+    DURING first:
+        TRANSITION TO second WHEN next_phase.
+        ON ENTER:
+            WORLD DO PRINT("Entering first phase").
+            ASSIGN PbOne TO RoleA.
+            RoleA DO PRINT("RoleA is active in first phase").
+            
+        ON EXIT:
+            UNASSIGN PbOne FROM RoleA.
+            
+    DURING second:
+        ON ENTER:
+            WORLD DO PRINT("Entering second phase").
+            ASSIGN PbTwo TO RoleB.
+            RoleB DO PRINT("RoleB is active in second phase").

@@ -17,6 +17,8 @@ from regia.ast_builder   import ASTBuilder
 from regia.ast_nodes     import Program
 from regia.errors        import ErrorReporter, CompilerMessage
 from regia.syntax_errors import report_syntax_error
+from regia.validator     import Validator
+from regia.emitter       import Emitter
 
 
 # == Result type ===============================================================
@@ -48,8 +50,8 @@ def compile_source(source: str, filename: str = "<string>") -> CompileResult:
     Stages:
         1. Parse    (source string to Lark tree)
         2. Build    (Lark tree to typed AST)
-        3. Validate (semantic checks on AST)       [TODO]
-        4. Emit     (AST to AgentSpeak strings)     [TODO]
+        3. Validate (semantic checks on AST)
+        4. Emit     (AST to AgentSpeak strings)
 
     Args:
         source:   The Regia source code as a string.
@@ -75,20 +77,18 @@ def compile_source(source: str, filename: str = "<string>") -> CompileResult:
         return _failure(reporter)
 
     # == Stage 3: Validate =====================================================
-    # TODO: symbol table validation pass
-    # validator = Validator(reporter)
-    # validator.validate(program)
-    # if reporter.has_errors():
-    #     return _failure(reporter)
+    validator = Validator(reporter)
+    validator.validate(program)
+    if reporter.has_errors():
+        return _failure(reporter)
 
     # == Stage 4: Emit AgentSpeak ==============================================
-    # TODO: emission pass
-    # emitter = Emitter(reporter)
-    # outputs = emitter.emit(program)
+    emitter = Emitter()
+    outputs = emitter.emit(program)
 
     return CompileResult(
         success       = True,
-        outputs       = {},         # placeholder until emission is implemented
+        outputs       = outputs,
         error_count   = reporter.error_count,
         warning_count = reporter.warning_count,
         messages      = reporter.messages,

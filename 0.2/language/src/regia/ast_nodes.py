@@ -40,9 +40,9 @@ from typing import List, Optional, Union
 # These are reserved words in the grammar and cannot be used as
 # regular action identifiers.
 
-SPECIAL_ACTIONS: frozenset[str] = frozenset({
-    "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET",
-})
+SPECIAL_ACTIONS: frozenset[str] = frozenset([
+    "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET", "PRINT"
+])
 
 
 # == Source Location ===========================================================
@@ -90,12 +90,14 @@ class Arg:
     NUMBER token in the source.
 
     Attributes:
-        value: The argument value (str for IDs, int for NUMBERs).
-        loc:   Source location of the argument token.
+        value:     The argument value (string identifier, string literal, or integer).
+        is_string: True if the value was parsed from a STRING literal.
+        loc:       Source location.
     """
 
-    value: Union[str, int]
-    loc:   SourceLoc = _NO_LOC
+    value:     Union[str, int]
+    is_string: bool = False
+    loc:       SourceLoc = _NO_LOC
 
 
 # == Base Element Declarations =================================================

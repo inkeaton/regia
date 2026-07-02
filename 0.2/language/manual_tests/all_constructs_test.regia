@@ -1,0 +1,90 @@
+ACTION walk.
+ACTION speak.
+ACTION hide.
+
+EVENT start_scene.
+EVENT timer_ticked.
+EVENT danger_spotted.
+EVENT safe_again.
+
+FACT has_weapon.
+FACT health_low.
+FACT is_daytime.
+
+################################################
+### Explore Playbook
+################################################
+
+PLAYBOOK PbExplore:
+    WHEN start_scene:
+        DO PRINT("Exploration started").
+        DO BELIEVE(has_weapon).
+    
+    WHEN danger_spotted PRIORITY 8:
+        DO hide.
+        IF has_weapon AND NOT (health_low):
+            DO speak(threat).
+            SIGNAL timer_ticked.
+        IF health_low OR NOT (is_daytime):
+            DO PRINT("Too weak to fight").
+            SIGNAL safe_again.
+        ELSE:
+            DO FORGET(has_weapon).
+
+################################################
+### Combat Playbook
+################################################
+
+PLAYBOOK PbCombat:
+    WHEN timer_ticked:
+        DO speak(attack_cry, "Charge!").
+        IF has_weapon:
+            DO walk(forward).
+
+################################################
+### Plot Definition
+################################################
+
+PLOT GrandTest.
+    PHASE peace INITIAL.
+    PHASE battle.
+    
+    ROLE Hero.
+    
+    ################################################
+    ### Peace Phase
+    ################################################
+    
+    DURING peace:
+        TRANSITION TO battle WHEN danger_spotted IF NOT (is_daytime).
+        
+        ON ENTER:
+            WORLD DO PRINT("Peace begins").
+            ASSIGN PbExplore TO Hero.
+            Hero DO speak(greetings, "Hello world").
+            
+        ON EXIT:
+            UNASSIGN PbExplore FROM Hero.
+            Hero DO walk(away).
+            
+        WHEN timer_ticked PRIORITY 2:
+            WORLD DO BROADCAST(start_scene).
+
+    ################################################
+    ### Battle Phase
+    ################################################
+            
+    DURING battle:
+        TRANSITION TO peace WHEN safe_again.
+        
+        ON ENTER:
+            ASSIGN PbCombat TO Hero.
+            WORLD DO PRINT("Battle begins").
+
+    ################################################
+    ### Global Plot Events
+    ################################################
+
+    DURING PLOT:
+        WHEN start_scene:
+            WORLD DO PRINT("Plot is starting!").

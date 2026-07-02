@@ -117,13 +117,13 @@ signal_stmt: "SIGNAL" ID arg_list? "."
 
 // The action name is either a regular identifier or a
 // special AgentSpeak keyword (these are reserved words).
-action_name: ID | TELL | BROADCAST | ACHIEVE | BELIEVE | FORGET
+action_name: ID | TELL | BROADCAST | ACHIEVE | BELIEVE | FORGET | PRINT
 
 // Argument list: (arg1, arg2, ...)
 arg_list: "(" arg ("," arg)* ")"
 
-// Arguments are identifiers or integer numbers.
-arg: ID | NUMBER
+// Arguments are identifiers, integer numbers, or string literals.
+arg: ID | NUMBER | STRING
 
 
 // ============================================================
@@ -252,6 +252,9 @@ ID: /[a-zA-Z_][a-zA-Z0-9_]*/
 // Integer numbers: used in PRIORITY and as action arguments.
 NUMBER: /[0-9]+/
 
+// String literals: used in PRINT and other actions.
+STRING: /\"[^\"]*\"/
+
 // Named terminals for keywords whose values carry semantic
 // meaning and need to appear in the tree. These have higher
 // priority than ID, making them effectively reserved words.
@@ -262,6 +265,7 @@ BROADCAST: "BROADCAST"
 ACHIEVE: "ACHIEVE"
 BELIEVE: "BELIEVE"
 FORGET: "FORGET"
+PRINT: "PRINT"
 
 
 // ============================================================
