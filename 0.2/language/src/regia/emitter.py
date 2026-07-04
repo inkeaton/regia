@@ -30,6 +30,8 @@ from regia.ast_nodes import (
     ConditionExpr, ConditionNot, ConditionAnd, ConditionOr, FactRef,
     # Playbook
     DoStmt, SignalStmt, PbWhenBlock, PbIfBranch, PbElseBranch, PlaybookDef,
+    # Temper (VEsNA)
+    TemperSpec,
     # Imperative
     AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
     # Plot
@@ -677,6 +679,7 @@ class Emitter:
                 label = f"pb__{pb.name}__{when.event}__0"
                 self._write_plan(
                     lines, label, when.event, [gate], body_stmts, priority,
+                    temper=when.temper,
                 )
                 continue
 
@@ -698,7 +701,7 @@ class Emitter:
                 label = f"pb__{pb.name}__{when.event}__{idx}"
                 self._write_plan(
                     lines, label, when.event, context_parts, body_stmts,
-                    priority,
+                    priority, temper=when.temper,
                 )
 
             # ELSE branch
@@ -718,7 +721,7 @@ class Emitter:
                 label = f"pb__{pb.name}__{when.event}__{len(when.branches)}"
                 self._write_plan(
                     lines, label, when.event, context_parts, body_stmts,
-                    priority,
+                    priority, temper=when.temper,
                 )
 
     # == Statement emission ====================================================
@@ -939,11 +942,12 @@ class Emitter:
         context_parts: List[str],
         body_stmts: List[str],
         priority: int = 0,
+        temper: Optional[TemperSpec] = None,
     ) -> None:
         """Write a complete AgentSpeak plan to the output.
 
         Format:
-            @label[priority(N)]
+            @label[priority(N), temper([...]), effects([...])]
             +event : context1 & context2 <-
                 stmt1;
                 stmt2.
@@ -955,10 +959,25 @@ class Emitter:
             context_parts: List of context conditions (ANDed together).
             body_stmts:    List of body statement strings.
             priority:      Numeric priority (included as annotation).
+            temper:        Optional temper/effects annotation (VEsNA).
         """
-        # Priority annotation
+        # Build annotation list
+        annotations: List[str] = []
         if priority != 0:
-            lines.append(f"@{label}[priority({priority})]")
+            annotations.append(f"priority({priority})")
+        if temper is not None:
+            dims = ", ".join(
+                f"{e.name}({e.value})" for e in temper.dimensions
+            )
+            annotations.append(f"temper([{dims}])")
+            if temper.effects:
+                effs = ", ".join(
+                    f"{e.name}({e.value})" for e in temper.effects
+                )
+                annotations.append(f"effects([{effs}])")
+
+        if annotations:
+            lines.append(f"@{label}[{', '.join(annotations)}]")
         else:
             lines.append(f"@{label}")
 

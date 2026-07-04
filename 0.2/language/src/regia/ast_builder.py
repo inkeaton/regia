@@ -35,6 +35,8 @@ from regia.ast_nodes import (
     FactRef, ConditionNot, ConditionAnd, ConditionOr, ConditionExpr,
     # Playbook
     DoStmt, SignalStmt, PbIfBranch, PbElseBranch, PbWhenBlock, PlaybookDef,
+    # Temper (VEsNA)
+    TemperEntry, TemperSpec,
     # Imperative
     AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
     # Plot
@@ -255,6 +257,54 @@ class ASTBuilder(Transformer):
         """
         return int(num_token)
 
+    # == Temper annotations (VEsNA) ============================================
+
+    @v_args(inline=True)
+    def temper_entry(self, name_token: Token, value_token: Token) -> TemperEntry:
+        """ID "(" FLOAT ")" -> TemperEntry.
+
+        Args:
+            name_token:  The dimension name (e.g. sympathy).
+            value_token: The FLOAT token (e.g. 0.8).
+
+        Returns:
+            A TemperEntry with name and float value.
+        """
+        return TemperEntry(name=str(name_token), value=float(value_token))
+
+    def effects(self, children: List) -> List[TemperEntry]:
+        """EFFECTS temper_entry+ -> list of TemperEntry.
+
+        Args:
+            children: One or more TemperEntry nodes.
+
+        Returns:
+            The list of TemperEntry objects for the effects.
+        """
+        return list(children)
+
+    def temper(self, children: List) -> TemperSpec:
+        """TEMPER temper_entry+ effects? -> TemperSpec.
+
+        Args:
+            children: One or more TemperEntry nodes, optionally
+                      followed by a list of TemperEntry (the effects).
+
+        Returns:
+            A TemperSpec with dimensions and optional effects.
+        """
+        dimensions: List[TemperEntry] = []
+        effects_list: List[TemperEntry] = []
+
+        for child in children:
+            if isinstance(child, TemperEntry):
+                dimensions.append(child)
+            elif isinstance(child, list):
+                # The effects rule returns a list of TemperEntry
+                effects_list = child
+
+        return TemperSpec(dimensions=dimensions, effects=effects_list)
+
     # == Playbook actions ======================================================
 
     @v_args(meta=True)
@@ -367,31 +417,35 @@ class ASTBuilder(Transformer):
 
     @v_args(meta=True)
     def pb_when_block(self, meta: Any, children: List) -> PbWhenBlock:
-        """WHEN event PRIORITY n: body -> reactive plan.
+        """WHEN event PRIORITY n TEMPER ...: body -> reactive plan.
 
         Args:
             meta:     Position of the WHEN keyword.
-            children: [Token(ID, event), optional int, body_tuple].
-                      - If 3 children: event, priority, body
-                      - If 2 children: event, body (no priority)
+            children: [Token(ID, event), optional int, optional TemperSpec,
+                       body_tuple]. Variable length due to optional
+                       priority and temper.
 
         Returns:
             A PbWhenBlock AST node with separated body parts.
         """
         event_token = children[0]
 
-        # Determine whether priority is present by child count
-        if len(children) == 3:
-            priority_val = children[1]
-            body = children[2]
-        else:
-            priority_val = None
-            body = children[1]
+        # Determine optional children by type inspection
+        priority_val: Optional[int] = None
+        temper_val: Optional[TemperSpec] = None
+        body = children[-1]  # Body is always the last child
+
+        for child in children[1:-1]:
+            if isinstance(child, int):
+                priority_val = child
+            elif isinstance(child, TemperSpec):
+                temper_val = child
 
         prefix_stmts, branches, else_branch = body
         return PbWhenBlock(
             event=str(event_token),
             priority=priority_val,
+            temper=temper_val,
             prefix_stmts=prefix_stmts,
             branches=branches,
             else_branch=else_branch,

@@ -302,6 +302,34 @@ class PbElseBranch:
     loc:   SourceLoc = _NO_LOC
 
 
+# == Temper (VEsNA) ============================================================
+
+@dataclass
+class TemperEntry:
+    """A single temper or effect dimension: e.g. sympathy(0.8).
+
+    Attributes:
+        name:  The dimension identifier (e.g. sympathy, fear).
+        value: The numeric value (float).
+    """
+
+    name:  str
+    value: float
+
+
+@dataclass
+class TemperSpec:
+    """Full TEMPER annotation with optional EFFECTS.
+
+    Attributes:
+        dimensions: The temper dimensions list.
+        effects:    The effects dimensions list (may be empty).
+    """
+
+    dimensions: List[TemperEntry]
+    effects:    List[TemperEntry] = field(default_factory=list)
+
+
 # == Playbook ==================================================================
 
 @dataclass
@@ -319,6 +347,7 @@ class PbWhenBlock:
     Attributes:
         event:        The triggering event name.
         priority:     Numeric priority (None means default = 0).
+        temper:       Optional temper/effects annotation (VEsNA).
         prefix_stmts: Unconditional statements before any IF.
         branches:     Conditional IF branches.
         else_branch:  Optional ELSE fallback.
@@ -327,6 +356,7 @@ class PbWhenBlock:
 
     event:        str
     priority:     Optional[int]              = None
+    temper:       Optional[TemperSpec]        = None
     prefix_stmts: List[PbStmt]               = field(default_factory=list)
     branches:     List[PbIfBranch]            = field(default_factory=list)
     else_branch:  Optional[PbElseBranch]      = None

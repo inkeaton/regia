@@ -155,6 +155,36 @@ class TestPlaybook:
                     DO PRINT("Found item", item, 42).
         """)
 
+    def test_playbook_with_temper(self) -> None:
+        """WHEN with TEMPER annotation should parse."""
+        parse("""
+            ACTION a.
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e TEMPER sympathy(0.8):
+                    DO a.
+        """)
+
+    def test_playbook_with_temper_and_effects(self) -> None:
+        """WHEN with TEMPER and EFFECTS should parse."""
+        parse("""
+            ACTION a.
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e TEMPER sympathy(0.8), aggressiveness(-0.5) EFFECTS fear(-0.05):
+                    DO a.
+        """)
+
+    def test_playbook_with_priority_and_temper(self) -> None:
+        """WHEN with both PRIORITY and TEMPER should parse."""
+        parse("""
+            ACTION a.
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e PRIORITY 5 TEMPER laziness(0.8) EFFECTS sympathy(0.05):
+                    DO a.
+        """)
+
 
 # == Conditions ================================================================
 

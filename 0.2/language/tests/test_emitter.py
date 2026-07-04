@@ -572,6 +572,66 @@ class TestRoleOutput:
         pb_output = result.outputs["playbook_p.asl"]
         assert "@pb__P__e__0[priority(3)]" in pb_output
 
+    def test_temper_annotation(self) -> None:
+        """WHEN with TEMPER should include temper annotation in playbook file."""
+        result = _compile("""
+            ACTION a.
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e TEMPER sympathy(0.8):
+                    DO a.
+            PLOT Q.
+                PHASE start INITIAL.
+                ROLE NPC.
+                DURING start:
+                    ON ENTER:
+                        ASSIGN P TO NPC.
+        """)
+        assert result.success
+        pb_output = result.outputs["playbook_p.asl"]
+        assert "temper([sympathy(0.8)])" in pb_output
+
+    def test_temper_with_effects(self) -> None:
+        """WHEN with TEMPER and EFFECTS should include both annotations."""
+        result = _compile("""
+            ACTION a.
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e TEMPER sympathy(0.8) EFFECTS fear(-0.05):
+                    DO a.
+            PLOT Q.
+                PHASE start INITIAL.
+                ROLE NPC.
+                DURING start:
+                    ON ENTER:
+                        ASSIGN P TO NPC.
+        """)
+        assert result.success
+        pb_output = result.outputs["playbook_p.asl"]
+        assert "temper([sympathy(0.8)])" in pb_output
+        assert "effects([fear(-0.05)])" in pb_output
+
+    def test_temper_and_priority(self) -> None:
+        """WHEN with both PRIORITY and TEMPER should include all annotations."""
+        result = _compile("""
+            ACTION a.
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e PRIORITY 5 TEMPER laziness(0.8) EFFECTS sympathy(0.05):
+                    DO a.
+            PLOT Q.
+                PHASE start INITIAL.
+                ROLE NPC.
+                DURING start:
+                    ON ENTER:
+                        ASSIGN P TO NPC.
+        """)
+        assert result.success
+        pb_output = result.outputs["playbook_p.asl"]
+        assert "priority(5)" in pb_output
+        assert "temper([laziness(0.8)])" in pb_output
+        assert "effects([sympathy(0.05)])" in pb_output
+
     def test_multiple_playbooks_on_same_role(self) -> None:
         """A Role with multiple Playbooks should include both playbook files."""
         result = _compile("""
