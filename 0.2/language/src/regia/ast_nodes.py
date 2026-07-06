@@ -52,12 +52,14 @@ class SourceLoc:
     """Source position attached to every AST node for error reporting.
 
     Attributes:
-        line:   1-based line number in the source file.
-        column: 1-based column number in the source file.
+        line:     1-based line number in the source file.
+        column:   1-based column number in the source file.
+        filename: Name of the source file (empty for single-file).
     """
 
-    line:   int = 0
-    column: int = 0
+    line:     int = 0
+    column:   int = 0
+    filename: str = ""
 
 
 # Helper for creating a default SourceLoc in dataclass fields.

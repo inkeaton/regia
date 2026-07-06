@@ -67,7 +67,7 @@ class _ActionInfo:
         self.is_special = is_special
 
 
-def _meta_loc(meta: Any) -> SourceLoc:
+def _meta_loc(meta: Any, filename: str = "") -> SourceLoc:
     """Extract a SourceLoc from a Lark tree's Meta object.
 
     With propagate_positions=True, every Tree node gets a .meta
@@ -75,21 +75,23 @@ def _meta_loc(meta: Any) -> SourceLoc:
     rule (including filtered keywords like "DO", "WHEN", etc.).
 
     Args:
-        meta: The Lark Meta object from @v_args(meta=True).
+        meta:     The Lark Meta object from @v_args(meta=True).
+        filename: The source file name to embed in the SourceLoc.
 
     Returns:
         A SourceLoc with the extracted position.
     """
     line = getattr(meta, "line", 0) or 0
     column = getattr(meta, "column", 0) or 0
-    return SourceLoc(line=line, column=column)
+    return SourceLoc(line=line, column=column, filename=filename)
 
 
-def _token_loc(token: Token) -> SourceLoc:
+def _token_loc(token: Token, filename: str = "") -> SourceLoc:
     """Extract a SourceLoc from a Lark Token.
 
     Args:
-        token: A Lark Token with .line and .column attributes.
+        token:    A Lark Token with .line and .column attributes.
+        filename: The source file name to embed in the SourceLoc.
 
     Returns:
         A SourceLoc with the token's position.
@@ -97,6 +99,7 @@ def _token_loc(token: Token) -> SourceLoc:
     return SourceLoc(
         line=getattr(token, "line", 0) or 0,
         column=getattr(token, "column", 0) or 0,
+        filename=filename,
     )
 
 
@@ -113,6 +116,17 @@ class ASTBuilder(Transformer):
     Rules prefixed with ? in the grammar (element_decl, pb_stmt, etc.)
     are inlined by Lark and do NOT need methods here.
     """
+
+    def __init__(self, filename: str = "") -> None:
+        """Initialise the builder with an optional source filename.
+
+        Args:
+            filename: The name of the source file being built.
+                      Embedded into every SourceLoc for multi-file
+                      error reporting.
+        """
+        super().__init__()
+        self._filename: str = filename
 
     # == Base element declarations =============================================
 
@@ -132,7 +146,7 @@ class ASTBuilder(Transformer):
         return ActionDecl(
             name=str(name_token),
             params=params,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -151,7 +165,7 @@ class ASTBuilder(Transformer):
         return EventDecl(
             name=str(name_token),
             origin=origin,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -170,7 +184,7 @@ class ASTBuilder(Transformer):
         return FactDecl(
             name=str(name_token),
             params=params,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     def param_names(self, children: List[Token]) -> List[str]:
@@ -210,12 +224,12 @@ class ASTBuilder(Transformer):
             An Arg AST node.
         """
         if token.type == "NUMBER":
-            return Arg(value=int(token), is_string=False, loc=_meta_loc(meta))
+            return Arg(value=int(token), is_string=False, loc=_meta_loc(meta, self._filename))
         elif token.type == "STRING":
             # Strip the surrounding quotes
             val = str(token)[1:-1]
-            return Arg(value=val, is_string=True, loc=_meta_loc(meta))
-        return Arg(value=str(token), is_string=False, loc=_meta_loc(meta))
+            return Arg(value=val, is_string=True, loc=_meta_loc(meta, self._filename))
+        return Arg(value=str(token), is_string=False, loc=_meta_loc(meta, self._filename))
 
     def arg_list(self, children: List[Arg]) -> List[Arg]:
         """(arg1, arg2, ...) -> list of Args.
@@ -324,7 +338,7 @@ class ASTBuilder(Transformer):
             action=info.name,
             is_special=info.is_special,
             args=args,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -343,7 +357,7 @@ class ASTBuilder(Transformer):
         return SignalStmt(
             event=str(event_token),
             args=args,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     # == Playbook WHEN blocks ==================================================
@@ -362,7 +376,7 @@ class ASTBuilder(Transformer):
         return PbIfBranch(
             condition=children[0],
             stmts=list(children[1:]),
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -376,7 +390,7 @@ class ASTBuilder(Transformer):
         Returns:
             A PbElseBranch AST node.
         """
-        return PbElseBranch(stmts=list(children), loc=_meta_loc(meta))
+        return PbElseBranch(stmts=list(children), loc=_meta_loc(meta, self._filename))
 
     def pb_when_body(
         self,
@@ -449,7 +463,7 @@ class ASTBuilder(Transformer):
             prefix_stmts=prefix_stmts,
             branches=branches,
             else_branch=else_branch,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -467,7 +481,7 @@ class ASTBuilder(Transformer):
         return PlaybookDef(
             name=str(name_token),
             when_blocks=list(children[1:]),
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     # == Conditions ============================================================
@@ -488,7 +502,7 @@ class ASTBuilder(Transformer):
         return FactRef(
             name=str(name_token),
             args=args,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -509,7 +523,7 @@ class ASTBuilder(Transformer):
         """
         if len(children) == 1:
             return children[0]
-        return ConditionOr(operands=list(children), loc=_meta_loc(meta))
+        return ConditionOr(operands=list(children), loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
     def condition_and(
@@ -531,7 +545,7 @@ class ASTBuilder(Transformer):
         """
         if len(children) == 1:
             return children[0]
-        return ConditionAnd(operands=list(children), loc=_meta_loc(meta))
+        return ConditionAnd(operands=list(children), loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
     def condition_not(self, meta: Any, children: List) -> ConditionNot:
@@ -544,7 +558,7 @@ class ASTBuilder(Transformer):
         Returns:
             A ConditionNot AST node.
         """
-        return ConditionNot(operand=children[0], loc=_meta_loc(meta))
+        return ConditionNot(operand=children[0], loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
     def condition_group(self, meta: Any, children: List) -> ConditionExpr:
@@ -579,7 +593,7 @@ class ASTBuilder(Transformer):
         return AssignStmt(
             playbook=str(children[0]),
             role=str(children[1]),
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -596,7 +610,7 @@ class ASTBuilder(Transformer):
         return UnassignStmt(
             playbook=str(children[0]),
             role=str(children[1]),
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -616,7 +630,7 @@ class ASTBuilder(Transformer):
             action=info.name,
             is_special=info.is_special,
             args=args,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -638,7 +652,7 @@ class ASTBuilder(Transformer):
             action=info.name,
             is_special=info.is_special,
             args=args,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     # == Plot WHEN blocks ======================================================
@@ -657,7 +671,7 @@ class ASTBuilder(Transformer):
         return PlotIfBranch(
             condition=children[0],
             stmts=list(children[1:]),
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -671,7 +685,7 @@ class ASTBuilder(Transformer):
         Returns:
             A PlotElseBranch AST node.
         """
-        return PlotElseBranch(stmts=list(children), loc=_meta_loc(meta))
+        return PlotElseBranch(stmts=list(children), loc=_meta_loc(meta, self._filename))
 
     def plot_when_body(
         self,
@@ -730,7 +744,7 @@ class ASTBuilder(Transformer):
             prefix_stmts=prefix_stmts,
             branches=branches,
             else_branch=else_branch,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     # == Plot structure ========================================================
@@ -754,7 +768,7 @@ class ASTBuilder(Transformer):
             target_phase=str(target_token),
             event=str(event_token),
             guard=guard,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -768,7 +782,7 @@ class ASTBuilder(Transformer):
         Returns:
             An OnEnter AST node.
         """
-        return OnEnter(stmts=list(children), loc=_meta_loc(meta))
+        return OnEnter(stmts=list(children), loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
     def on_exit(self, meta: Any, children: List) -> OnExit:
@@ -781,7 +795,7 @@ class ASTBuilder(Transformer):
         Returns:
             An OnExit AST node.
         """
-        return OnExit(stmts=list(children), loc=_meta_loc(meta))
+        return OnExit(stmts=list(children), loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
     def initial_phase_decl(self, meta: Any, children: List[Token]) -> PhaseDecl:
@@ -801,7 +815,7 @@ class ASTBuilder(Transformer):
         return PhaseDecl(
             name=str(children[0]),
             is_initial=True,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -818,7 +832,7 @@ class ASTBuilder(Transformer):
         return PhaseDecl(
             name=str(children[0]),
             is_initial=False,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -832,7 +846,7 @@ class ASTBuilder(Transformer):
         Returns:
             A RoleDecl AST node.
         """
-        return RoleDecl(name=str(children[0]), loc=_meta_loc(meta))
+        return RoleDecl(name=str(children[0]), loc=_meta_loc(meta, self._filename))
 
     def plot_header(
         self,
@@ -914,7 +928,7 @@ class ASTBuilder(Transformer):
             on_enters=on_enters,
             on_exits=on_exits,
             when_blocks=when_blocks,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -941,7 +955,7 @@ class ASTBuilder(Transformer):
             on_enters=on_enters,
             on_exits=on_exits,
             when_blocks=when_blocks,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     @v_args(meta=True)
@@ -964,7 +978,7 @@ class ASTBuilder(Transformer):
             phases=phases,
             roles=roles,
             during_blocks=during_blocks,
-            loc=_meta_loc(meta),
+            loc=_meta_loc(meta, self._filename),
         )
 
     # == Root ==================================================================

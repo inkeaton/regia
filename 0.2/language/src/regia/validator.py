@@ -626,6 +626,7 @@ class Validator:
             length=1,
             message=message,
             hint=hint,
+            filename=loc.filename,
         )
 
     def _warning(
@@ -647,4 +648,5 @@ class Validator:
             length=1,
             message=message,
             hint=hint,
+            filename=loc.filename,
         )

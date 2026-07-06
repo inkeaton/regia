@@ -1,0 +1,12 @@
+ACTION walk.
+ACTION speak.
+ACTION hide.
+
+EVENT start_scene.
+EVENT timer_ticked.
+EVENT danger_spotted.
+EVENT safe_again.
+
+FACT has_weapon.
+FACT health_low.
+FACT is_daytime.

@@ -6,11 +6,12 @@ Ported from v0.1 with improvements:
   - Public ``messages`` property (no more accessing private fields)
   - Counters maintained incrementally (no full-scan on every check)
   - Source-line caret display is centralised here only
+  - Multi-source registry for multi-file compilation
 """
 
 from dataclasses import dataclass
 from enum        import Enum, auto
-from typing      import List
+from typing      import Dict, List
 
 
 # == Severity ==================================================================
@@ -36,6 +37,7 @@ class CompilerMessage:
         message:     Human-readable description of the issue.
         hint:        Optional suggestion for how to fix the issue.
         source_line: The raw source line text (for caret display).
+        filename:    Name of the source file (empty for single-file).
     """
 
     severity:    Severity
@@ -45,6 +47,7 @@ class CompilerMessage:
     message:     str
     hint:        str = ""
     source_line: str = ""
+    filename:    str = ""
 
 
 # == Error reporter ============================================================
@@ -52,62 +55,87 @@ class CompilerMessage:
 class ErrorReporter:
     """Central error and warning collector for the Regia compiler.
 
-    Constructed with the full source text so it can display the
-    offending line with a caret for every message. Counters are
-    maintained incrementally for O(1) queries.
+    Manages a registry of source texts keyed by filename, so it
+    can display the offending line with a caret for diagnostics
+    from any file. Counters are maintained incrementally for O(1)
+    queries.
     """
 
-    def __init__(self, source: str) -> None:
-        """Initialise the reporter with the full source text.
+    def __init__(self, source: str = "") -> None:
+        """Initialise the reporter, optionally with a single source text.
 
         Args:
-            source: The complete source code string, used to extract
-                    individual lines for caret display.
+            source: The complete source code string for single-file
+                    compilation. For multi-file, call register_source()
+                    for each file instead.
         """
-        self._lines:         List[str]             = source.splitlines()
-        self._messages:      List[CompilerMessage] = []
-        self._error_count:   int                   = 0
-        self._warning_count: int                   = 0
+        self._source_registry: Dict[str, List[str]] = {}
+        self._messages:        List[CompilerMessage] = []
+        self._error_count:     int                   = 0
+        self._warning_count:   int                   = 0
+
+        # Backwards compatibility: if a source string is provided,
+        # register it under the empty filename key.
+        if source:
+            self.register_source("", source)
+
+    # == Source registry =======================================================
+
+    def register_source(self, filename: str, source: str) -> None:
+        """Register the source text for a file.
+
+        Args:
+            filename: The name of the source file (used to look up
+                      lines when formatting diagnostics).
+            source:   The complete source code string for this file.
+        """
+        self._source_registry[filename] = source.splitlines()
 
     # == Public reporting API ==================================================
 
     def error(
         self,
-        line:    int,
-        column:  int,
-        length:  int,
-        message: str,
-        hint:    str = "",
+        line:     int,
+        column:   int,
+        length:   int,
+        message:  str,
+        hint:     str = "",
+        filename: str = "",
     ) -> None:
         """Record an error diagnostic.
 
         Args:
-            line:    1-based line number of the issue.
-            column:  0-based column offset within the line.
-            length:  Length of the offending span (for caret width).
-            message: Human-readable description of the error.
-            hint:    Optional suggestion for how to fix it.
+            line:     1-based line number of the issue.
+            column:   0-based column offset within the line.
+            length:   Length of the offending span (for caret width).
+            message:  Human-readable description of the error.
+            hint:     Optional suggestion for how to fix it.
+            filename: The source file this error originates from.
         """
-        self._add(Severity.ERROR, line, column, length, message, hint)
+        self._add(Severity.ERROR, line, column, length, message, hint,
+                  filename)
 
     def warning(
         self,
-        line:    int,
-        column:  int,
-        length:  int,
-        message: str,
-        hint:    str = "",
+        line:     int,
+        column:   int,
+        length:   int,
+        message:  str,
+        hint:     str = "",
+        filename: str = "",
     ) -> None:
         """Record a warning diagnostic.
 
         Args:
-            line:    1-based line number of the issue.
-            column:  0-based column offset within the line.
-            length:  Length of the offending span (for caret width).
-            message: Human-readable description of the warning.
-            hint:    Optional suggestion for how to address it.
+            line:     1-based line number of the issue.
+            column:   0-based column offset within the line.
+            length:   Length of the offending span (for caret width).
+            message:  Human-readable description of the warning.
+            hint:     Optional suggestion for how to address it.
+            filename: The source file this warning originates from.
         """
-        self._add(Severity.WARNING, line, column, length, message, hint)
+        self._add(Severity.WARNING, line, column, length, message, hint,
+                  filename)
 
     # == Queries ===============================================================
 
@@ -151,6 +179,21 @@ class ErrorReporter:
 
     # == Internal ==============================================================
 
+    def _get_source_line(self, filename: str, line: int) -> str:
+        """Look up a source line from the registry.
+
+        Args:
+            filename: The source file name.
+            line:     The 1-based line number.
+
+        Returns:
+            The source line text, or empty string if not found.
+        """
+        lines = self._source_registry.get(filename, [])
+        if 1 <= line <= len(lines):
+            return lines[line - 1]
+        return ""
+
     def _add(
         self,
         severity: Severity,
@@ -159,6 +202,7 @@ class ErrorReporter:
         length:   int,
         message:  str,
         hint:     str,
+        filename: str = "",
     ) -> None:
         """Create a CompilerMessage and append it to the internal list.
 
@@ -169,10 +213,9 @@ class ErrorReporter:
             length:   Offending span length.
             message:  Description text.
             hint:     Optional fix suggestion.
+            filename: The source file this message originates from.
         """
-        source_line = ""
-        if 1 <= line <= len(self._lines):
-            source_line = self._lines[line - 1]
+        source_line = self._get_source_line(filename, line)
 
         self._messages.append(CompilerMessage(
             severity    = severity,
@@ -182,6 +225,7 @@ class ErrorReporter:
             message     = message,
             hint        = hint,
             source_line = source_line,
+            filename    = filename,
         ))
 
         if severity == Severity.ERROR:
@@ -200,9 +244,16 @@ class ErrorReporter:
         """
         divider = "=" * 60
         label   = "ERROR" if msg.severity == Severity.ERROR else "WARNING"
+
+        # Include filename in location when available
+        if msg.filename:
+            location = f"{msg.filename}:{msg.line}, column {msg.column}"
+        else:
+            location = f"line {msg.line}, column {msg.column}"
+
         parts: List[str] = [
             f"\n{divider}",
-            f" {label}  line {msg.line}, column {msg.column}",
+            f" {label}  {location}",
             f" {msg.message}",
         ]
         if msg.hint:

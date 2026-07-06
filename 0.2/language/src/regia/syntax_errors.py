@@ -65,6 +65,7 @@ def _friendly_expected(expected: Set[str]) -> str:
 def report_syntax_error(
     error:    UnexpectedToken | UnexpectedCharacters,
     reporter: ErrorReporter,
+    filename: str = "",
 ) -> None:
     """Translate a Lark parse/lex exception into a CompilerMessage.
 
@@ -75,6 +76,7 @@ def report_syntax_error(
         error:    The Lark exception (UnexpectedToken or
                   UnexpectedCharacters).
         reporter: The ErrorReporter to add the message to.
+        filename: The source file name for multi-file diagnostics.
     """
     if isinstance(error, UnexpectedToken):
         text     = str(error.token) if error.token else "?"
@@ -88,6 +90,7 @@ def report_syntax_error(
             line, column - 1, length,
             f"Unexpected '{text}' found here.",
             f"Expected {expected}.",
+            filename=filename,
         )
         return
 
@@ -99,4 +102,5 @@ def report_syntax_error(
             line, column - 1, 1,
             "Unrecognised character at this position.",
             "Check for typos or unsupported symbols.",
+            filename=filename,
         )

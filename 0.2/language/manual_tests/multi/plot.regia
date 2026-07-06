@@ -1,0 +1,31 @@
+PLOT GrandTest.
+    PHASE peace INITIAL.
+    PHASE battle.
+
+    ROLE Hero.
+
+    DURING peace:
+        TRANSITION TO battle WHEN danger_spotted IF NOT (is_daytime).
+
+        ON ENTER:
+            WORLD DO PRINT("Peace begins").
+            ASSIGN PbExplore TO Hero.
+            Hero DO speak(greetings, "Hello world").
+
+        ON EXIT:
+            UNASSIGN PbExplore FROM Hero.
+            Hero DO walk(away).
+
+        WHEN timer_ticked PRIORITY 2:
+            WORLD DO BROADCAST(start_scene).
+
+    DURING battle:
+        TRANSITION TO peace WHEN safe_again.
+
+        ON ENTER:
+            ASSIGN PbCombat TO Hero.
+            WORLD DO PRINT("Battle begins").
+
+    DURING PLOT:
+        WHEN start_scene:
+            WORLD DO PRINT("Plot is starting!").

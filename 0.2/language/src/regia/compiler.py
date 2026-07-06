@@ -4,6 +4,11 @@ Compiler pipeline for the Regia compiler.
 Orchestrates parsing, AST building, validation, and emission.
 Each stage only runs if the previous produced zero errors.
 This module contains no grammar or emission logic; it is pure wiring.
+
+Supports both single-file and multi-file compilation. In multi-file
+mode, each file is parsed and built independently, then the resulting
+AST Programs are merged into a single Program for validation and
+emission.
 """
 
 from dataclasses import dataclass
@@ -25,7 +30,7 @@ from regia.emitter       import Emitter
 
 @dataclass
 class CompileResult:
-    """The result of compiling a Regia source file.
+    """The result of compiling one or more Regia source files.
 
     Attributes:
         success:       True if compilation completed without errors.
@@ -60,17 +65,18 @@ def compile_source(source: str, filename: str = "<string>") -> CompileResult:
     Returns:
         A CompileResult with success status, outputs, and diagnostics.
     """
-    reporter = ErrorReporter(source)
+    reporter = ErrorReporter()
+    reporter.register_source(filename, source)
 
     # == Stage 1: Parse ========================================================
     try:
         tree = parse(source)
     except (UnexpectedToken, UnexpectedCharacters) as e:
-        report_syntax_error(e, reporter)
+        report_syntax_error(e, reporter, filename=filename)
         return _failure(reporter)
 
     # == Stage 2: Build AST ====================================================
-    builder = ASTBuilder()
+    builder = ASTBuilder(filename=filename)
     program: Program = builder.transform(tree)
 
     if reporter.has_errors():
@@ -96,7 +102,7 @@ def compile_source(source: str, filename: str = "<string>") -> CompileResult:
 
 
 def compile_file(filepath: Union[str, Path]) -> CompileResult:
-    """Compile a .rgs file through the full pipeline.
+    """Compile a single .regia file through the full pipeline.
 
     Args:
         filepath: Path to the Regia source file.
@@ -107,6 +113,77 @@ def compile_file(filepath: Union[str, Path]) -> CompileResult:
     filepath = Path(filepath)
     source   = filepath.read_text(encoding="utf-8")
     return compile_source(source, filename=filepath.name)
+
+
+def compile_files(filepaths: List[Path]) -> CompileResult:
+    """Compile multiple .regia files through the full pipeline.
+
+    Each file is parsed and built into a Program independently.
+    The Programs are then merged into one combined Program for
+    validation and emission. File order does not matter.
+
+    Stages:
+        1. Parse each file (continue on error to report all failures)
+        2. Build AST for each file
+        3. Merge all Programs into one
+        4. Validate merged Program
+        5. Emit AgentSpeak
+
+    Args:
+        filepaths: List of paths to Regia source files.
+
+    Returns:
+        A CompileResult with success status, outputs, and diagnostics.
+    """
+    # Single file: delegate to the simpler path
+    if len(filepaths) == 1:
+        return compile_file(filepaths[0])
+
+    reporter = ErrorReporter()
+    programs: List[Program] = []
+
+    # == Stages 1 & 2: Parse + Build each file =============================
+    for fpath in filepaths:
+        filename = fpath.name
+        source   = fpath.read_text(encoding="utf-8")
+        reporter.register_source(filename, source)
+
+        try:
+            tree = parse(source)
+        except (UnexpectedToken, UnexpectedCharacters) as e:
+            report_syntax_error(e, reporter, filename=filename)
+            continue  # Try remaining files to report all errors
+
+        builder = ASTBuilder(filename=filename)
+        program: Program = builder.transform(tree)
+        programs.append(program)
+
+    # If any file failed to parse, stop here
+    if reporter.has_errors():
+        return _failure(reporter)
+
+    # == Stage 3: Merge Programs ===========================================
+    merged = Program()
+    for prog in programs:
+        merged.items.extend(prog.items)
+
+    # == Stage 4: Validate =================================================
+    validator = Validator(reporter)
+    validator.validate(merged)
+    if reporter.has_errors():
+        return _failure(reporter)
+
+    # == Stage 5: Emit =====================================================
+    emitter = Emitter()
+    outputs = emitter.emit(merged)
+
+    return CompileResult(
+        success       = True,
+        outputs       = outputs,
+        error_count   = reporter.error_count,
+        warning_count = reporter.warning_count,
+        messages      = reporter.messages,
+    )
 
 
 # == Internal ==================================================================

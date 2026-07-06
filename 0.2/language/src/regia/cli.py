@@ -2,15 +2,16 @@
 Command-line interface for the Regia compiler.
 
 Usage:
-    regia compile <file.regia> [-o <output_dir>]
+    regia compile <file.regia> [<file2.regia> ...] [-o <output_dir>]
 """
 
 import sys
 from pathlib import Path
+from typing import Tuple
 
 import click
 
-from regia.compiler import compile_file
+from regia.compiler import compile_file, compile_files
 from regia.errors import Severity
 
 
@@ -21,7 +22,10 @@ def main() -> None:
 
 
 @main.command()
-@click.argument("source_file", type=click.Path(exists=True, path_type=Path))
+@click.argument(
+    "source_files", nargs=-1, required=True,
+    type=click.Path(exists=True, path_type=Path),
+)
 @click.option(
     "-o",
     "--output-dir",
@@ -29,12 +33,17 @@ def main() -> None:
     default=".",
     help="Directory to place the generated AgentSpeak files.",
 )
-def compile(source_file: Path, output_dir: Path) -> None:
-    """Compile a Regia source file into AgentSpeak."""
-    click.echo(f"Compiling {source_file.name}...")
+def compile(source_files: Tuple[Path, ...], output_dir: Path) -> None:
+    """Compile one or more Regia source files into AgentSpeak."""
+    file_list = list(source_files)
+    file_names = ", ".join(f.name for f in file_list)
+    click.echo(f"Compiling {file_names}...")
 
     # Run the compiler pipeline
-    result = compile_file(source_file)
+    if len(file_list) == 1:
+        result = compile_file(file_list[0])
+    else:
+        result = compile_files(file_list)
 
     # Print diagnostics
     for msg in result.messages:
@@ -44,8 +53,13 @@ def compile(source_file: Path, output_dir: Path) -> None:
             prefix = click.style(prefix, fg="red", bold=True)
         elif msg.severity == Severity.WARNING:
             prefix = click.style(prefix, fg="yellow", bold=True)
-            
-        location = f"line {msg.line}, col {msg.column}"
+
+        # Include filename in location when available
+        if msg.filename:
+            location = f"{msg.filename}:{msg.line}, col {msg.column}"
+        else:
+            location = f"line {msg.line}, col {msg.column}"
+
         click.echo(f"{prefix} {location}: {msg.message}")
 
     # Summary

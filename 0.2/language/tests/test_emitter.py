@@ -12,7 +12,9 @@ Run with:  pytest tests/test_emitter.py -v
 
 import pytest
 
-from regia.compiler import compile_source, CompileResult
+from pathlib import Path
+
+from regia.compiler import compile_source, compile_files, CompileResult
 
 
 def _compile(source: str) -> CompileResult:
@@ -834,3 +836,123 @@ class TestFullIntegration:
         assert "trigger_alarm" in director
         assert "!send_to_role(singer, achieve, acknowledge)" in director
         assert "!send_to_role(audiencemember, achieve, acknowledge)" in director
+
+
+# == Multi-File Compilation ====================================================
+
+class TestMultiFile:
+    """Tests for compiling multiple Regia source files together."""
+
+    def test_split_base_and_playbook(self, tmp_path: Path) -> None:
+        """Declarations in one file, playbook+plot in another should compile."""
+        base_file = tmp_path / "base.regia"
+        base_file.write_text("""
+            ACTION greet.
+            EVENT hello.
+            FACT happy.
+        """)
+
+        main_file = tmp_path / "main.regia"
+        main_file.write_text("""
+            PLAYBOOK P:
+                WHEN hello:
+                    DO greet.
+            PLOT Q.
+                PHASE start INITIAL.
+                ROLE NPC.
+                DURING start:
+                    ON ENTER:
+                        ASSIGN P TO NPC.
+        """)
+
+        result = compile_files([base_file, main_file])
+        assert result.success
+        assert "playbook_p.asl" in result.outputs
+        assert "director_q.asl" in result.outputs
+        pb = result.outputs["playbook_p.asl"]
+        assert "greet" in pb
+
+    def test_three_file_split(self, tmp_path: Path) -> None:
+        """Declarations, playbook, and plot in separate files should compile."""
+        decls = tmp_path / "decls.regia"
+        decls.write_text("""
+            ACTION run.
+            ACTION fight.
+            EVENT danger.
+            EVENT safe.
+            FACT armed.
+        """)
+
+        playbook = tmp_path / "playbook.regia"
+        playbook.write_text("""
+            PLAYBOOK Combat:
+                WHEN danger:
+                    DO fight.
+        """)
+
+        plot = tmp_path / "plot.regia"
+        plot.write_text("""
+            PLOT Battle.
+                PHASE idle INITIAL.
+                PHASE fighting.
+                ROLE Soldier.
+                DURING idle:
+                    TRANSITION TO fighting WHEN danger.
+                    ON ENTER:
+                        ASSIGN Combat TO Soldier.
+                DURING fighting:
+                    TRANSITION TO idle WHEN safe.
+        """)
+
+        result = compile_files([decls, playbook, plot])
+        assert result.success
+        assert "playbook_combat.asl" in result.outputs
+        assert "director_battle.asl" in result.outputs
+        assert "role_battle_soldier.asl" in result.outputs
+
+    def test_cross_file_undeclared_error(self, tmp_path: Path) -> None:
+        """Referencing an undeclared action across files should error."""
+        base_file = tmp_path / "base.regia"
+        base_file.write_text("""
+            EVENT hello.
+        """)
+
+        main_file = tmp_path / "main.regia"
+        main_file.write_text("""
+            PLAYBOOK P:
+                WHEN hello:
+                    DO missing_action.
+            PLOT Q.
+                PHASE start INITIAL.
+                ROLE NPC.
+                DURING start:
+                    ON ENTER:
+                        ASSIGN P TO NPC.
+        """)
+
+        result = compile_files([base_file, main_file])
+        assert not result.success
+        # Error should reference the file where the issue is
+        error_msgs = [m for m in result.messages if m.severity.name == "ERROR"]
+        assert len(error_msgs) > 0
+        assert any("missing_action" in m.message for m in error_msgs)
+        # Filename should be tracked on the error
+        assert any(m.filename == "main.regia" for m in error_msgs)
+
+    def test_duplicate_across_files(self, tmp_path: Path) -> None:
+        """Same action declared in two files should produce duplicate error."""
+        file_a = tmp_path / "a.regia"
+        file_a.write_text("""
+            ACTION greet.
+        """)
+
+        file_b = tmp_path / "b.regia"
+        file_b.write_text("""
+            ACTION greet.
+        """)
+
+        result = compile_files([file_a, file_b])
+        assert not result.success
+        error_msgs = [m for m in result.messages if m.severity.name == "ERROR"]
+        assert any("greet" in m.message for m in error_msgs)
+
