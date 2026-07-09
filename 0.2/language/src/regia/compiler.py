@@ -13,7 +13,7 @@ emission.
 
 from dataclasses import dataclass
 from pathlib     import Path
-from typing      import Dict, List, Union
+from typing      import Dict, List, Union, Optional
 
 from lark import UnexpectedToken, UnexpectedCharacters
 
@@ -38,6 +38,7 @@ class CompileResult:
         error_count:   Total number of errors encountered.
         warning_count: Total number of warnings encountered.
         messages:      List of all compiler diagnostics.
+        ast:           Compiled Abstract Syntax Tree, passed for the editor's webserver
     """
 
     success:       bool
@@ -45,7 +46,8 @@ class CompileResult:
     error_count:   int
     warning_count: int
     messages:      List[CompilerMessage]
-
+    # added the following to expose ast result to webserver
+    ast:           Optional[Program] = None 
 
 # == Core compile functions ====================================================
 
@@ -101,6 +103,8 @@ def compile_source(source: str, filename: str = "<string>", emit: bool = True) -
         error_count   = reporter.error_count,
         warning_count = reporter.warning_count,
         messages      = reporter.messages,
+        # added the following to expose ast result to webserver
+        ast           = program,
     )
 
 

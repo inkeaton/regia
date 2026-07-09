@@ -1,0 +1,89 @@
+/* =============================================================================
+   CodeEditor.module.css
+   Styles for the left-panel code editor component.
+   ============================================================================= */
+
+/* ===== Outer container: fills the editor panel vertically ===== */
+.editorContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-md);
+    gap: var(--space-sm);
+}
+
+/* ===== Header row: title + parsing status indicator ===== */
+.editorHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-divider);
+}
+
+.editorTitle {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    letter-spacing: 0.02em;
+}
+
+.parsingIndicator {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* ===== Textarea: the actual code input ===== */
+.codeTextarea {
+    flex-grow: 1;
+    font-family: var(--font-code);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    padding: var(--space-md);
+    resize: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-app);
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.codeTextarea:focus {
+    border-color: var(--color-accent-primary);
+}
+
+/* ===== Error panel: syntax error list ===== */
+.errorPanel {
+    flex-shrink: 0;
+    background-color: var(--color-error-bg);
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.errorPanelTitle {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-error);
+    margin-bottom: var(--space-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.errorList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.errorItem {
+    font-size: var(--font-size-sm);
+    font-family: var(--font-code);
+    color: var(--color-error);
+}
