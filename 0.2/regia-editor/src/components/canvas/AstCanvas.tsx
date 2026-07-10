@@ -1,14 +1,14 @@
-// src/components/canvas/StoryCanvas.tsx
+// src/components/canvas/AstCanvas.tsx
 import { useEffect, useState } from "react";
 import ReactFlow, { Background, Controls, type Node, type Edge, Panel } from "reactflow";
 
 import { useStore } from "../../store/useStore";
 import { PhaseNode } from "./PhaseNode";
-import { convertAstToGraph } from "../../layout/storyToGraph";
+import { convertAstToGraph } from "../../layout/astToGraph";
 import { getLayoutedElements } from "../../layout/autoLayout";
 import { exportCanvas } from "../../export/toImage";
 
-import styles from "./StoryCanvas.module.css";
+import styles from "./AstCanvas.module.css";
 import "reactflow/dist/style.css";
 
 // ==============================================================================
@@ -18,7 +18,7 @@ import "reactflow/dist/style.css";
 /**
  * Registry of custom node types for React Flow.
  * Add new custom node types here when extending the visualization.
- * The key ("phaseNode") must match the `type` field set in `storyToGraph.ts`.
+ * The key ("phaseNode") must match the `type` field set in `astToGraph.ts`.
  */
 const NODE_TYPES = {
     phaseNode: PhaseNode,
@@ -42,7 +42,7 @@ const NODE_TYPES = {
  *   and `onConnect` props to the `<ReactFlow>` element.
  * - To add new node types, register them in `NODE_TYPES` above.
  */
-export const StoryCanvas = () => {
+export const AstCanvas = () => {
     const { ast, errors } = useStore();
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);

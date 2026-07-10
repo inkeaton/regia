@@ -9,7 +9,7 @@ import styles from "./PhaseNode.module.css";
 
 /**
  * Data payload attached to every Phase node in the React Flow graph.
- * The `storyToGraph.ts` mapper populates this from the AST.
+ * The `astToGraph.ts` mapper populates this from the AST.
  *
  * @property label     - The phase name (e.g. "backstage").
  * @property isInitial - True if this is the INITIAL phase.
@@ -44,9 +44,9 @@ const HANDLE_STYLE = {
  *
  * Each node exposes six handles (top, bottom, left-source, left-target,
  * right-source, right-target) so that the smart edge router in
- * `storyToGraph.ts` can avoid visual overlaps for reverse/lateral transitions.
+ * `astToGraph.ts` can avoid visual overlaps for reverse/lateral transitions.
  *
- * @param data - The PhaseNodeData payload set by `storyToGraph.ts`.
+ * @param data - The PhaseNodeData payload set by `astToGraph.ts`.
  */
 export const PhaseNode = ({ data }: NodeProps<PhaseNodeData>) => {
     const cardClass = data.isInitial

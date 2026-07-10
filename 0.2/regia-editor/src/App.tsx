@@ -1,6 +1,6 @@
 // src/App.tsx
 import { CodeEditor } from "./components/editor/CodeEditor";
-import { StoryCanvas } from "./components/canvas/StoryCanvas";
+import { AstCanvas } from "./components/canvas/AstCanvas";
 
 import styles from "./App.module.css";
 
@@ -24,7 +24,7 @@ export const App = () => {
 
             {/* Right Column: Visual Graph */}
             <div className={styles.canvasPanel}>
-                <StoryCanvas />
+                <AstCanvas />
             </div>
         </div>
     );

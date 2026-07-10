@@ -1,4 +1,4 @@
-// src/layout/storyToGraph.ts
+// src/layout/astToGraph.ts
 import { type Node, type Edge, MarkerType } from "reactflow";
 import type { Program, PlotDef, DuringBlock } from "../types/ast";
 
@@ -55,7 +55,7 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
 
         nodes.push({
             id: phase.name,
-            type: "phaseNode",   // Must match the key in NODE_TYPES (StoryCanvas.tsx)
+            type: "phaseNode",   // Must match the key in NODE_TYPES (AstCanvas.tsx)
             position: { x: 0, y: 0 }, // Placeholder; dagre will compute the real position
             data: {
                 label:     phase.name,

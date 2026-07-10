@@ -3,7 +3,7 @@
 // ==============================================================================
 // GRAPH-TO-AST REVERSE MAPPER (stub)
 // ==============================================================================
-// This module will contain the reverse of storyToGraph.ts:
+// This module will contain the reverse of astToGraph.ts:
 // given a set of React Flow nodes and edges, reconstruct the PlotDef portion
 // of the AST so it can be sent to the /emit-regia endpoint.
 //

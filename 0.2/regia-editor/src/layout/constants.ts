@@ -3,7 +3,7 @@
 // ==============================================================================
 // GRAPH LAYOUT CONSTANTS
 // ==============================================================================
-// Single source of truth for all geometry values used by storyToGraph.ts,
+// Single source of truth for all geometry values used by astToGraph.ts,
 // autoLayout.ts, and the CSS modules.
 // Changing these values adjusts the entire graph layout uniformly.
 
@@ -22,7 +22,7 @@ export const LAYOUT_NODE_SEP = 120;
 // ==============================================================================
 // EDGE STYLE DEFAULTS
 // ==============================================================================
-// These are used in storyToGraph.ts when constructing React Flow Edge objects.
+// These are used in astToGraph.ts when constructing React Flow Edge objects.
 // Centralising them here means a single edit propagates to all edges.
 
 /** Default stroke color for transition edges. Matches --color-edge in index.css. */
