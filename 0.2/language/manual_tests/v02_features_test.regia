@@ -1,0 +1,50 @@
+# v02_features_test.regia
+# This file is specifically designed to test the v0.2 language features:
+# 1. The IMPORT system
+# 2. Doc Comments (#@ key: value)
+# 3. Inline Transitions (TRANSITION TO within WHEN blocks)
+
+IMPORT "shared_elements.regia".
+
+#@author: AgentSpeak Designer
+#@version: 0.2
+#@desc: Playbook demonstrating basic actions triggered by an imported event.
+PLAYBOOK HeroPlaybook:
+    WHEN quest_completed PRIORITY 5:
+        DO celebrate.
+
+#@author: AgentSpeak Director
+#@desc: Main plot demonstrating inline phase transitions.
+PLOT EpicAdventure.
+
+ROLE Hero.
+
+PHASE beginning INITIAL.
+PHASE middle.
+PHASE ending.
+
+DURING beginning:
+    # Testing standard declarative transitions for baseline comparison
+    TRANSITION TO middle WHEN quest_completed.
+    
+    # Testing inline transitions embedded inside a Plot WHEN block
+    WHEN quest_completed PRIORITY 10:
+        IF NOT has_achievement(hero_medal):
+            WORLD DO BROADCAST("Giving hero a medal!").
+            TRANSITION TO middle.
+        ELSE:
+            WORLD DO BROADCAST("Hero already has the medal.").
+            TRANSITION TO ending.
+
+DURING middle:
+    ON ENTER:
+        ASSIGN HeroPlaybook TO Hero.
+    
+    # Inline transition testing with bare prefix action
+    WHEN quest_completed:
+        WORLD DO BROADCAST("Quest completed again!").
+        TRANSITION TO ending.
+
+DURING ending:
+    ON ENTER:
+        UNASSIGN HeroPlaybook FROM Hero.

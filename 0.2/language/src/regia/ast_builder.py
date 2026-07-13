@@ -29,6 +29,8 @@ from lark import Transformer, Token, v_args
 from regia.ast_nodes import (
     # Shared
     SourceLoc, Arg, EventOrigin, SPECIAL_ACTIONS,
+    # Imports
+    ImportDecl,
     # Base elements
     ActionDecl, EventDecl, FactDecl,
     # Conditions
@@ -38,7 +40,7 @@ from regia.ast_nodes import (
     # Temper (VEsNA)
     TemperEntry, TemperSpec,
     # Imperative
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt,
     # Plot
     TransitionStmt, OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock,
@@ -127,6 +129,28 @@ class ASTBuilder(Transformer):
         """
         super().__init__()
         self._filename: str = filename
+
+    # == Import declarations ===================================================
+
+    @v_args(meta=True)
+    def import_stmt(self, meta: Any, children: List) -> ImportDecl:
+        """IMPORT \"path\"  -> import declaration.
+
+        Args:
+            meta:     Position of the IMPORT keyword.
+            children: [Token(STRING, path)].
+
+        Returns:
+            An ImportDecl AST node.
+        """
+        path_token = children[0]
+        # Strip surrounding quotes from the STRING token
+        raw = str(path_token)
+        path = raw[1:-1] if raw.startswith('"') else raw
+        return ImportDecl(
+            path=path,
+            loc=_meta_loc(meta, self._filename),
+        )
 
     # == Base element declarations =============================================
 
@@ -498,7 +522,7 @@ class ASTBuilder(Transformer):
             A FactRef AST node.
         """
         name_token = children[0]
-        args = list(children[1:])
+        args = [c for c in children[1:] if c is not None]
         return FactRef(
             name=str(name_token),
             args=args,
@@ -652,6 +676,31 @@ class ASTBuilder(Transformer):
             action=info.name,
             is_special=info.is_special,
             args=args,
+            loc=_meta_loc(meta, self._filename),
+        )
+
+    @v_args(meta=True)
+    def inline_transition_stmt(
+        self,
+        meta: Any,
+        children: List,
+    ) -> InlineTransitionStmt:
+        """TRANSITION TO phase. -> inline phase transition.
+
+        Used as the last statement of a WHEN body or branch body.
+        The trigger and guard are provided by the enclosing WHEN block
+        and IF branch, unlike the declarative TransitionStmt.
+
+        Args:
+            meta:     Position of the TRANSITION keyword.
+            children: [Token(ID, target_phase)].
+
+        Returns:
+            An InlineTransitionStmt AST node.
+        """
+        target_token = children[0]
+        return InlineTransitionStmt(
+            target_phase=str(target_token),
             loc=_meta_loc(meta, self._filename),
         )
 

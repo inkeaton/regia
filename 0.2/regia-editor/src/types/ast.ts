@@ -24,6 +24,29 @@ export type SourceLoc = {
 };
 
 // ==============================================================================
+// PREPROCESSOR TYPES
+// ==============================================================================
+
+/**
+ * A doc comment attached to a node: `#@key: value`
+ */
+export type DocAnnotation = {
+    type:  "DocAnnotation";
+    key:   string;
+    value: string;
+    loc:   SourceLoc;
+};
+
+/**
+ * An import statement: `IMPORT "path".`
+ */
+export type ImportDecl = ASTNode & {
+    type: "ImportDecl";
+    path: string;
+    loc:  SourceLoc;
+};
+
+// ==============================================================================
 // BASE ELEMENT DECLARATIONS
 // Declared at the top of a Regia source file with ACTION, EVENT, FACT.
 // ==============================================================================
@@ -35,6 +58,7 @@ export type ActionDecl = ASTNode & {
     type:   "ActionDecl";
     name:   string;
     params: string[];
+    docs?:  DocAnnotation[];
     loc:    SourceLoc;
 };
 
@@ -45,6 +69,7 @@ export type EventDecl = ASTNode & {
     type:   "EventDecl";
     name:   string;
     origin: "SELF" | "ENVIRONMENT" | null;
+    docs?:  DocAnnotation[];
     loc:    SourceLoc;
 };
 
@@ -55,6 +80,7 @@ export type FactDecl = ASTNode & {
     type:   "FactDecl";
     name:   string;
     params: string[];
+    docs?:  DocAnnotation[];
     loc:    SourceLoc;
 };
 
@@ -199,6 +225,7 @@ export type PlaybookDef = ASTNode & {
     type:        "PlaybookDef";
     name:        string;
     when_blocks: PbWhenBlock[];
+    docs?:       DocAnnotation[];
     loc:         SourceLoc;
 };
 
@@ -250,8 +277,17 @@ export type RoleDoStmt = ASTNode & {
     loc:        SourceLoc;
 };
 
+/**
+ * Inline phase transition: `TRANSITION TO target.`
+ */
+export type InlineTransitionStmt = ASTNode & {
+    type:         "InlineTransitionStmt";
+    target_phase: string;
+    loc:          SourceLoc;
+};
+
 /** Union type for statements valid inside Plot WHEN blocks, ON ENTER, and ON EXIT. */
-export type ImperativeStmt = AssignStmt | UnassignStmt | WorldDoStmt | RoleDoStmt;
+export type ImperativeStmt = AssignStmt | UnassignStmt | WorldDoStmt | RoleDoStmt | InlineTransitionStmt;
 
 // ==============================================================================
 // PLOT BRANCHING
@@ -373,6 +409,7 @@ export type PlotDef = ASTNode & {
     phases:        PhaseDecl[];
     roles:         RoleDecl[];
     during_blocks: DuringBlock[];
+    docs?:         DocAnnotation[];
     loc:           SourceLoc;
 };
 
@@ -395,6 +432,8 @@ export type TopLevelItem =
  * This is what the `/parse` endpoint returns.
  */
 export type Program = ASTNode & {
-    type:  "Program";
-    items: TopLevelItem[];
+    type:         "Program";
+    imports?:     ImportDecl[];
+    doc_comments?: DocAnnotation[];
+    items:        TopLevelItem[];
 };

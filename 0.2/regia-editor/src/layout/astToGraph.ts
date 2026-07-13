@@ -1,6 +1,6 @@
 // src/layout/astToGraph.ts
 import { type Node, type Edge, MarkerType } from "reactflow";
-import type { Program, PlotDef, DuringBlock } from "../types/ast";
+import type { Program, PlotDef, DuringBlock, ImperativeStmt } from "../types/ast";
 
 import {
     EDGE_COLOR,
@@ -76,71 +76,94 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
     // Alternates between left and right sides for lateral edges.
     let lateralCounter = 0;
 
+    const addEdge = (source: string, target: string, eventLabel: string) => {
+        const sourceIdx = phaseIndexMap[source] ?? 0;
+        const targetIdx = phaseIndexMap[target] ?? 0;
+
+        // An "immediate forward" transition goes from phase N to phase N+1 —
+        // the most common case. These get straight vertical routing.
+        const isImmediateForward = (targetIdx - sourceIdx) === 1;
+
+        // Use an unordered key so A→B and B→A share a counter.
+        const pairKey = [source, target].sort().join("-");
+        edgePairCounts[pairKey] = (edgePairCounts[pairKey] ?? 0);
+        const slot = edgePairCounts[pairKey]++;
+
+        // Choose handle IDs and edge type based on routing strategy.
+        let sourceHandle: string;
+        let targetHandle: string;
+        let edgeType: string;
+
+        if (isImmediateForward && slot === 0) {
+            // Straight vertical: top/bottom handles with step-style routing.
+            sourceHandle = "bottom-s";
+            targetHandle = "top-t";
+            edgeType     = "smoothstep";
+        } else {
+            // Lateral/reverse: Bezier arc through left or right handles.
+            // Alternating sides prevents all curved edges from going the same way.
+            edgeType = "default";
+            if (lateralCounter % 2 === 0) {
+                sourceHandle = "right-s";
+                targetHandle = "right-t";
+            } else {
+                sourceHandle = "left-s";
+                targetHandle = "left-t";
+            }
+            lateralCounter++;
+        }
+
+        edges.push({
+            id:           `edge-${source}-${target}-${eventLabel}-${slot}`,
+            source,
+            target,
+            sourceHandle,
+            targetHandle,
+            type:         edgeType,
+            label:        eventLabel,
+            animated:     true,
+            zIndex:       -1, // Keep edges behind node cards
+            style:        { stroke: EDGE_COLOR, strokeWidth: EDGE_STROKE_WIDTH },
+            labelStyle:   { fill: EDGE_COLOR, fontWeight: 700, fontSize: 12 },
+            labelBgStyle: { fill: "var(--color-edge-label-bg)", fillOpacity: 0.9 },
+            markerEnd: {
+                type:   MarkerType.ArrowClosed,
+                width:  EDGE_MARKER_WIDTH,
+                height: EDGE_MARKER_HEIGHT,
+                color:  EDGE_COLOR,
+            },
+        });
+    };
+
     plot.during_blocks.forEach((block: DuringBlock) => {
         // Skip DURING PLOT blocks (phase_name is null); transitions only exist
         // inside phase-specific DURING blocks.
         if (!block.phase_name) return;
 
+        // 1. Declarative transitions
         block.transitions.forEach((trans) => {
+            addEdge(block.phase_name as string, trans.target_phase, trans.event);
+        });
+
+        // 2. Extract reactive/inline transitions (inside when_blocks)
+        block.when_blocks.forEach((whenBlock) => {
             const source = block.phase_name as string;
-            const target = trans.target_phase;
+            const eventLabel = whenBlock.event;
 
-            const sourceIdx = phaseIndexMap[source] ?? 0;
-            const targetIdx = phaseIndexMap[target] ?? 0;
+            // Helper to scan a list of imperative statements for inline transitions
+            const scanStmts = (stmts: ImperativeStmt[]) => {
+                stmts.forEach((stmt) => {
+                    if (stmt.type === "InlineTransitionStmt") {
+                        addEdge(source, stmt.target_phase, eventLabel);
+                    }
+                });
+            };
 
-            // An "immediate forward" transition goes from phase N to phase N+1 —
-            // the most common case. These get straight vertical routing.
-            const isImmediateForward = (targetIdx - sourceIdx) === 1;
-
-            // Use an unordered key so A→B and B→A share a counter.
-            const pairKey = [source, target].sort().join("-");
-            edgePairCounts[pairKey] = (edgePairCounts[pairKey] ?? 0);
-            const slot = edgePairCounts[pairKey]++;
-
-            // Choose handle IDs and edge type based on routing strategy.
-            let sourceHandle: string;
-            let targetHandle: string;
-            let edgeType: string;
-
-            if (isImmediateForward && slot === 0) {
-                // Straight vertical: top/bottom handles with step-style routing.
-                sourceHandle = "bottom-s";
-                targetHandle = "top-t";
-                edgeType     = "smoothstep";
-            } else {
-                // Lateral/reverse: Bezier arc through left or right handles.
-                // Alternating sides prevents all curved edges from going the same way.
-                edgeType = "default";
-                if (lateralCounter % 2 === 0) {
-                    sourceHandle = "right-s";
-                    targetHandle = "right-t";
-                } else {
-                    sourceHandle = "left-s";
-                    targetHandle = "left-t";
-                }
-                lateralCounter++;
+            scanStmts(whenBlock.prefix_stmts);
+            whenBlock.branches.forEach((branch) => scanStmts(branch.stmts));
+            if (whenBlock.else_branch) {
+                scanStmts(whenBlock.else_branch.stmts);
             }
-
-            edges.push({
-                id:           `edge-${source}-${target}-${trans.event}`,
-                source,
-                target,
-                sourceHandle,
-                targetHandle,
-                type:         edgeType,
-                label:        trans.event,
-                animated:     true,
-                zIndex:       -1, // Keep edges behind node cards
-                style:        { stroke: EDGE_COLOR, strokeWidth: EDGE_STROKE_WIDTH },
-                labelStyle:   { fill: EDGE_COLOR, fontWeight: 700, fontSize: 12 },
-                labelBgStyle: { fill: "var(--color-edge-label-bg)", fillOpacity: 0.9 },
-                markerEnd: {
-                    type:   MarkerType.ArrowClosed,
-                    width:  EDGE_MARKER_WIDTH,
-                    height: EDGE_MARKER_HEIGHT,
-                    color:  EDGE_COLOR,
-                },
-            });
         });
     });
 

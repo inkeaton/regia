@@ -33,7 +33,7 @@ from regia.ast_nodes import (
     # Temper (VEsNA)
     TemperSpec,
     # Imperative
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt,
     # Plot
     TransitionStmt, OnEnter, OnExit,
     PlotWhenBlock, PlotIfBranch, PlotElseBranch,
@@ -415,7 +415,7 @@ class Emitter:
                     else None
                 )
                 self._emit_when_as_director(
-                    when, phase_ctx, plot.name, lines,
+                    when, phase_ctx, block.phase_name, plot, lines,
                 )
 
         if has_when:
@@ -425,7 +425,8 @@ class Emitter:
         self,
         when: PlotWhenBlock,
         phase_context: Optional[str],
-        plot_name: str,
+        source_phase: Optional[str],
+        plot: PlotDef,
         lines: List[str],
     ) -> None:
         """Emit a single Plot WHEN block as Director AgentSpeak plans.
@@ -435,13 +436,32 @@ class Emitter:
             2. Pure conditional: one plan per IF branch + ELSE
             3. Mixed: prefix stmts prepended to every branch plan
 
+        Inline TRANSITION TO statements are expanded in-place into the
+        ON EXIT sequence, phase belief update, and ON ENTER sequence.
+
         Args:
             when:          The PlotWhenBlock to emit.
             phase_context: Optional phase guard (e.g. "current_phase(backstage)").
-            plot_name:     The Plot name for labeling.
+            source_phase:  The source phase name (None for DURING PLOT).
+            plot:          The PlotDef (needed for ON EXIT/ENTER expansion).
             lines:         The output line buffer.
         """
         priority = when.priority if when.priority is not None else 0
+        plot_name = plot.name
+
+        def _expand_stmts(stmts: list) -> List[str]:
+            """Expand a stmt list, replacing InlineTransitionStmt in-place."""
+            result: List[str] = []
+            for s in stmts:
+                if isinstance(s, InlineTransitionStmt):
+                    result.extend(
+                        self._emit_inline_transition_stmts(
+                            s, source_phase, plot,
+                        )
+                    )
+                else:
+                    result.append(self._emit_imperative_stmt(s))
+            return result
 
         # Case 1: no branches (unconditional)
         if not when.branches:
@@ -449,10 +469,7 @@ class Emitter:
             if phase_context:
                 context_parts.append(phase_context)
 
-            body_stmts = [
-                self._emit_imperative_stmt(s)
-                for s in when.prefix_stmts
-            ]
+            body_stmts = _expand_stmts(when.prefix_stmts)
 
             label = f"dir__{plot_name}__{when.event}__0"
             self._write_plan(
@@ -461,10 +478,7 @@ class Emitter:
             return
 
         # Case 2 & 3: branches (with optional prefix)
-        prefix_stmts = [
-            self._emit_imperative_stmt(s)
-            for s in when.prefix_stmts
-        ]
+        prefix_stmts = _expand_stmts(when.prefix_stmts)
 
         for idx, branch in enumerate(when.branches):
             context_parts = []
@@ -474,10 +488,7 @@ class Emitter:
                 self._emit_condition(branch.condition)
             )
 
-            body_stmts = prefix_stmts + [
-                self._emit_imperative_stmt(s)
-                for s in branch.stmts
-            ]
+            body_stmts = prefix_stmts + _expand_stmts(branch.stmts)
 
             label = f"dir__{plot_name}__{when.event}__{idx}"
             self._write_plan(
@@ -496,10 +507,7 @@ class Emitter:
             ]
             context_parts.extend(negated)
 
-            body_stmts = prefix_stmts + [
-                self._emit_imperative_stmt(s)
-                for s in when.else_branch.stmts
-            ]
+            body_stmts = prefix_stmts + _expand_stmts(when.else_branch.stmts)
 
             label = f"dir__{plot_name}__{when.event}__{len(when.branches)}"
             self._write_plan(
@@ -818,8 +826,13 @@ class Emitter:
     def _emit_imperative_stmt(self, stmt: object) -> str:
         """Emit an imperative statement (Director context).
 
+        For InlineTransitionStmt, use _emit_inline_transition_stmts
+        instead (it returns a List[str] due to the multi-step expansion).
+        This method returns a fallback comment if called directly on one.
+
         Args:
-            stmt: An AssignStmt, UnassignStmt, WorldDoStmt, or RoleDoStmt.
+            stmt: An AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+                  or InlineTransitionStmt.
 
         Returns:
             AgentSpeak string.
@@ -862,7 +875,65 @@ class Emitter:
             goal = f"{action_lower}({args})" if args else action_lower
             return f"!send_to_role({role_lower}, achieve, {goal})"
 
+        elif isinstance(stmt, InlineTransitionStmt):
+            # Should be expanded via _emit_inline_transition_stmts.
+            # Fallback: emit a Jason internal action call.
+            return (
+                f"!transition_to({stmt.target_phase})"
+            )
+
         return f"/* unknown imperative */"
+
+    def _emit_inline_transition_stmts(
+        self,
+        stmt: InlineTransitionStmt,
+        source_phase: Optional[str],
+        plot: PlotDef,
+    ) -> List[str]:
+        """Expand an inline TRANSITION TO into its AgentSpeak steps.
+
+        The expansion mirrors what the declarative TRANSITION emits
+        at phase-change time:
+
+            1. ON EXIT stmts of the current (source) phase
+            2. -current_phase(source) belief removal
+            3. +current_phase(target) belief addition
+            4. ON ENTER stmts of the target phase
+
+        Args:
+            stmt:         The InlineTransitionStmt to expand.
+            source_phase: The phase name that contains this WHEN block
+                          (None for DURING PLOT — validator already errors).
+            plot:         The containing PlotDef (for ON EXIT/ENTER lookup).
+
+        Returns:
+            A list of AgentSpeak statement strings to splice into the
+            plan body.
+        """
+        result: List[str] = []
+        target = stmt.target_phase
+
+        # Find the ON EXIT stmts for the source phase
+        if source_phase is not None:
+            for block in plot.during_blocks:
+                if block.phase_name == source_phase:
+                    for on_exit in block.on_exits:
+                        for s in on_exit.stmts:
+                            result.append(self._emit_imperative_stmt(s))
+
+        # Update the phase belief
+        if source_phase is not None:
+            result.append(f"-current_phase({source_phase})")
+        result.append(f"+current_phase({target})")
+
+        # Find the ON ENTER stmts for the target phase
+        for block in plot.during_blocks:
+            if block.phase_name == target:
+                for on_enter in block.on_enters:
+                    for s in on_enter.stmts:
+                        result.append(self._emit_imperative_stmt(s))
+
+        return result
 
     def _emit_imperative_body(
         self,

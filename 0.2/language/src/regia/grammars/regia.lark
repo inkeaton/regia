@@ -1,235 +1,384 @@
 // ============================================================
+
 // Regia v0.2 Grammar
+
 // ============================================================
+
 //
+
 // Three-layer architecture:
+
 //   1. Base Elements (ACTION, EVENT, FACT) = shared vocabulary
+
 //   2. Playbooks = reusable, assignable behaviour sets
+
 //   3. Plots = director-centric narrative scenarios
+
 //
+
 // Naming conventions for this file:
+
 //   - Parser rules use snake_case
+
 //   - Terminals use UPPER_CASE
+
 //   - Rules prefixed with ? are "inlined": if they match
+
 //     exactly one child, the wrapper node is removed and the
+
 //     child is promoted to its parent. This keeps the parse
+
 //     tree flat and easier to transform.
+
 //   - String literals ("KEYWORD") become anonymous terminals
+
 //     which are automatically filtered from the tree.
+
 //   - Named terminals (e.g. ID, NUMBER, TELL) ARE kept in
+
 //     the tree as Token objects.
 
+// ============================================================
+
+// FILE STRUCTURE
 
 // ============================================================
-// FILE STRUCTURE
-// ============================================================
+
 // A program is a flat sequence of element declarations,
+
 // playbook definitions, and plot definitions, in any order.
 
-program: (_item)+
-_item: element_decl | playbook_def | plot_def
+program: (import_stmt | _item)+
 
+_item: element_decl
+    | playbook_def
+    | plot_def
+
+// IMPORT "path/to/file.regia".
+
+// Import declarations must appear at the top of the file (before
+
+// any element, playbook, or plot declarations). The compiler enforces
+
+// this ordering during the import-resolution pre-pass.
+
+import_stmt: "IMPORT" STRING "."
 
 // ============================================================
+
 // BASE ELEMENT DECLARATIONS
+
 // ============================================================
+
 // These declare the shared vocabulary (actions, events, facts)
+
 // that Playbooks and Plots can reference.
+
 //
+
 // The ? prefix makes element_decl a pass-through: program's
+
 // children will directly contain action_decl / event_decl /
+
 // fact_decl nodes, without an extra wrapper.
 
-?element_decl: action_decl | event_decl | fact_decl
+?element_decl: action_decl
+    | event_decl
+    | fact_decl
 
 // ACTION greet_back.
+
 // ACTION give_item(item, target).
+
 action_decl: "ACTION" ID param_names? "."
 
 // EVENT fan_greets.
+
 // EVENT internal_check SELF.
+
 event_decl: "EVENT" ID event_origin? "."
 
 // FACT happy.
+
 // FACT has_item(item).
+
 fact_decl: "FACT" ID param_names? "."
 
 // Parameter slots in declarations: (name1, name2, ...)
+
 param_names: "(" ID ("," ID)* ")"
 
 // Event origin (optional, defaults to ENVIRONMENT)
-event_origin: SELF | ENVIRONMENT
 
+event_origin: SELF
+    | ENVIRONMENT
 
 // ============================================================
+
 // PLAYBOOK
+
 // ============================================================
+
 // A reusable, context-free bundle of reactive plans.
+
 // Contains only self-directed actions (DO) and signals
+
 // to the Director (SIGNAL). Cannot reference Plot or
+
 // Phase state.
 
 playbook_def: "PLAYBOOK" ID ":" pb_when_block+
 
 // Each WHEN block is a reactive plan triggered by an event.
+
 // WHEN fan_greets PRIORITY 7:
+
 pb_when_block: "WHEN" ID priority? temper? ":" pb_when_body
 
 // Optional numeric priority for a plan.
+
 priority: "PRIORITY" NUMBER
 
 // Optional temper annotation for mood-based plan selection (VEsNA).
+
 // TEMPER sympathy(0.8), aggressiveness(-0.5) EFFECTS fear(-0.05)
+
 temper: "TEMPER" temper_entry ("," temper_entry)* effects?
+
 temper_entry: ID "(" FLOAT ")"
+
 effects: "EFFECTS" temper_entry ("," temper_entry)*
 
 // The body of a WHEN block. It contains a sequence of
+
 // statements and/or IF branches, optionally ending with ELSE.
+
 //
+
 // Three valid shapes:
+
 //   1. Pure unconditional:   DO a. DO b.
+
 //   2. Pure conditional:     IF x: DO a. ELSE: DO b.
+
 //   3. Mixed (prefix + IF):  DO a. IF x: DO b. ELSE: DO c.
+
 //
+
 // The AST builder validates that DOs come before IFs (no
+
 // interleaving). Semantically, prefix DOs are prepended to
+
 // every branch's plan body in AgentSpeak.
+
 pb_when_body: pb_body_item+ pb_else_branch?
 
 // Inlined: pb_when_body directly contains do_stmt,
+
 // signal_stmt, or pb_if_branch nodes.
-?pb_body_item: pb_stmt | pb_if_branch
-?pb_stmt: do_stmt | signal_stmt
+
+?pb_body_item: pb_stmt
+    | pb_if_branch
+
+?pb_stmt: do_stmt
+    | signal_stmt
 
 // IF happy: DO greet_back.
+
 pb_if_branch: "IF" condition ":" pb_stmt+
 
 // ELSE: DO ignore.
+
 pb_else_branch: "ELSE" ":" pb_stmt+
 
-
 // ============================================================
+
 // ACTIONS AND SIGNALS (used inside Playbooks)
+
 // ============================================================
 
 // Self-directed action: DO greet_back.
+
 //                    or DO TELL(Singer, info).
+
 do_stmt: "DO" action_name arg_list? "."
 
 // Signal the Director: SIGNAL emergency.
+
 //                   or SIGNAL emergency(location).
+
 signal_stmt: "SIGNAL" ID arg_list? "."
 
 // The action name is either a regular identifier or a
+
 // special AgentSpeak keyword (these are reserved words).
-action_name: ID | TELL | BROADCAST | ACHIEVE | BELIEVE | FORGET | PRINT
+
+action_name: ID
+    | TELL
+    | BROADCAST
+    | ACHIEVE
+    | BELIEVE
+    | FORGET
+    | PRINT
 
 // Argument list: (arg1, arg2, ...)
+
 arg_list: "(" arg ("," arg)* ")"
 
 // Arguments are identifiers, integer numbers, or string literals.
-arg: ID | NUMBER | STRING
 
+arg: ID
+    | NUMBER
+    | STRING
 
 // ============================================================
+
 // PLOT
+
 // ============================================================
+
 // A narrative scenario written from the Director's perspective.
+
 // Uses Roles (templates) instead of named agents. Each active
+
 // Plot spawns its own Director agent at runtime.
 
 plot_def: "PLOT" ID "." plot_header during_block+
 
 // Header declares phases and roles before any behaviour blocks.
+
 plot_header: (phase_decl | role_decl)+
 
 // PHASE backstage INITIAL.
+
 // PHASE performing.
+
 // Uses -> alias so the Transformer can distinguish initial
+
 // from normal phases without needing INITIAL in the tree.
-phase_decl: "PHASE" ID "INITIAL" "."       -> initial_phase_decl
-          | "PHASE" ID "."
+
+phase_decl: "PHASE" ID "INITIAL" "." -> initial_phase_decl
+    | "PHASE" ID "."
 
 // ROLE Singer.
+
 role_decl: "ROLE" ID "."
 
 // DURING backstage:    (phase-specific behaviour)
+
 // DURING PLOT:         (active in ALL phases)
+
 // Uses -> alias to distinguish the two forms.
-during_block: "DURING" ID ":" during_content+          -> during_phase
-            | "DURING" "PLOT" ":" during_content+       -> during_plot_wide
+
+during_block: "DURING" ID ":" during_content+ -> during_phase
+    | "DURING" "PLOT" ":" during_content+ -> during_plot_wide
 
 // Inlined: during_phase / during_plot_wide directly contain
+
 // transition_stmt, on_enter, on_exit, or plot_when_block.
+
 ?during_content: transition_stmt
-               | on_enter
-               | on_exit
-               | plot_when_block
+    | on_enter
+    | on_exit
+    | plot_when_block
 
 // TRANSITION TO performing WHEN time_to_start.
+
 // TRANSITION TO cancelled WHEN timeout IF NOT quest_complete.
+
 transition_stmt: "TRANSITION" "TO" ID "WHEN" ID ("IF" condition)? "."
 
 // ON ENTER: (imperative sequence at phase entry)
+
 on_enter: "ON" "ENTER" ":" imperative_stmt+
 
 // ON EXIT: (imperative sequence at phase exit)
+
 on_exit: "ON" "EXIT" ":" imperative_stmt+
 
+// ============================================================
+
+// PLOT WHEN BLOCKS (director-centric reactive plans)
 
 // ============================================================
-// PLOT WHEN BLOCKS (director-centric reactive plans)
-// ============================================================
+
 // Same structure as Playbook WHEN blocks, but the body uses
+
 // imperative_stmt (WORLD DO, Role DO, ASSIGN, UNASSIGN)
+
 // instead of self-directed DO.
 
 plot_when_block: "WHEN" ID priority? ":" plot_when_body
 
 plot_when_body: plot_body_item+ plot_else_branch?
 
-?plot_body_item: imperative_stmt | plot_if_branch
+?plot_body_item: imperative_stmt
+    | plot_if_branch
 
 // IF happy: Singer DO greet.
+
 plot_if_branch: "IF" condition ":" imperative_stmt+
 
 // ELSE: Singer DO ignore.
+
 plot_else_branch: "ELSE" ":" imperative_stmt+
 
+// ============================================================
+
+// IMPERATIVE STATEMENTS
 
 // ============================================================
-// IMPERATIVE STATEMENTS
-// ============================================================
+
 // Used inside ON ENTER/EXIT blocks and Plot WHEN bodies.
+
 // These are director-level commands.
 
 // Inlined: parent nodes directly contain assign_stmt, etc.
+
 ?imperative_stmt: assign_stmt
-                | unassign_stmt
-                | world_do_stmt
-                | role_do_stmt
+    | unassign_stmt
+    | world_do_stmt
+    | role_do_stmt
+    | inline_transition_stmt
 
 // ASSIGN SingerInBackstage TO Singer.
+
 assign_stmt: "ASSIGN" ID "TO" ID "."
 
 // UNASSIGN SingerInBackstage FROM Singer.
+
 unassign_stmt: "UNASSIGN" ID "FROM" ID "."
 
 // WORLD DO add_waiting_for_concert.
+
 // WORLD DO BROADCAST(alert).
+
 world_do_stmt: "WORLD" "DO" action_name arg_list? "."
 
 // Singer DO acknowledge.
+
 // Singer DO TELL(AudienceMember, hello).
+
 role_do_stmt: ID "DO" action_name arg_list? "."
 
+// TRANSITION TO performing.
+
+// Inline transition: must be the last statement in a WHEN body or branch.
+
+// The enclosing WHEN event and IF guard serve as the trigger/condition.
+
+inline_transition_stmt: "TRANSITION" "TO" ID "."
 
 // ============================================================
+
 // CONDITIONS (boolean expressions over FACTs)
+
 // ============================================================
+
 // Used inside IF guards and TRANSITION guards.
+
 // Precedence: NOT > AND > OR (standard).
+
 // Parentheses override precedence.
 
 condition: condition_and ("OR" condition_and)*
@@ -237,54 +386,75 @@ condition: condition_and ("OR" condition_and)*
 condition_and: condition_atom ("AND" condition_atom)*
 
 // NOT creates a separate node via -> alias, and is
+
 // recursive so NOT NOT x or NOT (x AND y) both work.
-?condition_atom: "NOT" condition_atom        -> condition_not // ? or not ? to check
-               | fact_ref
-               | "(" condition ")"           -> condition_group
+
+?condition_atom: "NOT" condition_atom -> condition_not
+    | fact_ref
+    | "(" condition ")" -> condition_group
 
 // A fact reference, optionally with arguments.
-// happy             -> bare fact
-// has_item(sword)   -> parameterised fact
-fact_ref: ID ("(" arg ("," arg)* ")")?
 
+fact_ref: ID ["(" arg ("," arg)* ")"]
 
 // ============================================================
+
 // TERMINALS
+
 // ============================================================
 
 // Identifiers: variable names, action names, phase names, etc.
+
 ID: /[a-zA-Z_][a-zA-Z0-9_]*/
 
 // Integer numbers: used in PRIORITY and as action arguments.
+
 NUMBER: /[0-9]+/
 
 // Floating-point numbers: used in TEMPER values.
+
 // Matches optional sign and decimal (e.g. 0.8, -0.5, 1.0).
+
 FLOAT: /\-?[0-9]+(\.[0-9]+)?/
 
 // String literals: used in PRINT and other actions.
+
 STRING: /\"[^\"]*\"/
 
 // Named terminals for keywords whose values carry semantic
+
 // meaning and need to appear in the tree. These have higher
+
 // priority than ID, making them effectively reserved words.
+
 SELF: "SELF"
+
 ENVIRONMENT: "ENVIRONMENT"
+
 TELL: "TELL"
+
 BROADCAST: "BROADCAST"
+
 ACHIEVE: "ACHIEVE"
+
 BELIEVE: "BELIEVE"
+
 FORGET: "FORGET"
+
 PRINT: "PRINT"
 
-
 // ============================================================
+
 // IGNORED
+
 // ============================================================
 
 // Comments start with # and run to end of line.
+
 COMMENT: /#[^\n]*/
+
 %ignore COMMENT
 
 // Whitespace (spaces, tabs, newlines) is insignificant.
+
 %ignore /[\s]+/

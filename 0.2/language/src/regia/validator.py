@@ -23,6 +23,8 @@ from typing import Dict, List, Optional, Set
 from regia.ast_nodes import (
     # Shared
     SourceLoc, SPECIAL_ACTIONS,
+    # Imports
+    ImportDecl,
     # Base elements
     ActionDecl, EventDecl, FactDecl,
     # Conditions
@@ -30,7 +32,7 @@ from regia.ast_nodes import (
     # Playbook
     DoStmt, SignalStmt, PbIfBranch, PbElseBranch, PbWhenBlock, PlaybookDef,
     # Imperative
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt,
     # Plot
     TransitionStmt, OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock,
@@ -149,7 +151,9 @@ class Validator:
             program: The root AST node.
         """
         for item in program.items:
-            if isinstance(item, ActionDecl):
+            if isinstance(item, ImportDecl):
+                pass  # Import paths are resolved before validation
+            elif isinstance(item, ActionDecl):
                 self._declare(
                     self._symbols.actions, "action", item.name, item.loc,
                 )
@@ -291,7 +295,7 @@ class Validator:
     def _validate_during_block(
         self,
         block: DuringBlock,
-        scope: _PlotScope,
+        scope: "_PlotScope",
     ) -> None:
         """Validate a single DURING block.
 
@@ -343,16 +347,35 @@ class Validator:
             self._validate_transition(tr, scope)
 
         # Validate ON ENTER / ON EXIT stmts
+        # InlineTransitionStmt is NOT allowed in ON ENTER/EXIT; those
+        # hooks execute during an already-in-progress phase change and
+        # a second inline transition would be ambiguous.
         for on_enter in block.on_enters:
             for stmt in on_enter.stmts:
-                self._validate_imperative_stmt(stmt, scope)
+                if isinstance(stmt, InlineTransitionStmt):
+                    self._error(
+                        stmt.loc,
+                        "TRANSITION TO cannot appear inside ON ENTER.",
+                        hint="Use a declarative TRANSITION TO ... WHEN ... "
+                             "instead, or move the transition to a WHEN block.",
+                    )
+                else:
+                    self._validate_imperative_stmt(stmt, scope)
         for on_exit in block.on_exits:
             for stmt in on_exit.stmts:
-                self._validate_imperative_stmt(stmt, scope)
+                if isinstance(stmt, InlineTransitionStmt):
+                    self._error(
+                        stmt.loc,
+                        "TRANSITION TO cannot appear inside ON EXIT.",
+                        hint="Use a declarative TRANSITION TO ... WHEN ... "
+                             "instead, or move the transition to a WHEN block.",
+                    )
+                else:
+                    self._validate_imperative_stmt(stmt, scope)
 
         # Validate WHEN blocks
         for when in block.when_blocks:
-            self._validate_plot_when_block(when, scope)
+            self._validate_plot_when_block(when, scope, block.phase_name)
 
     def _validate_transition(
         self,
@@ -387,32 +410,49 @@ class Validator:
     def _validate_plot_when_block(
         self,
         when: PlotWhenBlock,
-        scope: _PlotScope,
+        scope: "_PlotScope",
+        phase_name: Optional[str] = None,
     ) -> None:
         """Validate a Plot WHEN block.
 
+        Also enforces that InlineTransitionStmt only appears in
+        phase-specific DURING blocks (not DURING PLOT) and that
+        it is always the last statement in any body or branch.
+
         Args:
-            when:  The PlotWhenBlock to validate.
-            scope: The per-plot scope.
+            when:       The PlotWhenBlock to validate.
+            scope:      The per-plot scope.
+            phase_name: The phase this WHEN block lives in, or None
+                        for DURING PLOT blocks.
         """
         self._check_event_ref(when.event, when.loc)
 
+        # Validate prefix stmts and check position of inline transitions
+        self._check_stmt_list_for_inline_transition(
+            when.prefix_stmts, phase_name, context="WHEN prefix",
+        )
         for stmt in when.prefix_stmts:
             self._validate_imperative_stmt(stmt, scope)
 
         for branch in when.branches:
             self._validate_condition(branch.condition)
+            self._check_stmt_list_for_inline_transition(
+                branch.stmts, phase_name, context="IF branch",
+            )
             for stmt in branch.stmts:
                 self._validate_imperative_stmt(stmt, scope)
 
         if when.else_branch is not None:
+            self._check_stmt_list_for_inline_transition(
+                when.else_branch.stmts, phase_name, context="ELSE branch",
+            )
             for stmt in when.else_branch.stmts:
                 self._validate_imperative_stmt(stmt, scope)
 
     def _validate_imperative_stmt(
         self,
         stmt: object,
-        scope: _PlotScope,
+        scope: "_PlotScope",
     ) -> None:
         """Validate a single imperative statement (ASSIGN, WORLD DO, etc).
 
@@ -434,6 +474,9 @@ class Validator:
         elif isinstance(stmt, RoleDoStmt):
             self._check_role_ref(stmt.role, stmt.loc, scope)
             self._check_action_ref(stmt.action, stmt.is_special, stmt.loc)
+
+        elif isinstance(stmt, InlineTransitionStmt):
+            self._check_inline_transition(stmt, scope)
 
     # == Condition validation ===================================================
 
@@ -462,6 +505,79 @@ class Validator:
     # == Reference checkers ====================================================
     # Each checker verifies that a referenced name exists in the
     # symbol table and marks it as used for the unused-warning pass.
+
+    def _check_inline_transition(
+        self,
+        stmt: InlineTransitionStmt,
+        scope: "_PlotScope",
+    ) -> None:
+        """Validate an inline TRANSITION TO statement.
+
+        Checks that the target phase is declared in the current plot.
+        Position checking (must be last in list) is done by
+        _check_stmt_list_for_inline_transition before this method is
+        called.
+
+        Args:
+            stmt:  The InlineTransitionStmt to validate.
+            scope: The per-plot scope.
+        """
+        if stmt.target_phase not in scope.phases:
+            self._error(
+                stmt.loc,
+                f"Inline TRANSITION targets undeclared phase: "
+                f"'{stmt.target_phase}'.",
+                hint=(
+                    f"Add 'PHASE {stmt.target_phase}.' to "
+                    f"plot '{scope.plot_name}'."
+                ),
+            )
+
+    def _check_stmt_list_for_inline_transition(
+        self,
+        stmts: List,
+        phase_name: Optional[str],
+        context: str,
+    ) -> None:
+        """Enforce inline transition placement rules on a statement list.
+
+        Rules enforced:
+            1. InlineTransitionStmt may only appear in a phase-specific
+               DURING block (not in DURING PLOT).
+            2. InlineTransitionStmt must be the last statement in the
+               list. Any occurrence before the end is an error.
+
+        Args:
+            stmts:      The list of imperative statements to check.
+            phase_name: The containing phase (None for DURING PLOT).
+            context:    Human-readable context for error messages.
+        """
+        for i, stmt in enumerate(stmts):
+            if not isinstance(stmt, InlineTransitionStmt):
+                continue
+
+            # Rule 1: not allowed in DURING PLOT
+            if phase_name is None:
+                self._error(
+                    stmt.loc,
+                    f"Inline TRANSITION TO cannot appear inside "
+                    f"DURING PLOT ({context}).",
+                    hint="Move this transition to a phase-specific "
+                         "DURING block.",
+                )
+                continue
+
+            # Rule 2: must be the last statement
+            if i < len(stmts) - 1:
+                self._error(
+                    stmts[i + 1].loc,
+                    f"Unreachable statement after TRANSITION TO "
+                    f"in {context}.",
+                    hint="TRANSITION TO must be the last statement "
+                         "in a body or branch.",
+                )
+
+    # =====================================================================
 
     def _check_action_ref(
         self,

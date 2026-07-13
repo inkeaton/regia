@@ -10,6 +10,7 @@ Each node carries a SourceLoc (line, column) for error reporting.
 The node hierarchy mirrors the three-layer language architecture:
 
     Program
+    ├── ImportDecl                           (import declarations)
     ├── ActionDecl / EventDecl / FactDecl   (base elements)
     ├── PlaybookDef                          (reactive behaviour sets)
     │   └── PbWhenBlock
@@ -20,12 +21,17 @@ The node hierarchy mirrors the three-layer language architecture:
         ├── PhaseDecl / RoleDecl
         └── DuringBlock
             ├── TransitionStmt
+            ├── InlineTransitionStmt
             ├── OnEnter / OnExit
             └── PlotWhenBlock
                 ├── AssignStmt / UnassignStmt
                 ├── WorldDoStmt / RoleDoStmt
+                ├── InlineTransitionStmt
                 ├── PlotIfBranch
                 └── PlotElseBranch
+
+Doc annotations (#@ comments) are attached to top-level nodes
+after AST building by the compiler's post-pass.
 """
 
 from __future__ import annotations
@@ -43,6 +49,7 @@ from typing import List, Optional, Union
 SPECIAL_ACTIONS: frozenset[str] = frozenset([
     "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET", "PRINT"
 ])
+
 
 
 # == Source Location ===========================================================
@@ -64,6 +71,51 @@ class SourceLoc:
 
 # Helper for creating a default SourceLoc in dataclass fields.
 _NO_LOC = SourceLoc(0, 0)
+
+
+# == Doc annotations ===========================================================
+# Produced by the preprocessor from #@ comment lines and attached
+# to AST nodes by the compiler's post-pass. These are NOT part of
+# the grammar; they are extracted before parsing.
+
+@dataclass
+class DocAnnotation:
+    """A single #@ doc-comment annotation.
+
+    Attached to top-level AST nodes (ActionDecl, PlaybookDef, PlotDef,
+    etc.) after AST building by the compiler's annotation post-pass.
+
+    Attributes:
+        key:   The annotation key (free-form identifier).
+        value: The annotation value (freeform text).
+        line:  The 1-based source line of the annotation.
+    """
+
+    key:   str
+    value: str
+    line:  int = 0
+
+
+# == Import declarations =======================================================
+# ImportDecl nodes are produced by the AST builder from IMPORT
+# statements in the grammar. They appear as the first items
+# in Program.items (in source order).
+
+@dataclass
+class ImportDecl:
+    """An import declaration: IMPORT \"path/to/file.regia\".
+
+    The compiler resolves these before validation. After resolution,
+    the imported definitions are merged into the Program and these
+    nodes are kept for informational/tooling purposes.
+
+    Attributes:
+        path: The raw import path string (as written in source).
+        loc:  Source location of the IMPORT keyword.
+    """
+
+    path: str
+    loc:  SourceLoc = _NO_LOC
 
 
 # == Enums =====================================================================
@@ -114,11 +166,13 @@ class ActionDecl:
         name:   The action identifier.
         params: Parameter slot names (empty list if no parameters).
         loc:    Source location of the declaration.
+        docs:   Doc annotations attached to this declaration.
     """
 
     name:   str
-    params: List[str]        = field(default_factory=list)
-    loc:    SourceLoc        = _NO_LOC
+    params: List[str]           = field(default_factory=list)
+    loc:    SourceLoc           = _NO_LOC
+    docs:   List[DocAnnotation] = field(default_factory=list)
 
 
 @dataclass
@@ -130,11 +184,13 @@ class EventDecl:
         origin: Optional origin qualifier (SELF or ENVIRONMENT).
                 None means the default (ENVIRONMENT).
         loc:    Source location of the declaration.
+        docs:   Doc annotations attached to this declaration.
     """
 
     name:   str
     origin: Optional[EventOrigin] = None
     loc:    SourceLoc              = _NO_LOC
+    docs:   List[DocAnnotation]   = field(default_factory=list)
 
 
 @dataclass
@@ -145,11 +201,13 @@ class FactDecl:
         name:   The fact identifier.
         params: Parameter slot names (empty list if no parameters).
         loc:    Source location of the declaration.
+        docs:   Doc annotations attached to this declaration.
     """
 
     name:   str
-    params: List[str]        = field(default_factory=list)
-    loc:    SourceLoc        = _NO_LOC
+    params: List[str]           = field(default_factory=list)
+    loc:    SourceLoc           = _NO_LOC
+    docs:   List[DocAnnotation] = field(default_factory=list)
 
 
 # == Conditions ================================================================
@@ -377,16 +435,39 @@ class PlaybookDef:
         name:        The Playbook identifier.
         when_blocks: The reactive plans inside this Playbook.
         loc:         Source location of the PLAYBOOK keyword.
+        docs:        Doc annotations attached to this Playbook.
     """
 
     name:        str
-    when_blocks: List[PbWhenBlock] = field(default_factory=list)
-    loc:         SourceLoc         = _NO_LOC
+    when_blocks: List[PbWhenBlock]   = field(default_factory=list)
+    loc:         SourceLoc           = _NO_LOC
+    docs:        List[DocAnnotation] = field(default_factory=list)
 
 
 # == Imperative Statements =====================================================
 # Statements used inside Plot WHEN blocks, ON ENTER, and ON EXIT.
 # These are director-level commands.
+
+@dataclass
+class InlineTransitionStmt:
+    """An inline phase transition inside a WHEN body: TRANSITION TO phase.
+
+    Unlike the declarative TransitionStmt (which has its own WHEN/IF
+    guard), this variant is used as the last statement of an
+    imperative plan body. The triggering event and guard are provided
+    by the enclosing WHEN block and IF branch.
+
+    The validator enforces that this statement is always the final
+    one in its containing body or branch.
+
+    Attributes:
+        target_phase: The destination phase name.
+        loc:          Source location of the TRANSITION keyword.
+    """
+
+    target_phase: str
+    loc:          SourceLoc = _NO_LOC
+
 
 @dataclass
 class AssignStmt:
@@ -468,7 +549,11 @@ class RoleDoStmt:
 
 # Type alias for statements valid inside Plot WHEN blocks,
 # ON ENTER, and ON EXIT.
-ImperativeStmt = Union[AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt]
+# InlineTransitionStmt is also valid in WHEN blocks (but not in
+# ON ENTER/ON EXIT, where phase state is already changing).
+ImperativeStmt = Union[
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt
+]
 
 
 # == Plot Branching ============================================================
@@ -661,6 +746,7 @@ class PlotDef:
         roles:         Role declarations.
         during_blocks: DURING phase/PLOT blocks with behaviour.
         loc:           Source location of the PLOT keyword.
+        docs:          Doc annotations attached to this Plot.
     """
 
     name:          str
@@ -668,21 +754,29 @@ class PlotDef:
     roles:         List[RoleDecl]      = field(default_factory=list)
     during_blocks: List[DuringBlock]   = field(default_factory=list)
     loc:           SourceLoc           = _NO_LOC
+    docs:          List[DocAnnotation] = field(default_factory=list)
 
 
 # == Root ======================================================================
 
 # Type alias for any top-level item in a program.
-TopLevelItem = Union[ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef]
+TopLevelItem = Union[ImportDecl, ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef]
 
 
 @dataclass
 class Program:
     """Root AST node representing a complete Regia source file.
 
+    After the compiler's annotation post-pass, doc_comments contains
+    the file-level #@ annotations (those that precede any top-level
+    item). Annotations attached to specific items are stored on the
+    items themselves via their own `docs` lists.
+
     Attributes:
-        items: All top-level declarations and definitions,
-               in source order.
+        items:        All top-level declarations and definitions,
+                      in source order. ImportDecl nodes appear first.
+        doc_comments: File-level #@ annotations (preprocessor output).
     """
 
-    items: List[TopLevelItem] = field(default_factory=list)
+    items:        List[TopLevelItem]  = field(default_factory=list)
+    doc_comments: List[DocAnnotation] = field(default_factory=list)
