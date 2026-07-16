@@ -1,0 +1,37 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Nuovo progetto di gioco"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*uid://ddlpo1quf1wgb"
+ServerManager="*uid://714bspnfwxm7"
+
+[debug]
+
+file_logging/enable_file_logging=true
+file_logging/log_path="res://logs/godot.log"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/IgnoreFolders/plugin.cfg")
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"

@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://d2bes6s2x63nn"]
+
+[ext_resource type="Script" uid="uid://ck5g66iimnqo4" path="res://bodies/player/src/player.gd" id="2_atwkx"]
+[ext_resource type="PackedScene" uid="uid://b8od50pqogx6w" path="res://bodies/player/crumb.tscn" id="2_ku522"]
+[ext_resource type="Material" uid="uid://cyutonnakdbcg" path="res://bodies/player/res/lineboil.tres" id="2_r2oif"]
+[ext_resource type="Texture2D" uid="uid://c7jvbmbippix1" path="res://bodies/player/res/spritesheet.png" id="3_atwkx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_naond"]
+radius = 16.713476
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7dh5t"]
+size = Vector2(28.571424, 37.142853)
+
+[sub_resource type="AnimationRootNode" id="AnimationRootNode_7dh5t"]
+
+[sub_resource type="Animation" id="Animation_ln2m6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yh7se"]
+_data = {
+&"RESET": SubResource("Animation_ln2m6")
+}
+
+[node name="Player" type="CharacterBody2D" unique_id=1424175727 groups=["player"]]
+scale = Vector2(0.15, 0.15)
+collision_layer = 4
+script = ExtResource("2_atwkx")
+DEFAULT_SPEED = 30.0
+crumb_scene = ExtResource("2_ku522")
+crumb_spacing = 150.0
+max_crumbs_in_world = 5
+
+[node name="Hand" type="Area2D" parent="." unique_id=35048869]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hand" unique_id=513507528]
+scale = Vector2(16, 16)
+shape = SubResource("CircleShape2D_naond")
+debug_color = Color(0.7019608, 0, 0.3254902, 0.41960785)
+
+[node name="Hitbox" type="CollisionShape2D" parent="." unique_id=509441090]
+position = Vector2(6.666668, 0.00010172526)
+scale = Vector2(14.000001, 14.000001)
+shape = SubResource("RectangleShape2D_7dh5t")
+debug_color = Color(0.7019608, 0.59607846, 0, 0.41960785)
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1460783650]
+material = ExtResource("2_r2oif")
+texture = ExtResource("3_atwkx")
+hframes = 2
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=784210420]
+tree_root = SubResource("AnimationRootNode_7dh5t")
+anim_player = NodePath("AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="AnimationTree" unique_id=165476596]
+root_node = NodePath("../..")
+libraries/ = SubResource("AnimationLibrary_yh7se")
