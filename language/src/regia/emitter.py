@@ -33,7 +33,8 @@ from regia.ast_nodes import (
     # Temper (VEsNA)
     TemperSpec,
     # Imperative
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt,
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
     TransitionStmt, OnEnter, OnExit,
     PlotWhenBlock, PlotIfBranch, PlotElseBranch,
@@ -241,23 +242,28 @@ class Emitter:
             p.name for p in plot.phases if p.is_initial
         )
         lines.append(f"// == Initial Beliefs ==")
+        lines.append(f"plot_name({plot.name}).")
         lines.append(f"current_phase({initial_phase}).")
         lines.append("")
 
         # Boot plan: fires on agent creation, runs ON ENTER
-        # for the initial phase
+        # for the initial phase, and registers the plot identity.
         lines.append(f"// == Boot Plan ==")
         lines.append(f"// Runs when the Director agent is created.")
-        lines.append(f"// Executes the ON ENTER hook for the initial phase.")
+        lines.append(f"// Registers plot identity and executes ON ENTER "
+                     f"for the initial phase.")
         lines.append(f"@boot__{plot.name}[atomic]")
-        lines.append(f"+!boot <- ")
+        lines.append(f"+!boot <-")
+        lines.append(f"    .my_name(Me);")
+        lines.append(f"    +plot_id(Me)")
         boot_stmts = self._get_on_enter_stmts(plot, initial_phase)
         if boot_stmts:
-            lines.append(
-                self._emit_imperative_body(boot_stmts, indent=4)
-            )
+            body_str = self._emit_imperative_body(boot_stmts, indent=4)
+            # body_str ends with '.'; strip it and continue the chain
+            body_inner = body_str.rstrip().rstrip(".")
+            lines.append(f";{body_inner}.")
         else:
-            lines.append("    true.")
+            lines.append(f"    .")
         lines.append("")
 
         # Phase transition plans
@@ -450,7 +456,7 @@ class Emitter:
         plot_name = plot.name
 
         def _expand_stmts(stmts: list) -> List[str]:
-            """Expand a stmt list, replacing InlineTransitionStmt in-place."""
+            """Expand a stmt list, replacing terminal stmts in-place."""
             result: List[str] = []
             for s in stmts:
                 if isinstance(s, InlineTransitionStmt):
@@ -458,6 +464,14 @@ class Emitter:
                         self._emit_inline_transition_stmts(
                             s, source_phase, plot,
                         )
+                    )
+                elif isinstance(s, StartSubplotStmt):
+                    # START SUBPLOT is also expanded directly in _emit_imperative_stmt
+                    # so we don't strictly need it here, but it's fine.
+                    result.append(self._emit_imperative_stmt(s))
+                elif isinstance(s, PlotEndStmt):
+                    result.extend(
+                        self._emit_plot_end_stmts(s, source_phase, plot)
                     )
                 else:
                     result.append(self._emit_imperative_stmt(s))
@@ -882,6 +896,17 @@ class Emitter:
                 f"!transition_to({stmt.target_phase})"
             )
 
+        elif isinstance(stmt, StartSubplotStmt):
+            lines = self._emit_start_subplot_stmts(stmt)
+            # A START SUBPLOT expands to multiple statements.
+            # Join them properly.
+            return ";\n    ".join(lines)
+
+        elif isinstance(stmt, PlotEndStmt):
+            # Multi-step expansion: delegate to helper.
+            # Fallback: emit a placeholder comment.
+            return "/* END PLOT (expand via _emit_plot_end_stmts) */"
+
         return f"/* unknown imperative */"
 
     def _emit_inline_transition_stmts(
@@ -932,6 +957,136 @@ class Emitter:
                 for on_enter in block.on_enters:
                     for s in on_enter.stmts:
                         result.append(self._emit_imperative_stmt(s))
+
+        return result
+
+    def _emit_start_subplot_stmts(
+        self,
+        stmt: StartSubplotStmt,
+    ) -> List[str]:
+        """Expand a START SUBPLOT statement into AgentSpeak steps.
+
+        Steps emitted:
+            1. Generate a unique child instance name from self name
+            2. .create_agent with the child's director file
+            3. For each MAPPING, collect role agents into variables
+            4. Build the Bindings list and send !start_plot
+            5. Send parent reference to child
+            6. Add child_plot belief to self
+
+        Args:
+            stmt: The StartSubplotStmt to expand.
+            plot: The containing PlotDef (for context).
+
+        Returns:
+            A list of AgentSpeak statement strings.
+        """
+        result: List[str] = []
+        child_lower = stmt.plot_name.lower()
+
+        result.append(f"// --- START SUBPLOT {stmt.plot_name} ---")
+        result.append(
+            f".concat(\"{child_lower}_\", plot_id(Me), ChildId)"
+        )
+        result.append(
+            f".create_agent(ChildId, \"director_{child_lower}.asl\")"
+        )
+
+        if stmt.mappings:
+            # Build per-mapping findall calls
+            binding_terms: List[str] = []
+            for i, mapping in enumerate(stmt.mappings):
+                src_lower = mapping.source_role.lower()
+                tgt_lower = mapping.target_role.lower()
+                var_name = f"Agents_{i}"
+                result.append(
+                    f".findall(A, role_agent({src_lower}, A), {var_name})"
+                )
+                binding_terms.append(
+                    f"map({tgt_lower}, {var_name})"
+                )
+
+            bindings_list = ", ".join(binding_terms)
+            result.append(
+                f"!build_bindings([{bindings_list}], Bindings)"
+            )
+            result.append(
+                f".send(ChildId, achieve, start_plot(Bindings))"
+            )
+        else:
+            # Roleless plot: send empty bindings
+            result.append(
+                f".send(ChildId, achieve, start_plot([]))"
+            )
+
+        # Send parent reference and register child
+        result.append(f".send(ChildId, tell, parent_plot(Me))")
+
+        # Build mapping annotation for child_plot belief
+        if stmt.mappings:
+            map_pairs = ", ".join(
+                f"map({m.target_role.lower()}, {m.source_role.lower()})"
+                for m in stmt.mappings
+            )
+            mappings_str = f"[{map_pairs}]"
+        else:
+            mappings_str = "[]"
+
+        result.append(
+            f"+child_plot(ChildId, {stmt.plot_name}, {mappings_str})"
+        )
+
+        return result
+
+    def _emit_plot_end_stmts(
+        self,
+        stmt: PlotEndStmt,
+        source_phase: Optional[str],
+        plot: PlotDef,
+    ) -> List[str]:
+        """Expand an END PLOT statement into AgentSpeak steps.
+
+        Steps emitted:
+            1. Notify all children (parent_ended)
+            2. Notify parent (child_ended with type and instance id)
+            3. ON EXIT of the current phase
+            4. .kill_agent(self)
+
+        Args:
+            stmt:         The PlotEndStmt to expand.
+            source_phase: The current phase (None for DURING PLOT).
+            plot:         The containing PlotDef.
+
+        Returns:
+            A list of AgentSpeak statement strings.
+        """
+        result: List[str] = []
+
+        result.append("// --- END PLOT ---")
+
+        # Notify all children
+        result.append(
+            ".findall(C, child_plot(C, _, _), Children)"
+        )
+        result.append(
+            "for ( .member(Child, Children) ) { "
+            ".send(Child, tell, parent_ended) }"
+        )
+
+        # Notify parent (if any)
+        result.append(
+            f"if ( parent_plot(Parent) ) {{ "
+            f".send(Parent, tell, child_ended({plot.name}, Me)) }}"
+        )
+
+        # ON EXIT of current phase
+        if source_phase is not None:
+            exit_stmts = self._get_on_exit_stmts(plot, source_phase)
+            for s in exit_stmts:
+                result.append(self._emit_imperative_stmt(s))
+
+        # Kill self
+        result.append(".kill_agent(self)")
 
         return result
 

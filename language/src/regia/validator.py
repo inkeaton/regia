@@ -32,7 +32,8 @@ from regia.ast_nodes import (
     # Playbook
     DoStmt, SignalStmt, PbIfBranch, PbElseBranch, PbWhenBlock, PlaybookDef,
     # Imperative
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt,
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
     TransitionStmt, OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock,
@@ -41,6 +42,16 @@ from regia.ast_nodes import (
     Program,
 )
 from regia.errors import ErrorReporter
+
+
+# == Implicit built-in events ==================================================
+# These events are implicitly available to all Plots as part of the hierarchy
+# protocol. They do not need to be declared with EVENT.
+
+_IMPLICIT_EVENTS: frozenset[str] = frozenset([
+    "parent_ended",
+    "child_ended",
+])
 
 
 # == Symbol table ==============================================================
@@ -119,6 +130,11 @@ class Validator:
         self._used_facts:     Set[str] = set()
         self._used_playbooks: Set[str] = set()
 
+        # Registry of all declared Plot names and their role sets.
+        # Used to validate START SUBPLOT targets and MAPPING roles.
+        # plot_name -> set of role names
+        self._plot_roles: Dict[str, Set[str]] = {}
+
     # == Public API ============================================================
 
     def validate(self, program: Program) -> None:
@@ -127,6 +143,13 @@ class Validator:
         Args:
             program: The root AST node to validate.
         """
+        # Phase 0: build plot role registry (needed for SUBPLOT validation)
+        for item in program.items:
+            if isinstance(item, PlotDef):
+                self._plot_roles[item.name] = {
+                    r.name for r in item.roles
+                }
+
         # Phase 1: collect all declarations into the symbol table
         self._collect_declarations(program)
 
@@ -347,9 +370,9 @@ class Validator:
             self._validate_transition(tr, scope)
 
         # Validate ON ENTER / ON EXIT stmts
-        # InlineTransitionStmt is NOT allowed in ON ENTER/EXIT; those
-        # hooks execute during an already-in-progress phase change and
-        # a second inline transition would be ambiguous.
+        # InlineTransitionStmt and PlotEndStmt are NOT allowed in ON
+        # ENTER/EXIT; those hooks execute during an already-in-progress
+        # phase change and such statements would be ambiguous.
         for on_enter in block.on_enters:
             for stmt in on_enter.stmts:
                 if isinstance(stmt, InlineTransitionStmt):
@@ -358,6 +381,12 @@ class Validator:
                         "TRANSITION TO cannot appear inside ON ENTER.",
                         hint="Use a declarative TRANSITION TO ... WHEN ... "
                              "instead, or move the transition to a WHEN block.",
+                    )
+                elif isinstance(stmt, PlotEndStmt):
+                    self._error(
+                        stmt.loc,
+                        "END PLOT cannot appear inside ON ENTER.",
+                        hint="Move END PLOT to a WHEN block.",
                     )
                 else:
                     self._validate_imperative_stmt(stmt, scope)
@@ -369,6 +398,12 @@ class Validator:
                         "TRANSITION TO cannot appear inside ON EXIT.",
                         hint="Use a declarative TRANSITION TO ... WHEN ... "
                              "instead, or move the transition to a WHEN block.",
+                    )
+                elif isinstance(stmt, PlotEndStmt):
+                    self._error(
+                        stmt.loc,
+                        "END PLOT cannot appear inside ON EXIT.",
+                        hint="Move END PLOT to a WHEN block.",
                     )
                 else:
                     self._validate_imperative_stmt(stmt, scope)
@@ -427,8 +462,8 @@ class Validator:
         """
         self._check_event_ref(when.event, when.loc)
 
-        # Validate prefix stmts and check position of inline transitions
-        self._check_stmt_list_for_inline_transition(
+        # Validate prefix stmts and check position rules
+        self._check_terminal_stmts(
             when.prefix_stmts, phase_name, context="WHEN prefix",
         )
         for stmt in when.prefix_stmts:
@@ -436,14 +471,14 @@ class Validator:
 
         for branch in when.branches:
             self._validate_condition(branch.condition)
-            self._check_stmt_list_for_inline_transition(
+            self._check_terminal_stmts(
                 branch.stmts, phase_name, context="IF branch",
             )
             for stmt in branch.stmts:
                 self._validate_imperative_stmt(stmt, scope)
 
         if when.else_branch is not None:
-            self._check_stmt_list_for_inline_transition(
+            self._check_terminal_stmts(
                 when.else_branch.stmts, phase_name, context="ELSE branch",
             )
             for stmt in when.else_branch.stmts:
@@ -478,6 +513,12 @@ class Validator:
         elif isinstance(stmt, InlineTransitionStmt):
             self._check_inline_transition(stmt, scope)
 
+        elif isinstance(stmt, StartSubplotStmt):
+            self._check_start_subplot(stmt, scope)
+
+        # PlotEndStmt has no references to validate; placement is
+        # checked by _check_terminal_stmts.
+
     # == Condition validation ===================================================
 
     def _validate_condition(self, cond: ConditionExpr) -> None:
@@ -506,6 +547,67 @@ class Validator:
     # Each checker verifies that a referenced name exists in the
     # symbol table and marks it as used for the unused-warning pass.
 
+    def _check_start_subplot(
+        self,
+        stmt: StartSubplotStmt,
+        scope: _PlotScope,
+    ) -> None:
+        """Validate a START SUBPLOT statement.
+
+        Rules:
+            1. The target Plot must be declared in the program.
+            2. Each source role in MAPPING must exist in the current plot.
+            3. Each target role in MAPPING must exist in the spawned plot.
+            4. Warn if no MAPPING is given but the spawned plot has roles.
+
+        Args:
+            stmt:  The StartSubplotStmt to validate.
+            scope: The per-plot scope of the spawning Plot.
+        """
+        # Rule 1: target plot must exist
+        if stmt.plot_name not in self._plot_roles:
+            self._error(
+                stmt.loc,
+                f"START SUBPLOT references undeclared plot: "
+                f"'{stmt.plot_name}'.",
+                hint=f"Add a 'PLOT {stmt.plot_name}. ...' definition.",
+            )
+            return
+
+        child_roles = self._plot_roles[stmt.plot_name]
+
+        # Rule 4: warn if no mapping provided but child has roles
+        if not stmt.mappings and child_roles:
+            self._warning(
+                stmt.loc,
+                f"START SUBPLOT '{stmt.plot_name}' has no MAPPING clause, "
+                f"but that plot declares {len(child_roles)} role(s).",
+                hint="Add 'MAPPING SourceRole TO TargetRole, ...' to bind "
+                     "agents from this plot to the child plot's roles.",
+            )
+
+        # Rules 2 & 3: validate each role mapping
+        for mapping in stmt.mappings:
+            # Source role must exist in the current (parent) plot
+            if mapping.source_role not in scope.roles:
+                self._error(
+                    mapping.loc,
+                    f"MAPPING source role '{mapping.source_role}' is not "
+                    f"declared in plot '{scope.plot_name}'.",
+                    hint=f"Add 'ROLE {mapping.source_role}.' to plot "
+                         f"'{scope.plot_name}', or fix the role name.",
+                )
+
+            # Target role must exist in the spawned (child) plot
+            if mapping.target_role not in child_roles:
+                self._error(
+                    mapping.loc,
+                    f"MAPPING target role '{mapping.target_role}' is not "
+                    f"declared in plot '{stmt.plot_name}'.",
+                    hint=f"Add 'ROLE {mapping.target_role}.' to plot "
+                         f"'{stmt.plot_name}', or fix the role name.",
+                )
+
     def _check_inline_transition(
         self,
         stmt: InlineTransitionStmt,
@@ -533,19 +635,25 @@ class Validator:
                 ),
             )
 
-    def _check_stmt_list_for_inline_transition(
+    def _check_terminal_stmts(
         self,
         stmts: List,
         phase_name: Optional[str],
         context: str,
     ) -> None:
-        """Enforce inline transition placement rules on a statement list.
+        """Enforce placement rules for terminal statements in a body list.
 
-        Rules enforced:
-            1. InlineTransitionStmt may only appear in a phase-specific
-               DURING block (not in DURING PLOT).
-            2. InlineTransitionStmt must be the last statement in the
-               list. Any occurrence before the end is an error.
+        Terminal statements are those that must appear last:
+            - InlineTransitionStmt
+            - PlotEndStmt
+
+        Rules:
+            1. InlineTransitionStmt may only appear in phase-specific
+               DURING blocks (not in DURING PLOT).
+            2. Both terminal statement types must be the last statement
+               in the list. Any statement following one is an error.
+
+        This method replaces the older _check_stmt_list_for_inline_transition.
 
         Args:
             stmts:      The list of imperative statements to check.
@@ -553,11 +661,14 @@ class Validator:
             context:    Human-readable context for error messages.
         """
         for i, stmt in enumerate(stmts):
-            if not isinstance(stmt, InlineTransitionStmt):
+            is_terminal = isinstance(
+                stmt, (InlineTransitionStmt, PlotEndStmt)
+            )
+            if not is_terminal:
                 continue
 
-            # Rule 1: not allowed in DURING PLOT
-            if phase_name is None:
+            # InlineTransitionStmt: not allowed in DURING PLOT
+            if isinstance(stmt, InlineTransitionStmt) and phase_name is None:
                 self._error(
                     stmt.loc,
                     f"Inline TRANSITION TO cannot appear inside "
@@ -567,17 +678,21 @@ class Validator:
                 )
                 continue
 
-            # Rule 2: must be the last statement
+            # Both terminals: must be the last statement
             if i < len(stmts) - 1:
                 self._error(
                     stmts[i + 1].loc,
-                    f"Unreachable statement after TRANSITION TO "
+                    f"Unreachable statement after "
+                    f"{'TRANSITION TO' if isinstance(stmt, InlineTransitionStmt) else 'END PLOT'} "
                     f"in {context}.",
-                    hint="TRANSITION TO must be the last statement "
-                         "in a body or branch.",
+                    hint="This statement type must be the last in a body "
+                         "or branch.",
                 )
 
-    # =====================================================================
+    # Keep old name as alias for compatibility during transition
+    _check_stmt_list_for_inline_transition = _check_terminal_stmts
+
+    # ==========================================================================
 
     def _check_action_ref(
         self,
@@ -609,12 +724,19 @@ class Validator:
         self._used_actions.add(name)
 
     def _check_event_ref(self, name: str, loc: SourceLoc) -> None:
-        """Check that a referenced event is declared.
+        """Check that a referenced event is declared (or is a built-in).
+
+        Implicit hierarchy events (parent_ended, child_ended) are
+        always valid and do not need an EVENT declaration.
 
         Args:
             name: The event name.
             loc:  Source location of the reference.
         """
+        # Implicit hierarchy events: always accepted, never need EVENT decl.
+        if name in _IMPLICIT_EVENTS:
+            return
+
         if name not in self._symbols.events:
             self._error(
                 loc,

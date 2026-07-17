@@ -547,12 +547,69 @@ class RoleDoStmt:
     loc:        SourceLoc      = _NO_LOC
 
 
+@dataclass
+class RoleMapping:
+    """A single role binding in a START SUBPLOT mapping clause.
+
+    Maps a role from the parent Plot to a role in the child Plot.
+
+    Attributes:
+        source_role: The role name in the parent (spawning) Plot.
+        target_role: The role name in the child (spawned) Plot.
+        loc:         Source location of the source role token.
+    """
+
+    source_role: str
+    target_role: str
+    loc:         SourceLoc = _NO_LOC
+
+
+@dataclass
+class StartSubplotStmt:
+    """Start a child Plot: START SUBPLOT DungeonCrawl MAPPING Hero TO Adventurer.
+
+    Spawns a new Director agent for the named Plot and passes it role
+    bindings derived from the parent's current role-agent registry.
+
+    The MAPPING clause is optional for roleless Plots; the compiler emits
+    a warning if omitted when the target Plot declares roles.
+
+    Attributes:
+        plot_name: The Plot type to instantiate.
+        mappings:  Role binding list (may be empty for roleless Plots).
+        loc:       Source location of the START keyword.
+    """
+
+    plot_name: str
+    mappings:  List[RoleMapping]
+    loc:       SourceLoc = _NO_LOC
+
+
+@dataclass
+class PlotEndStmt:
+    """Terminate the current Plot: END PLOT.
+
+    Notifies all child plots (parent_ended event) and the parent plot
+    (child_ended event), then kills the Director agent.
+
+    Must be the last statement in its WHEN block or branch.
+    Forbidden inside ON ENTER / ON EXIT hooks.
+
+    Attributes:
+        loc: Source location of the END keyword.
+    """
+
+    loc: SourceLoc = _NO_LOC
+
+
 # Type alias for statements valid inside Plot WHEN blocks,
 # ON ENTER, and ON EXIT.
-# InlineTransitionStmt is also valid in WHEN blocks (but not in
-# ON ENTER/ON EXIT, where phase state is already changing).
+# InlineTransitionStmt and PlotEndStmt must be the last statement
+# in their block; StartSubplotStmt is unrestricted.
+# PlotEndStmt is forbidden in ON ENTER / ON EXIT (validator enforces this).
 ImperativeStmt = Union[
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    InlineTransitionStmt, StartSubplotStmt, PlotEndStmt
 ]
 
 

@@ -340,6 +340,8 @@ plot_else_branch: "ELSE" ":" imperative_stmt+
     | world_do_stmt
     | role_do_stmt
     | inline_transition_stmt
+    | start_subplot_stmt
+    | plot_end_stmt
 
 // ASSIGN SingerInBackstage TO Singer.
 
@@ -368,6 +370,26 @@ role_do_stmt: ID "DO" action_name arg_list? "."
 // The enclosing WHEN event and IF guard serve as the trigger/condition.
 
 inline_transition_stmt: "TRANSITION" "TO" ID "."
+
+// START SUBPLOT DungeonCrawl MAPPING Hero TO Adventurer, Sidekick TO Companion.
+
+// MAPPING clause is optional for roleless Plots (compiler emits a warning
+
+// if the target Plot has roles but no mapping is provided).
+
+start_subplot_stmt: "START" "SUBPLOT" ID ["MAPPING" role_mapping ("," role_mapping)*] "."
+
+// A single role binding within a MAPPING clause: SourceRole TO TargetRole.
+
+role_mapping: ID "TO" ID
+
+// END PLOT.
+
+// Terminates the current Plot. Must be the last statement in its WHEN block
+
+// or branch. Forbidden inside ON ENTER / ON EXIT.
+
+plot_end_stmt: "END" "PLOT" "."
 
 // ============================================================
 

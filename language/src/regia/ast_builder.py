@@ -40,7 +40,8 @@ from regia.ast_nodes import (
     # Temper (VEsNA)
     TemperEntry, TemperSpec,
     # Imperative
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt, InlineTransitionStmt,
+    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
+    InlineTransitionStmt, RoleMapping, StartSubplotStmt, PlotEndStmt,
     # Plot
     TransitionStmt, OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock,
@@ -703,6 +704,66 @@ class ASTBuilder(Transformer):
             target_phase=str(target_token),
             loc=_meta_loc(meta, self._filename),
         )
+
+    @v_args(meta=True)
+    def role_mapping(self, meta: Any, children: List[Token]) -> RoleMapping:
+        """SourceRole TO TargetRole -> a single role binding.
+
+        Args:
+            meta:     Position of the source role token.
+            children: [Token(ID, source_role), Token(ID, target_role)].
+
+        Returns:
+            A RoleMapping AST node.
+        """
+        return RoleMapping(
+            source_role=str(children[0]),
+            target_role=str(children[1]),
+            loc=_meta_loc(meta, self._filename),
+        )
+
+    @v_args(meta=True)
+    def start_subplot_stmt(
+        self,
+        meta: Any,
+        children: List,
+    ) -> StartSubplotStmt:
+        """START SUBPLOT PlotName [MAPPING ...]. -> child plot spawn.
+
+        The MAPPING clause is optional: if present, children contains
+        the plot-name token followed by one or more RoleMapping objects.
+        If absent, only the plot-name token is present.
+
+        Args:
+            meta:     Position of the START keyword.
+            children: [Token(ID, plot_name), optional RoleMapping, ...].
+
+        Returns:
+            A StartSubplotStmt AST node.
+        """
+        plot_name_token = children[0]
+        mappings = [
+            c for c in children[1:]
+            if isinstance(c, RoleMapping)
+        ]
+        return StartSubplotStmt(
+            plot_name=str(plot_name_token),
+            mappings=mappings,
+            loc=_meta_loc(meta, self._filename),
+        )
+
+    @v_args(meta=True)
+    def plot_end_stmt(self, meta: Any, children: List) -> PlotEndStmt:
+        """END PLOT. -> terminate the current Plot.
+
+        Args:
+            meta:     Position of the END keyword.
+            children: [] (no children; keywords are filtered).
+
+        Returns:
+            A PlotEndStmt AST node.
+        """
+        return PlotEndStmt(loc=_meta_loc(meta, self._filename))
 
     # == Plot WHEN blocks ======================================================
 

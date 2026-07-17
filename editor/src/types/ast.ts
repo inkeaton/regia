@@ -286,8 +286,36 @@ export type InlineTransitionStmt = ASTNode & {
     loc:          SourceLoc;
 };
 
+/**
+ * Maps a role from a parent plot to a child subplot.
+ */
+export type RoleMapping = {
+    type:        "RoleMapping";
+    source_role: string;
+    target_role: string;
+    loc:         SourceLoc;
+};
+
+/**
+ * Spawns a new subplot: `START SUBPLOT PlotName MAPPING ...`
+ */
+export type StartSubplotStmt = ASTNode & {
+    type:      "StartSubplotStmt";
+    plot_name: string;
+    mappings:  RoleMapping[];
+    loc:       SourceLoc;
+};
+
+/**
+ * Terminates the current plot: `END PLOT.`
+ */
+export type PlotEndStmt = ASTNode & {
+    type: "PlotEndStmt";
+    loc:  SourceLoc;
+};
+
 /** Union type for statements valid inside Plot WHEN blocks, ON ENTER, and ON EXIT. */
-export type ImperativeStmt = AssignStmt | UnassignStmt | WorldDoStmt | RoleDoStmt | InlineTransitionStmt;
+export type ImperativeStmt = AssignStmt | UnassignStmt | WorldDoStmt | RoleDoStmt | InlineTransitionStmt | StartSubplotStmt | PlotEndStmt;
 
 // ==============================================================================
 // PLOT BRANCHING
@@ -425,7 +453,8 @@ export type TopLevelItem =
     | EventDecl
     | FactDecl
     | PlaybookDef
-    | PlotDef;
+    | PlotDef
+    | ImportDecl;
 
 /**
  * The root AST node representing a complete Regia source file.
@@ -433,7 +462,6 @@ export type TopLevelItem =
  */
 export type Program = ASTNode & {
     type:         "Program";
-    imports?:     ImportDecl[];
     doc_comments?: DocAnnotation[];
     items:        TopLevelItem[];
 };

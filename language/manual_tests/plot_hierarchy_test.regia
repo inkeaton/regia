@@ -1,0 +1,145 @@
+# =============================================================
+# plot_hierarchy_test.regia
+#
+# Manual test covering all three Plot Hierarchy features:
+#   1. START SUBPLOT with a MAPPING clause
+#   2. END PLOT with parent/child notification
+#   3. Reacting to parent_ended and child_ended events
+#   4. START SUBPLOT from ON ENTER (allowed)
+#   5. Multiple children of the same plot type
+# =============================================================
+
+ACTION open_gate.
+ACTION close_gate.
+ACTION sound_horn.
+ACTION award_trophy.
+ACTION pack_up.
+ACTION prepare_arena.
+ACTION play_fanfare.
+
+EVENT quest_started.
+EVENT quest_complete.
+EVENT victory_achieved.
+EVENT defeat_suffered.
+EVENT cleanup_done.
+
+FACT all_trials_passed.
+FACT arena_ready.
+
+# =============================================================
+# Playbooks
+# =============================================================
+
+#@desc: Combat hero who fights in an arena trial
+PLAYBOOK TrialFighter:
+    WHEN victory_achieved:
+        DO BELIEVE(all_trials_passed).
+        SIGNAL quest_complete.
+
+    WHEN defeat_suffered:
+        DO FORGET(all_trials_passed).
+        SIGNAL quest_complete.
+
+# =============================================================
+# The child subplot: a single arena trial
+# =============================================================
+
+#@desc: A single arena trial. Spawned by the grand quest plot.
+PLOT ArenaTrial.
+
+    PHASE warmup INITIAL.
+    PHASE combat.
+    PHASE done.
+
+    ROLE Fighter.
+
+    DURING warmup:
+
+        TRANSITION TO combat WHEN quest_started.
+
+        ON ENTER:
+            ASSIGN TrialFighter TO Fighter.
+            WORLD DO prepare_arena.
+
+        ON EXIT:
+            WORLD DO open_gate.
+
+    DURING combat:
+
+        ON ENTER:
+            WORLD DO play_fanfare.
+
+        WHEN victory_achieved:
+            WORLD DO sound_horn.
+            TRANSITION TO done.
+
+        WHEN defeat_suffered:
+            TRANSITION TO done.
+
+    DURING done:
+        ON ENTER:
+            UNASSIGN TrialFighter FROM Fighter.
+            WORLD DO close_gate.
+
+        WHEN cleanup_done:
+            END PLOT.
+
+    DURING PLOT:
+        # If our parent quest ends early, we clean up too
+        WHEN parent_ended:
+            WORLD DO close_gate.
+            END PLOT.
+
+# =============================================================
+# The parent plot: the grand quest that runs multiple trials
+# =============================================================
+
+#@desc: Grand quest that oversees multiple arena trials.
+#@author: Game Design Team
+PLOT GrandQuest.
+
+    PHASE intro INITIAL.
+    PHASE trials.
+    PHASE finale.
+
+    ROLE Hero.
+    ROLE Champion.
+
+    DURING intro:
+
+        TRANSITION TO trials WHEN quest_started.
+
+        ON ENTER:
+            # Spawn two concurrent trials when entering intro
+            START SUBPLOT ArenaTrial MAPPING Hero TO Fighter.
+            START SUBPLOT ArenaTrial MAPPING Champion TO Fighter.
+            WORLD DO sound_horn.
+
+    DURING trials:
+
+        ON ENTER:
+            WORLD DO open_gate.
+
+        # React when any child trial finishes
+        WHEN child_ended:
+            IF all_trials_passed:
+                TRANSITION TO finale.
+
+        # If all children are done, move to finale
+        WHEN quest_complete:
+            IF all_trials_passed:
+                TRANSITION TO finale.
+
+    DURING finale:
+
+        ON ENTER:
+            WORLD DO award_trophy.
+
+        WHEN cleanup_done:
+            WORLD DO pack_up.
+            END PLOT.
+
+    DURING PLOT:
+        WHEN parent_ended:
+            WORLD DO close_gate.
+            END PLOT.
