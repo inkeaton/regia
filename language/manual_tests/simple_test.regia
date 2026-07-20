@@ -18,7 +18,8 @@ PLOT SimplePlot.
     ROLE RoleB.
     
     DURING first:
-        TRANSITION TO second WHEN next_phase.
+        WHEN next_phase:
+            TRANSITION TO second.
         ON ENTER:
             WORLD DO PRINT("Entering first phase").
             ASSIGN PbOne TO RoleA.

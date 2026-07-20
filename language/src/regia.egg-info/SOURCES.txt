@@ -17,3 +17,4 @@ src/regia.egg-info/entry_points.txt
 src/regia.egg-info/requires.txt
 src/regia.egg-info/top_level.txt
 src/regia/grammars/regia.lark
+tests/test_plot_hierarchy.py

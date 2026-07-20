@@ -200,7 +200,8 @@ class TestDirectorOutput:
                 PHASE b.
                 ROLE R.
                 DURING a:
-                    TRANSITION TO b WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO b.
                     ON ENTER:
                         WORLD DO a.
         """)
@@ -220,7 +221,9 @@ class TestDirectorOutput:
                 PHASE b.
                 ROLE R.
                 DURING a:
-                    TRANSITION TO b WHEN trigger IF ready.
+                    WHEN trigger:
+                        IF ready:
+                            TRANSITION TO b.
                     ON ENTER:
                         WORLD DO a.
         """)
@@ -237,7 +240,8 @@ class TestDirectorOutput:
                 PHASE b.
                 ROLE R.
                 DURING a:
-                    TRANSITION TO b WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO b.
                     ON ENTER:
                         WORLD DO enter_action.
                     ON EXIT:
@@ -330,7 +334,8 @@ class TestDirectorOutput:
                 PHASE next.
                 ROLE Hero.
                 DURING start:
-                    TRANSITION TO next WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO next.
                     ON ENTER:
                         ASSIGN Pb TO Hero.
                     ON EXIT:
@@ -652,7 +657,8 @@ class TestRoleOutput:
                 PHASE war.
                 ROLE Guard.
                 DURING peace:
-                    TRANSITION TO war WHEN attack.
+                    WHEN attack:
+                        TRANSITION TO war.
                     ON ENTER:
                         ASSIGN Friendly TO Guard.
                     ON EXIT:
@@ -759,7 +765,8 @@ class TestFullIntegration:
                     AudienceMember DO acknowledge.
 
             DURING backstage:
-                TRANSITION TO performing WHEN time_to_start.
+                WHEN time_to_start:
+                    TRANSITION TO performing.
                 ON ENTER:
                     ASSIGN SingerInBackstage TO Singer.
                     WORLD DO add_waiting_for_concert.
@@ -768,8 +775,9 @@ class TestFullIntegration:
                     WORLD DO announce_concert.
 
             DURING performing:
-                TRANSITION TO aftermath WHEN song_ends
-                    IF audience_satisfied.
+                WHEN song_ends:
+                    IF audience_satisfied:
+                        TRANSITION TO aftermath.
                 ON ENTER:
                     ASSIGN SingerOnStage TO Singer.
                     WORLD DO start_music.
@@ -897,11 +905,13 @@ class TestMultiFile:
                 PHASE fighting.
                 ROLE Soldier.
                 DURING idle:
-                    TRANSITION TO fighting WHEN danger.
+                    WHEN danger:
+                        TRANSITION TO fighting.
                     ON ENTER:
                         ASSIGN Combat TO Soldier.
                 DURING fighting:
-                    TRANSITION TO idle WHEN safe.
+                    WHEN safe:
+                        TRANSITION TO idle.
         """)
 
         result = compile_files([decls, playbook, plot])

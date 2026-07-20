@@ -178,6 +178,30 @@ export type SignalStmt = ASTNode & {
 export type PbStmt = DoStmt | SignalStmt;
 
 // ==============================================================================
+// TEMPER AND EFFECTS
+// ==============================================================================
+
+/**
+ * A single temper or effect dimension: e.g. sympathy(0.8).
+ */
+export type TemperEntry = ASTNode & {
+    type:  "TemperEntry";
+    name:  string;
+    value: number;
+    loc:   SourceLoc;
+};
+
+/**
+ * Full TEMPER annotation with optional EFFECTS.
+ */
+export type TemperSpec = ASTNode & {
+    type:       "TemperSpec";
+    dimensions: TemperEntry[];
+    effects:    TemperEntry[];
+    loc:        SourceLoc;
+};
+
+// ==============================================================================
 // PLAYBOOK BRANCHING
 // ==============================================================================
 
@@ -212,6 +236,7 @@ export type PbWhenBlock = ASTNode & {
     type:         "PbWhenBlock";
     event:        string;
     priority:     number | null;
+    temper:       TemperSpec | null;
     prefix_stmts: PbStmt[];
     branches:     PbIfBranch[];
     else_branch:  PbElseBranch | null;
@@ -348,13 +373,7 @@ export type PlotElseBranch = ASTNode & {
  * A phase transition: `TRANSITION TO performing WHEN time_to_start.`
  * Optionally guarded: `TRANSITION TO done WHEN end IF all_complete.`
  */
-export type TransitionStmt = ASTNode & {
-    type:         "TransitionStmt";
-    target_phase: string;
-    event:        string;
-    guard:        ConditionExpr | null;
-    loc:          SourceLoc;
-};
+
 
 /**
  * Phase entry hook: `ON ENTER: ...`
@@ -384,6 +403,7 @@ export type PlotWhenBlock = ASTNode & {
     type:         "PlotWhenBlock";
     event:        string;
     priority:     number | null;
+    temper:       TemperSpec | null;
     prefix_stmts: ImperativeStmt[];
     branches:     PlotIfBranch[];
     else_branch:  PlotElseBranch | null;
@@ -398,7 +418,6 @@ export type PlotWhenBlock = ASTNode & {
 export type DuringBlock = ASTNode & {
     type:          "DuringBlock";
     phase_name:    string | null;
-    transitions:   TransitionStmt[];
     on_enters:     OnEnter[];
     on_exits:      OnExit[];
     when_blocks:   PlotWhenBlock[];

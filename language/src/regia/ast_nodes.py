@@ -20,8 +20,6 @@ The node hierarchy mirrors the three-layer language architecture:
     └── PlotDef                              (narrative scenarios)
         ├── PhaseDecl / RoleDecl
         └── DuringBlock
-            ├── TransitionStmt
-            ├── InlineTransitionStmt
             ├── OnEnter / OnExit
             └── PlotWhenBlock
                 ├── AssignStmt / UnassignStmt
@@ -452,13 +450,9 @@ class PlaybookDef:
 class InlineTransitionStmt:
     """An inline phase transition inside a WHEN body: TRANSITION TO phase.
 
-    Unlike the declarative TransitionStmt (which has its own WHEN/IF
-    guard), this variant is used as the last statement of an
-    imperative plan body. The triggering event and guard are provided
-    by the enclosing WHEN block and IF branch.
-
-    The validator enforces that this statement is always the final
-    one in its containing body or branch.
+    Must always be the final statement in its containing body or branch.
+    Forbidden in DURING PLOT blocks (there is no single current phase to leave).
+    Forbidden in ON ENTER / ON EXIT hooks.
 
     Attributes:
         target_phase: The destination phase name.
@@ -645,24 +639,6 @@ class PlotElseBranch:
 
 # == Plot Content ==============================================================
 
-@dataclass
-class TransitionStmt:
-    """Phase transition: TRANSITION TO performing WHEN time_to_start.
-
-    Optionally guarded: TRANSITION TO done WHEN end IF all_complete.
-
-    Attributes:
-        target_phase: The destination phase name.
-        event:        The triggering event name.
-        guard:        Optional boolean guard condition.
-        loc:          Source location of the TRANSITION keyword.
-    """
-
-    target_phase: str
-    event:        str
-    guard:        Optional[ConditionExpr] = None
-    loc:          SourceLoc               = _NO_LOC
-
 
 @dataclass
 class OnEnter:
@@ -730,8 +706,9 @@ class DuringBlock:
     DURING backstage:  (phase-specific, phase_name = 'backstage')
     DURING PLOT:       (plot-wide,      phase_name = None)
 
-    Contains phase transitions, lifecycle hooks (ON ENTER/EXIT),
-    and director-centric WHEN blocks.
+    Contains lifecycle hooks (ON ENTER/EXIT) and director-centric WHEN blocks.
+    Phase transitions are expressed as inline TRANSITION TO statements inside
+    WHEN block bodies, not as separate top-level items here.
 
     Note: the validator enforces that at most one ON ENTER and
     one ON EXIT exist per DURING block. The AST stores them as
@@ -740,7 +717,6 @@ class DuringBlock:
 
     Attributes:
         phase_name:  Phase name (None for DURING PLOT = all phases).
-        transitions: Phase transition declarations.
         on_enters:   ON ENTER hooks (validator checks len <= 1).
         on_exits:    ON EXIT hooks (validator checks len <= 1).
         when_blocks: Director-centric reactive plans.
@@ -748,7 +724,6 @@ class DuringBlock:
     """
 
     phase_name:  Optional[str]
-    transitions: List[TransitionStmt]    = field(default_factory=list)
     on_enters:   List[OnEnter]           = field(default_factory=list)
     on_exits:    List[OnExit]            = field(default_factory=list)
     when_blocks: List[PlotWhenBlock]     = field(default_factory=list)

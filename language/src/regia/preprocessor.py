@@ -138,8 +138,7 @@ def resolve_imports(
 
     Performs a breadth-first walk of the import graph. Each file is
     preprocessed to extract its IMPORT declarations. The result is a
-    list of absolute paths in dependency order (dependencies first,
-    entry file last). Each file appears at most once.
+    list of absolute paths. Each file appears at most once.
 
     Circular imports are detected and reported via reporter_cb; the
     offending file is skipped so resolution continues.
@@ -152,8 +151,8 @@ def resolve_imports(
                      and records the error. Usually wraps ErrorReporter.
 
     Returns:
-        Ordered list of absolute file paths to compile (dependencies
-        first). Includes the entry file itself.
+        Ordered list of absolute file paths to compile. Includes the
+        entry file itself.
     """
     entry_abs = entry_file.resolve()
 

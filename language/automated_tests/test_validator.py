@@ -259,8 +259,8 @@ class TestUndeclaredReferences:
         assert any("Undeclared event" in e and "ghost_signal" in e
                     for e in errors)
 
-    def test_undeclared_event_in_transition(self) -> None:
-        """TRANSITION WHEN with an undeclared event should error."""
+    def test_undeclared_event_in_plot_when(self) -> None:
+        """WHEN with an undeclared event should error."""
         result = _compile("""
             ACTION a.
             PLOT Q.
@@ -268,7 +268,8 @@ class TestUndeclaredReferences:
                 PHASE end.
                 ROLE R.
                 DURING start:
-                    TRANSITION TO end WHEN ghost_event.
+                    WHEN ghost_event:
+                        TRANSITION TO end.
                     ON ENTER:
                         WORLD DO a.
         """)
@@ -276,8 +277,8 @@ class TestUndeclaredReferences:
         assert any("Undeclared event" in e and "ghost_event" in e
                     for e in errors)
 
-    def test_undeclared_phase_in_transition(self) -> None:
-        """TRANSITION TO an undeclared phase should error."""
+    def test_undeclared_phase_in_inline_transition(self) -> None:
+        """Inline TRANSITION TO an undeclared phase should error."""
         result = _compile("""
             ACTION a.
             EVENT trigger.
@@ -285,7 +286,8 @@ class TestUndeclaredReferences:
                 PHASE start INITIAL.
                 ROLE R.
                 DURING start:
-                    TRANSITION TO ghost_phase WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO ghost_phase.
                     ON ENTER:
                         WORLD DO a.
         """)
@@ -308,8 +310,8 @@ class TestUndeclaredReferences:
         assert any("undeclared phase" in e and "ghost_phase" in e
                     for e in errors)
 
-    def test_undeclared_fact_in_transition_guard(self) -> None:
-        """TRANSITION IF with an undeclared fact should error."""
+    def test_undeclared_fact_in_plot_if(self) -> None:
+        """Plot IF with an undeclared fact should error."""
         result = _compile("""
             ACTION a.
             EVENT trigger.
@@ -318,7 +320,9 @@ class TestUndeclaredReferences:
                 PHASE end.
                 ROLE R.
                 DURING start:
-                    TRANSITION TO end WHEN trigger IF ghost_fact.
+                    WHEN trigger:
+                        IF ghost_fact:
+                            TRANSITION TO end.
                     ON ENTER:
                         WORLD DO a.
         """)
@@ -395,8 +399,8 @@ class TestStructuralConstraints:
         errors = _error_messages(result)
         assert any("Duplicate ON EXIT" in e for e in errors)
 
-    def test_transition_in_during_plot(self) -> None:
-        """TRANSITION inside DURING PLOT should error."""
+    def test_inline_transition_in_during_plot(self) -> None:
+        """Inline TRANSITION inside DURING PLOT should error."""
         result = _compile("""
             ACTION a.
             EVENT trigger.
@@ -405,12 +409,13 @@ class TestStructuralConstraints:
                 PHASE end.
                 ROLE R.
                 DURING PLOT:
-                    TRANSITION TO end WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO end.
                     ON ENTER:
                         WORLD DO a.
         """)
         errors = _error_messages(result)
-        assert any("TRANSITION cannot appear inside DURING PLOT" in e
+        assert any("TRANSITION TO cannot appear inside DURING PLOT" in e
                     for e in errors)
 
 
@@ -567,7 +572,8 @@ class TestValidPrograms:
                         AudienceMember DO acknowledge.
 
                 DURING backstage:
-                    TRANSITION TO performing WHEN time_to_start.
+                    WHEN time_to_start:
+                        TRANSITION TO performing.
                     ON ENTER:
                         ASSIGN SingerInBackstage TO Singer.
                         WORLD DO add_waiting_for_concert.
@@ -576,8 +582,9 @@ class TestValidPrograms:
                         WORLD DO announce_concert.
 
                 DURING performing:
-                    TRANSITION TO aftermath WHEN song_ends
-                        IF audience_satisfied.
+                    WHEN song_ends:
+                        IF audience_satisfied:
+                            TRANSITION TO aftermath.
                     ON ENTER:
                         ASSIGN SingerOnStage TO Singer.
                         WORLD DO start_music.

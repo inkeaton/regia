@@ -20,7 +20,7 @@ from regia.ast_nodes import (
     PlaybookDef, PbWhenBlock, DoStmt, SignalStmt,
     PbIfBranch, PbElseBranch,
     PlotDef, PhaseDecl, RoleDecl, DuringBlock,
-    TransitionStmt, OnEnter, OnExit, PlotWhenBlock,
+    OnEnter, OnExit, PlotWhenBlock,
     AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
     PlotIfBranch, PlotElseBranch,
     FactRef, ConditionNot, ConditionAnd, ConditionOr, Arg,
@@ -514,7 +514,8 @@ class TestDuringBlock:
                 PHASE b.
                 ROLE R.
                 DURING a:
-                    TRANSITION TO b WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO b.
                     ON ENTER:
                         WORLD DO start.
                     ON EXIT:
@@ -523,49 +524,10 @@ class TestDuringBlock:
                         WORLD DO evacuate.
         """)
         block = ast.items[0].during_blocks[0]
-        assert len(block.transitions) == 1
         assert len(block.on_enters) == 1
         assert len(block.on_exits) == 1
-        assert len(block.when_blocks) == 1
+        assert len(block.when_blocks) == 2
 
-
-class TestTransitionStmt:
-    """Tests for TRANSITION statements -> TransitionStmt AST nodes."""
-
-    def test_simple_transition(self) -> None:
-        """TRANSITION TO b WHEN trigger. -> no guard."""
-        ast = _build("""
-            PLOT Q.
-                PHASE a INITIAL.
-                PHASE b.
-                ROLE R.
-                DURING a:
-                    TRANSITION TO b WHEN trigger.
-                    ON ENTER:
-                        WORLD DO start.
-        """)
-        tr = ast.items[0].during_blocks[0].transitions[0]
-        assert isinstance(tr, TransitionStmt)
-        assert tr.target_phase == "b"
-        assert tr.event == "trigger"
-        assert tr.guard is None
-
-    def test_guarded_transition(self) -> None:
-        """TRANSITION TO b WHEN end IF ready. -> with guard."""
-        ast = _build("""
-            PLOT Q.
-                PHASE a INITIAL.
-                PHASE b.
-                ROLE R.
-                DURING a:
-                    TRANSITION TO b WHEN end IF ready.
-                    ON ENTER:
-                        WORLD DO start.
-        """)
-        tr = ast.items[0].during_blocks[0].transitions[0]
-        assert tr.guard is not None
-        assert isinstance(tr.guard, FactRef)
-        assert tr.guard.name == "ready"
 
 
 class TestImperativeStmts:
@@ -758,7 +720,8 @@ class TestFullExample:
                     AudienceMember DO acknowledge.
 
             DURING backstage:
-                TRANSITION TO performing WHEN time_to_start.
+                WHEN time_to_start:
+                    TRANSITION TO performing.
                 ON ENTER:
                     ASSIGN SingerInBackstage TO Singer.
                     WORLD DO add_waiting_for_concert.
@@ -767,7 +730,9 @@ class TestFullExample:
                     WORLD DO announce_concert.
 
             DURING performing:
-                TRANSITION TO aftermath WHEN song_ends IF audience_satisfied.
+                WHEN song_ends:
+                    IF audience_satisfied:
+                        TRANSITION TO aftermath.
                 ON ENTER:
                     ASSIGN SingerOnStage TO Singer.
                     WORLD DO start_music.
@@ -853,7 +818,7 @@ class TestFullExample:
         plot = [i for i in ast.items if isinstance(i, PlotDef)][0]
         backstage_block = plot.during_blocks[1]
         assert backstage_block.phase_name == "backstage"
-        assert len(backstage_block.transitions) == 1
+        assert len(backstage_block.when_blocks) == 1
         assert len(backstage_block.on_enters) == 1
         assert len(backstage_block.on_exits) == 1
 
@@ -862,8 +827,11 @@ class TestFullExample:
         ast = _build(self.FULL_EXAMPLE)
         plot = [i for i in ast.items if isinstance(i, PlotDef)][0]
         perf_block = plot.during_blocks[2]
-        tr = perf_block.transitions[0]
+        when_block = perf_block.when_blocks[0]
+        assert when_block.event == "song_ends"
+        
+        if_branch = when_block.branches[0]
+        assert isinstance(if_branch.condition, FactRef)
+        assert if_branch.condition.name == "audience_satisfied"
+        tr = if_branch.stmts[0]
         assert tr.target_phase == "aftermath"
-        assert tr.event == "song_ends"
-        assert isinstance(tr.guard, FactRef)
-        assert tr.guard.name == "audience_satisfied"

@@ -36,7 +36,7 @@ from regia.ast_nodes import (
     AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
     InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
-    TransitionStmt, OnEnter, OnExit,
+    OnEnter, OnExit,
     PlotWhenBlock, PlotIfBranch, PlotElseBranch,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
@@ -216,7 +216,6 @@ class Emitter:
 
         The Director agent manages:
             - Phase state (current_phase belief)
-            - Phase transitions
             - ON ENTER / ON EXIT lifecycle hooks
             - WORLD DO actions
             - ASSIGN / UNASSIGN via .send
@@ -266,9 +265,6 @@ class Emitter:
             lines.append(f"    .")
         lines.append("")
 
-        # Phase transition plans
-        self._emit_transitions(plot, lines)
-
         # WHEN blocks (director-centric plans)
         self._emit_director_when_blocks(plot, lines)
 
@@ -315,87 +311,6 @@ class Emitter:
             if block.phase_name == phase_name and block.on_exits:
                 return block.on_exits[0].stmts
         return []
-
-    def _emit_transitions(
-        self,
-        plot: PlotDef,
-        lines: List[str],
-    ) -> None:
-        """Emit phase transition plans for all DURING blocks.
-
-        A transition plan:
-            1. Checks current_phase matches the source phase
-            2. Optionally checks the guard condition
-            3. Runs ON EXIT of the source phase
-            4. Updates current_phase belief
-            5. Runs ON ENTER of the target phase
-
-        Args:
-            plot:  The Plot definition.
-            lines: The output line buffer to append to.
-        """
-        has_transitions = False
-        for block in plot.during_blocks:
-            if block.phase_name is None:
-                continue  # DURING PLOT has no transitions
-
-            for tr in block.transitions:
-                if not has_transitions:
-                    lines.append(f"// == Phase Transitions ==")
-                    has_transitions = True
-
-                source_phase = block.phase_name
-                target_phase = tr.target_phase
-
-                lines.append(
-                    f"// TRANSITION: {source_phase} -> "
-                    f"{target_phase} on {tr.event}"
-                )
-
-                # Build the context (guard conditions)
-                context_parts: List[str] = [
-                    f"current_phase({source_phase})",
-                ]
-                if tr.guard is not None:
-                    context_parts.append(
-                        self._emit_condition(tr.guard)
-                    )
-
-                context = " & ".join(context_parts)
-
-                # Build the plan body
-                body_stmts: List[str] = []
-
-                # ON EXIT of source phase
-                exit_stmts = self._get_on_exit_stmts(plot, source_phase)
-                for stmt in exit_stmts:
-                    body_stmts.append(
-                        self._emit_imperative_stmt(stmt)
-                    )
-
-                # Update phase belief
-                body_stmts.append(
-                    f"-current_phase({source_phase})"
-                )
-                body_stmts.append(
-                    f"+current_phase({target_phase})"
-                )
-
-                # ON ENTER of target phase
-                enter_stmts = self._get_on_enter_stmts(plot, target_phase)
-                for stmt in enter_stmts:
-                    body_stmts.append(
-                        self._emit_imperative_stmt(stmt)
-                    )
-
-                body = ";\n    ".join(body_stmts)
-                lines.append(f"@tr__{plot.name}__{source_phase}_to_{target_phase}__{tr.event}[atomic]")
-                lines.append(f"+{tr.event} : {context} <-")
-                lines.append(f"    {body}.")
-                lines.append("")
-
-        if has_transitions:
-            lines.append("")
 
     def _emit_director_when_blocks(
         self,
@@ -917,8 +832,7 @@ class Emitter:
     ) -> List[str]:
         """Expand an inline TRANSITION TO into its AgentSpeak steps.
 
-        The expansion mirrors what the declarative TRANSITION emits
-        at phase-change time:
+        The expansion happens at phase-change time:
 
             1. ON EXIT stmts of the current (source) phase
             2. -current_phase(source) belief removal

@@ -25,7 +25,8 @@ PHASE ending.
 
 DURING beginning:
     # Testing standard declarative transitions for baseline comparison
-    TRANSITION TO middle WHEN quest_completed.
+    WHEN quest_completed:
+        TRANSITION TO middle.
     
     # Testing inline transitions embedded inside a Plot WHEN block
     WHEN quest_completed PRIORITY 10:

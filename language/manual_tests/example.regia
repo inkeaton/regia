@@ -93,7 +93,8 @@ PLOT Concert.
     # Phase-specific behaviors
     DURING backstage:
         # Transition to the next phase when an event occurs
-        TRANSITION TO performing WHEN time_to_start.
+        WHEN time_to_start:
+            TRANSITION TO performing.
 
         # Hooks that run when entering or exiting the phase
         ON ENTER:
@@ -108,7 +109,9 @@ PLOT Concert.
 
     DURING performing:
         # A guarded transition (requires a condition to be met)
-        TRANSITION TO aftermath WHEN song_ends IF audience_satisfied.
+        WHEN song_ends:
+            IF audience_satisfied:
+                TRANSITION TO aftermath.
 
         ON ENTER:
             ASSIGN SingerOnStage TO Singer.

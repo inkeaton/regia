@@ -35,7 +35,7 @@ from regia.ast_nodes import (
     AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
     InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
-    TransitionStmt, OnEnter, OnExit,
+    OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
@@ -277,11 +277,9 @@ class Validator:
             - No duplicate roles or phases within the plot.
             - DURING blocks reference declared phases.
             - At most one ON ENTER and one ON EXIT per DURING block.
-            - DURING PLOT blocks do not contain transitions.
             - All WHEN event references, action references, fact
               references, playbook references, and role references
               are declared.
-            - Transition targets reference declared phases.
 
         Args:
             plot: The PlotDef to validate.
@@ -339,35 +337,10 @@ class Validator:
                     ),
                 )
 
-        # Check for transitions in plot-wide blocks
-        if block.phase_name is None and len(block.transitions) > 0:
-            self._error(
-                block.transitions[0].loc,
-                "TRANSITION cannot appear inside DURING PLOT "
-                "(transitions need a source phase).",
-                hint="Move this TRANSITION to a phase-specific "
-                     "DURING block.",
-            )
-
-        # Check at most one ON ENTER / ON EXIT
         if len(block.on_enters) > 1:
-            self._error(
-                block.on_enters[1].loc,
-                "Duplicate ON ENTER block "
-                f"(first at line {block.on_enters[0].loc.line}).",
-                hint="Merge the statements into a single ON ENTER.",
-            )
+            self._error(block.on_enters[1].loc, "Duplicate ON ENTER block.")
         if len(block.on_exits) > 1:
-            self._error(
-                block.on_exits[1].loc,
-                "Duplicate ON EXIT block "
-                f"(first at line {block.on_exits[0].loc.line}).",
-                hint="Merge the statements into a single ON EXIT.",
-            )
-
-        # Validate transitions
-        for tr in block.transitions:
-            self._validate_transition(tr, scope)
+            self._error(block.on_exits[1].loc, "Duplicate ON EXIT block.")
 
         # Validate ON ENTER / ON EXIT stmts
         # InlineTransitionStmt and PlotEndStmt are NOT allowed in ON
@@ -379,8 +352,7 @@ class Validator:
                     self._error(
                         stmt.loc,
                         "TRANSITION TO cannot appear inside ON ENTER.",
-                        hint="Use a declarative TRANSITION TO ... WHEN ... "
-                             "instead, or move the transition to a WHEN block.",
+                        hint="Move the transition to a WHEN block.",
                     )
                 elif isinstance(stmt, PlotEndStmt):
                     self._error(
@@ -396,8 +368,7 @@ class Validator:
                     self._error(
                         stmt.loc,
                         "TRANSITION TO cannot appear inside ON EXIT.",
-                        hint="Use a declarative TRANSITION TO ... WHEN ... "
-                             "instead, or move the transition to a WHEN block.",
+                        hint="Move the transition to a WHEN block.",
                     )
                 elif isinstance(stmt, PlotEndStmt):
                     self._error(
@@ -411,36 +382,6 @@ class Validator:
         # Validate WHEN blocks
         for when in block.when_blocks:
             self._validate_plot_when_block(when, scope, block.phase_name)
-
-    def _validate_transition(
-        self,
-        tr: TransitionStmt,
-        scope: _PlotScope,
-    ) -> None:
-        """Validate a TRANSITION statement.
-
-        Args:
-            tr:    The transition to validate.
-            scope: The per-plot scope.
-        """
-        # Target phase must be declared
-        if tr.target_phase not in scope.phases:
-            self._error(
-                tr.loc,
-                f"TRANSITION targets undeclared phase: "
-                f"'{tr.target_phase}'.",
-                hint=(
-                    f"Add 'PHASE {tr.target_phase}.' to "
-                    f"plot '{scope.plot_name}'."
-                ),
-            )
-
-        # Triggering event must be declared
-        self._check_event_ref(tr.event, tr.loc)
-
-        # Optional guard condition
-        if tr.guard is not None:
-            self._validate_condition(tr.guard)
 
     def _validate_plot_when_block(
         self,

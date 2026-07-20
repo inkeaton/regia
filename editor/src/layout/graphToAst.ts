@@ -11,8 +11,8 @@
 //
 //   1. For each Node of type "phaseNode" → create a PhaseDecl.
 //   2. For each Edge → find which source phase it belongs to,
-//      then create a TransitionStmt with target_phase and event.
-//   3. Wrap phases + transitions into DuringBlocks, then into a PlotDef.
+//      then create a PlotWhenBlock containing an InlineTransitionStmt.
+//   3. Wrap phases + when_blocks into DuringBlocks, then into a PlotDef.
 //   4. Call transport.emitRegia(ast) → get Regia DSL string back.
 //   5. Update the store's `code` field with the result.
 //

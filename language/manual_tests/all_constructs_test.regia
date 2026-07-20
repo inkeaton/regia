@@ -56,7 +56,9 @@ PLOT GrandTest.
     ################################################
     
     DURING peace:
-        TRANSITION TO battle WHEN danger_spotted IF NOT (is_daytime).
+        WHEN danger_spotted:
+            IF NOT (is_daytime):
+                TRANSITION TO battle.
         
         ON ENTER:
             WORLD DO PRINT("Peace begins").
@@ -75,7 +77,8 @@ PLOT GrandTest.
     ################################################
             
     DURING battle:
-        TRANSITION TO peace WHEN safe_again.
+        WHEN safe_again:
+            TRANSITION TO peace.
         
         ON ENTER:
             ASSIGN PbCombat TO Hero.

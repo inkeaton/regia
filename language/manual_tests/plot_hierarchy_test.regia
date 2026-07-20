@@ -55,7 +55,8 @@ PLOT ArenaTrial.
 
     DURING warmup:
 
-        TRANSITION TO combat WHEN quest_started.
+        WHEN quest_started:
+            TRANSITION TO combat.
 
         ON ENTER:
             ASSIGN TrialFighter TO Fighter.
@@ -107,7 +108,8 @@ PLOT GrandQuest.
 
     DURING intro:
 
-        TRANSITION TO trials WHEN quest_started.
+        WHEN quest_started:
+            TRANSITION TO trials.
 
         ON ENTER:
             # Spawn two concurrent trials when entering intro

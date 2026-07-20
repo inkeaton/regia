@@ -43,7 +43,7 @@ from regia.ast_nodes import (
     AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
     InlineTransitionStmt, RoleMapping, StartSubplotStmt, PlotEndStmt,
     # Plot
-    TransitionStmt, OnEnter, OnExit,
+    OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
@@ -690,7 +690,7 @@ class ASTBuilder(Transformer):
 
         Used as the last statement of a WHEN body or branch body.
         The trigger and guard are provided by the enclosing WHEN block
-        and IF branch, unlike the declarative TransitionStmt.
+        and IF branch.
 
         Args:
             meta:     Position of the TRANSITION keyword.
@@ -857,29 +857,6 @@ class ASTBuilder(Transformer):
             loc=_meta_loc(meta, self._filename),
         )
 
-    # == Plot structure ========================================================
-
-    @v_args(meta=True)
-    def transition_stmt(self, meta: Any, children: List) -> TransitionStmt:
-        """TRANSITION TO phase WHEN event IF guard. -> transition.
-
-        Args:
-            meta:     Position of the TRANSITION keyword.
-            children: [Token(ID, target), Token(ID, event),
-                       optional ConditionExpr guard].
-
-        Returns:
-            A TransitionStmt AST node.
-        """
-        target_token = children[0]
-        event_token = children[1]
-        guard = children[2] if len(children) > 2 else None
-        return TransitionStmt(
-            target_phase=str(target_token),
-            event=str(event_token),
-            guard=guard,
-            loc=_meta_loc(meta, self._filename),
-        )
 
     @v_args(meta=True)
     def on_enter(self, meta: Any, children: List) -> OnEnter:
@@ -977,11 +954,12 @@ class ASTBuilder(Transformer):
         roles = [c for c in children if isinstance(c, RoleDecl)]
         return (phases, roles)
 
+    # == Plot structure ========================================================
+
     def _sort_during_content(
         self,
         items: List,
     ) -> Tuple[
-        List[TransitionStmt],
         List[OnEnter],
         List[OnExit],
         List[PlotWhenBlock],
@@ -990,30 +968,27 @@ class ASTBuilder(Transformer):
 
         Called by during_phase and during_plot_wide to classify
         the flat children (produced by ?during_content inlining)
-        into four categories for the DuringBlock.
+        into three categories for the DuringBlock.
 
         Args:
             items: Mixed list of during-block content items.
 
         Returns:
-            A (transitions, on_enters, on_exits, when_blocks) tuple.
+            A (on_enters, on_exits, when_blocks) tuple.
         """
-        transitions: List[TransitionStmt] = []
         on_enters: List[OnEnter] = []
         on_exits: List[OnExit] = []
         when_blocks: List[PlotWhenBlock] = []
 
         for item in items:
-            if isinstance(item, TransitionStmt):
-                transitions.append(item)
-            elif isinstance(item, OnEnter):
+            if isinstance(item, OnEnter):
                 on_enters.append(item)
             elif isinstance(item, OnExit):
                 on_exits.append(item)
             elif isinstance(item, PlotWhenBlock):
                 when_blocks.append(item)
 
-        return (transitions, on_enters, on_exits, when_blocks)
+        return (on_enters, on_exits, when_blocks)
 
     @v_args(meta=True)
     def during_phase(self, meta: Any, children: List) -> DuringBlock:
@@ -1029,12 +1004,11 @@ class ASTBuilder(Transformer):
             A DuringBlock with phase_name set to the phase identifier.
         """
         name_token = children[0]
-        transitions, on_enters, on_exits, when_blocks = (
+        on_enters, on_exits, when_blocks = (
             self._sort_during_content(children[1:])
         )
         return DuringBlock(
             phase_name=str(name_token),
-            transitions=transitions,
             on_enters=on_enters,
             on_exits=on_exits,
             when_blocks=when_blocks,
@@ -1056,12 +1030,11 @@ class ASTBuilder(Transformer):
         Returns:
             A DuringBlock with phase_name=None (plot-wide).
         """
-        transitions, on_enters, on_exits, when_blocks = (
+        on_enters, on_exits, when_blocks = (
             self._sort_during_content(children)
         )
         return DuringBlock(
             phase_name=None,
-            transitions=transitions,
             on_enters=on_enters,
             on_exits=on_exits,
             when_blocks=when_blocks,

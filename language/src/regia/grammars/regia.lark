@@ -275,18 +275,11 @@ during_block: "DURING" ID ":" during_content+ -> during_phase
 
 // Inlined: during_phase / during_plot_wide directly contain
 
-// transition_stmt, on_enter, on_exit, or plot_when_block.
+// on_enter, on_exit, or plot_when_block.
 
-?during_content: transition_stmt
-    | on_enter
+?during_content: on_enter
     | on_exit
     | plot_when_block
-
-// TRANSITION TO performing WHEN time_to_start.
-
-// TRANSITION TO cancelled WHEN timeout IF NOT quest_complete.
-
-transition_stmt: "TRANSITION" "TO" ID "WHEN" ID ("IF" condition)? "."
 
 // ON ENTER: (imperative sequence at phase entry)
 

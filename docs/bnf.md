@@ -127,14 +127,11 @@
 <during-target>       ::= ID
                         | 'PLOT'
 
-<during-content>    ::= <transition-stmt>
-                      | <on-enter>
+<during-content>    ::= <on-enter>
                       | <on-exit>
                       | <plot-when-block>
 
-<transition-stmt>   ::= 'TRANSITION' 'TO' ID 'WHEN' ID <opt-if-condition> '.'
-<opt-if-condition>  ::= 'IF' <condition>
-                      |
+
 
 <on-enter>              ::= 'ON' 'ENTER' ':' <imperative-stmt> <imperative-stmt-tail>
 <on-exit>               ::= 'ON' 'EXIT' ':' <imperative-stmt> <imperative-stmt-tail>

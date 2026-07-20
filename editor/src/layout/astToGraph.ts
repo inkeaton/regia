@@ -140,12 +140,7 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
         // inside phase-specific DURING blocks.
         if (!block.phase_name) return;
 
-        // 1. Declarative transitions
-        block.transitions.forEach((trans) => {
-            addEdge(block.phase_name as string, trans.target_phase, trans.event);
-        });
-
-        // 2. Extract reactive/inline transitions (inside when_blocks)
+        // 1. Extract reactive/inline transitions (inside when_blocks)
         block.when_blocks.forEach((whenBlock) => {
             const source = block.phase_name as string;
             const eventLabel = whenBlock.event;

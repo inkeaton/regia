@@ -279,7 +279,8 @@ class TestPlot:
                 PHASE searching.
                 ROLE Hero.
                 DURING asking:
-                    TRANSITION TO searching WHEN accepted.
+                    WHEN accepted:
+                        TRANSITION TO searching.
                     ON ENTER:
                         WORLD DO show_dialog.
         """)
@@ -292,10 +293,24 @@ class TestPlot:
                 PHASE b.
                 ROLE R.
                 DURING a:
-                    TRANSITION TO b WHEN timeout IF NOT quest_complete.
+                    WHEN timeout:
+                        IF NOT quest_complete:
+                            TRANSITION TO b.
                     ON ENTER:
                         WORLD DO start.
         """)
+
+    def test_declarative_transition_fails(self) -> None:
+        """A declarative transition should produce a parse error."""
+        with pytest.raises(UnexpectedToken):
+            parse("""
+                PLOT Quest.
+                    PHASE a INITIAL.
+                    PHASE b.
+                    ROLE Hero.
+                    DURING a:
+                        TRANSITION TO b WHEN accepted.
+            """)
 
     def test_on_enter_exit(self) -> None:
         """ON ENTER and ON EXIT blocks should parse."""
@@ -356,7 +371,8 @@ class TestPlot:
                     WHEN emergency PRIORITY 9:
                         WORLD DO evacuate.
                 DURING a:
-                    TRANSITION TO b WHEN trigger.
+                    WHEN trigger:
+                        TRANSITION TO b.
                     ON ENTER:
                         WORLD DO start.
         """)
@@ -395,14 +411,16 @@ class TestPlot:
                 ROLE AudienceMember.
                 ROLE StageManager.
                 DURING backstage:
-                    TRANSITION TO performing WHEN time_to_start.
+                    WHEN time_to_start:
+                        TRANSITION TO performing.
                     ON ENTER:
                         ASSIGN SingerBackstage TO Singer.
                         WORLD DO prepare_stage.
                     ON EXIT:
                         UNASSIGN SingerBackstage FROM Singer.
                 DURING performing:
-                    TRANSITION TO aftermath WHEN song_ends.
+                    WHEN song_ends:
+                        TRANSITION TO aftermath.
                     ON ENTER:
                         ASSIGN SingerOnStage TO Singer.
         """)
@@ -480,7 +498,8 @@ class TestFullExample:
 
             DURING backstage:
 
-                TRANSITION TO performing WHEN time_to_start.
+                WHEN time_to_start:
+                    TRANSITION TO performing.
 
                 ON ENTER:
                     ASSIGN SingerInBackstage TO Singer.
@@ -492,7 +511,9 @@ class TestFullExample:
 
             DURING performing:
 
-                TRANSITION TO aftermath WHEN song_ends IF audience_satisfied.
+                WHEN song_ends:
+                    IF audience_satisfied:
+                        TRANSITION TO aftermath.
 
                 ON ENTER:
                     ASSIGN SingerOnStage TO Singer.

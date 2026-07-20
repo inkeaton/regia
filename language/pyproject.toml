@@ -5,8 +5,11 @@ description = "A Domain Specific Language for Game Designers to model Agent beha
 requires-python = ">=3.11"
 
 dependencies = [
-    "lark>=1.2,<2",
-    "click>=8.1,<9",
+  "click>=8.1,<9",  # cli
+  "fastapi",  # web server
+  "lark>=1.2,<2",  # parser
+  "pydantic",  # validation
+  "uvicorn",  # web server runner
 ]
 
 [project.scripts]
@@ -15,8 +18,8 @@ regia = "regia.cli:main"
 # == Development dependencies ==================================================
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0",
-    "syrupy>=4.0",
+  "pytest>=8.0",
+  "syrupy>=4.0",
 ]
 
 # == Build system ==============================================================
@@ -24,13 +27,13 @@ dev = [
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+# == Pytest configuration ======================================================
+[tool.pytest.ini_options]
+testpaths = ["automated_tests"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 # Include the .lark grammar file in the package
 [tool.setuptools.package-data]
 regia = ["grammars/*.lark"]
-
-# == Pytest configuration ======================================================
-[tool.pytest.ini_options]
-testpaths = ["tests"]

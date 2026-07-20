@@ -106,29 +106,30 @@ def compile_source(
 
     # == Stage 0: Preprocess ===================================================
     annotations = preprocess(source, filename=filename)
-    reporter.register_source(filename, annotations.clean_source)
+    reporter.register_source(filename, annotations.clean_source) # register source to later give context to the error reporter
 
     # == Stage 1: Parse ========================================================
     try:
-        tree = parse(annotations.clean_source)
+        tree = parse(annotations.clean_source) # parse the clean source
     except (UnexpectedToken, UnexpectedCharacters) as e:
-        report_syntax_error(e, reporter, filename=filename)
-        return _failure(reporter)
+        report_syntax_error(e, reporter, filename=filename) # report syntax error
+        return _failure(reporter) # return failure
 
     # == Stage 2: Build AST ====================================================
-    builder = ASTBuilder(filename=filename)
-    program: Program = builder.transform(tree)
+    builder = ASTBuilder(filename=filename) # builder is a lark transformer
 
-    if reporter.has_errors():
+    program: Program = builder.transform(tree) # transform the tree to an AST
+    if reporter.has_errors(): # if there are errors after building the AST, return failure
         return _failure(reporter)
 
     # == Stage 3: Annotate =====================================================
-    _attach_doc_comments(program, annotations.doc_comments)
+    _attach_doc_comments(program, annotations.doc_comments) # attach doc comments to AST nodes
 
     # == Stage 4: Validate =====================================================
-    validator = Validator(reporter)
-    validator.validate(program)
-    if reporter.has_errors():
+    validator = Validator(reporter) # validator checks for semantic errors
+
+    validator.validate(program) # validate the AST
+    if reporter.has_errors(): # if there are errors after validation, return failure
         return _failure(reporter)
 
     # == Stage 5: Emit AgentSpeak ==============================================
