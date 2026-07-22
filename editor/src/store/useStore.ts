@@ -26,7 +26,10 @@ export type EditorState = {
     code: string;
     ast: Program | null;
     isParsing: boolean;
+    /** Human-readable error strings derived from `compilerMessages`. */
     errors: string[];
+    /** Structured compiler diagnostics with precise line/column info for Monaco markers. */
+    compilerMessages: CompilerMessage[];
     setCode: (newCode: string) => void;
     parseCode: () => Promise<void>;
 };
@@ -129,6 +132,7 @@ export const useStore = create<EditorState>((set, get) => ({
     ast: null,
     isParsing: false,
     errors: [],
+    compilerMessages: [],
 
     /**
      * Updates the raw code string in the state.
@@ -153,11 +157,11 @@ export const useStore = create<EditorState>((set, get) => ({
             return;
         }
 
-        set({ isParsing: true, errors: [] });
+        set({ isParsing: true, errors: [], compilerMessages: [] });
 
         try {
             const parsedAst = await fetchAst(code);
-            set({ ast: parsedAst, isParsing: false });
+            set({ ast: parsedAst, isParsing: false, compilerMessages: [] });
 
         } catch (error) {
             // The transport layer throws a TransportError object on failure.
@@ -166,17 +170,20 @@ export const useStore = create<EditorState>((set, get) => ({
             const transportError = error as TransportError;
 
             let errorMessages: string[];
+            let compilerMessages: CompilerMessage[] = [];
 
             if (transportError.messages && transportError.messages.length > 0) {
-                // Format each structured compiler message into a readable string.
-                errorMessages = transportError.messages.map((msg) => msg.message);
+                // Preserve the full structured messages for Monaco inline markers,
+                // and derive the flat string list for backward compatibility.
+                compilerMessages = transportError.messages;
+                errorMessages = compilerMessages.map((msg) => msg.message);
             } else if (transportError.message) {
                 errorMessages = [transportError.message];
             } else {
                 errorMessages = ["An unknown error occurred while parsing."];
             }
 
-            set({ ast: null, errors: errorMessages, isParsing: false });
+            set({ ast: null, errors: errorMessages, compilerMessages, isParsing: false });
         }
     },
 }));
