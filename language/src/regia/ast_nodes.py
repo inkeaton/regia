@@ -413,9 +413,9 @@ class PbWhenBlock:
     """
 
     event:        str
-    priority:     Optional[int]              = None
+    priority:     Optional[int]               = None
     temper:       Optional[TemperSpec]        = None
-    prefix_stmts: List[PbStmt]               = field(default_factory=list)
+    prefix_stmts: List[PbStmt]                = field(default_factory=list)
     branches:     List[PbIfBranch]            = field(default_factory=list)
     else_branch:  Optional[PbElseBranch]      = None
     loc:          SourceLoc                   = _NO_LOC
@@ -800,8 +800,8 @@ class Program:
     """Root AST node representing a complete Regia source file.
 
     After the compiler's annotation post-pass, doc_comments contains
-    the file-level #@ annotations (those that precede any top-level
-    item). Annotations attached to specific items are stored on the
+    the file-level #@ annotations. 
+    Annotations attached to specific items are stored on the
     items themselves via their own `docs` lists.
 
     Attributes:

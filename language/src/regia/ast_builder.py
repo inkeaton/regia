@@ -63,7 +63,7 @@ class _ActionInfo:
     role_do_stmt can consume both values cleanly.
     """
 
-    __slots__ = ("name", "is_special")
+    __slots__ = ("name", "is_special") # memory optimization
 
     def __init__(self, name: str, is_special: bool) -> None:
         self.name = name

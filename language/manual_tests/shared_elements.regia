@@ -2,7 +2,7 @@
 # A shared library of elements for testing the import system.
 
 #@desc: An action to celebrate the completion of a quest.
-ACTION celebrate.
+ACTION celebrate(a).
 
 #@desc: An event indicating a quest has been finished.
 EVENT quest_completed.

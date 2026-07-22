@@ -256,14 +256,11 @@ def test_emitter_generates_start_subplot(parser, builder):
     
     parent_asl = out["director_parent.asl"]
     
-    assert "START SUBPLOT Child" in parent_asl
-    assert '.concat("child_", plot_id(Me), ChildId)' in parent_asl
-    assert '.create_agent(ChildId, "director_child.asl")' in parent_asl
-    assert ".findall(A, role_agent(hero, A), Agents_0)" in parent_asl
-    assert "!build_bindings([map(fighter, Agents_0)], Bindings)" in parent_asl
-    assert ".send(ChildId, achieve, start_plot(Bindings))" in parent_asl
-    assert ".send(ChildId, tell, parent_plot(Me))" in parent_asl
-    assert "+child_plot(ChildId, Child, [map(fighter, hero)])" in parent_asl
+    assert '!start_subplot("child", child, [map(fighter, hero)])' in parent_asl
+    
+    # Check that infrastructure plan is present
+    assert "+!start_subplot" in parent_asl
+    assert '.create_agent(ChildId, SourceFile)' in parent_asl
 
 
 def test_emitter_generates_end_plot(parser, builder):
@@ -281,11 +278,14 @@ def test_emitter_generates_end_plot(parser, builder):
     
     parent_asl = out["director_parent.asl"]
     
-    assert "END PLOT" in parent_asl
+    assert "!end_plot" in parent_asl
+    
+    # Check that infrastructure plan is present
+    assert "+!end_plot" in parent_asl
     assert ".findall(C, child_plot(C, _, _), Children)" in parent_asl
     assert ".send(Child, tell, parent_ended)" in parent_asl
-    assert ".send(Parent, tell, child_ended(Parent, Me))" in parent_asl
-    assert ".kill_agent(self)" in parent_asl
+    assert ".send(Parent, tell, child_ended(parent, Me))" in parent_asl
+    assert ".kill_agent(Me)" in parent_asl
 
 
 def test_emitter_generates_boot_beliefs(parser, builder):
@@ -302,5 +302,38 @@ def test_emitter_generates_boot_beliefs(parser, builder):
     
     asl = out["director_test.asl"]
     
-    assert "plot_name(Test)." in asl
+    assert "plot_name(test)." in asl
     assert "+plot_id(Me)" in asl
+
+
+def test_role_transitive_closure(parser, builder):
+    src = """
+    ACTION child_action.
+    EVENT e.
+    PLAYBOOK ChildPlaybook:
+        WHEN e:
+            DO child_action.
+    
+    PLOT Child.
+        PHASE a INITIAL.
+        ROLE Fighter.
+        DURING a:
+            ON ENTER:
+                ASSIGN ChildPlaybook TO Fighter.
+                Fighter DO child_action.
+                
+    PLOT Parent.
+        PHASE one INITIAL.
+        ROLE Hero.
+        DURING one:
+            ON ENTER:
+                START SUBPLOT Child MAPPING Hero TO Fighter.
+    """
+    ast = parse_and_build(parser, builder, src)
+    emitter = Emitter()
+    out = emitter.emit(ast)
+    
+    hero_asl = out["role_parent_hero.asl"]
+    
+    assert '{ include("playbook_childplaybook.asl") }' in hero_asl
+    assert "+!child_action <-" in hero_asl

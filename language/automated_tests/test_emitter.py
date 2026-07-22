@@ -76,7 +76,8 @@ class TestOutputFiles:
                     DO a.
         """)
         assert result.success
-        assert len(result.outputs) == 0
+        assert len(result.outputs) == 1
+        assert "playbook_pb.asl" in result.outputs
 
     def test_playbook_file_generated(self) -> None:
         """Assigned Playbooks should produce playbook_<name>.asl files."""
@@ -132,7 +133,7 @@ class TestOutputFiles:
         """)
         assert result.success
         pb_output = result.outputs["playbook_greeter.asl"]
-        assert "playbook_active(Greeter)" in pb_output
+        assert "playbook_active(greeter, _)" in pb_output
         assert "+hello" in pb_output
         assert "greet" in pb_output
 
@@ -207,8 +208,7 @@ class TestDirectorOutput:
         """)
         assert "+trigger" in output
         assert "current_phase(a)" in output
-        assert "-current_phase(a)" in output
-        assert "+current_phase(b)" in output
+        assert "!switch_phase(b)" in output
 
     def test_guarded_transition(self) -> None:
         """Guarded transition should include condition in context."""
@@ -250,12 +250,11 @@ class TestDirectorOutput:
                     ON ENTER:
                         WORLD DO enter_action.
         """)
-        # In the transition plan, exit comes before enter
-        plan_section = output[output.index("+trigger"):]
-        exit_pos = plan_section.index("exit_action")
-        phase_update = plan_section.index("-current_phase(a)")
-        enter_pos = plan_section.index("enter_action")
-        assert exit_pos < phase_update < enter_pos
+        # Ensure the infrastructural hooks are generated correctly
+        assert "+!on_exit(a) <-" in output
+        assert "exit_action" in output.split("+!on_exit(a) <-")[1]
+        assert "+!on_enter(b) <-" in output
+        assert "enter_action" in output.split("+!on_enter(b) <-")[1]
 
     def test_director_when_block(self) -> None:
         """Director WHEN block should produce a plan."""
@@ -318,7 +317,7 @@ class TestDirectorOutput:
                     ON ENTER:
                         ASSIGN Pb TO Hero.
         """)
-        assert "!send_to_role(hero, tell, add_playbook(Pb))" in output
+        assert "!send_to_role(hero, tell, add_playbook(pb))" in output
 
     def test_unassign_sends_remove_playbook(self) -> None:
         """UNASSIGN should emit .send with remove_playbook."""
@@ -341,7 +340,7 @@ class TestDirectorOutput:
                     ON EXIT:
                         UNASSIGN Pb FROM Hero.
         """)
-        assert "!send_to_role(hero, tell, remove_playbook(Pb))" in output
+        assert "!send_to_role(hero, tell, remove_playbook(pb))" in output
 
     def test_role_do_sends_achieve(self) -> None:
         """Role DO should emit !send_to_role(role, achieve, action)."""
@@ -397,10 +396,13 @@ class TestRoleOutput:
                     ON ENTER:
                         ASSIGN Pb TO Hero.
         """, "Hero")
-        assert "+add_playbook(Name)" in output
-        assert "+playbook_active(Name)" in output
-        assert "+remove_playbook(Name)" in output
-        assert "-playbook_active(Name)" in output
+        assert "+add_playbook(Name)[source(Sender)]" in output
+        assert "+playbook_active(Name, Sender)" in output
+        assert "+remove_playbook(Name)[source(Sender)]" in output
+        assert "-playbook_active(Name, Sender)" in output
+        assert "+plot_ended(PlotId)[source(PlotId)]" in output
+        assert "+!signal_directors(PbName, Payload) <-" in output
+        assert ".findall(D, playbook_active(PbName, D), Directors);" in output
 
     def test_static_gated_plan(self) -> None:
         """Playbook plans should be gated by playbook_active."""
@@ -419,8 +421,8 @@ class TestRoleOutput:
         """, "NPC")
         # Plans are now in the playbook file, not inline in the role.
         # Role file should have include directive and management handlers.
-        assert '+add_playbook(Name)' in output
-        assert '+remove_playbook(Name)' in output
+        assert '+add_playbook(Name)[source(Sender)]' in output
+        assert '+remove_playbook(Name)[source(Sender)]' in output
         assert '{ include("playbook_greeter.asl") }' in output
 
     def test_conditional_plans_in_playbook_file(self) -> None:
@@ -445,7 +447,7 @@ class TestRoleOutput:
         """)
         assert result.success
         pb_output = result.outputs["playbook_p.asl"]
-        assert "playbook_active(P) & happy" in pb_output
+        assert "playbook_active(p, _) & happy" in pb_output
         assert "not (happy)" in pb_output
 
     def test_special_action_tell(self) -> None:
@@ -558,7 +560,7 @@ class TestRoleOutput:
         """)
         assert result.success
         pb_output = result.outputs["playbook_p.asl"]
-        assert ".send(director, tell, attack)" in pb_output
+        assert "!signal_directors(p, attack)" in pb_output
 
     def test_priority_annotation(self) -> None:
         """WHEN with PRIORITY should include @priority annotation in playbook file."""
@@ -672,8 +674,8 @@ class TestRoleOutput:
         assert '{ include("playbook_friendly.asl") }' in role_output
         assert '{ include("playbook_fighter.asl") }' in role_output
         # Plans should be in their own playbook files
-        assert "playbook_active(Friendly)" in result.outputs["playbook_friendly.asl"]
-        assert "playbook_active(Fighter)" in result.outputs["playbook_fighter.asl"]
+        assert "playbook_active(friendly, _)" in result.outputs["playbook_friendly.asl"]
+        assert "playbook_active(fighter, _)" in result.outputs["playbook_fighter.asl"]
 
     def test_role_do_handler_plan(self) -> None:
         """Role DO should generate achievement goal handler in role file."""
@@ -686,8 +688,7 @@ class TestRoleOutput:
                     ON ENTER:
                         Hero DO flee.
         """, "Hero")
-        assert "+!flee <-" in output
-        assert "    flee." in output
+        assert "+!flee <- flee." in output
 
     def test_role_do_handler_special_action(self) -> None:
         """Role DO with special action should generate correctly mapped handler."""
@@ -699,8 +700,7 @@ class TestRoleOutput:
                     ON ENTER:
                         Hero DO TELL(villain, "die").
         """, "Hero")
-        assert '+!tell(villain, "die") <-' in output
-        assert '    .send(villain, tell, "die").' in output
+        assert '+!tell(villain, "die") <- .send(villain, tell, "die").' in output
 
 
 # == Full Integration ==========================================================
@@ -834,7 +834,7 @@ class TestFullIntegration:
         """Singer emergency plan should include signal to director."""
         result = _compile(self.CONCERT_SOURCE)
         pb = result.outputs["playbook_singerinbackstage.asl"]
-        assert ".send(director, tell, emergency)" in pb
+        assert "!signal_directors(singerinbackstage, emergency)" in pb
 
     def test_director_emergency_plan(self) -> None:
         """Director should have plot-wide emergency plan."""

@@ -1,0 +1,24 @@
+mas regia_test {
+
+    // The Director agent (emitted by Regia compiler)
+    agent my_director:director_epicbattle.asl {
+        // Inject the initial knowledge about who is playing what role
+        beliefs: role_agent(hero, alice)
+                 role_agent(villain, bob)
+                 role_agent(villain, charlie)
+        // Add the boot goal to trigger the ON ENTER hooks
+        goals: boot
+    }
+
+    // Our test workers (they all share the same source file)
+    agent bob:bob.asl
+    agent alice:bob.asl
+    agent charlie:bob.asl
+
+    // The runner that stimulates the director
+    agent test_runner:test_runner.asl {
+        // Knows who the director is
+        beliefs: target_director(my_director)
+    }
+
+}

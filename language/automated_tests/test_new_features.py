@@ -67,8 +67,8 @@ def test_inline_transitions():
     
     # Look for the plan for the trigger event
     assert "+trigger" in director_code
-    assert "-current_phase(start)" in director_code
-    assert "+current_phase(end)" in director_code
+    assert "!switch_phase(end)" in director_code
+    assert "+!on_exit(start) <-" in director_code
     assert "jump" in director_code
 
 def test_inline_transitions_invalid_placement():

@@ -1,14 +1,6 @@
 mas vesna {
 
     // Sentry agents - agent names must match Godot node names
-    
-    agent sentry1:sentry.asl {
-        ag-class:   vesna.VesnaAgent
-        temper:     temper(aggressiveness(0.6), laziness(0.2), fear(0.0)[mood], sympathy(0.0)[mood])
-        address:    localhost
-        port:       9071
-        strategy:   most_similar
-    }
 
     agent sentry2:sentry.asl {
         ag-class:   vesna.VesnaAgent
@@ -122,6 +114,14 @@ mas vesna {
         strategy:   most_similar
         address: localhost
         port: 9200
+    }
+
+    agent director_test:test.asl {
+        ag-class: vesna.VesnaAgent
+        temper:     temper(laziness(0.1), aggressiveness(0.8))
+        strategy:   most_similar
+        address: localhost
+        port: 9071
     }
 
 }

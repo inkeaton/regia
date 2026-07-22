@@ -25,7 +25,7 @@ Pipeline stages
   5. Emit        (AST to AgentSpeak strings)
 """
 
-from __future__ import annotations
+from __future__ import annotations # allows the use of types as annotations
 
 import sys
 
@@ -105,38 +105,38 @@ def compile_source(
     reporter = ErrorReporter()
 
     # == Stage 0: Preprocess ===================================================
-    annotations = preprocess(source, filename=filename)
+    annotations = preprocess(source, filename=filename) # (preprocessor.py)
     reporter.register_source(filename, annotations.clean_source) # register source to later give context to the error reporter
 
     # == Stage 1: Parse ========================================================
     try:
-        tree = parse(annotations.clean_source) # parse the clean source
+        tree = parse(annotations.clean_source) # parse the clean source (parser.py)
     except (UnexpectedToken, UnexpectedCharacters) as e:
-        report_syntax_error(e, reporter, filename=filename) # report syntax error
-        return _failure(reporter) # return failure
+        report_syntax_error(e, reporter, filename=filename) # report syntax error (syntax_errors.py)
+        return _failure(reporter) # return failure (here)
 
     # == Stage 2: Build AST ====================================================
     builder = ASTBuilder(filename=filename) # builder is a lark transformer
 
-    program: Program = builder.transform(tree) # transform the tree to an AST
+    program: Program = builder.transform(tree) # transform the tree to an AST (ast_builder.py)
     if reporter.has_errors(): # if there are errors after building the AST, return failure
-        return _failure(reporter)
+        return _failure(reporter) # return failure (here)
 
     # == Stage 3: Annotate =====================================================
-    _attach_doc_comments(program, annotations.doc_comments) # attach doc comments to AST nodes
+    _attach_doc_comments(program, annotations.doc_comments) # attach doc comments to AST nodes (ast_builder.py)
 
     # == Stage 4: Validate =====================================================
-    validator = Validator(reporter) # validator checks for semantic errors
+    validator = Validator(reporter) # validator checks for semantic errors (validator.py)
 
     validator.validate(program) # validate the AST
     if reporter.has_errors(): # if there are errors after validation, return failure
-        return _failure(reporter)
+        return _failure(reporter) # return failure (here)
 
     # == Stage 5: Emit AgentSpeak ==============================================
     outputs: Dict[str, str] = {}
     if emit:
-        emitter = Emitter()
-        outputs = emitter.emit(program)
+        emitter = Emitter() # emitter converts AST to AgentSpeak strings (emitter.py)
+        outputs = emitter.emit(program) # emit the AST (emitter.py)
 
     return CompileResult(
         success       = True,

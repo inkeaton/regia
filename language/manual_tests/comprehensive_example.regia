@@ -1,0 +1,116 @@
+#@description: Comprehensive minimal example of Regia language constructs.
+#-              This file uses every major language feature (Playbooks, 
+#-              Plots, Subplots, Priorities, Tempers, and special DO commands).
+#@author: Agent
+#@version: 1.0
+
+# ==============================================================================
+# BASE VOCABULARY
+# ==============================================================================
+
+# Actions (operations agents or world can do)
+ACTION wake_up.
+ACTION go_home.
+
+# Events (triggers from environment or self)
+EVENT morning_comes.
+EVENT tired SELF.                 # A self-generated event (origin SELF)
+EVENT emergency_alarm.
+EVENT task_finished.
+EVENT safe.
+
+# Facts (beliefs agents hold)
+FACT is_raining.
+FACT has_coffee.
+
+# ==============================================================================
+# PLAYBOOKS
+# ==============================================================================
+# Playbooks are generic, context-free behaviors that agents can adopt.
+
+PLAYBOOK Worker:
+    # A simple reactive plan with a priority
+    WHEN morning_comes PRIORITY 5:
+        DO wake_up.
+        DO BELIEVE(has_coffee).
+    
+    # Emotional traits and internal conditions
+    WHEN tired TEMPER diligence(0.8) EFFECTS stress(-0.5):
+        DO PRINT("Taking a break...").
+        IF has_coffee:
+            DO FORGET(has_coffee).
+        ELSE:
+            DO PRINT("I need coffee!").
+    
+    # Conditional branching with prefix statements
+    WHEN emergency_alarm:
+        DO PRINT("Alarm heard!"). # Executes before any branch
+        IF is_raining:
+            DO TELL(boss, "Staying inside!").
+        ELSE:
+            DO BROADCAST("Evacuating!").
+            DO ACHIEVE(go_home).
+            SIGNAL safe.              # Send a signal to the active Director
+
+PLAYBOOK Specialist:
+    WHEN task_finished:
+        DO PRINT("I did it!").
+
+# ==============================================================================
+# PLOTS
+# ==============================================================================
+
+# A child plot demonstrating sub-scenarios
+PLOT SubTask.
+    PHASE working INITIAL.
+    PHASE done.
+    
+    ROLE Assignee.
+
+    DURING working:
+        ON ENTER:
+            ASSIGN Specialist TO Assignee.
+            
+        WHEN task_finished:
+            WORLD DO PRINT("SubTask completed!").
+            END PLOT.             # Terminates the plot and notifies parent
+
+# The main parent plot
+PLOT OfficeDay.
+    
+    PHASE morning INITIAL.
+    PHASE afternoon.
+    
+    ROLE Employee.
+    
+    # Global plot rules that apply across all phases
+    DURING PLOT:
+        WHEN emergency_alarm PRIORITY 10:
+            WORLD DO PRINT("Global Evacuation").
+            Employee DO go_home.  # Director forcing an agent to do an action
+            END PLOT.
+
+    DURING morning:
+        ON ENTER:
+            ASSIGN Worker TO Employee.
+            WORLD DO PRINT("The office opens.").
+            
+        WHEN tired:
+            # Inline transition with condition
+            IF is_raining:
+                WORLD DO PRINT("Too rainy to leave.").
+            ELSE:
+                TRANSITION TO afternoon.
+                
+        ON EXIT:
+            WORLD DO PRINT("Morning is over.").
+
+    DURING afternoon:
+        ON ENTER:
+            # Spawn a subplot, mapping our Employee role to the Assignee role
+            START SUBPLOT SubTask MAPPING Employee TO Assignee.
+            
+        # Catching the built-in termination event of a child plot
+        WHEN child_ended:
+            UNASSIGN Worker FROM Employee.
+            WORLD DO PRINT("The day is done.").

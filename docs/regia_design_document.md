@@ -50,6 +50,8 @@ An **Action** is a named operation that an agent can perform. It may optionally 
 ```regia
 ACTION greet_back.
 ACTION give_item(item, target).
+ACTION vesna.transition_to(state).
+ACTION .print(message).
 ```
 
 Actions are the atomic units of agent behaviour. They correspond to AgentSpeak internal actions or environment commands. Regia deliberately does not specify *how* an action is implemented — it only names the interface.
@@ -189,7 +191,7 @@ The special action names `TELL`, `BROADCAST`, `ACHIEVE`, `BELIEVE`, `FORGET`, an
 SIGNAL emergency.
 ```
 
-A `SIGNAL` maps to `.send(director, tell, emergency)` in AgentSpeak. The Playbook does not need to know who the Director is — that binding is resolved at runtime.
+A `SIGNAL` maps to an infrastructural helper `!signal_directors` in AgentSpeak, which queries all active `playbook_active(Name, DirectorId)` beliefs and broadcasts the signal to every Director currently managing this agent. The Playbook does not need to know who the Directors are — that binding is resolved dynamically at runtime, allowing an agent to safely participate in multiple concurrent Plots.
 
 ### 4.4 Conditional Branching (IF / ELSE)
 
@@ -499,9 +501,9 @@ The following diagram captures the runtime relationships between Regia concepts:
 │         ▼                ▼                           │
 │  ┌─────────────────────────────────────────────┐     │
 │  │  ROLE-bound AGENT                           │     │
-│  │  - holds playbook_active(pb) beliefs        │     │
+│  │  - holds playbook_active(pb, Director)      │     │
 │  │  - runs Playbook WHEN plans                 │     │
-│  │  - sends SIGNAL back to Director            │     │
+│  │  - uses !signal_directors to broadcast      │     │
 │  └─────────────────────────────────────────────┘     │
 └─────────────────────────────────────────────────────┘
 ```
@@ -643,7 +645,7 @@ If an `emergency` event fires at any point, the `DURING PLOT` handler fires: the
 | `DO ACHIEVE(goal).` | `!goal` |
 | `DO BELIEVE(fact).` | `+fact` |
 | `DO FORGET(fact).` | `-fact` |
-| `SIGNAL emergency.` | `.send(director, tell, emergency)` |
+| `SIGNAL emergency.` | `!signal_directors(playbook_name, emergency)` |
 | `ASSIGN Pb TO Role.` | Director: `.send(agent, tell, add_playbook(Pb))` |
 | `UNASSIGN Pb FROM Role.` | Director: `.send(agent, tell, remove_playbook(Pb))` |
 | `WORLD DO action.` | Director: `action` (internal/env action) |
@@ -662,10 +664,14 @@ If an `emergency` event fires at any point, the `DURING PLOT` handler fires: the
 
 When a Director executes `ASSIGN Playbook TO Role`, one of two strategies could realise this in AgentSpeak:
 
-- **Static gating**: All Playbook plans are pre-compiled into every Role's `.asl` template, guarded by a `playbook_active(Name)` belief. `ASSIGN`/`UNASSIGN` simply toggles this belief. This is the approach currently implemented.
+- **Static gating with Transitive Closure**: All Playbook plans are pre-compiled into every Role's `.asl` template, guarded by a `playbook_active(Name, DirectorId)` belief. `ASSIGN`/`UNASSIGN` simply toggles this belief. To support subplots, the compiler runs a Depth-First Search over all role mappings and statically includes the **transitive closure** of every Playbook the agent might ever need. This is the approach currently implemented.
 - **Dynamic injection**: The Director uses Jason's `.add_plan`/`.remove_plan` API to inject and remove plans at runtime.
 
-Static gating is simpler, more predictable, and easier to debug, at the cost of including unused plans in every agent's file. Dynamic injection is more memory-efficient but harder to reason about statically.
+Static gating is simpler, more predictable, and easier to debug, at the cost of including unused plans in every agent's file (though this is mitigated by the fact that Jason ignores plans whose context beliefs are false).
+
+### 11.2 Fault Tolerance and Agent Death
+
+If an agent unexpectedly terminates, the environment can broadcast a `+agent_died(Agent)` belief to the system. Directors possess infrastructural handlers to catch this event and immediately prune the dead agent from their internal `role_agent` registry. This cleanly decouples failure states and ensures that Directors do not stall indefinitely attempting to communicate with dead agents.
 
 ### 11.2 Roles as Indirection
 

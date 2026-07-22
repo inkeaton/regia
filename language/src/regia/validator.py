@@ -54,29 +54,43 @@ _IMPLICIT_EVENTS: frozenset[str] = frozenset([
 ])
 
 
+from dataclasses import dataclass
+
 # == Symbol table ==============================================================
-# Records where each name was declared, so we can report both the
-# "first declared here" location and the "duplicate" location.
+# Records where each name was declared and its arity, so we can report
+# duplicate locations and verify arguments during usage.
+
+@dataclass
+class DeclInfo:
+    """Information about a declared symbol.
+
+    Attributes:
+        loc:   Source location of the declaration.
+        arity: Number of arguments the symbol accepts (for actions/facts).
+    """
+    loc: SourceLoc
+    arity: int = 0
+
 
 class _SymbolTable:
-    """Tracks declared names and their source locations.
+    """Tracks declared names, their source locations, and arities.
 
     Maintains separate namespaces for actions, events, facts,
     playbooks, and per-plot scopes for roles and phases.
 
     Attributes:
-        actions:   Declared action names -> source location.
-        events:    Declared event names -> source location.
-        facts:     Declared fact names -> source location.
-        playbooks: Declared playbook names -> source location.
+        actions:   Declared action names -> DeclInfo.
+        events:    Declared event names -> DeclInfo.
+        facts:     Declared fact names -> DeclInfo.
+        playbooks: Declared playbook names -> DeclInfo.
     """
 
     def __init__(self) -> None:
         """Initialise empty symbol table."""
-        self.actions:   Dict[str, SourceLoc] = {}
-        self.events:    Dict[str, SourceLoc] = {}
-        self.facts:     Dict[str, SourceLoc] = {}
-        self.playbooks: Dict[str, SourceLoc] = {}
+        self.actions:   Dict[str, DeclInfo] = {}
+        self.events:    Dict[str, DeclInfo] = {}
+        self.facts:     Dict[str, DeclInfo] = {}
+        self.playbooks: Dict[str, DeclInfo] = {}
 
 
 class _PlotScope:
@@ -178,32 +192,32 @@ class Validator:
                 pass  # Import paths are resolved before validation
             elif isinstance(item, ActionDecl):
                 self._declare(
-                    self._symbols.actions, "action", item.name, item.loc,
+                    self._symbols.actions, "action", item.name, item.loc, len(item.params)
                 )
             elif isinstance(item, EventDecl):
                 self._declare(
-                    self._symbols.events, "event", item.name, item.loc,
+                    self._symbols.events, "event", item.name, item.loc, 0
                 )
             elif isinstance(item, FactDecl):
                 self._declare(
-                    self._symbols.facts, "fact", item.name, item.loc,
+                    self._symbols.facts, "fact", item.name, item.loc, len(item.params)
                 )
             elif isinstance(item, PlaybookDef):
                 self._declare(
-                    self._symbols.playbooks, "playbook", item.name, item.loc,
+                    self._symbols.playbooks, "playbook", item.name, item.loc, 0
                 )
             elif isinstance(item, PlotDef):
                 # Plots themselves don't need a namespace check for
-                # now (single-file, one plot is typical). But we could
-                # add duplicate plot detection if needed.
+                # now. But we could add duplicate plot detection if needed.
                 pass
 
     def _declare(
         self,
-        namespace: Dict[str, SourceLoc],
+        namespace: Dict[str, DeclInfo],
         kind: str,
         name: str,
         loc: SourceLoc,
+        arity: int = 0,
     ) -> None:
         """Register a name in a namespace, reporting duplicates.
 
@@ -212,17 +226,18 @@ class Validator:
             kind:      Human-readable kind ("action", "event", etc.).
             name:      The identifier being declared.
             loc:       Source location of this declaration.
+            arity:     Number of arguments the symbol accepts.
         """
         if name in namespace:
             prev = namespace[name]
             self._error(
                 loc,
                 f"Duplicate {kind} declaration: '{name}'"
-                f" (previously declared at line {prev.line}).",
+                f" (previously declared at line {prev.loc.line}).",
             )
             return
 
-        namespace[name] = loc
+        namespace[name] = DeclInfo(loc, arity)
 
     # == Phase 2a: validate Playbooks ==========================================
 
@@ -263,7 +278,7 @@ class Validator:
             stmt: A DoStmt or SignalStmt.
         """
         if isinstance(stmt, DoStmt):
-            self._check_action_ref(stmt.action, stmt.is_special, stmt.loc)
+            self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
         elif isinstance(stmt, SignalStmt):
             self._check_event_ref(stmt.event, stmt.loc)
 
@@ -445,11 +460,11 @@ class Validator:
             self._check_role_ref(stmt.role, stmt.loc, scope)
 
         elif isinstance(stmt, WorldDoStmt):
-            self._check_action_ref(stmt.action, stmt.is_special, stmt.loc)
+            self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
 
         elif isinstance(stmt, RoleDoStmt):
             self._check_role_ref(stmt.role, stmt.loc, scope)
-            self._check_action_ref(stmt.action, stmt.is_special, stmt.loc)
+            self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
 
         elif isinstance(stmt, InlineTransitionStmt):
             self._check_inline_transition(stmt, scope)
@@ -471,7 +486,7 @@ class Validator:
             cond: The condition expression to validate.
         """
         if isinstance(cond, FactRef):
-            self._check_fact_ref(cond.name, cond.loc)
+            self._check_fact_ref(cond.name, cond.args, cond.loc)
 
         elif isinstance(cond, ConditionNot):
             self._validate_condition(cond.operand)
@@ -638,6 +653,7 @@ class Validator:
     def _check_action_ref(
         self,
         name: str,
+        args: List,
         is_special: bool,
         loc: SourceLoc,
     ) -> None:
@@ -648,6 +664,7 @@ class Validator:
 
         Args:
             name:       The action name.
+            args:       The arguments provided to the action.
             is_special: True if this is a special AgentSpeak primitive.
             loc:        Source location of the reference.
         """
@@ -661,6 +678,13 @@ class Validator:
                 hint=f"Add 'ACTION {name}.' at the top of the file.",
             )
             return
+
+        decl = self._symbols.actions[name]
+        if decl.arity != len(args):
+            self._error(
+                loc,
+                f"Action '{name}' expects {decl.arity} argument(s), but {len(args)} were provided."
+            )
 
         self._used_actions.add(name)
 
@@ -688,11 +712,12 @@ class Validator:
 
         self._used_events.add(name)
 
-    def _check_fact_ref(self, name: str, loc: SourceLoc) -> None:
+    def _check_fact_ref(self, name: str, args: List, loc: SourceLoc) -> None:
         """Check that a referenced fact is declared.
 
         Args:
             name: The fact name.
+            args: The arguments provided to the fact.
             loc:  Source location of the reference.
         """
         if name not in self._symbols.facts:
@@ -702,6 +727,13 @@ class Validator:
                 hint=f"Add 'FACT {name}.' at the top of the file.",
             )
             return
+
+        decl = self._symbols.facts[name]
+        if decl.arity != len(args):
+            self._error(
+                loc,
+                f"Fact '{name}' expects {decl.arity} argument(s), but {len(args)} were provided."
+            )
 
         self._used_facts.add(name)
 
@@ -765,21 +797,21 @@ class Validator:
 
     def _warn_unused(
         self,
-        declared: Dict[str, SourceLoc],
+        declared: Dict[str, DeclInfo],
         used: Set[str],
         kind: str,
     ) -> None:
         """Emit a warning for each declared-but-unused name.
 
         Args:
-            declared: The namespace of declared names.
+            declared: The namespace of declared names (mapped to DeclInfo).
             used:     The set of names that were referenced.
             kind:     Human-readable kind ("action", "event", etc.).
         """
-        for name, loc in declared.items():
+        for name, decl in declared.items():
             if name not in used:
                 self._warning(
-                    loc,
+                    decl.loc,
                     f"Declared {kind} '{name}' is never used.",
                 )
 

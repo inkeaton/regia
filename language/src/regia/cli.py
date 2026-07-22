@@ -39,25 +39,37 @@ def main(ctx: click.Context, quiet: bool, verbose: bool) -> None:
 
 def _print_diagnostics(result, quiet: bool) -> None:
     """Helper to print diagnostics consistently."""
-    for msg in result.messages:
-        # If quiet, only print errors
+    for msg in sorted(result.messages, key=lambda m: (m.filename, m.line)):
         if quiet and msg.severity != Severity.ERROR:
             continue
 
-        prefix = f"[{msg.severity.name}]"
+        divider = "=" * 60
+        label = "ERROR" if msg.severity == Severity.ERROR else "WARNING"
         if msg.severity == Severity.ERROR:
-            prefix = click.style(prefix, fg="red", bold=True)
+            label = click.style(label, fg="red", bold=True)
         elif msg.severity == Severity.WARNING:
-            prefix = click.style(prefix, fg="yellow", bold=True)
+            label = click.style(label, fg="yellow", bold=True)
 
-        # Include filename in location when available
         if msg.filename:
             colored_name = click.style(msg.filename, fg="blue")
             location = f"{colored_name}:{msg.line}, col {msg.column}"
         else:
             location = f"line {msg.line}, col {msg.column}"
 
-        click.echo(f"{prefix} {location}: {msg.message}")
+        parts = [
+            f"\n{divider}",
+            f" {label}  {location}",
+            f" {msg.message}",
+        ]
+        if msg.hint:
+            parts.append(f" Hint: {msg.hint}")
+        if msg.source_line:
+            parts.append("")
+            parts.append(f"    {msg.source_line}")
+            parts.append(" " * (4 + msg.column) + click.style("^" * msg.length, fg="red", bold=True))
+        parts.append(divider)
+
+        click.echo("\n".join(parts))
 
 
 def _print_summary(result, quiet: bool) -> None:

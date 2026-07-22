@@ -41,8 +41,8 @@ export type EditorState = {
  * injected via the transport layer.
  */
 const INITIAL_CODE = `\
-ACTION walk.
-ACTION speak.
+ACTION walk(ARG1).
+ACTION speak(ARG1, ARG2).
 ACTION hide.
 
 EVENT start_scene.
@@ -62,7 +62,7 @@ PLAYBOOK PbExplore:
     WHEN danger_spotted PRIORITY 8:
         DO hide.
         IF has_weapon AND NOT (health_low):
-            DO speak(threat).
+            DO speak("threat", "Charge!").
             SIGNAL timer_ticked.
         IF health_low OR NOT (is_daytime):
             DO PRINT("Too weak to fight").

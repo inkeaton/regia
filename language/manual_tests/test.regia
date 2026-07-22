@@ -1,0 +1,53 @@
+#@description: This is a massive description that spans multiple lines!
+#-              You can freely type paragraphs here without needing 
+#-              long prefix on every line.
+#@author: inkeaton
+#@version: 0.0.1
+
+# actions
+ACTION vesna.walk(a).
+ACTION vesna.pick_up_phone.
+
+# events
+EVENT phone_rings.
+EVENT mom_calls.
+EVENT danger_spotted.
+
+# facts
+FACT happy.
+FACT is_daytime.
+
+
+# playbook
+PLAYBOOK Routine:
+
+    WHEN mom_calls:
+        DO vesna.walk(home).
+    
+    WHEN phone_rings:
+        IF happy:
+            DO vesna.pick_up_phone.
+
+# plot
+PLOT BigDay.
+
+    PHASE peace INITIAL.
+    PHASE battle.
+    
+    ROLE Guy.
+    
+    DURING peace:
+        ON ENTER:
+            WORLD DO PRINT("Peace begins").
+            ASSIGN Routine TO Guy.     
+        WHEN danger_spotted:
+            IF NOT is_daytime:
+                TRANSITION TO battle.
+    
+    DURING battle:
+        ON ENTER:
+            WORLD DO PRINT("Battle begins").
+            UNASSIGN Routine FROM Guy.    
+        WHEN danger_spotted:
+            IF (is_daytime):
+                TRANSITION TO peace.

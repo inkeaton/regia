@@ -2,11 +2,6 @@
 Error reporting for the Regia compiler.
 
 Collects, formats, and displays compiler messages (errors and warnings).
-Ported from v0.1 with improvements:
-  - Public ``messages`` property (no more accessing private fields)
-  - Counters maintained incrementally (no full-scan on every check)
-  - Source-line caret display is centralised here only
-  - Multi-source registry for multi-file compilation
 """
 
 from dataclasses import dataclass
@@ -69,7 +64,7 @@ class ErrorReporter:
                     compilation. For multi-file, call register_source()
                     for each file instead.
         """
-        self._source_registry: Dict[str, List[str]] = {}
+        self._source_registry: Dict[str, List[str]]  = {}
         self._messages:        List[CompilerMessage] = []
         self._error_count:     int                   = 0
         self._warning_count:   int                   = 0
@@ -139,11 +134,6 @@ class ErrorReporter:
 
     # == Queries ===============================================================
 
-    @property
-    def messages(self) -> List[CompilerMessage]:
-        """Return a copy of all collected messages."""
-        return list(self._messages)
-
     def has_errors(self) -> bool:
         """Check whether any errors have been recorded.
 
@@ -151,6 +141,11 @@ class ErrorReporter:
             True if at least one ERROR-severity message exists.
         """
         return self._error_count > 0
+
+    @property
+    def messages(self) -> List[CompilerMessage]:
+        """Return a copy of all collected messages."""
+        return list(self._messages)
 
     @property
     def error_count(self) -> int:
