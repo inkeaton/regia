@@ -1,0 +1,54 @@
+# Base Vocabulary
+ACTION vesna.via.set_visible(visible) AS set_visible.
+ACTION vesna.via.utter(text) AS utter.
+ACTION vesna.via.set_dialogue(node) AS set_dialogue.
+
+# We declare the Jason internal actions we need to bridge with the environment
+ACTION vesna.via.spawn_item(item, waypoint) AS spawn_item.
+ACTION vesna.via.despawn_item(item) AS despawn_item.
+
+EVENT test_utter.
+EVENT test_vanish.
+EVENT test_spawn.
+EVENT test_despawn.
+EVENT picked_up_flower.
+
+# The Playbook that will be assigned to the scientist
+PLAYBOOK ScientistFeatures:
+
+    WHEN test_utter:
+        DO PRINT("Testing utter!").
+        DO utter("Behold my speech bubble!").
+        
+    WHEN test_vanish:
+        DO PRINT("Testing vanish!").
+        DO utter("Poof! I'm gone! (Wait 5 seconds)").
+        DO set_visible(false).
+        DO WAIT(5000).
+        DO set_visible(true).
+        DO utter("And I'm back!").
+
+    WHEN test_spawn:
+        DO PRINT("Spawning a flower in the garden!").
+        DO spawn_item("flower", "garden").
+        DO utter("Flower conjured!").
+
+    WHEN test_despawn:
+        DO PRINT("Despawning the flower!").
+        DO despawn_item("flower").
+        DO utter("Flower banished!").
+
+    WHEN picked_up_flower:
+        DO PRINT("The player picked up the flower!").
+        DO utter("Hey! You took my flower!").
+        DO set_dialogue("thanks_for_flower").
+
+# The Plot managed by the Director agent
+PLOT TestFeatures.
+    PHASE main INITIAL.
+
+    ROLE Scientist.
+
+    DURING main:
+        ON ENTER:
+            ASSIGN ScientistFeatures TO Scientist.

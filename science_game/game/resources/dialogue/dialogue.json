@@ -1,0 +1,59 @@
+{
+  "test_features": {
+	"text": "Behold my new Regia capabilities! What shall I do?",
+	"portrait": "res://resources/images/portraits/cop.png",
+	"options": [
+	  {
+		"id": "opt_utter",
+		"text": "Speak to me!",
+		"next": "test_features",
+		"event": "test_utter"
+	  },
+	  {
+		"id": "opt_vanish",
+		"text": "Perform a vanishing act.",
+		"next": "exit",
+		"event": "test_vanish"
+	  },
+	  {
+		"id": "opt_spawn",
+		"text": "Conjure a flower.",
+		"next": "test_features",
+		"event": "test_spawn"
+	  },
+	  {
+		"id": "opt_despawn",
+		"text": "Banish the flower.",
+		"next": "test_features",
+		"event": "test_despawn"
+	  },
+	  {
+		"id": "opt_leave",
+		"text": "That is all. (Leave)",
+		"next": "exit"
+	  }
+	]
+  },
+  "wait_for_pickup": {
+	"text": "The flower is in the garden. Go get it!",
+	"portrait": "res://resources/images/portraits/cop.png",
+	"options": [
+	  {
+		"id": "opt_ok",
+		"text": "Ok!",
+		"next": "exit"
+	  }
+	]
+  },
+  "thanks_for_flower": {
+	"text": "Wow, you got the flower! Thanks!",
+	"portrait": "res://resources/images/portraits/cop.png",
+	"options": [
+	  {
+		"id": "opt_welcome",
+		"text": "You're welcome.",
+		"next": "exit"
+	  }
+	]
+  }
+}

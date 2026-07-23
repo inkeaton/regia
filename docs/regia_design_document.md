@@ -52,7 +52,10 @@ ACTION greet_back.
 ACTION give_item(item, target).
 ACTION vesna.transition_to(state).
 ACTION .print(message).
+ACTION vesna.via.set_visible(visible) AS set_visible.
 ```
+
+Aliases are useful for mapping deeply namespaced internal actions to simpler names for use within the `.regia` script. When an alias is declared, both the original name and the alias can be used in the Playbook. The compiler will automatically replace the alias with the original name in the generated AgentSpeak code.
 
 Actions are the atomic units of agent behaviour. They correspond to AgentSpeak internal actions or environment commands. Regia deliberately does not specify *how* an action is implemented — it only names the interface.
 
@@ -184,6 +187,7 @@ The special action names `TELL`, `BROADCAST`, `ACHIEVE`, `BELIEVE`, `FORGET`, an
 | `DO BELIEVE(fact).` | `+fact` |
 | `DO FORGET(fact).` | `-fact` |
 | `DO PRINT(text).` | `.print(text)` |
+| `DO WAIT(ms).` | `.wait(ms)` |
 
 **`SIGNAL event.`** — Send a message to the Director that manages the Plot this agent is currently participating in. This is the *only* way a Playbook can communicate upward to the narrative layer.
 

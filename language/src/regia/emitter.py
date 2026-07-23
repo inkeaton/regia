@@ -61,6 +61,9 @@ class Emitter:
         # Accumulated AgentSpeak output, keyed by filename
         self._outputs: Dict[str, str] = {}
 
+        # Action aliases: alias -> original_name
+        self._action_aliases: Dict[str, str] = {}
+
         # Tracks which Playbooks are assigned to which Roles
         # across all Plots. Populated during a pre-scan.
         # role_name -> set of playbook_names (global)
@@ -102,6 +105,8 @@ class Emitter:
         for item in program.items:
             if isinstance(item, PlaybookDef):
                 self._playbook_defs[item.name] = item
+            elif getattr(item, "alias", None):
+                self._action_aliases[item.alias] = item.name
 
         # Phase 2: pre-scan Plots to discover Role-Playbook assignments
         # and Role DO directives
@@ -836,11 +841,12 @@ class Emitter:
         Returns:
             AgentSpeak string.
         """
+        action_name = self._action_aliases.get(stmt.action, stmt.action)
         if not stmt.is_special:
             args = self._emit_args(stmt.args)
             if args:
-                return f"{stmt.action}({args})"
-            return stmt.action
+                return f"{action_name}({args})"
+            return action_name
 
         # Special actions
         def _fmt(index: int, default: str) -> str:
@@ -873,6 +879,10 @@ class Emitter:
         elif stmt.action == "PRINT":
             args_str = self._emit_args(stmt.args)
             return f".print({args_str})"
+
+        elif stmt.action == "WAIT":
+            args_str = self._emit_args(stmt.args)
+            return f".wait({args_str})"
 
         return f"/* unknown special: {stmt.action} */"
 

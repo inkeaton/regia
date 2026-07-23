@@ -19,9 +19,9 @@ import styles from "./CodeEditor.module.css";
 
 /** Maps backend severity strings to Monaco marker severities. */
 const SEVERITY_MAP: Record<string, MonacoType.MarkerSeverity> = {
-    ERROR:   4, // MonacoType.MarkerSeverity.Error
+    ERROR: 4, // MonacoType.MarkerSeverity.Error
     WARNING: 2, // MonacoType.MarkerSeverity.Warning
-    INFO:    1, // MonacoType.MarkerSeverity.Hint
+    INFO: 1, // MonacoType.MarkerSeverity.Hint
 };
 
 // ==============================================================================
@@ -64,20 +64,20 @@ export const CodeEditor = () => {
     // Whenever the store's compilerMessages change, push them as Monaco markers.
     useEffect(() => {
         const monaco = monacoRef.current;
-        const editor  = editorRef.current;
+        const editor = editorRef.current;
         if (!monaco || !editor) return;
 
         const model = editor.getModel();
         if (!model) return;
 
         const markers: MonacoType.editor.IMarkerData[] = compilerMessages.map((msg) => ({
-            severity:        SEVERITY_MAP[msg.severity] ?? SEVERITY_MAP.ERROR,
-            message:         msg.message,
-            startLineNumber: msg.line   > 0 ? msg.line   : 1,
-            startColumn:     msg.column > 0 ? msg.column : 1,
-            endLineNumber:   msg.line   > 0 ? msg.line   : 1,
+            severity: SEVERITY_MAP[msg.severity] ?? SEVERITY_MAP.ERROR,
+            message: msg.message,
+            startLineNumber: msg.line > 0 ? msg.line : 1,
+            startColumn: msg.column > 0 ? msg.column : 1,
+            endLineNumber: msg.line > 0 ? msg.line : 1,
             // Underline to the end of the line for a natural squiggle feel.
-            endColumn:       model.getLineMaxColumn(msg.line > 0 ? msg.line : 1),
+            endColumn: model.getLineMaxColumn(msg.line > 0 ? msg.line : 1),
         }));
 
         monaco.editor.setModelMarkers(model, "regia-compiler", markers);
@@ -94,8 +94,8 @@ export const CodeEditor = () => {
 
     /** Store refs to the editor and monaco API after mounting. */
     const handleMount: OnMount = (editor, monaco) => {
-        editorRef.current  = editor;
-        monacoRef.current  = monaco;
+        editorRef.current = editor;
+        monacoRef.current = monaco;
     };
 
     /** Propagate text changes to the store (triggers debounced parse). */
@@ -128,21 +128,22 @@ export const CodeEditor = () => {
                     onMount={handleMount}
                     onChange={handleChange}
                     options={{
-                        minimap:              { enabled: false },
-                        fontSize:             14,
-                        fontFamily:           "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
-                        lineNumbers:          "on",
+                        // we don't need the minimap
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                        lineNumbers: "on",
                         scrollBeyondLastLine: false,
-                        automaticLayout:      true,
-                        wordWrap:             "on",
-                        folding:              true,
-                        renderLineHighlight:  "line",
-                        smoothScrolling:      true,
-                        cursorBlinking:       "smooth",
-                        padding:              { top: 12, bottom: 12 },
+                        automaticLayout: true,
+                        wordWrap: "on",
+                        folding: true,
+                        renderLineHighlight: "line",
+                        smoothScrolling: true,
+                        cursorBlinking: "smooth",
+                        padding: { top: 12, bottom: 12 },
                     }}
                 />
             </div>
         </div>
     );
-};
+};

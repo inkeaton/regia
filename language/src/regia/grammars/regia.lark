@@ -90,7 +90,7 @@ import_stmt: "IMPORT" STRING "."
 
 // ACTION give_item(item, target).
 
-action_decl: "ACTION" ID param_names? "."
+action_decl: "ACTION" ID param_names? ("AS" ID)? "."
 
 // EVENT fan_greets.
 
@@ -220,6 +220,7 @@ action_name: ID
     | BELIEVE
     | FORGET
     | PRINT
+    | WAIT
 
 // Argument list: (arg1, arg2, ...)
 
@@ -459,6 +460,8 @@ BELIEVE: "BELIEVE"
 FORGET: "FORGET"
 
 PRINT: "PRINT"
+
+WAIT: "WAIT"
 
 // ============================================================
 

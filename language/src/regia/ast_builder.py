@@ -167,10 +167,19 @@ class ASTBuilder(Transformer):
             An ActionDecl AST node.
         """
         name_token = children[0]
-        params = children[1] if len(children) > 1 else []
+        params = []
+        alias = None
+        
+        for child in children[1:]:
+            if isinstance(child, list):
+                params = child
+            elif isinstance(child, Token):
+                alias = str(child)
+
         return ActionDecl(
             name=str(name_token),
             params=params,
+            alias=alias,
             loc=_meta_loc(meta, self._filename),
         )
 

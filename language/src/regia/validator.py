@@ -143,6 +143,7 @@ class Validator:
         self._used_events:    Set[str] = set()
         self._used_facts:     Set[str] = set()
         self._used_playbooks: Set[str] = set()
+        self._action_aliases: Dict[str, str] = {}
 
         # Registry of all declared Plot names and their role sets.
         # Used to validate START SUBPLOT targets and MAPPING roles.
@@ -194,6 +195,12 @@ class Validator:
                 self._declare(
                     self._symbols.actions, "action", item.name, item.loc, len(item.params)
                 )
+                if item.alias:
+                    self._declare(
+                        self._symbols.actions, "action alias", item.alias, item.loc, len(item.params)
+                    )
+                    self._action_aliases[item.alias] = item.name
+                    self._action_aliases[item.name] = item.alias
             elif isinstance(item, EventDecl):
                 self._declare(
                     self._symbols.events, "event", item.name, item.loc, 0
@@ -687,6 +694,8 @@ class Validator:
             )
 
         self._used_actions.add(name)
+        if name in self._action_aliases:
+            self._used_actions.add(self._action_aliases[name])
 
     def _check_event_ref(self, name: str, loc: SourceLoc) -> None:
         """Check that a referenced event is declared (or is a built-in).

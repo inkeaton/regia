@@ -45,7 +45,7 @@ from typing import List, Optional, Union
 # regular action identifiers.
 
 SPECIAL_ACTIONS: frozenset[str] = frozenset([
-    "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET", "PRINT"
+    "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET", "PRINT", "WAIT"
 ])
 
 
@@ -169,6 +169,7 @@ class ActionDecl:
 
     name:   str
     params: List[str]           = field(default_factory=list)
+    alias:  Optional[str]       = None
     loc:    SourceLoc           = _NO_LOC
     docs:   List[DocAnnotation] = field(default_factory=list)
 

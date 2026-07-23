@@ -1,83 +1,106 @@
-# Regia — Compiler Architecture & Mapping
+# Regia Compiler Architecture
 
-> **Scope**: This document maps the core constructs defined in the [Regia Language Design Document](regia_design_document.md) to their actual implementation inside the Regia compiler. It serves as a bridge for developers who need to understand how the theoretical language design maps to the grammar, AST, and compiler pipeline.
+> **Scope**: This document explains the internal architecture of the Regia compiler. It traces the data flow from raw `.regia` source code to compiled AgentSpeak (`.asl`) files, detailing the goals, key patterns, and core data structures of each compilation phase.
 
 ---
 
 ## 1. Compiler Pipeline Overview
 
-The Regia compiler (`language/src/regia/`) translates `.regia` source files into `.asl` AgentSpeak files in five distinct passes:
+The Regia compiler (located in `language/src/regia/`) operates as a classic multi-pass transpiler. It converts domain-specific Regia narratives into executable, multi-agent AgentSpeak logic.
 
-1. **Preprocessor** (`preprocessor.py`): Scans raw source text to extract doc-comments and resolve imports, substituting them with blank lines to preserve line numbers before passing the cleaned text to the parser.
-2. **Parser** (`regia.lark`): Defines the formal grammar and parses text into a raw parse tree using Lark.
-3. **AST Builder** (`ast_builder.py`): Transforms the raw parse tree into strongly-typed Python objects defined in `ast_nodes.py`.
-4. **Validator** (`validator.py`): Performs semantic checks (name resolution, type constraints, structural rules) and reports user-facing errors.
-5. **Emitter** (`emitter.py`): Translates the validated AST into valid AgentSpeak (`.asl`) code.
+The transpilation pipeline consists of five strict, sequential phases:
+
+1. **Preprocessor:** Cleans the source, resolves imports, and extracts metadata.
+2. **Parser:** Converts raw text into an untyped syntax tree.
+3. **AST Builder:** Transforms the parse tree into strongly-typed Python objects.
+4. **Validator:** Enforces semantic rules, scopes, and name resolution.
+5. **Emitter:** Generates the final AgentSpeak `.asl` files.
 
 ---
 
-## 2. Concept Implementation Mapping
+## 2. CLI Entrypoint (`cli.py`)
 
-This section details exactly which data structures and functions are responsible for handling each major language element.
+The compiler is invoked via the command-line interface defined in `cli.py`.
 
-### 2.1 Actions
-* **Grammar** (`regia.lark`): `action_decl`
-* **AST Node** (`ast_nodes.py`): `ActionDecl`
-* **Builder** (`ast_builder.py`): `action_decl()`
-* **Validator** (`validator.py`): `_check_action_ref()` ensures that any action referenced in a `DO` statement has been declared.
-* **Emitter** (`emitter.py`): Emitted through `_emit_pb_stmt()` and `_emit_imperative_stmt()`. Special actions (`TELL`, `BROADCAST`, etc.) have hardcoded translations here.
+* **Goal**: Handle user input, manage file I/O, orchestrate the pipeline, and report errors.
+* **Key Operations**:
+  * Exposes commands like `compile <file.regia> -o <out_dir>`.
+  * Instantiates the `ErrorReporter` to collect warnings and errors across all phases.
+  * Triggers the `compile_file()` sequence, passing data cleanly from one phase to the next.
+  * Formats and prints any intercepted compilation errors to the terminal, halting the process if validation fails.
 
-### 2.2 Events
-* **Grammar** (`regia.lark`): `event_decl`
-* **AST Node** (`ast_nodes.py`): `EventDecl`
-* **Builder** (`ast_builder.py`): `event_decl()`
-* **Validator** (`validator.py`): `_check_event_ref()` ensures that events used in `WHEN` triggers and `SIGNAL` statements have been declared.
-* **Emitter** (`emitter.py`): Processed as the trigger condition (e.g. `+event`) when writing AgentSpeak plans via `_write_plan()`.
+---
 
-### 2.3 Facts
-* **Grammar** (`regia.lark`): `fact_decl`
-* **AST Node** (`ast_nodes.py`): `FactDecl` (declaration), `FactRef` (usage)
-* **Builder** (`ast_builder.py`): `fact_decl()`
-* **Validator** (`validator.py`): `_check_fact_ref()` and `_validate_condition()` ensure facts used in `IF` and `TRANSITION` guards are valid.
-* **Emitter** (`emitter.py`): Compiled into context clauses (e.g. `: fact(X)`) within `_emit_condition()`.
+## 3. Phase 1: Preprocessing & Import Resolution (`preprocessor.py`)
 
-### 2.4 Playbooks
-* **Grammar** (`regia.lark`): `playbook_def`, `pb_when_block`
-* **AST Node** (`ast_nodes.py`): `PlaybookDef`, `PbWhenBlock`
-* **Builder** (`ast_builder.py`): `playbook_def()`, `pb_when_block()`
-* **Validator** (`validator.py`): `_validate_playbook()` ensures that playbook internal logic is sound and delegates to `_validate_pb_when_block()`.
-* **Emitter** (`emitter.py`): `_emit_playbook()` handles the creation of a dedicated `.asl` file for each playbook, resolving `WHEN` blocks into `.asl` plans.
+Before the formal grammar even sees the text, the Preprocessor cleans it up and resolves multi-file dependencies.
 
-### 2.5 Plots & Phases
-* **Grammar** (`regia.lark`): `plot_def`, `phase_decl`, `during_block`
-* **AST Node** (`ast_nodes.py`): `PlotDef`, `PhaseDecl`, `DuringBlock`
-* **Builder** (`ast_builder.py`): `plot_def()`, `_sort_during_content()` organizes the internal statements (`ON ENTER`, `ON EXIT`, transitions).
-* **Validator** (`validator.py`): `_validate_plot()` performs plot-wide scoping checks (like missing roles, exactly one initial phase), and `_validate_during_block()` checks phase-specific limits (e.g., maximum one `ON ENTER` block).
-* **Emitter** (`emitter.py`): Uses `_emit_director()` to generate the `director_<plot_name>.asl` file, and `_emit_role()` to generate the `role_<plot_name>_<role>.asl` files.
+* **Goal**: Extract documentation, strip comments to prevent parser clutter, and resolve `IMPORT` statements into a single cohesive AST.
+* **Key Patterns**:
+  * **Regex Scrubbing**: Single-line and block comments are identified and replaced with whitespace (to preserve accurate line numbers for error reporting later).
+  * **Recursive Compilation**: When an `IMPORT "path/to/file.regia".` is encountered, the compiler recursively runs the Preprocessor, Parser, and AST Builder on the imported file. The resulting AST nodes are merged into the main file's AST before validation.
+* **Data Structures**:
+  * `DocAnnotation`: Stores the text and source location of documentation comments.
+  * `SourceAnnotations`: A container mapping line numbers to their extracted `DocAnnotation`s.
 
-### 2.6 Transitions (Inline)
-* **Grammar** (`regia.lark`): Handled as `transition_stmt` inside `imperative_stmt` (within `WHEN` blocks).
-* **AST Node** (`ast_nodes.py`): `InlineTransitionStmt`
-* **Builder** (`ast_builder.py`): Constructed naturally via statement parsing inside `WHEN` branches.
-* **Validator** (`validator.py`): `_check_inline_transition()` validates target phases and ensures the transition is always the final statement in its block/branch. It also explicitly forbids them inside `DURING PLOT` scopes.
-* **Emitter** (`emitter.py`): Evaluated in `_emit_imperative_stmt()`, translating into a sequence of beliefs: triggering the old phase's `ON EXIT`, updating `current_phase`, and triggering the new phase's `ON ENTER`.
+---
 
-### 2.7 Reactive Plans (WHEN blocks)
-* **Grammar** (`regia.lark`): `pb_when_block`, `plot_when_block`
-* **AST Node** (`ast_nodes.py`): `PbWhenBlock`, `PlotWhenBlock`
-* **Builder** (`ast_builder.py`): `pb_when_block()`, `plot_when_block()` separate the statement bodies into conditional branches (`IF`/`ELSE`) and unconditional prefixes.
-* **Validator** (`validator.py`): Validates event references and branch contexts within `_validate_pb_when_block()` and `_validate_plot_when_block()`.
-* **Emitter** (`emitter.py`): Emitted dynamically via `_write_plan()`, combining triggers (`+event`), context clauses (`: condition`), and bodies (`<- actions`) into discrete `.asl` plans.
+## 4. Phase 2: Lexing & Parsing (`grammars/regia.lark`)
 
-### 2.8 Preprocessing Constructs (Imports & Doc Comments)
-* **Grammar**: Not parsed by Lark. Handled purely by regex before syntax parsing.
-* **Data Structures** (`preprocessor.py`): `DocAnnotation`, `SourceAnnotations`
-* **Processor** (`preprocessor.py`): `preprocess()`, `resolve_imports()`
-* **Validator** (`validator.py`): (Imports) Validated globally by merging ASTs from multiple files into a single project scope.
-* **Emitter**: Doc comments are discarded at emission time, while imports dictate which source files are compiled.
+Regia relies on the [Lark](https://github.com/lark-parser/lark) parsing toolkit to define its formal grammar and build the initial syntax tree.
 
-### 2.9 Emotional Modeling (TEMPER & EFFECTS)
-* **Grammar** (`regia.lark`): `temper`, `effects`
-* **AST Node** (`ast_nodes.py`): `TemperSpec`, `TemperEntry`
-* **Builder** (`ast_builder.py`): `temper()`
-* **Emitter** (`emitter.py`): Processed directly into AgentSpeak plan annotations (`temper([...])`, `effects([...])`) inside the `_write_plan()` helper function.
+* **Goal**: Convert the preprocessed string into an untyped, hierarchical tree based on syntactic rules.
+* **Key Patterns**:
+  * **LALR(1) Parsing**: The grammar uses the efficient LALR algorithm.
+  * **Tree Shaping**: The grammar file (`regia.lark`) makes heavy use of Lark's tree-shaping operators (like `?` to inline rules and aliases) to keep the generated tree as flat and clean as possible.
+* **Data Structures**:
+  * Lark's native `Tree` (representing grammar rules) and `Token` (representing raw string matches like IDs or literals).
+
+---
+
+## 5. Phase 3: AST Construction (`ast_builder.py` & `ast_nodes.py`)
+
+Raw parse trees are difficult to work with safely. This phase converts the untyped Lark Tree into our own strictly-typed Abstract Syntax Tree (AST).
+
+* **Goal**: Transform strings and raw tokens into semantic, domain-specific Python objects.
+* **Key Patterns**:
+  * **Bottom-Up Traversal**: `ast_builder.py` implements a Lark `Transformer`. It walks the parse tree from the leaves to the root. As each rule is encountered, its corresponding method (e.g., `def action_decl(...)`) is called, receiving its previously-transformed children as arguments.
+* **Data Structures (`ast_nodes.py`)**:
+  * Python `@dataclass` objects represent the structure of Regia.
+  * *Base Elements*: `ActionDecl`, `EventDecl`, `FactDecl`.
+  * *Narrative Scopes*: `PlaybookDef`, `PlotDef`, `PhaseDecl`.
+  * *Control Flow*: `PbWhenBlock`, `PlotWhenBlock`, `IfBranch`.
+  * *Statements*: `DoStmt`, `SignalStmt`, `InlineTransitionStmt`.
+
+---
+
+## 6. Phase 4: Semantic Validation (`validator.py`)
+
+A syntactically correct Regia file can still contain semantic errors (e.g., referencing an action that doesn't exist, or transitioning to a non-existent phase).
+
+* **Goal**: Enforce language rules, validate references, and emit warnings for unused code.
+* **Key Patterns**:
+  * **Two-Pass Visitor**:
+    * **Pass 1 (Collection)**: The validator scans all top-level items (`ActionDecl`, `PlaybookDef`, etc.) and registers them in a central symbol table. Duplicate declarations are caught here.
+    * **Pass 2 (Validation)**: The validator walks deeply into `WHEN` blocks and `DURING` blocks. It checks that every `DO` action exists in the symbol table, ensures transitions point to valid phases, and verifies structural constraints (like `ON ENTER` uniqueness).
+* **Data Structures**:
+  * `Validator`: The main visitor class.
+  * `_SymbolTable` & `DeclInfo`: Maps identifiers to their arity and source locations.
+  * **Usage Sets**: Tracks which elements were actually referenced (`_used_actions`, `_used_events`, etc.). Anything not in these sets by the end of Pass 2 triggers an "unused declaration" warning.
+
+---
+
+## 7. Phase 5: AgentSpeak Emission (`emitter.py`)
+
+The final phase takes the validated, completely sound AST and translates it into Jason-compatible AgentSpeak code.
+
+* **Goal**: Generate multi-agent `.asl` files that accurately reproduce the Regia logic.
+* **Key Patterns**:
+  * **Multi-Pass Generation**:
+    1. **Pre-scan**: The emitter scans all Plots to discover exactly which Playbooks are assigned to which Roles, and computes transitive closures (to handle nested plot mappings).
+    2. **Emit Playbooks**: Creates a separate `.asl` file for each Playbook. `WHEN` blocks are mapped to AgentSpeak plans triggered by `+event`. These plans are gated dynamically using the `playbook_active(Name)` context guard.
+    3. **Emit Directors**: Creates a central coordinator `.asl` file for each Plot. It handles the finite-state machine logic (phase transitions, `ON ENTER`/`ON EXIT` logic, and `START SUBPLOT` delegations).
+    4. **Emit Roles**: Creates an `.asl` file for each specific Role in a Plot. This file includes the necessary Playbooks and sets up listeners for Director commands.
+* **Data Structures**:
+  * `Emitter`: Maintains the state of file generation.
+  * `_outputs`: A dictionary mapping output filenames (e.g., `director_test.asl`) to their generated string content. These strings are finally written to disk by the CLI.

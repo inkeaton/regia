@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://8d4du44d8614"]
+
+[ext_resource type="Script" uid="uid://ys63gsi2me5u" path="res://bodies/npcs/NPC.gd" id="1_yief8"]
+[ext_resource type="Texture2D" uid="uid://bk6vj3fntcc06" path="res://resources/images/test1.jpg" id="2_d8j02"]
+[ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="3_jsqdi"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7ht8i"]
+size = Vector2(239, 216)
+
+[node name="test_npc" type="CharacterBody2D" unique_id=1761570622]
+script = ExtResource("1_yief8")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=187120093]
+position = Vector2(9, -3.0517578e-05)
+scale = Vector2(0.19140625, 0.171875)
+texture = ExtResource("2_d8j02")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504639406]
+position = Vector2(2, -1)
+shape = SubResource("RectangleShape2D_7ht8i")
+
+[node name="VesnaManager" type="Node" parent="." unique_id=1688373293]
+script = ExtResource("3_jsqdi")
+PORT = 9001
+metadata/_custom_type_script = "uid://dvhqleqa5i43d"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1524213935]
+
+[node name="SpeechBubble" type="PanelContainer" parent="." unique_id=793708288]
+visible = false
+offset_left = -115.0
+offset_top = -209.0
+offset_right = 125.0
+offset_bottom = -145.0
+
+[node name="Text" type="Label" parent="SpeechBubble" unique_id=1960643120]
+layout_mode = 2
+text = "This is a utterance"
+horizontal_alignment = 1
+
+[node name="UtteranceTimer" type="Timer" parent="." unique_id=1629026168]
+one_shot = true
