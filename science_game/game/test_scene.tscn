@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dvyid5qdscqk" path="res://ui/hud.tscn" id="4_njel3"]
 [ext_resource type="Script" uid="uid://baip7bay0mxl4" path="res://libraries/Coordinator.gd" id="5_vr1i5"]
 [ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="6_rpuu0"]
+[ext_resource type="Texture2D" uid="uid://4km6j8a1y43v" path="res://resources/images/portraits/sci.png" id="7_8pr8v"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_7ht8i"]
 vertices = PackedVector2Array(1193.7578, 613.09375, -1146.0625, 634.8906, -1045.7109, -499.46875, 1159.2578, -886.1328)
@@ -38,23 +39,39 @@ metadata/_custom_type_script = "uid://dvhqleqa5i43d"
 [node name="waypoints" type="Node2D" parent="level" unique_id=531407168]
 
 [node name="garden" type="Marker2D" parent="level/waypoints" unique_id=1487946543 groups=["waypoints"]]
-position = Vector2(766, 280)
+position = Vector2(-167, -454)
 
 [node name="lab" type="Marker2D" parent="level/waypoints" unique_id=1846446058 groups=["waypoints"]]
 position = Vector2(-1004, 518)
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="level" unique_id=1173154093]
+position = Vector2(-11, -161)
 navigation_polygon = SubResource("NavigationPolygon_7ht8i")
 
 [node name="Camera2D" type="Camera2D" parent="level" unique_id=1667814174]
-position = Vector2(283, -375)
-zoom = Vector2(0.5, 0.5)
+position = Vector2(-439, -488)
+zoom = Vector2(0.7, 0.7)
 
 [node name="Player" parent="." unique_id=1424175727 instance=ExtResource("1_7cbxl")]
-position = Vector2(283, -375)
+position = Vector2(-439, -488)
+metadata/_edit_group_ = true
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player" unique_id=1644528650]
 remote_path = NodePath("../../level/Camera2D")
 
-[node name="test_npc" parent="." unique_id=1761570622 instance=ExtResource("2_8pr8v")]
-position = Vector2(54, 300)
+[node name="sci" parent="." unique_id=1761570622 instance=ExtResource("2_8pr8v")]
+position = Vector2(372, 68)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" parent="sci/CollisionShape2D" parent_id_path=PackedInt32Array(1761570622, 1504639406) index="0" unique_id=187120093]
+texture = ExtResource("7_8pr8v")
+
+[node name="cop" parent="." unique_id=1477466107 instance=ExtResource("2_8pr8v")]
+position = Vector2(-445, 100)
+metadata/_edit_group_ = true
+
+[node name="VesnaManager" parent="cop" index="1" unique_id=1688373293]
+PORT = 9002
+
+[editable path="sci"]
+[editable path="cop"]

@@ -21,6 +21,9 @@ signal dialogue_event(event_id: String, npc_reference: Node2D)
 ## Signal emitted when an NPC wants to start a dialogue.
 signal request_dialogue(node_id: String, player: Node2D, npc_reference: Node2D)
 
+## Signal emitted when an NPC wants to update the currently open dialogue window.
+signal request_dialogue_update(node_id: String, npc_reference: Node2D)
+
 # ==============================================================================
 # LIFECYCLE
 # ==============================================================================
@@ -56,6 +59,19 @@ func get_node_data(node_id: String) -> Dictionary:
 	if database.has(node_id):
 		return database[node_id]
 	print("Dialogue Error: Node '", node_id, "' not found in database!")
+	return {}
+
+## Returns a floating option from the injected pool.
+##
+## @param opt_id The ID of the option to retrieve.
+## @return Dictionary The option data, or empty dictionary if not found.
+func get_injected_option(opt_id: String) -> Dictionary:
+	if database.has("injected_options_pool") and database["injected_options_pool"].has(opt_id):
+		var opt_data = database["injected_options_pool"][opt_id]
+		if not opt_data.has("id"):
+			opt_data["id"] = opt_id
+		return opt_data
+	print("Dialogue Error: Injected Option '", opt_id, "' not found in pool!")
 	return {}
 
 ## Triggers the global dialogue UI to open.

@@ -252,6 +252,9 @@ public class VesnaAgent extends Agent{
 		String event_type = event.getString("type");
 		// Emit flat parameterless perception
 		Literal perception = createLiteral(event_type);
+		//try {
+		//	getTS().getAg().delBel(perception);
+		//} catch (Exception e) {}
 		sense(perception);
 	}
 

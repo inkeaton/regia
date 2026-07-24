@@ -100,7 +100,7 @@ The final phase takes the validated, completely sound AST and translates it into
     1. **Pre-scan**: The emitter scans all Plots to discover exactly which Playbooks are assigned to which Roles, and computes transitive closures (to handle nested plot mappings).
     2. **Emit Playbooks**: Creates a separate `.asl` file for each Playbook. `WHEN` blocks are mapped to AgentSpeak plans triggered by `+event`. These plans are gated dynamically using the `playbook_active(Name)` context guard.
     3. **Emit Directors**: Creates a central coordinator `.asl` file for each Plot. It handles the finite-state machine logic (phase transitions, `ON ENTER`/`ON EXIT` logic, and `START SUBPLOT` delegations).
-    4. **Emit Roles**: Creates an `.asl` file for each specific Role in a Plot. This file includes the necessary Playbooks and sets up listeners for Director commands.
+    4. **Emit Roles**: Creates an `.asl` file for each specific Role in a Plot. This file includes the necessary Playbooks and sets up listeners for Director commands. Listeners for playbook assignments use `achieve` goals (`+!add_playbook`) and signal broadcasts use `untell/tell` sequences to prevent Jason's belief base from dropping duplicate events.
 * **Data Structures**:
   * `Emitter`: Maintains the state of file generation.
   * `_outputs`: A dictionary mapping output filenames (e.g., `director_test.asl`) to their generated string content. These strings are finally written to disk by the CLI.

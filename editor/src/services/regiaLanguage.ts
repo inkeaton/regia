@@ -80,14 +80,14 @@ const MONARCH_LANGUAGE: MonacoType.languages.IMonarchLanguage = {
     ],
     flowKeywords: [
         "DURING", "WHEN", "IF", "ELSE", "ON", "ENTER",
-        "EXIT", "TRANSITION",
+        "EXIT", "TRANSITION", "ENDS",
     ],
     actionKeywords: [
         "DO", "ASSIGN", "UNASSIGN", "WORLD", "SIGNAL",
-        "START", "SUBPLOT", "END", "MAPPING", "TO",
+        "START", "SUBPLOT", "END", "MAPPING", "TO", "AS",
     ],
     builtinKeywords: [
-        "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET", "PRINT",
+        "TELL", "BROADCAST", "ACHIEVE", "BELIEVE", "FORGET", "PRINT", "WAIT",
     ],
     modifierKeywords: [
         "PRIORITY", "TEMPER", "EFFECTS", "INITIAL", "SELF",

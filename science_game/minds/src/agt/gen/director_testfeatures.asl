@@ -7,7 +7,7 @@
 // == Initial Beliefs ==
 // ============================================
 plot_name(testfeatures).
-current_phase(main).
+current_phase(calm).
 
 // ============================================
 // == Boot Plan ==
@@ -18,8 +18,22 @@ current_phase(main).
 +!boot <-
     .my_name(Me);
     +plot_id(Me);
-    .print("[TestFeatures] Booting up director agent ", Me, " in phase 'main'...");
-    !on_enter(main).
+    .print("[TestFeatures] Booting up director agent ", Me, " in phase 'calm'...");
+    !on_enter(calm).
+
+// == Director WHEN Plans ==
+@dir__TestFeatures__flower_stolen__0
++flower_stolen : current_phase(calm) <-
+    !switch_phase(angry).
+
+@dir__TestFeatures__calmed_down__0
++calmed_down : current_phase(angry) <-
+    !switch_phase(calm).
+
+@dir__TestFeatures__subplot_investigation_ended__0
++child_ended(investigation, _) : current_phase(angry) <-
+    !send_to_role(scientist, achieve, utter("The subplot has officially concluded!")).
+
 
 // ============================================
 // == Phase Transition Infrastructure ==
@@ -32,8 +46,20 @@ current_phase(main).
     +current_phase(Target);
     !on_enter(Target).
 
-+!on_enter(main) <-
-    !send_to_role(scientist, tell, add_playbook(scientistfeatures)).
++!on_exit(calm) <-
+    !send_to_role(scientist, achieve, remove_playbook(scientistcalm)).
++!on_enter(calm) <-
+    !send_to_role(scientist, achieve, add_playbook(scientistcalm));
+    !send_to_role(scientist, achieve, set_dialogue("test_features")).
++!on_exit(angry) <-
+    !send_to_role(scientist, achieve, remove_playbook(scientistangry));
+    !send_to_role(scientist, achieve, remove_dialogue_option("opt_apologize"));
+    !send_to_role(scientist, achieve, set_dialogue("test_features")).
++!on_enter(angry) <-
+    !send_to_role(scientist, achieve, add_playbook(scientistangry));
+    !send_to_role(scientist, achieve, set_dialogue("scientist_angry"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_apologize"));
+    !start_subplot("investigation", investigation, [map(suspect, scientist), map(officer, cop)]).
 +!on_exit(_) <- true.
 +!on_enter(_) <- true.
 

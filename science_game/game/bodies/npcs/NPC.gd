@@ -26,6 +26,8 @@ class_name NPC
 
 var current_dialogue_id: String = ""
 var current_target_waypoint: String = ""
+var injected_options: Array[String] = []
+var removed_options: Array[String] = []
 
 var utterance_queue: Array[String] = []
 @onready var utterance_panel: PanelContainer = $SpeechBubble
@@ -165,6 +167,24 @@ func _on_command_received(intention: Dictionary) -> void:
 		
 	elif type == "remove_diary_entry":
 		GameManager.remove_diary_entry(data.get("text", ""))
+		
+	elif type == "add_dialogue_option":
+		var opt_id = data.get("id", "")
+		if opt_id != "":
+			if not opt_id in injected_options:
+				injected_options.append(opt_id)
+			if opt_id in removed_options:
+				removed_options.erase(opt_id)
+			
+	elif type == "remove_dialogue_option":
+		var opt_id = data.get("id", "")
+		if opt_id in injected_options:
+			injected_options.erase(opt_id)
+			
+	elif type == "update_dialogue":
+		var node_id = data.get("node", "")
+		if node_id != "":
+			DialogueManager.request_dialogue_update.emit(node_id, self)
 
 ## Forwards global dialogue events specific to this NPC to its Jason agent.
 ##

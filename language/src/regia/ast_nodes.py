@@ -21,7 +21,7 @@ The node hierarchy mirrors the three-layer language architecture:
         ├── PhaseDecl / RoleDecl
         └── DuringBlock
             ├── OnEnter / OnExit
-            └── PlotWhenBlock
+            └── PlotWhenBlock / PlotWhenSubplotEndsBlock
                 ├── AssignStmt / UnassignStmt
                 ├── WorldDoStmt / RoleDoStmt
                 ├── InlineTransitionStmt
@@ -698,6 +698,27 @@ class PlotWhenBlock:
     loc:          SourceLoc                     = _NO_LOC
 
 
+@dataclass
+class PlotWhenSubplotEndsBlock:
+    """A director-centric reactive plan for when a subplot ends.
+
+    Attributes:
+        subplot_name: The Plot type that ended.
+        priority:     Numeric priority (None means default = 0).
+        prefix_stmts: Unconditional statements before any IF.
+        branches:     Conditional IF branches.
+        else_branch:  Optional ELSE fallback.
+        loc:          Source location of the WHEN keyword.
+    """
+
+    subplot_name: str
+    priority:     Optional[int]                = None
+    prefix_stmts: List[ImperativeStmt]         = field(default_factory=list)
+    branches:     List[PlotIfBranch]            = field(default_factory=list)
+    else_branch:  Optional[PlotElseBranch]      = None
+    loc:          SourceLoc                     = _NO_LOC
+
+
 # == During Blocks =============================================================
 
 @dataclass
@@ -727,7 +748,7 @@ class DuringBlock:
     phase_name:  Optional[str]
     on_enters:   List[OnEnter]           = field(default_factory=list)
     on_exits:    List[OnExit]            = field(default_factory=list)
-    when_blocks: List[PlotWhenBlock]     = field(default_factory=list)
+    when_blocks: List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock]] = field(default_factory=list)
     loc:         SourceLoc               = _NO_LOC
 
 

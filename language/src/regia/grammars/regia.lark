@@ -48,6 +48,10 @@
 
 // playbook definitions, and plot definitions, in any order.
 
+?start: program
+
+// added so linter does not protest
+
 program: (import_stmt | _item)+
 
 _item: element_decl
@@ -281,6 +285,7 @@ during_block: "DURING" ID ":" during_content+ -> during_phase
 ?during_content: on_enter
     | on_exit
     | plot_when_block
+    | plot_when_subplot_ends_block
 
 // ON ENTER: (imperative sequence at phase entry)
 
@@ -303,6 +308,8 @@ on_exit: "ON" "EXIT" ":" imperative_stmt+
 // instead of self-directed DO.
 
 plot_when_block: "WHEN" ID priority? ":" plot_when_body
+
+plot_when_subplot_ends_block: "WHEN" "SUBPLOT" ID "ENDS" priority? ":" plot_when_body
 
 plot_when_body: plot_body_item+ plot_else_branch?
 

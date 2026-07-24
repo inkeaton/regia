@@ -1,23 +1,24 @@
 [gd_scene format=3 uid="uid://8d4du44d8614"]
 
 [ext_resource type="Script" uid="uid://ys63gsi2me5u" path="res://bodies/npcs/NPC.gd" id="1_yief8"]
-[ext_resource type="Texture2D" uid="uid://bk6vj3fntcc06" path="res://resources/images/test1.jpg" id="2_d8j02"]
+[ext_resource type="Texture2D" uid="uid://21p4djv5h3vg" path="res://resources/images/portraits/cop.png" id="2_yief8"]
 [ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="3_jsqdi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ht8i"]
-size = Vector2(239, 216)
+size = Vector2(121, 216)
 
 [node name="test_npc" type="CharacterBody2D" unique_id=1761570622]
+scale = Vector2(1.5, 1.5)
 script = ExtResource("1_yief8")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=187120093]
-position = Vector2(9, -3.0517578e-05)
-scale = Vector2(0.19140625, 0.171875)
-texture = ExtResource("2_d8j02")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504639406]
-position = Vector2(2, -1)
+position = Vector2(-3.5, -1)
 shape = SubResource("RectangleShape2D_7ht8i")
+
+[node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D" unique_id=187120093]
+position = Vector2(3.31355, 0.8686733)
+scale = Vector2(0.2160548, 0.19400841)
+texture = ExtResource("2_yief8")
 
 [node name="VesnaManager" type="Node" parent="." unique_id=1688373293]
 script = ExtResource("3_jsqdi")

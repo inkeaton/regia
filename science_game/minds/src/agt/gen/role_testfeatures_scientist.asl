@@ -6,17 +6,21 @@
 // ============================================
 // == Included Playbooks ==
 // ============================================
-{ include("playbook_scientistfeatures.asl") }
+{ include("playbook_scientistangry.asl") }
+{ include("playbook_scientistcalm.asl") }
+{ include("playbook_suspectplaybook.asl") }
 
 // ============================================
 // == Playbook Management ==
 // ============================================
 // When the Director assigns a playbook, add the
 // playbook_active belief to enable its gated plans.
-+add_playbook(Name)[source(Sender)] <-
++!add_playbook(Name)[source(Sender)] <-
+    .print("[Scientist] Added playbook ", Name, " from ", Sender);
     +playbook_active(Name, Sender).
 
-+remove_playbook(Name)[source(Sender)] <-
++!remove_playbook(Name)[source(Sender)] <-
+    .print("[Scientist] Removed playbook ", Name, " from ", Sender);
     -playbook_active(Name, Sender).
 
 // Cleanup ghost playbooks when the Plot terminates
@@ -25,6 +29,34 @@
 
 // Signal all active directors for a given playbook
 +!signal_directors(PbName, Payload) <-
+    .print("[Scientist] Signaling directors of ", PbName, " with ", Payload);
     .findall(D, playbook_active(PbName, D), Directors);
-    for ( .member(DirectorId, Directors) ) { .send(DirectorId, tell, Payload) }.
+    for ( .member(DirectorId, Directors) ) { .send(DirectorId, untell, Payload); .send(DirectorId, tell, Payload) }.
+
+// ============================================
+// == Director Commands ==
+// ============================================
+@role__investigation__suspect__add_dialogue_option__opt_deny__
++!add_dialogue_option("opt_deny") <- vesna.via.add_dialogue_option("opt_deny").
+
+@role__investigation__suspect__remove_dialogue_option__opt_deny__
++!remove_dialogue_option("opt_deny") <- vesna.via.remove_dialogue_option("opt_deny").
+
+@role__investigation__suspect__utter__Phew__That_was_close___
++!utter("Phew. That was close.") <- vesna.via.utter("Phew. That was close.").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_apologize__
++!add_dialogue_option("opt_apologize") <- vesna.via.add_dialogue_option("opt_apologize").
+
+@role__testfeatures__scientist__remove_dialogue_option__opt_apologize__
++!remove_dialogue_option("opt_apologize") <- vesna.via.remove_dialogue_option("opt_apologize").
+
+@role__testfeatures__scientist__set_dialogue__scientist_angry__
++!set_dialogue("scientist_angry") <- vesna.via.set_dialogue("scientist_angry").
+
+@role__testfeatures__scientist__set_dialogue__test_features__
++!set_dialogue("test_features") <- vesna.via.set_dialogue("test_features").
+
+@role__testfeatures__scientist__utter__The_subplot_has_officially_concluded___
++!utter("The subplot has officially concluded!") <- vesna.via.utter("The subplot has officially concluded!").
 

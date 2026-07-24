@@ -195,7 +195,7 @@ The special action names `TELL`, `BROADCAST`, `ACHIEVE`, `BELIEVE`, `FORGET`, an
 SIGNAL emergency.
 ```
 
-A `SIGNAL` maps to an infrastructural helper `!signal_directors` in AgentSpeak, which queries all active `playbook_active(Name, DirectorId)` beliefs and broadcasts the signal to every Director currently managing this agent. The Playbook does not need to know who the Directors are — that binding is resolved dynamically at runtime, allowing an agent to safely participate in multiple concurrent Plots.
+A `SIGNAL` maps to an infrastructural helper `!signal_directors` in AgentSpeak, which queries all active `playbook_active(Name, DirectorId)` beliefs and broadcasts the signal to every Director currently managing this agent. To prevent Jason from dropping duplicate signals if the same event occurs twice, the helper explicitly broadcasts an `untell` immediately followed by a `tell` to force the Director to process the signal as a new event. The Playbook does not need to know who the Directors are — that binding is resolved dynamically at runtime, allowing an agent to safely participate in multiple concurrent Plots.
 
 ### 4.4 Conditional Branching (IF / ELSE)
 
@@ -401,8 +401,8 @@ Inside Plot `WHEN` blocks, `ON ENTER`, and `ON EXIT`, the Director uses a differ
 |---|---|---|
 | `WORLD DO action.` | Director executes an action itself (ownerless) | Internal action / environment call |
 | `RoleName DO action.` | Director sends a one-off goal to a role's agents | `.send(agent, achieve, action)` |
-| `ASSIGN Playbook TO Role.` | Inject a Playbook into a role's agents | `.send(agent, tell, add_playbook(pb))` |
-| `UNASSIGN Playbook FROM Role.` | Remove a Playbook from a role's agents | `.send(agent, tell, remove_playbook(pb))` |
+| `ASSIGN Playbook TO Role.` | Inject a Playbook into a role's agents | `.send(agent, achieve, add_playbook(pb))` |
+| `UNASSIGN Playbook FROM Role.` | Remove a Playbook from a role's agents | `.send(agent, achieve, remove_playbook(pb))` |
 | `TRANSITION TO phase.` | Inline phase transition (WHEN blocks only) | Phase belief update sequence |
 | `START SUBPLOT Plot MAPPING ... .` | Spawn a child Plot | Director creates a child Director |
 | `END PLOT.` | Terminate the current Plot | Director notifies parent/children and stops |
@@ -419,20 +419,23 @@ ON ENTER:
 
 The `MAPPING` clause binds roles from the parent Plot to roles in the child Plot. Multiple instances of the same Plot type can be spawned concurrently (each gets its own Director).
 
-**Parent-child communication**: Plots communicate through two reserved events:
-- `child_ended` — fired in the parent when one of its children terminates.
-- `parent_ended` — fired in all children when the parent terminates.
+**Parent-child communication**: Plots communicate through two mechanisms:
+- **Child to Parent**: When a child plot terminates, the parent can react using the `WHEN SUBPLOT <PlotName> ENDS:` keyword.
+- **Parent to Child**: When a parent plot terminates, it notifies all children via the `parent_ended` reserved event.
 
-These events allow coordinated cleanup and conditional advancement:
+These mechanisms allow coordinated cleanup and conditional advancement:
 
 ```regia
 DURING PLOT:
     WHEN parent_ended:
         WORLD DO close_gate.
         END PLOT.
+
+    WHEN SUBPLOT ArenaTrial ENDS:
+        WORLD DO announce_winner.
 ```
 
-**`END PLOT`**: Terminates the current Plot instance. This notifies all children (via `parent_ended`) and the parent (via `child_ended`), then destroys the Director agent. Must be the last statement in its block or branch. Forbidden inside `ON ENTER` / `ON EXIT` hooks.
+**`END PLOT`**: Terminates the current Plot instance. This notifies all children (via `parent_ended`) and the parent (via `child_ended` internally), then destroys the Director agent. Must be the last statement in its block or branch. Forbidden inside `ON ENTER` / `ON EXIT` hooks.
 
 ---
 
@@ -650,8 +653,8 @@ If an `emergency` event fires at any point, the `DURING PLOT` handler fires: the
 | `DO BELIEVE(fact).` | `+fact` |
 | `DO FORGET(fact).` | `-fact` |
 | `SIGNAL emergency.` | `!signal_directors(playbook_name, emergency)` |
-| `ASSIGN Pb TO Role.` | Director: `.send(agent, tell, add_playbook(Pb))` |
-| `UNASSIGN Pb FROM Role.` | Director: `.send(agent, tell, remove_playbook(Pb))` |
+| `ASSIGN Pb TO Role.` | Director: `.send(agent, achieve, add_playbook(Pb))` |
+| `UNASSIGN Pb FROM Role.` | Director: `.send(agent, achieve, remove_playbook(Pb))` |
 | `WORLD DO action.` | Director: `action` (internal/env action) |
 | `Singer DO acknowledge.` | Director: `.send(singer_agent, achieve, acknowledge)` |
 | `TRANSITION TO p.` (inline) | Director body: ON EXIT + belief update + ON ENTER |

@@ -18,7 +18,7 @@ Responsibilities:
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Union
 
 from regia.ast_nodes import (
     # Shared
@@ -36,7 +36,7 @@ from regia.ast_nodes import (
     InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
     OnEnter, OnExit,
-    PlotIfBranch, PlotElseBranch, PlotWhenBlock,
+    PlotIfBranch, PlotElseBranch, PlotWhenBlock, PlotWhenSubplotEndsBlock,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
     Program,
@@ -407,23 +407,32 @@ class Validator:
 
     def _validate_plot_when_block(
         self,
-        when: PlotWhenBlock,
+        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock],
         scope: "_PlotScope",
         phase_name: Optional[str] = None,
     ) -> None:
-        """Validate a Plot WHEN block.
+        """Validate a Plot WHEN block or WHEN SUBPLOT ENDS block.
 
         Also enforces that InlineTransitionStmt only appears in
         phase-specific DURING blocks (not DURING PLOT) and that
         it is always the last statement in any body or branch.
 
         Args:
-            when:       The PlotWhenBlock to validate.
+            when:       The block to validate.
             scope:      The per-plot scope.
             phase_name: The phase this WHEN block lives in, or None
                         for DURING PLOT blocks.
         """
-        self._check_event_ref(when.event, when.loc)
+        if isinstance(when, PlotWhenBlock):
+            self._check_event_ref(when.event, when.loc)
+        else:
+            if when.subplot_name not in self._plot_roles:
+                self._error(
+                    when.loc,
+                    f"WHEN SUBPLOT ENDS references undeclared plot: "
+                    f"'{when.subplot_name}'.",
+                    hint=f"Add a 'PLOT {when.subplot_name}. ...' definition.",
+                )
 
         # Validate prefix stmts and check position rules
         self._check_terminal_stmts(

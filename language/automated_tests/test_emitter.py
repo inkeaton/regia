@@ -317,7 +317,7 @@ class TestDirectorOutput:
                     ON ENTER:
                         ASSIGN Pb TO Hero.
         """)
-        assert "!send_to_role(hero, tell, add_playbook(pb))" in output
+        assert "!send_to_role(hero, achieve, add_playbook(pb))" in output
 
     def test_unassign_sends_remove_playbook(self) -> None:
         """UNASSIGN should emit .send with remove_playbook."""
@@ -340,7 +340,7 @@ class TestDirectorOutput:
                     ON EXIT:
                         UNASSIGN Pb FROM Hero.
         """)
-        assert "!send_to_role(hero, tell, remove_playbook(pb))" in output
+        assert "!send_to_role(hero, achieve, remove_playbook(pb))" in output
 
     def test_role_do_sends_achieve(self) -> None:
         """Role DO should emit !send_to_role(role, achieve, action)."""
@@ -396,9 +396,9 @@ class TestRoleOutput:
                     ON ENTER:
                         ASSIGN Pb TO Hero.
         """, "Hero")
-        assert "+add_playbook(Name)[source(Sender)]" in output
+        assert "+!add_playbook(Name)[source(Sender)]" in output
         assert "+playbook_active(Name, Sender)" in output
-        assert "+remove_playbook(Name)[source(Sender)]" in output
+        assert "+!remove_playbook(Name)[source(Sender)]" in output
         assert "-playbook_active(Name, Sender)" in output
         assert "+plot_ended(PlotId)[source(PlotId)]" in output
         assert "+!signal_directors(PbName, Payload) <-" in output
@@ -421,8 +421,8 @@ class TestRoleOutput:
         """, "NPC")
         # Plans are now in the playbook file, not inline in the role.
         # Role file should have include directive and management handlers.
-        assert '+add_playbook(Name)[source(Sender)]' in output
-        assert '+remove_playbook(Name)[source(Sender)]' in output
+        assert '+!add_playbook(Name)[source(Sender)]' in output
+        assert '+!remove_playbook(Name)[source(Sender)]' in output
         assert '{ include("playbook_greeter.asl") }' in output
 
     def test_conditional_plans_in_playbook_file(self) -> None:

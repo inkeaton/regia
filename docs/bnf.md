@@ -4,9 +4,14 @@
 ## 1. File structure
 
 ```
-<program>        ::= <item> <program-tail>
-<program-tail>   ::= <item> <program-tail>
+<program>        ::= <program-item> <program-tail>
+<program-tail>   ::= <program-item> <program-tail>
                    |
+
+<program-item>   ::= <import-stmt>
+                   | <item>
+
+<import-stmt>    ::= 'IMPORT' STRING '.'
 
 <item>           ::= <element-decl>
                    | <playbook-def>
@@ -92,6 +97,7 @@
                    | 'BELIEVE'
                    | 'FORGET'
                    | 'PRINT'
+                   | 'WAIT'
 
 <opt-arg-list>   ::= <arg-list>
                    |
@@ -130,6 +136,7 @@
 <during-content>    ::= <on-enter>
                       | <on-exit>
                       | <plot-when-block>
+                      | <plot-when-subplot-ends-block>
 
 
 
@@ -142,7 +149,8 @@
 ### Plot WHEN blocks
 
 ```
-<plot-when-block>       ::= 'WHEN' ID <opt-priority> ':' <plot-when-body>
+<plot-when-block>              ::= 'WHEN' ID <opt-priority> ':' <plot-when-body>
+<plot-when-subplot-ends-block> ::= 'WHEN' 'SUBPLOT' ID 'ENDS' <opt-priority> ':' <plot-when-body>
 <plot-when-body>        ::= <plot-body-item> <plot-body-item-tail> <opt-plot-else-branch>
 <plot-body-item-tail>   ::= <plot-body-item> <plot-body-item-tail>
                           |
@@ -162,11 +170,22 @@
                    | <unassign-stmt>
                    | <world-do-stmt>
                    | <role-do-stmt>
+                   | <inline-transition-stmt>
+                   | <start-subplot-stmt>
+                   | <plot-end-stmt>
 
 <assign-stmt>     ::= 'ASSIGN' ID 'TO' ID '.'
 <unassign-stmt>   ::= 'UNASSIGN' ID 'FROM' ID '.'
 <world-do-stmt>   ::= 'WORLD' 'DO' <action-name> <opt-arg-list> '.'
 <role-do-stmt>    ::= ID 'DO' <action-name> <opt-arg-list> '.'
+<inline-transition-stmt> ::= 'TRANSITION' 'TO' ID '.'
+<start-subplot-stmt>     ::= 'START' 'SUBPLOT' ID <opt-mapping-clause> '.'
+<opt-mapping-clause>     ::= 'MAPPING' <role-mapping> <role-mapping-tail>
+                           |
+<role-mapping>           ::= ID 'TO' ID
+<role-mapping-tail>      ::= ',' <role-mapping> <role-mapping-tail>
+                           |
+<plot-end-stmt>          ::= 'END' 'PLOT' '.'
 ```
 
 ## 5. Conditions
@@ -198,6 +217,6 @@ STRING      ::= "[^"]*"
 ```
 
 Reserved words kept as named terminals: `SELF`, `ENVIRONMENT`,
-`TELL`, `BROADCAST`, `ACHIEVE`, `BELIEVE`, `FORGET`, `PRINT`.
+`TELL`, `BROADCAST`, `ACHIEVE`, `BELIEVE`, `FORGET`, `PRINT`, `WAIT`.
 
 ---

@@ -58,6 +58,7 @@ export type ActionDecl = ASTNode & {
     type:   "ActionDecl";
     name:   string;
     params: string[];
+    alias:  string | null;
     docs?:  DocAnnotation[];
     loc:    SourceLoc;
 };
@@ -411,6 +412,20 @@ export type PlotWhenBlock = ASTNode & {
 };
 
 /**
+ * A director-centric reactive plan triggered when a subplot ends.
+ * `WHEN SUBPLOT Investigation ENDS PRIORITY 9: WORLD DO utter("Done").`
+ */
+export type PlotWhenSubplotEndsBlock = ASTNode & {
+    type:         "PlotWhenSubplotEndsBlock";
+    subplot_name: string;
+    priority:     number | null;
+    prefix_stmts: ImperativeStmt[];
+    branches:     PlotIfBranch[];
+    else_branch:  PlotElseBranch | null;
+    loc:          SourceLoc;
+};
+
+/**
  * A DURING block inside a Plot.
  * `DURING backstage: ...` (phase-specific, phase_name = "backstage")
  * `DURING PLOT: ...`      (plot-wide,      phase_name = null)
@@ -420,7 +435,7 @@ export type DuringBlock = ASTNode & {
     phase_name:    string | null;
     on_enters:     OnEnter[];
     on_exits:      OnExit[];
-    when_blocks:   PlotWhenBlock[];
+    when_blocks:   (PlotWhenBlock | PlotWhenSubplotEndsBlock)[];
     loc:           SourceLoc;
 };
 

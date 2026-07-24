@@ -16,3 +16,4 @@ res://bodies/npcs/NPC.gd
 res://libraries/vesnaManager.gd
 res://ui/dialogue_ui.gd
 res://bodies/npcs/npc.tscn
+res://bodies/items/flower.tscn

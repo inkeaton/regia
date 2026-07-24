@@ -1,59 +1,148 @@
 {
-  "test_features": {
-	"text": "Behold my new Regia capabilities! What shall I do?",
-	"portrait": "res://resources/images/portraits/cop.png",
-	"options": [
-	  {
-		"id": "opt_utter",
-		"text": "Speak to me!",
-		"next": "test_features",
-		"event": "test_utter"
-	  },
-	  {
-		"id": "opt_vanish",
-		"text": "Perform a vanishing act.",
-		"next": "exit",
-		"event": "test_vanish"
-	  },
-	  {
-		"id": "opt_spawn",
-		"text": "Conjure a flower.",
-		"next": "test_features",
-		"event": "test_spawn"
-	  },
-	  {
-		"id": "opt_despawn",
-		"text": "Banish the flower.",
-		"next": "test_features",
-		"event": "test_despawn"
-	  },
-	  {
-		"id": "opt_leave",
-		"text": "That is all. (Leave)",
-		"next": "exit"
-	  }
-	]
-  },
-  "wait_for_pickup": {
-	"text": "The flower is in the garden. Go get it!",
-	"portrait": "res://resources/images/portraits/cop.png",
-	"options": [
-	  {
-		"id": "opt_ok",
-		"text": "Ok!",
-		"next": "exit"
-	  }
-	]
-  },
-  "thanks_for_flower": {
-	"text": "Wow, you got the flower! Thanks!",
-	"portrait": "res://resources/images/portraits/cop.png",
-	"options": [
-	  {
-		"id": "opt_welcome",
-		"text": "You're welcome.",
-		"next": "exit"
-	  }
-	]
-  }
+	"test_features": {
+		"text": "Behold my new Regia capabilities! What shall I do?",
+		"portrait": "res://resources/images/portraits/sci.png",
+		"options": [
+			{
+				"id": "opt_utter",
+				"text": "Speak to me!",
+				"next": "test_features",
+				"event": "test_utter"
+			},
+			{
+				"id": "opt_vanish",
+				"text": "Perform a vanishing act.",
+				"next": "exit",
+				"event": "test_vanish"
+			},
+			{
+				"id": "opt_spawn",
+				"text": "Conjure a flower.",
+				"next": "test_features",
+				"event": "test_spawn"
+			},
+			{
+				"id": "opt_despawn",
+				"text": "Banish the flower.",
+				"next": "test_features",
+				"event": "test_despawn"
+			},
+			{
+				"id": "opt_leave",
+				"text": "That is all. (Leave)",
+				"next": "exit"
+			}
+		]
+	},
+	"scientist_angry": {
+		"text": "I am furious! Someone stole my flower! What do you want?!",
+		"portrait": "res://resources/images/portraits/sci.png",
+		"options": [
+			{
+				"id": "opt_utter",
+				"text": "Speak to me!",
+				"next": "scientist_angry",
+				"event": "test_utter"
+			},
+			{
+				"id": "opt_vanish",
+				"text": "Perform a vanishing act.",
+				"next": "exit",
+				"event": "test_vanish"
+			},
+			{
+				"id": "opt_spawn",
+				"text": "Conjure a flower.",
+				"next": "scientist_angry",
+				"event": "test_spawn"
+			},
+			{
+				"id": "opt_despawn",
+				"text": "Banish the flower.",
+				"next": "scientist_angry",
+				"event": "test_despawn"
+			},
+			{
+				"id": "opt_leave",
+				"text": "That is all. (Leave)",
+				"next": "exit"
+			}
+		]
+	},
+	"wait_for_pickup": {
+		"text": "The flower is in the garden. Go get it!",
+		"portrait": "res://resources/images/portraits/sci.png",
+		"options": [
+			{
+				"id": "opt_ok",
+				"text": "Ok!",
+				"next": "exit"
+			}
+		]
+	},
+	"thanks_for_flower": {
+		"text": "Wow, you got the flower! Thanks!",
+		"portrait": "res://resources/images/portraits/sci.png",
+		"options": [
+			{
+				"id": "opt_welcome",
+				"text": "You're welcome.",
+				"next": "exit"
+			}
+		]
+	},
+	"injected_options_pool": {
+		"opt_deny": {
+			"text": "I didn't steal any flower! Ask the cop!",
+			"next": "exit",
+			"event": "deny_crime",
+			"remove_on_select": true
+		},
+		"opt_bribe": {
+			"text": "Here's $50. You didn't see anything.",
+			"next": "exit",
+			"event": "bribe_cop",
+			"remove_on_select": true
+		},
+		"opt_apologize": {
+			"text": "I'm sorry, please calm down.",
+			"next": "await_agent",
+			"event": "apologize_event",
+			"remove_on_select": true
+		}
+	},
+	"apology_accepted": {
+		"text": "Okay... I'll let it slide this time.",
+		"portrait": "res://resources/images/portraits/sci.png",
+		"options": [
+			{
+				"id": "opt_thanks",
+				"text": "Thanks.",
+				"next": "exit"
+			}
+		]
+	},
+	"apology_rejected": {
+		"text": "Apology REJECTED! Now leave me alone!",
+		"portrait": "res://resources/images/portraits/sci.png",
+		"options": [
+			{
+				"id": "opt_yikes",
+				"text": "Yikes. (Vanish)",
+				"next": "exit",
+				"event": "test_vanish"
+			}
+		]
+	},
+	"cop_idle": {
+		"text": "Move along, citizen.",
+		"portrait": "res://resources/images/portraits/cop.png",
+		"options": [
+			{
+				"id": "opt_leave_cop",
+				"text": "Goodbye.",
+				"next": "exit"
+			}
+		]
+	}
 }

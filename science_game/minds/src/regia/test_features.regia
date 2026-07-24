@@ -1,20 +1,30 @@
 # Base Vocabulary
 ACTION vesna.via.set_visible(visible) AS set_visible.
 ACTION vesna.via.utter(text) AS utter.
-ACTION vesna.via.set_dialogue(node) AS set_dialogue.
 
 # We declare the Jason internal actions we need to bridge with the environment
 ACTION vesna.via.spawn_item(item, waypoint) AS spawn_item.
 ACTION vesna.via.despawn_item(item) AS despawn_item.
+
+ACTION vesna.via.add_dialogue_option(id) AS add_dialogue_option.
+ACTION vesna.via.remove_dialogue_option(id) AS remove_dialogue_option.
+ACTION vesna.via.update_dialogue(node) AS update_dialogue.
+ACTION vesna.via.set_dialogue(node) AS set_dialogue.
 
 EVENT test_utter.
 EVENT test_vanish.
 EVENT test_spawn.
 EVENT test_despawn.
 EVENT picked_up_flower.
+EVENT apologize_event.
 
-# The Playbook that will be assigned to the scientist
-PLAYBOOK ScientistFeatures:
+EVENT flower_stolen SELF.
+EVENT calmed_down SELF.
+EVENT deny_crime SELF.
+EVENT bribe_cop SELF.
+
+# The Playbook that will be assigned to the scientist when calm
+PLAYBOOK ScientistCalm:
 
     WHEN test_utter:
         DO PRINT("Testing utter!").
@@ -41,14 +51,96 @@ PLAYBOOK ScientistFeatures:
     WHEN picked_up_flower:
         DO PRINT("The player picked up the flower!").
         DO utter("Hey! You took my flower!").
-        DO set_dialogue("thanks_for_flower").
+        SIGNAL flower_stolen.
+
+    WHEN apologize_event:
+        DO PRINT("Apology received while calm!").
+        DO update_dialogue("apology_accepted").
+
+# The Playbook that will be assigned to the scientist when angry
+PLAYBOOK ScientistAngry:
+
+    WHEN test_utter:
+        DO utter("Don't talk to me! I'm mad about my flower!").
+
+    WHEN test_spawn:
+        DO utter("No more flowers for you!").
+
+    WHEN test_vanish:
+        DO utter("Fine! I'm taking a deep breath...").
+        SIGNAL calmed_down.
+        
+    WHEN picked_up_flower:
+        DO utter("I don't have any more flowers!").
+
+    WHEN apologize_event:
+        DO PRINT("Apology received while angry!").
+        DO update_dialogue("apology_rejected").
+
+PLAYBOOK SuspectPlaybook:
+    WHEN deny_crime:
+        DO utter("I am innocent! Ask the cop!").
+        SIGNAL deny_crime.
+
+PLAYBOOK CopPlaybook:
+    WHEN bribe_cop:
+        DO utter("Hmm. Very well. I didn't see anything.").
+        SIGNAL bribe_cop.
+
+PLOT Investigation.
+    PHASE questioning INITIAL.
+
+    ROLE Suspect.
+    ROLE Officer.
+
+    DURING questioning:
+        ON ENTER:
+            ASSIGN SuspectPlaybook TO Suspect.
+            ASSIGN CopPlaybook TO Officer.
+            Suspect DO add_dialogue_option("opt_deny").
+            Officer DO add_dialogue_option("opt_bribe").
+        ON EXIT:
+            UNASSIGN SuspectPlaybook FROM Suspect.
+            UNASSIGN CopPlaybook FROM Officer.
+            Suspect DO remove_dialogue_option("opt_deny").
+            Officer DO remove_dialogue_option("opt_bribe").
+        WHEN deny_crime:
+            Officer DO utter("I have my eye on you, scientist.").
+            END PLOT.
+        WHEN bribe_cop:
+            Suspect DO utter("Phew. That was close.").
+            END PLOT.
 
 # The Plot managed by the Director agent
 PLOT TestFeatures.
-    PHASE main INITIAL.
+    PHASE calm INITIAL.
+    PHASE angry.
 
     ROLE Scientist.
+    ROLE Cop.
 
-    DURING main:
+    DURING calm:
         ON ENTER:
-            ASSIGN ScientistFeatures TO Scientist.
+            ASSIGN ScientistCalm TO Scientist.
+            Scientist DO set_dialogue("test_features").
+        ON EXIT:
+            UNASSIGN ScientistCalm FROM Scientist.
+        WHEN flower_stolen:
+            TRANSITION TO angry.
+
+    DURING angry:
+        ON ENTER:
+            ASSIGN ScientistAngry TO Scientist.
+            Scientist DO set_dialogue("scientist_angry").
+            Scientist DO add_dialogue_option("opt_apologize").
+            START SUBPLOT Investigation MAPPING Scientist TO Suspect, Cop TO Officer.
+        ON EXIT:
+            UNASSIGN ScientistAngry FROM Scientist.
+            Scientist DO remove_dialogue_option("opt_apologize").
+            Scientist DO set_dialogue("test_features").
+        WHEN calmed_down:
+            TRANSITION TO calm.
+        WHEN SUBPLOT Investigation ENDS:
+            Scientist DO utter("The subplot has officially concluded!").
+
+

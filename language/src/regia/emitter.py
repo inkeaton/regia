@@ -19,7 +19,7 @@ compiler pipeline or CLI is responsible for writing them.
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 from regia.ast_nodes import (
     # Constants
@@ -37,7 +37,7 @@ from regia.ast_nodes import (
     InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
     OnEnter, OnExit,
-    PlotWhenBlock, PlotIfBranch, PlotElseBranch,
+    PlotWhenBlock, PlotIfBranch, PlotElseBranch, PlotWhenSubplotEndsBlock,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
     Program,
@@ -470,7 +470,7 @@ class Emitter:
 
     def _emit_when_as_director(
         self,
-        when: PlotWhenBlock,
+        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock],
         phase_context: Optional[str],
         source_phase: Optional[str],
         plot: PlotDef,
@@ -487,7 +487,7 @@ class Emitter:
         ON EXIT sequence, phase belief update, and ON ENTER sequence.
 
         Args:
-            when:          The PlotWhenBlock to emit.
+            when:          The PlotWhenBlock or PlotWhenSubplotEndsBlock to emit.
             phase_context: Optional phase guard (e.g. "current_phase(backstage)").
             source_phase:  The source phase name (None for DURING PLOT).
             plot:          The PlotDef (needed for ON EXIT/ENTER expansion).
@@ -495,6 +495,13 @@ class Emitter:
         """
         priority = when.priority if when.priority is not None else 0
         plot_name = plot.name
+        
+        if isinstance(when, PlotWhenSubplotEndsBlock):
+            event_name = f"child_ended({when.subplot_name.lower()}, _)"
+            event_label = f"subplot_{when.subplot_name.lower()}_ended"
+        else:
+            event_name = when.event
+            event_label = when.event
 
         def _expand_stmts(stmts: list) -> List[str]:
             """Expand a stmt list."""
@@ -511,9 +518,9 @@ class Emitter:
 
             body_stmts = _expand_stmts(when.prefix_stmts)
 
-            label = f"dir__{plot_name}__{when.event}__0"
+            label = f"dir__{plot_name}__{event_label}__0"
             self._write_plan(
-                lines, label, when.event, context_parts, body_stmts, priority,
+                lines, label, event_name, context_parts, body_stmts, priority,
             )
             return
 
@@ -530,9 +537,9 @@ class Emitter:
 
             body_stmts = prefix_stmts + _expand_stmts(branch.stmts)
 
-            label = f"dir__{plot_name}__{when.event}__{idx}"
+            label = f"dir__{plot_name}__{event_label}__{idx}"
             self._write_plan(
-                lines, label, when.event, context_parts, body_stmts, priority,
+                lines, label, event_name, context_parts, body_stmts, priority,
             )
 
         # ELSE branch: negation of all IF conditions
@@ -549,9 +556,9 @@ class Emitter:
 
             body_stmts = prefix_stmts + _expand_stmts(when.else_branch.stmts)
 
-            label = f"dir__{plot_name}__{when.event}__{len(when.branches)}"
+            label = f"dir__{plot_name}__{event_label}__{len(when.branches)}"
             self._write_plan(
-                lines, label, when.event, context_parts, body_stmts, priority,
+                lines, label, event_name, context_parts, body_stmts, priority,
             )
 
     def _emit_role_registry(
@@ -683,10 +690,12 @@ class Emitter:
         lines.append(
             f"// playbook_active belief to enable its gated plans."
         )
-        lines.append(f"+add_playbook(Name)[source(Sender)] <-")
+        lines.append(f"+!add_playbook(Name)[source(Sender)] <-")
+        lines.append(f"    .print(\"[{role_name}] Added playbook \", Name, \" from \", Sender);")
         lines.append(f"    +playbook_active(Name, Sender).")
         lines.append(f"")
-        lines.append(f"+remove_playbook(Name)[source(Sender)] <-")
+        lines.append(f"+!remove_playbook(Name)[source(Sender)] <-")
+        lines.append(f"    .print(\"[{role_name}] Removed playbook \", Name, \" from \", Sender);")
         lines.append(f"    -playbook_active(Name, Sender).")
         lines.append("")
         lines.append(f"// Cleanup ghost playbooks when the Plot terminates")
@@ -695,8 +704,10 @@ class Emitter:
         lines.append("")
         lines.append(f"// Signal all active directors for a given playbook")
         lines.append(f"+!signal_directors(PbName, Payload) <-")
+        lines.append(f"    .print(\"[{role_name}] Signaling directors of \", PbName, \" with \", Payload);")
         lines.append(f"    .findall(D, playbook_active(PbName, D), Directors);")
-        lines.append(f"    for ( .member(DirectorId, Directors) ) {{ .send(DirectorId, tell, Payload) }}.")
+                    # added untell for signals. See if maybe use achieve goals, and a special syntax in Regia plots for child signals?
+        lines.append(f"    for ( .member(DirectorId, Directors) ) {{ .send(DirectorId, untell, Payload); .send(DirectorId, tell, Payload) }}.")
         lines.append("")
 
         # Generate handler plans for Role DO directives across the transitive closure
@@ -714,10 +725,13 @@ class Emitter:
                     do = DoStmt(action=stmt.action, is_special=True, args=stmt.args)
                     body = self._emit_do_stmt(do)
                 else:
-                    body = goal
+                    action_name = self._action_aliases.get(stmt.action, stmt.action)
+                    body = f"{action_name}({args})" if args else action_name
 
+                import re # move upwards
+                safe_goal = re.sub(r'[^a-zA-Z0-9]', '_', goal)
                 handler_plans.add(
-                    f"@role__{p_name.lower()}__{r_name.lower()}__{action_lower}\n"
+                    f"@role__{p_name.lower()}__{r_name.lower()}__{safe_goal}\n"
                     f"+!{goal} <- {body}."
                 )
 
@@ -917,18 +931,18 @@ class Emitter:
             AgentSpeak string.
         """
         if isinstance(stmt, AssignStmt):
-            # Director sends add_playbook belief to all agents
+            # Director sends add_playbook goal to all agents
             # bound to this role
             role_lower = stmt.role.lower()
             return (
-                f"!send_to_role({role_lower}, tell, "
+                f"!send_to_role({role_lower}, achieve, "
                 f"add_playbook({stmt.playbook.lower()}))"
             )
 
         elif isinstance(stmt, UnassignStmt):
             role_lower = stmt.role.lower()
             return (
-                f"!send_to_role({role_lower}, tell, "
+                f"!send_to_role({role_lower}, achieve, "
                 f"remove_playbook({stmt.playbook.lower()}))"
             )
 

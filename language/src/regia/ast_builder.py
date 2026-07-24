@@ -44,7 +44,7 @@ from regia.ast_nodes import (
     InlineTransitionStmt, RoleMapping, StartSubplotStmt, PlotEndStmt,
     # Plot
     OnEnter, OnExit,
-    PlotIfBranch, PlotElseBranch, PlotWhenBlock,
+    PlotIfBranch, PlotElseBranch, PlotWhenBlock, PlotWhenSubplotEndsBlock,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
     Program,
@@ -868,6 +868,36 @@ class ASTBuilder(Transformer):
 
 
     @v_args(meta=True)
+    def plot_when_subplot_ends_block(self, meta: Any, children: List) -> PlotWhenSubplotEndsBlock:
+        """WHEN SUBPLOT name ENDS PRIORITY n: body -> director-centric reactive plan.
+
+        Args:
+            meta:     Position of the WHEN keyword.
+            children: [Token(ID, name), optional int, body_tuple].
+
+        Returns:
+            A PlotWhenSubplotEndsBlock AST node.
+        """
+        subplot_name = str(children[0])
+
+        if len(children) == 3:
+            priority_val = children[1]
+            body = children[2]
+        else:
+            priority_val = None
+            body = children[1]
+
+        prefix_stmts, branches, else_branch = body
+        return PlotWhenSubplotEndsBlock(
+            subplot_name=subplot_name,
+            priority=priority_val,
+            prefix_stmts=prefix_stmts,
+            branches=branches,
+            else_branch=else_branch,
+            loc=_meta_loc(meta, self._filename),
+        )
+
+    @v_args(meta=True)
     def on_enter(self, meta: Any, children: List) -> OnEnter:
         """ON ENTER: imperative_stmt+ -> phase entry hook.
 
@@ -971,7 +1001,7 @@ class ASTBuilder(Transformer):
     ) -> Tuple[
         List[OnEnter],
         List[OnExit],
-        List[PlotWhenBlock],
+        List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock]],
     ]:
         """Sort during_content items into typed lists.
 
@@ -987,14 +1017,14 @@ class ASTBuilder(Transformer):
         """
         on_enters: List[OnEnter] = []
         on_exits: List[OnExit] = []
-        when_blocks: List[PlotWhenBlock] = []
+        when_blocks: List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock]] = []
 
         for item in items:
             if isinstance(item, OnEnter):
                 on_enters.append(item)
             elif isinstance(item, OnExit):
                 on_exits.append(item)
-            elif isinstance(item, PlotWhenBlock):
+            elif isinstance(item, (PlotWhenBlock, PlotWhenSubplotEndsBlock)):
                 when_blocks.append(item)
 
         return (on_enters, on_exits, when_blocks)

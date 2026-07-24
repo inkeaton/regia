@@ -13,8 +13,15 @@ mas science_game {
         port:       9200
     }
 
+    agent cop:cop.asl {
+        ag-class:   vesna.VesnaAgent
+        address:    "172.26.80.1"
+        port:       9002
+    }
+
     agent testfeatures_director:gen/director_testfeatures.asl {
-        beliefs: role_agent(scientist, scientist)
+        beliefs: role_agent(scientist, scientist),
+                 role_agent(cop, cop)
         goals: boot
     }
 
