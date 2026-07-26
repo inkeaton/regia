@@ -37,7 +37,7 @@ from regia.ast_nodes import (
     InlineTransitionStmt, StartSubplotStmt, PlotEndStmt, RoleMapping,
     # Plot
     OnEnter, OnExit,
-    PlotWhenBlock, PlotIfBranch, PlotElseBranch, PlotWhenSubplotEndsBlock,
+    PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotIfBranch, PlotElseBranch,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
     Program,
@@ -355,8 +355,8 @@ class Emitter:
         lines.append(f"// ============================================")
         lines.append("// == Plot Lifecycle Infrastructure ==")
         lines.append(f"// ============================================")
-        lines.append(f"// Handle termination signal from parent plot")
-        lines.append(f"+parent_ended[source(Parent)] : parent_plot(Parent) <-")
+        # If the parent terminates, it signals children with !parent_ended
+        lines.append(f"+!parent_ended[source(Parent)] : parent_plot(Parent) <-")
         lines.append(f"    .print(\"[{plot.name}] Parent plot \", Parent, \" ended. Terminating this subplot...\");")
         lines.append(f"    -parent_plot(Parent);")
         lines.append(f"    !end_plot.")
@@ -367,15 +367,15 @@ class Emitter:
         lines.append(f"    .print(\"[{plot.name}] Ending plot. Running exit hooks and broadcasting termination...\");")
         lines.append(f"    !on_exit(Current);")
         lines.append(f"    .findall(C, child_plot(C, _, _), Children);")
-        lines.append(f"    for ( .member(Child, Children) ) {{ .send(Child, tell, parent_ended) }};")
+        lines.append(f"    for ( .member(Child, Children) ) {{ .send(Child, achieve, parent_ended) }};")
         lines.append(f"    .findall(A, role_agent(_, A), Roles);")
-        lines.append(f"    for ( .member(RoleAgent, Roles) ) {{ .send(RoleAgent, tell, plot_ended(Me)) }};")
+        lines.append(f"    for ( .member(RoleAgent, Roles) ) {{ .send(RoleAgent, achieve, plot_ended(Me)) }};")
         lines.append(f"    !notify_parent;")
         lines.append(f"    .kill_agent(Me).")
         lines.append("")
         lines.append(f"+!notify_parent : parent_plot(Parent) <-")
         lines.append(f"    .my_name(Me);")
-        lines.append(f"    .send(Parent, tell, child_ended({plot.name.lower()}, Me)).")
+        lines.append(f"    .send(Parent, achieve, child_ended({plot.name.lower()}, Me)).")
         lines.append(f"+!notify_parent <- true.")
         lines.append("")
         
@@ -497,10 +497,10 @@ class Emitter:
         plot_name = plot.name
         
         if isinstance(when, PlotWhenSubplotEndsBlock):
-            event_name = f"child_ended({when.subplot_name.lower()}, _)"
+            event_name = f"!child_ended({when.subplot_name.lower()}, _)"
             event_label = f"subplot_{when.subplot_name.lower()}_ended"
         else:
-            event_name = when.event
+            event_name = f"!{when.event}" if when.event in ["parent_ended", "child_ended"] else when.event
             event_label = when.event
 
         def _expand_stmts(stmts: list) -> List[str]:
@@ -699,7 +699,7 @@ class Emitter:
         lines.append(f"    -playbook_active(Name, Sender).")
         lines.append("")
         lines.append(f"// Cleanup ghost playbooks when the Plot terminates")
-        lines.append(f"+plot_ended(PlotId)[source(PlotId)] <-")
+        lines.append(f"+!plot_ended(PlotId)[source(PlotId)] <-")
         lines.append(f"    -playbook_active(_, PlotId).")
         lines.append("")
         lines.append(f"// Signal all active directors for a given playbook")

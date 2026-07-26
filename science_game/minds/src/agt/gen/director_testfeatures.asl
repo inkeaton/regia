@@ -31,7 +31,7 @@ current_phase(calm).
     !switch_phase(calm).
 
 @dir__TestFeatures__subplot_investigation_ended__0
-+child_ended(investigation, _) : current_phase(angry) <-
++!child_ended(investigation, _) : current_phase(angry) <-
     !send_to_role(scientist, achieve, utter("The subplot has officially concluded!")).
 
 
@@ -66,8 +66,7 @@ current_phase(calm).
 // ============================================
 // == Plot Lifecycle Infrastructure ==
 // ============================================
-// Handle termination signal from parent plot
-+parent_ended[source(Parent)] : parent_plot(Parent) <-
++!parent_ended[source(Parent)] : parent_plot(Parent) <-
     .print("[TestFeatures] Parent plot ", Parent, " ended. Terminating this subplot...");
     -parent_plot(Parent);
     !end_plot.
@@ -78,15 +77,15 @@ current_phase(calm).
     .print("[TestFeatures] Ending plot. Running exit hooks and broadcasting termination...");
     !on_exit(Current);
     .findall(C, child_plot(C, _, _), Children);
-    for ( .member(Child, Children) ) { .send(Child, tell, parent_ended) };
+    for ( .member(Child, Children) ) { .send(Child, achieve, parent_ended) };
     .findall(A, role_agent(_, A), Roles);
-    for ( .member(RoleAgent, Roles) ) { .send(RoleAgent, tell, plot_ended(Me)) };
+    for ( .member(RoleAgent, Roles) ) { .send(RoleAgent, achieve, plot_ended(Me)) };
     !notify_parent;
     .kill_agent(Me).
 
 +!notify_parent : parent_plot(Parent) <-
     .my_name(Me);
-    .send(Parent, tell, child_ended(testfeatures, Me)).
+    .send(Parent, achieve, child_ended(testfeatures, Me)).
 +!notify_parent <- true.
 
 @start_subplot_atomic[atomic]

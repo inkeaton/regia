@@ -423,6 +423,8 @@ The `MAPPING` clause binds roles from the parent Plot to roles in the child Plot
 - **Child to Parent**: When a child plot terminates, the parent can react using the `WHEN SUBPLOT <PlotName> ENDS:` keyword.
 - **Parent to Child**: When a parent plot terminates, it notifies all children via the `parent_ended` reserved event.
 
+*Note: In the compiled AgentSpeak codebase, these infrastructural lifecycle signals (`plot_ended`, `parent_ended`, `child_ended`) are broadcast as transient achievement goals (e.g. `!parent_ended`) rather than belief additions. This prevents permanently cluttering the agent's belief base with dead plot IDs.*
+
 These mechanisms allow coordinated cleanup and conditional advancement:
 
 ```regia

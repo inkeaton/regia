@@ -584,8 +584,8 @@ class StartSubplotStmt:
 class PlotEndStmt:
     """Terminate the current Plot: END PLOT.
 
-    Notifies all child plots (parent_ended event) and the parent plot
-    (child_ended event), then kills the Director agent.
+    Notifies all child plots (parent_ended achievement goal) and the parent plot
+    (child_ended achievement goal), then kills the Director agent.
 
     Must be the last statement in its WHEN block or branch.
     Forbidden inside ON ENTER / ON EXIT hooks.

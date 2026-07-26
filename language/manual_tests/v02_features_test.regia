@@ -4,14 +4,14 @@
 # 2. Doc Comments (#@ key: value)
 # 3. Inline Transitions (TRANSITION TO within WHEN blocks)
 
-IMPORT "shared_elements.regia".
+IMPORT "./output/shared_elements.regia".
 
 #@author: AgentSpeak Designer
 #@version: 0.2
 #@desc: Playbook demonstrating basic actions triggered by an imported event.
 PLAYBOOK HeroPlaybook:
     WHEN quest_completed PRIORITY 5:
-        DO celebrate.
+        DO celebrate(achievement_name).
 
 #@author: AgentSpeak Director
 #@desc: Main plot demonstrating inline phase transitions.

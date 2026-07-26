@@ -22,7 +22,7 @@
     -playbook_active(Name, Sender).
 
 // Cleanup ghost playbooks when the Plot terminates
-+plot_ended(PlotId)[source(PlotId)] <-
++!plot_ended(PlotId)[source(PlotId)] <-
     -playbook_active(_, PlotId).
 
 // Signal all active directors for a given playbook
