@@ -283,8 +283,8 @@ def test_emitter_generates_end_plot(parser, builder):
     # Check that infrastructure plan is present
     assert "+!end_plot" in parent_asl
     assert ".findall(C, child_plot(C, _, _), Children)" in parent_asl
-    assert ".send(Child, tell, parent_ended)" in parent_asl
-    assert ".send(Parent, tell, child_ended(parent, Me))" in parent_asl
+    assert ".send(Child, achieve, parent_ended)" in parent_asl
+    assert ".send(Parent, achieve, child_ended(parent, Me))" in parent_asl
     assert ".kill_agent(Me)" in parent_asl
 
 

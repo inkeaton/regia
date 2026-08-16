@@ -14,10 +14,10 @@ export const NODE_WIDTH  = 220;
 export const NODE_HEIGHT = 100;
 
 /** Vertical spacing between node rows in the dagre layout (in pixels). */
-export const LAYOUT_RANK_SEP = 150;
+export const LAYOUT_RANK_SEP = 200;
 
 /** Horizontal spacing between nodes in the same row (in pixels). */
-export const LAYOUT_NODE_SEP = 120;
+export const LAYOUT_NODE_SEP = 150;
 
 // ==============================================================================
 // EDGE STYLE DEFAULTS

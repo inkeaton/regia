@@ -3,19 +3,19 @@ mas science_game {
     // Roles for the game
     agent scientist:scientist.asl {
         ag-class:   vesna.VesnaAgent
-        address:    "172.26.80.1"
+        address:    localhost
         port:       9001
     }
 
     agent coordinator:ready_agent.asl {
         ag-class:   vesna.VesnaAgent
-        address:    "172.26.80.1"
+        address:    localhost
         port:       9200
     }
 
     agent cop:cop.asl {
         ag-class:   vesna.VesnaAgent
-        address:    "172.26.80.1"
+        address:    localhost
         port:       9002
     }
 

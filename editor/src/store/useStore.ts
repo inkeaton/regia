@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 import { fetchAst } from "../api/parser";
 import type { Program } from "../types/ast";
-import type { TransportError } from "../types/transport";
+import type { TransportError, CompilerMessage } from "../types/transport";
 
 // ==============================================================================
 // STATE TYPES
@@ -30,8 +30,11 @@ export type EditorState = {
     errors: string[];
     /** Structured compiler diagnostics with precise line/column info for Monaco markers. */
     compilerMessages: CompilerMessage[];
+    /** Target line to navigate to in the Monaco editor when a graph node is clicked. */
+    targetLine: number | null;
     setCode: (newCode: string) => void;
     parseCode: () => Promise<void>;
+    navigateToLine: (line: number) => void;
 };
 
 // ==============================================================================
@@ -133,6 +136,7 @@ export const useStore = create<EditorState>((set, get) => ({
     isParsing: false,
     errors: [],
     compilerMessages: [],
+    targetLine: null,
 
     /**
      * Updates the raw code string in the state.
@@ -141,6 +145,18 @@ export const useStore = create<EditorState>((set, get) => ({
      */
     setCode: (newCode: string) => {
         set({ code: newCode });
+    },
+
+    /**
+     * Triggers navigation in the code editor to a specific line.
+     */
+    navigateToLine: (line: number) => {
+        // We set to null first to ensure the watcher in CodeEditor fires
+        // even if clicking the same node twice, triggering a re-render/effect.
+        // But since React batches state updates, it's cleaner to just update it,
+        // or rely on a timestamp/counter if we really needed to force re-navigation.
+        // For now, just setting it is sufficient.
+        set({ targetLine: line });
     },
 
     /**

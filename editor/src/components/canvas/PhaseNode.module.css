@@ -50,12 +50,31 @@
     flex-shrink: 0;
 }
 
+/* Red "ENDS" badge */
+.terminalBadge {
+    background-color: var(--color-accent-danger, #ff4c4c);
+    color: white;
+}
+
 /* ===== Source location hint at the bottom ===== */
 .nodeFooter {
     margin-top: var(--space-sm);
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
     font-family: var(--font-code);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.hookTag {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    background-color: var(--color-bg-surface-alt);
+    padding: 0 var(--space-xs);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
 }
 
 /* ===== React Flow handles: the connection dots ===== */

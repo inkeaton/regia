@@ -3,10 +3,15 @@ import { useEffect, useState } from "react";
 import ReactFlow, { Background, Controls, type Node, type Edge, Panel } from "reactflow";
 
 import { useStore } from "../../store/useStore";
+import type { PlotDef } from "../../types/ast";
 import { PhaseNode } from "./PhaseNode";
 import { convertAstToGraph } from "../../layout/astToGraph";
 import { getLayoutedElements } from "../../layout/autoLayout";
 import { exportCanvas } from "../../export/toImage";
+import { useGraphEditing } from "../../hooks/useGraphEditing";
+import { AddPhaseModal } from "./AddPhaseModal";
+import { EventPickerModal } from "./EventPickerModal";
+import { TransitionEdge } from "./TransitionEdge";
 
 import styles from "./AstCanvas.module.css";
 import "reactflow/dist/style.css";
@@ -22,6 +27,10 @@ import "reactflow/dist/style.css";
  */
 const NODE_TYPES = {
     phaseNode: PhaseNode,
+};
+
+const EDGE_TYPES = {
+    transitionEdge: TransitionEdge,
 };
 
 // ==============================================================================
@@ -46,6 +55,16 @@ export const AstCanvas = () => {
     const { ast, errors } = useStore();
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
+
+    const {
+        onConnect,
+        onPaneDoubleClick,
+        pendingConnection,
+        isAddingPhase,
+        cancelPending,
+        confirmAddPhase,
+        confirmAddTransition,
+    } = useGraphEditing();
 
     // Recompute the graph layout whenever the AST updates.
     // The layout pipeline is: AST → raw nodes/edges → dagre layout → positioned nodes.
@@ -73,17 +92,57 @@ export const AstCanvas = () => {
 
     const hasSyntaxErrors = errors.length > 0;
 
+    const plot = ast?.items?.find((item) => item.type === "PlotDef") as PlotDef | undefined;
+    const roles = plot?.roles?.map((r) => r.name) || [];
+
     return (
         <div className={`${styles.canvasWrapper} ${hasSyntaxErrors ? styles.canvasWrapperDimmed : ""}`}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={NODE_TYPES}
+                edgeTypes={EDGE_TYPES}
                 fitView
                 fitViewOptions={{ padding: 0.2 }}
+                onConnect={onConnect}
+                nodesDraggable={false}
+                nodesConnectable={true}
             >
                 <Background color="var(--color-border)" gap={20} />
                 <Controls />
+
+                {/* Info panel in the top-left corner */}
+                {plot && (
+                    <Panel position="top-left">
+                        <div className={styles.infoPanel}>
+                            <div className={styles.plotNameSection}>
+                                <span className={styles.infoPanelTitle}>Plot: {plot.name}</span>
+                            </div>
+                            
+                            {roles.length > 0 && (
+                                <>
+                                    <span className={styles.infoPanelTitle}>Roles</span>
+                                    <div className={styles.roleChipContainer}>
+                                        {roles.map((role) => (
+                                            <span key={role} className={styles.roleChip}>
+                                                {role}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                            
+                            <div className={styles.actionsSection}>
+                                <button 
+                                    className={styles.actionButton}
+                                    onClick={onPaneDoubleClick}
+                                >
+                                    + Add Phase
+                                </button>
+                            </div>
+                        </div>
+                    </Panel>
+                )}
 
                 {/* Export toolbar in the top-right corner */}
                 <Panel position="top-right">
@@ -106,6 +165,22 @@ export const AstCanvas = () => {
                     </div>
                 </Panel>
             </ReactFlow>
+
+            {pendingConnection && ast && (
+                <EventPickerModal
+                    ast={ast}
+                    connection={pendingConnection}
+                    onConfirm={confirmAddTransition}
+                    onCancel={cancelPending}
+                />
+            )}
+            
+            {isAddingPhase && (
+                <AddPhaseModal
+                    onConfirm={confirmAddPhase}
+                    onCancel={cancelPending}
+                />
+            )}
         </div>
     );
 };

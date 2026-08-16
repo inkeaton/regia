@@ -2,6 +2,7 @@
 import { Handle, Position, type NodeProps } from "reactflow";
 
 import styles from "./PhaseNode.module.css";
+import { useStore } from "../../store/useStore";
 
 // ==============================================================================
 // TYPE DEFINITIONS
@@ -19,6 +20,10 @@ export type PhaseNodeData = {
     label: string;
     isInitial: boolean;
     line: number;
+    planCount?: number;
+    isTerminal?: boolean;
+    hasOnEnter?: boolean;
+    hasOnExit?: boolean;
 };
 
 // ==============================================================================
@@ -49,12 +54,18 @@ const HANDLE_STYLE = {
  * @param data - The PhaseNodeData payload set by `astToGraph.ts`.
  */
 export const PhaseNode = ({ data }: NodeProps<PhaseNodeData>) => {
+    const { navigateToLine } = useStore();
+    
     const cardClass = data.isInitial
         ? `${styles.nodeCard} ${styles.nodeCardInitial}`
         : styles.nodeCard;
 
     return (
-        <div className={cardClass}>
+        <div 
+            className={cardClass} 
+            onClick={() => navigateToLine(data.line)}
+            style={{ cursor: "pointer" }}
+        >
             {/* === Connection handles === */}
             {/* Primary vertical flow (forward transitions) */}
             <Handle type="target" position={Position.Top}    id="top-t"     style={HANDLE_STYLE} />
@@ -74,10 +85,18 @@ export const PhaseNode = ({ data }: NodeProps<PhaseNodeData>) => {
                 {data.isInitial && (
                     <span className={styles.initialBadge}>INITIAL</span>
                 )}
+                {data.isTerminal && (
+                    <span className={`${styles.initialBadge} ${styles.terminalBadge}`}>ENDS</span>
+                )}
             </div>
 
             <div className={styles.nodeFooter}>
-                Line: {data.line}
+                <span>Line: {data.line}</span>
+                {/* {data.hasOnEnter && <span className={styles.hookTag}>↓ enter</span>} */}
+                {/* {data.hasOnExit && <span className={styles.hookTag}>↑ exit</span>} */}
+                {data.planCount !== undefined && data.planCount > 0 && (
+                    <span>Plans: {data.planCount}</span>
+                )}
             </div>
         </div>
     );

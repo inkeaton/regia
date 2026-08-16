@@ -53,6 +53,52 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
     plot.phases.forEach((phase, index) => {
         phaseIndexMap[phase.name] = index;
 
+        // Find the matching DuringBlock
+        const block = plot.during_blocks.find(b => b.phase_name === phase.name);
+        
+        let line = phase.loc.line;
+        let planCount = 0;
+        let isTerminal = false;
+        let hasOnEnter = false;
+        let hasOnExit = false;
+
+        if (block) {
+            line = block.loc.line;
+            planCount = block.when_blocks.length;
+
+            // Helper to recursively search for PlotEndStmt
+            const hasEndPlot = (stmts: ImperativeStmt[]): boolean => {
+                for (const stmt of stmts) {
+                    if (stmt.type === "PlotEndStmt") return true;
+                }
+                return false;
+            };
+
+            // Check if this phase has any PlotEndStmt in its reactive plans
+            for (const whenBlock of block.when_blocks) {
+                if (hasEndPlot(whenBlock.prefix_stmts)) {
+                    isTerminal = true;
+                    break;
+                }
+                for (const branch of whenBlock.branches) {
+                    if (hasEndPlot(branch.stmts)) {
+                        isTerminal = true;
+                        break;
+                    }
+                }
+                if (!isTerminal && whenBlock.else_branch) {
+                    if (hasEndPlot(whenBlock.else_branch.stmts)) {
+                        isTerminal = true;
+                        break;
+                    }
+                }
+                if (isTerminal) break;
+            }
+            
+            hasOnEnter = block.on_enters.length > 0;
+            hasOnExit = block.on_exits.length > 0;
+        }
+
         nodes.push({
             id: phase.name,
             type: "phaseNode",   // Must match the key in NODE_TYPES (AstCanvas.tsx)
@@ -60,7 +106,11 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
             data: {
                 label:     phase.name,
                 isInitial: phase.is_initial,
-                line:      phase.loc.line,
+                line:      line,
+                planCount: planCount,
+                isTerminal: isTerminal,
+                hasOnEnter: hasOnEnter,
+                hasOnExit: hasOnExit,
             },
         });
     });
@@ -77,32 +127,23 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
     let lateralCounter = 0;
 
     const addEdge = (source: string, target: string, eventLabel: string) => {
-        const sourceIdx = phaseIndexMap[source] ?? 0;
-        const targetIdx = phaseIndexMap[target] ?? 0;
-
-        // An "immediate forward" transition goes from phase N to phase N+1 —
-        // the most common case. These get straight vertical routing.
-        const isImmediateForward = (targetIdx - sourceIdx) === 1;
-
         // Use an unordered key so A→B and B→A share a counter.
         const pairKey = [source, target].sort().join("-");
         edgePairCounts[pairKey] = (edgePairCounts[pairKey] ?? 0);
         const slot = edgePairCounts[pairKey]++;
 
-        // Choose handle IDs and edge type based on routing strategy.
+        // Use custom edge to avoid label collisions
+        const edgeType = "transitionEdge";
+        
         let sourceHandle: string;
         let targetHandle: string;
-        let edgeType: string;
 
-        if (isImmediateForward && slot === 0) {
-            // Straight vertical: top/bottom handles with step-style routing.
+        if (slot === 0) {
+            // First edge between these nodes goes straight top-to-bottom
             sourceHandle = "bottom-s";
             targetHandle = "top-t";
-            edgeType     = "smoothstep";
         } else {
-            // Lateral/reverse: Bezier arc through left or right handles.
-            // Alternating sides prevents all curved edges from going the same way.
-            edgeType = "default";
+            // Additional edges route laterally to avoid overlap
             if (lateralCounter % 2 === 0) {
                 sourceHandle = "right-s";
                 targetHandle = "right-t";
@@ -124,8 +165,7 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
             animated:     true,
             zIndex:       -1, // Keep edges behind node cards
             style:        { stroke: EDGE_COLOR, strokeWidth: EDGE_STROKE_WIDTH },
-            labelStyle:   { fill: EDGE_COLOR, fontWeight: 700, fontSize: 12 },
-            labelBgStyle: { fill: "var(--color-edge-label-bg)", fillOpacity: 0.9 },
+            data:         { slot },
             markerEnd: {
                 type:   MarkerType.ArrowClosed,
                 width:  EDGE_MARKER_WIDTH,
@@ -143,7 +183,7 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
         // 1. Extract reactive/inline transitions (inside when_blocks)
         block.when_blocks.forEach((whenBlock) => {
             const source = block.phase_name as string;
-            const eventLabel = whenBlock.event;
+            const eventLabel = "event" in whenBlock ? whenBlock.event : `SUBPLOT ${whenBlock.subplot_name} ENDS`;
 
             // Helper to scan a list of imperative statements for inline transitions
             const scanStmts = (stmts: ImperativeStmt[]) => {

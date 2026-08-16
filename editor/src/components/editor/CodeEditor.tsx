@@ -41,7 +41,7 @@ const SEVERITY_MAP: Record<string, MonacoType.MarkerSeverity> = {
  * from the previous textarea implementation.
  */
 export const CodeEditor = () => {
-    const { code, setCode, parseCode, compilerMessages, isParsing } = useStore();
+    const { code, setCode, parseCode, compilerMessages, isParsing, targetLine } = useStore();
     const debouncedCode = useDebounce(code, 500);
 
     // Keep a ref to the Monaco editor instance so we can push markers to it.
@@ -82,6 +82,20 @@ export const CodeEditor = () => {
 
         monaco.editor.setModelMarkers(model, "regia-compiler", markers);
     }, [compilerMessages]);
+
+    // ============================================================
+    // NAVIGATION SYNC
+    // ============================================================
+
+    // Whenever targetLine changes, reveal that line in the editor and move cursor.
+    useEffect(() => {
+        const editor = editorRef.current;
+        if (!editor || targetLine === null) return;
+
+        editor.revealLineInCenter(targetLine);
+        editor.setPosition({ lineNumber: targetLine, column: 1 });
+        editor.focus();
+    }, [targetLine]);
 
     // ============================================================
     // MONACO LIFECYCLE CALLBACKS

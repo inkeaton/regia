@@ -59,3 +59,69 @@
     border-color: var(--color-accent-primary);
     color: #fff;
 }
+
+/* ===== Info panel (Top-Left) ===== */
+.infoPanel {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.plotNameSection {
+    margin-bottom: var(--space-xs);
+}
+
+.infoPanelTitle {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.roleChipContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.roleChip {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-surface-alt);
+    border: 1px solid var(--color-border);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.actionsSection {
+    margin-top: var(--space-xs);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-sm);
+}
+
+.actionButton {
+    width: 100%;
+    font-family: var(--font-ui);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--color-border);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.actionButton:hover {
+    background-color: var(--color-bg-surface-alt);
+    border-style: solid;
+    border-color: var(--color-text-primary);
+}

@@ -400,7 +400,7 @@ class TestRoleOutput:
         assert "+playbook_active(Name, Sender)" in output
         assert "+!remove_playbook(Name)[source(Sender)]" in output
         assert "-playbook_active(Name, Sender)" in output
-        assert "+plot_ended(PlotId)[source(PlotId)]" in output
+        assert "+!plot_ended(PlotId)[source(PlotId)]" in output
         assert "+!signal_directors(PbName, Payload) <-" in output
         assert ".findall(D, playbook_active(PbName, D), Directors);" in output
 
