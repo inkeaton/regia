@@ -1,0 +1,119 @@
+# =============================================================
+# Vocabulary Declarations
+# =============================================================
+
+# Actions used by Playbooks
+ACTION toast(target).
+ACTION eat_food.
+ACTION complain.
+
+# Actions used by the Director (WORLD DO and Role DO)
+ACTION engine.security.summon_guards AS call_guards.
+ACTION lock_doors.
+ACTION play_music.
+ACTION serve_wine.
+ACTION stop_music.
+
+# Events triggering Playbook and Plot WHEN blocks
+EVENT food_served.
+EVENT insult_heard.
+EVENT digestion_check.
+EVENT assassin_spotted.
+EVENT insult_thrown.
+EVENT duel_resolved.
+
+# Facts used in Playbook IF conditions
+FACT is_hungry.
+FACT is_drunk.
+FACT hates(person).
+
+# =============================================================
+# Playbooks
+# =============================================================
+
+#@desc: Reactive behaviour for guests mingling and eating at the banquet.
+PLAYBOOK NobleSocializing:
+    
+    # Demonstrates priority, emotional gating, branching, and signaling the Plot.
+    WHEN insult_heard PRIORITY 5 TEMPER sympathy(-0.5) EFFECTS aggressiveness(0.2):
+        IF NOT is_drunk AND hates(host):
+            DO complain.
+            SIGNAL insult_thrown.
+        ELSE:
+            DO toast(host).
+
+    # Demonstrates self-perception and modifying the agent's own belief base.
+    WHEN digestion_check:
+        IF is_hungry:
+            DO eat_food.
+            DO FORGET(is_hungry).
+            DO PRINT("A guest finishes their meal.").
+
+    # Demonstrates the mixed prefix pattern together with OR and parenthesized conditions.
+    WHEN food_served:
+        DO PRINT("A guest notices food arriving.").
+        IF (is_hungry OR is_drunk) AND NOT hates(host):
+            DO eat_food.
+        ELSE:
+            DO complain.
+
+# =============================================================
+# Plots
+# =============================================================
+
+#@desc: A dummy subplot to satisfy the START SUBPLOT requirement.
+PLOT HonorDuel.
+
+    PHASE combat INITIAL.
+    
+    ROLE Challenger.
+
+    DURING combat:
+        WHEN duel_resolved:
+            WORLD DO PRINT("The duel is over.").
+            END PLOT.
+
+#@desc: The main narrative flow of the Royal Banquet.
+PLOT RoyalBanquet.
+
+    PHASE reception INITIAL.
+    PHASE feast.
+    PHASE duel_interruption.
+
+    ROLE Host.
+    ROLE Guest.
+
+    # Global handler active at all times. Demonstrates overriding autonomy.
+    DURING PLOT:
+        WHEN assassin_spotted PRIORITY 9:
+            WORLD DO lock_doors.
+            Host DO call_guards.
+            END PLOT.
+
+    # The opening phase. Sets up the initial state and playbooks.
+    DURING reception:
+        ON ENTER:
+            WORLD DO play_music.
+            ASSIGN NobleSocializing TO Guest.
+
+        WHEN food_served:
+            TRANSITION TO feast.
+
+    # The core phase. Waits for a role-specific signal to disrupt the flow.
+    DURING feast:
+        ON ENTER:
+            WORLD DO serve_wine.
+
+        WHEN ROLE Guest SIGNALS insult_thrown:
+            WORLD DO stop_music.
+            START SUBPLOT HonorDuel MAPPING Guest TO Challenger.
+            TRANSITION TO duel_interruption.
+
+        ON EXIT:
+            UNASSIGN NobleSocializing FROM Guest.
+
+    # The suspension phase. Waits for the child plot to resolve.
+    DURING duel_interruption:
+        WHEN SUBPLOT HonorDuel ENDS:
+            WORLD DO PRINT("The duel is settled. The banquet is ruined.").
+            END PLOT.

@@ -26,8 +26,6 @@ _FRIENDLY: Dict[str, str] = {
     # Named terminals (appear in tree, used in rules)
     "ID":          "a name (e.g. 'run', 'enemy_spotted')",
     "NUMBER":      "an integer number (e.g. '1', '7')",
-    "SELF":        "the keyword 'SELF'",
-    "ENVIRONMENT": "the keyword 'ENVIRONMENT'",
     "TELL":        "the keyword 'TELL'",
     "BROADCAST":   "the keyword 'BROADCAST'",
     "ACHIEVE":     "the keyword 'ACHIEVE'",

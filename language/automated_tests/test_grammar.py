@@ -36,13 +36,6 @@ class TestBaseElements:
         """A bare event declaration should parse."""
         parse("EVENT fan_greets.")
 
-    def test_event_with_self_origin(self) -> None:
-        """An event with SELF origin should parse."""
-        parse("EVENT internal_check SELF.")
-
-    def test_event_with_environment_origin(self) -> None:
-        """An event with ENVIRONMENT origin should parse."""
-        parse("EVENT explosion ENVIRONMENT.")
 
     def test_fact_simple(self) -> None:
         """A bare fact declaration should parse."""

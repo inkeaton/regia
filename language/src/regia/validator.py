@@ -37,6 +37,8 @@ from regia.ast_nodes import (
     # Plot
     OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock, PlotWhenSubplotEndsBlock,
+    PlotWhenRoleSignalsBlock,
+
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
     Program,
@@ -407,7 +409,7 @@ class Validator:
 
     def _validate_plot_when_block(
         self,
-        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock],
+        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock],
         scope: "_PlotScope",
         phase_name: Optional[str] = None,
     ) -> None:
@@ -425,6 +427,15 @@ class Validator:
         """
         if isinstance(when, PlotWhenBlock):
             self._check_event_ref(when.event, when.loc)
+        elif isinstance(when, PlotWhenRoleSignalsBlock):
+            self._check_event_ref(when.event, when.loc)
+            if when.role_name not in scope.roles:
+                self._error(
+                    when.loc,
+                    f"WHEN ROLE ... SIGNALS ... references undeclared role: "
+                    f"'{when.role_name}'.",
+                    hint=f"Add a 'ROLE {when.role_name}.' declaration to plot '{scope.plot_name}'.",
+                )
         else:
             if when.subplot_name not in self._plot_roles:
                 self._error(

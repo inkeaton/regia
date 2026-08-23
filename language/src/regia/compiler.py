@@ -106,11 +106,11 @@ def compile_source(
 
     # == Stage 0: Preprocess ===================================================
     annotations = preprocess(source, filename=filename) # (preprocessor.py)
-    reporter.register_source(filename, annotations.clean_source) # register source to later give context to the error reporter
+    reporter.register_source(filename, source) # register source to later give context to the error reporter
 
     # == Stage 1: Parse ========================================================
     try:
-        tree = parse(annotations.clean_source) # parse the clean source (parser.py)
+        tree = parse(source) # parse the clean source (parser.py)
     except (UnexpectedToken, UnexpectedCharacters) as e:
         report_syntax_error(e, reporter, filename=filename) # report syntax error (syntax_errors.py)
         return _failure(reporter) # return failure (here)
@@ -170,9 +170,7 @@ def compile_file(
     # Quick pre-scan: resolve the full import graph starting from this file.
     all_files = resolve_imports(
         filepath,
-        reporter_cb=lambda msg, fpath: reporter.error(
-            0, 0, 1, msg, filename=fpath.name if fpath else "",
-        ),
+        reporter=reporter,
     )
 
     if reporter.has_errors():
@@ -227,13 +225,16 @@ def compile_files(
         filename = fpath.name
         raw_source = fpath.read_text(encoding="utf-8")
 
-        # Stage 0: Preprocess
+        # Stage 0: Preprocess (extract annotations, but no longer modify source)
         annotations = preprocess(raw_source, filename=filename)
-        reporter.register_source(filename, annotations.clean_source)
+
+        # We no longer rely on the preprocessor to generate a clean source.
+        # Lark handles doc-comments and imports natively.
+        reporter.register_source(filename, raw_source)
 
         # Stage 1: Parse
         try:
-            tree = parse(annotations.clean_source)
+            tree = parse(raw_source)
         except (UnexpectedToken, UnexpectedCharacters) as e:
             report_syntax_error(e, reporter, filename=filename)
             continue  # Try remaining files to report all errors at once
@@ -299,10 +300,10 @@ def parse_files(filepaths: List[Path]) -> Program:
         raw_source = fpath.read_text(encoding="utf-8")
 
         annotations = preprocess(raw_source, filename=filename)
-        reporter.register_source(filename, annotations.clean_source)
+        reporter.register_source(filename, raw_source)
 
         try:
-            tree = parse(annotations.clean_source)
+            tree = parse(raw_source)
         except (UnexpectedToken, UnexpectedCharacters) as e:
             report_syntax_error(e, reporter, filename=filename)
             continue

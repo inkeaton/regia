@@ -15,9 +15,8 @@ source text before the grammar sees it:
        circular dependencies, and returns the ordered list of file
        paths to feed into the multi-file compilation pipeline.
 
-Both tasks produce a *clean* source string with the preprocessed
-constructs removed, so the Lark grammar remains unchanged and
-unaware of them.
+The raw source text is left unmodified, as the Lark grammar already
+contains rules to parse IMPORTs and ignore doc-comments.
 """
 
 from __future__ import annotations
@@ -28,6 +27,8 @@ from collections import deque
 from dataclasses import dataclass, field
 from pathlib     import Path
 from typing      import Deque, Dict, List, Optional, Set, Tuple
+
+from regia.errors import ErrorReporter
 
 
 # == Constants =================================================================
@@ -64,6 +65,18 @@ class DocAnnotation:
     filename: str = ""
 
 
+@dataclass
+class ImportDirective:
+    """An IMPORT statement extracted from a source file.
+    
+    Attributes:
+        path: The string path specified in the import.
+        line: The 1-based source line where it was found.
+    """
+    path: str
+    line: int
+
+
 # == Source annotations ========================================================
 
 @dataclass
@@ -71,16 +84,13 @@ class SourceAnnotations:
     """Results of preprocessing a single source file.
 
     Attributes:
-        clean_source: The source text with all preprocessor constructs
-                      replaced by blank lines (line numbers preserved).
         doc_comments: All extracted #@ annotations in source order.
         import_paths: All IMPORT paths in source order (unresolved,
                       relative to the file's directory).
     """
 
-    clean_source: str
-    doc_comments: List[DocAnnotation] = field(default_factory=list)
-    import_paths: List[str]           = field(default_factory=list)
+    doc_comments: List[DocAnnotation]   = field(default_factory=list)
+    import_paths: List[ImportDirective] = field(default_factory=list)
 
 
 # == Public API ================================================================
@@ -89,20 +99,20 @@ def preprocess(source: str, filename: str = "") -> SourceAnnotations:
     """Preprocess a Regia source string.
 
     Scans the source line by line, extracting #@ doc comments, #- continuations,
-    and IMPORT statements. All are replaced with blank lines so that
-    the Lark parser sees a clean source with unchanged line numbers.
+    and IMPORT statements.
+
+    The raw source text is left unmodified, as the Lark grammar already
+    contains rules to parse IMPORTs and ignore doc-comments.
 
     Args:
         source:   The raw Regia source code as a string.
         filename: The source file name (embedded in annotations).
 
     Returns:
-        A SourceAnnotations with the cleaned source, doc comments,
-        and import paths (in source order).
+        A SourceAnnotations with the doc comments and import paths (in source order).
     """
-    doc_comments: List[DocAnnotation] = []
-    import_paths: List[str]           = []
-    clean_lines:  List[str]           = []
+    doc_comments: List[DocAnnotation]   = []
+    import_paths: List[ImportDirective] = []
     
     last_doc_idx: Optional[int] = None
 
@@ -119,27 +129,17 @@ def preprocess(source: str, filename: str = "") -> SourceAnnotations:
                 filename = filename,
             ))
             last_doc_idx = len(doc_comments) - 1
-            clean_lines.append("")  # Preserve line number
         elif doc_cont_match:
             if last_doc_idx is not None:
                 doc_comments[last_doc_idx].value += "\n" + doc_cont_match.group(1)
-            clean_lines.append("")  # Preserve line number
         elif import_match:
-            import_paths.append(import_match.group(1))
+            import_paths.append(ImportDirective(path=import_match.group(1), line=line_num))
             last_doc_idx = None
-            clean_lines.append("")  # Preserve line number
         else:
             if raw_line.strip() != "":
                 last_doc_idx = None
-            clean_lines.append(raw_line)
-
-    # Preserve trailing newline behaviour of the original source
-    clean_source = "\n".join(clean_lines)
-    if source.endswith("\n"):
-        clean_source += "\n"
 
     return SourceAnnotations(
-        clean_source = clean_source,
         doc_comments = doc_comments,
         import_paths = import_paths,
     )
@@ -147,7 +147,7 @@ def preprocess(source: str, filename: str = "") -> SourceAnnotations:
 
 def resolve_imports(
     entry_file:  Path,
-    reporter_cb: "ImportErrorCallback",
+    reporter:    ErrorReporter,
 ) -> List[Path]:
     """Resolve the import graph starting from entry_file.
 
@@ -155,15 +155,14 @@ def resolve_imports(
     preprocessed to extract its IMPORT declarations. The result is a
     list of absolute paths. Each file appears at most once.
 
-    Circular imports are detected and reported via reporter_cb; the
+    Circular imports are detected and reported via the reporter; the
     offending file is skipped so resolution continues.
 
-    Missing files are also reported via reporter_cb.
+    Missing files are also reported via the reporter.
 
     Args:
         entry_file:  The absolute path to the entry-point .regia file.
-        reporter_cb: Callable that accepts (message: str, filepath: Path)
-                     and records the error. Usually wraps ErrorReporter.
+        reporter:    The ErrorReporter instance to record diagnostics.
 
     Returns:
         Ordered list of absolute file paths to compile. Includes the
@@ -171,26 +170,29 @@ def resolve_imports(
     """
     entry_abs = entry_file.resolve()
 
-    # Maps each file to the file that imported it (for cycle reporting).
-    imported_from: Dict[Path, Optional[Path]] = {entry_abs: None}
+    # Maps each file to the file that imported it (and the line number).
+    imported_from: Dict[Path, Optional[Tuple[Path, int]]] = {entry_abs: None}
 
-    # BFS queue of (file_to_process, importing_file_or_None)
-    queue: Deque[Tuple[Path, Optional[Path]]] = deque()
-    queue.append((entry_abs, None))
+    # BFS queue of (file_to_process, importing_file_or_None, line_number_in_importing_file)
+    queue: Deque[Tuple[Path, Optional[Path], int]] = deque()
+    queue.append((entry_abs, None, 0))
 
     # Preserves insertion order (Python 3.7+).
     # We use a list so we can control dependency ordering.
     visit_order: List[Path] = []
 
     while queue:
-        current, from_file = queue.popleft()
+        current, from_file, import_line = queue.popleft()
 
         if not current.exists():
             msg = (
                 f"Imported file not found: '{current}'"
                 + (f" (imported from '{from_file.name}')" if from_file else "")
             )
-            reporter_cb(msg, from_file or entry_abs)
+            reporter.error(
+                import_line, 0, 1, msg,
+                filename=from_file.name if from_file else entry_abs.name
+            )
             continue
 
         if current in [p for p in visit_order]:
@@ -201,36 +203,31 @@ def resolve_imports(
         try:
             raw_source = current.read_text(encoding="utf-8")
         except OSError as exc:
-            reporter_cb(
+            reporter.error(
+                import_line, 0, 1,
                 f"Cannot read imported file '{current}': {exc}",
-                from_file or entry_abs,
+                filename=from_file.name if from_file else entry_abs.name
             )
             continue
 
         annotations = preprocess(raw_source, filename=current.name)
         visit_order.append(current)
 
-        for rel_path_str in annotations.import_paths:
-            child = (current.parent / rel_path_str).resolve()
+        for imp_dir in annotations.import_paths:
+            child = (current.parent / imp_dir.path).resolve()
 
             if child in imported_from:
                 # Cycle detection
-                reporter_cb(
+                reporter.error(
+                    imp_dir.line, 0, 1,
                     f"Circular import detected: "
                     f"'{current.name}' imports '{child.name}' "
                     f"which is already in the import chain.",
-                    current,
+                    filename=current.name,
                 )
                 continue
 
-            imported_from[child] = current
-            queue.append((child, current))
+            imported_from[child] = (current, imp_dir.line)
+            queue.append((child, current, imp_dir.line))
 
     return visit_order
-
-
-# == Internal types ============================================================
-
-# Type alias for the error callback used in resolve_imports.
-# Callable[[str, Path], None]
-ImportErrorCallback = "callable[[str, Path], None]"

@@ -16,7 +16,7 @@ import pytest
 from regia.parser import parse
 from regia.ast_builder import ASTBuilder
 from regia.ast_nodes import (
-    Program, ActionDecl, EventDecl, FactDecl, EventOrigin,
+    Program, ActionDecl, EventDecl, FactDecl,
     PlaybookDef, PbWhenBlock, DoStmt, SignalStmt,
     PbIfBranch, PbElseBranch,
     PlotDef, PhaseDecl, RoleDecl, DuringBlock,
@@ -77,20 +77,6 @@ class TestEventDecl:
         event = ast.items[0]
         assert isinstance(event, EventDecl)
         assert event.name == "fan_greets"
-        assert event.origin is None
-
-    def test_event_self_origin(self) -> None:
-        """EVENT check SELF. -> EventDecl with SELF origin."""
-        ast = _build("EVENT check SELF.")
-        event = ast.items[0]
-        assert isinstance(event, EventDecl)
-        assert event.origin == EventOrigin.SELF
-
-    def test_event_environment_origin(self) -> None:
-        """EVENT explosion ENVIRONMENT. -> EventDecl with ENV origin."""
-        ast = _build("EVENT explosion ENVIRONMENT.")
-        event = ast.items[0]
-        assert event.origin == EventOrigin.ENVIRONMENT
 
 
 class TestFactDecl:

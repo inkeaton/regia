@@ -134,3 +134,44 @@ def test_imports(tmp_path):
     assert result.success
     assert result.error_count == 0
     assert "imported_action" in result.outputs["director_test.asl"]
+
+def test_missing_import_error(tmp_path):
+    main_file = tmp_path / "main.regia"
+    main_source = """
+    # line 1
+    # line 2
+    IMPORT "nonexistent.regia".
+    """
+    main_file.write_text(main_source)
+    
+    result = compile_file(main_file)
+    assert not result.success
+    assert result.error_count == 1
+    assert "Imported file not found" in result.messages[0].message
+    assert result.messages[0].line == 4
+
+def test_circular_import_error(tmp_path):
+    main_file = tmp_path / "main.regia"
+    imported_file = tmp_path / "imported.regia"
+    
+    main_source = f"""
+    # line 1
+    IMPORT "{imported_file.name}".
+    """
+    imported_source = f"""
+    # line 1
+    # line 2
+    # line 3
+    IMPORT "{main_file.name}".
+    """
+    main_file.write_text(main_source)
+    imported_file.write_text(imported_source)
+    
+    result = compile_file(main_file)
+    assert not result.success
+    # The error should be reported on imported_file's line 5, where it imports main_file
+    # Wait, the compiler might report it on main_file line 3 if it considers the cycle there,
+    # but the cycle is detected when parsing imported_file line 5.
+    assert "Circular import detected" in result.messages[0].message
+    assert result.messages[0].line == 5
+    assert result.messages[0].filename == imported_file.name

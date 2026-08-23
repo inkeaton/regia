@@ -98,9 +98,9 @@ action_decl: "ACTION" ID param_names? ("AS" ID)? "."
 
 // EVENT fan_greets.
 
-// EVENT internal_check SELF.
+// EVENT internal_check.
 
-event_decl: "EVENT" ID event_origin? "."
+event_decl: "EVENT" ID "."
 
 // FACT happy.
 
@@ -111,11 +111,6 @@ fact_decl: "FACT" ID param_names? "."
 // Parameter slots in declarations: (name1, name2, ...)
 
 param_names: "(" ID ("," ID)* ")"
-
-// Event origin (optional, defaults to ENVIRONMENT)
-
-event_origin: SELF
-    | ENVIRONMENT
 
 // ============================================================
 
@@ -286,6 +281,7 @@ during_block: "DURING" ID ":" during_content+ -> during_phase
     | on_exit
     | plot_when_block
     | plot_when_subplot_ends_block
+    | plot_when_role_signals_block
 
 // ON ENTER: (imperative sequence at phase entry)
 
@@ -310,6 +306,8 @@ on_exit: "ON" "EXIT" ":" imperative_stmt+
 plot_when_block: "WHEN" ID priority? ":" plot_when_body
 
 plot_when_subplot_ends_block: "WHEN" "SUBPLOT" ID "ENDS" priority? ":" plot_when_body
+
+plot_when_role_signals_block: "WHEN" "ROLE" ID "SIGNALS" ID priority? ":" plot_when_body
 
 plot_when_body: plot_body_item+ plot_else_branch?
 
@@ -451,10 +449,6 @@ STRING: /\"[^\"]*\"/
 // meaning and need to appear in the tree. These have higher
 
 // priority than ID, making them effectively reserved words.
-
-SELF: "SELF"
-
-ENVIRONMENT: "ENVIRONMENT"
 
 TELL: "TELL"
 

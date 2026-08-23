@@ -1,0 +1,73 @@
+# heist_showcase.regia
+
+ACTION sneak.
+ACTION grab_loot(item).
+ACTION chase.
+ACTION vesna.detection.raise_alarm AS raise_alarm.
+
+EVENT intruder_sighted.
+EVENT spotted.
+EVENT alarm_raised.
+EVENT plan_ready.
+
+FACT hidden.
+FACT alert_level(value).
+
+#@author: Regia Design Team
+#@desc: Reactive behaviour for the Thief while executing the heist.
+PLAYBOOK ThiefSneaking:
+    WHEN spotted PRIORITY 8:
+        IF hidden:
+            DO sneak.
+        IF NOT hidden OR alert_level(low):
+            DO grab_loot(gold).
+        ELSE:
+            DO raise_alarm.
+            SIGNAL alarm_raised.
+
+#@author: Regia Design Team
+#@desc: Reactive behaviour for a Guard patrolling the premises.
+PLAYBOOK GuardPatrol:
+    WHEN intruder_sighted:
+        DO PRINT("Guard notices something...").
+        SIGNAL spotted.
+
+#@author: Regia Design Team
+#@desc: A three-phase heist scenario with a Thief and a Guard.
+PLOT Heist.
+
+    PHASE planning INITIAL.
+    PHASE execution.
+    PHASE escape.
+
+    ROLE Thief.
+    ROLE Guard.
+
+    DURING PLOT:
+        WHEN alarm_raised PRIORITY 9:
+            WORLD DO raise_alarm.
+            Guard DO chase.
+
+    DURING planning:
+        ON ENTER:
+            WORLD DO PRINT("Heist planning phase begins.").
+        WHEN plan_ready:
+            TRANSITION TO execution.
+
+    DURING execution:
+        ON ENTER:
+            ASSIGN ThiefSneaking TO Thief.
+            ASSIGN GuardPatrol TO Guard.
+        WHEN ROLE Guard SIGNALS spotted PRIORITY 5:
+            IF alert_level(high):
+                WORLD DO PRINT("Guard sounds full alert!").
+                TRANSITION TO escape.
+            ELSE:
+                Thief DO sneak.
+        ON EXIT:
+            UNASSIGN ThiefSneaking FROM Thief.
+            UNASSIGN GuardPatrol FROM Guard.
+
+    DURING escape:
+        ON ENTER:
+            WORLD DO PRINT("The heist concludes in escape.").

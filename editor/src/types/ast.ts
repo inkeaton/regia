@@ -64,12 +64,11 @@ export type ActionDecl = ASTNode & {
 };
 
 /**
- * An event declaration: `EVENT fan_greets.` or `EVENT check SELF.`
+ * An event declaration: `EVENT fan_greets.` or `EVENT check.`
  */
 export type EventDecl = ASTNode & {
     type:   "EventDecl";
     name:   string;
-    origin: "SELF" | "ENVIRONMENT" | null;
     docs?:  DocAnnotation[];
     loc:    SourceLoc;
 };
@@ -426,6 +425,21 @@ export type PlotWhenSubplotEndsBlock = ASTNode & {
 };
 
 /**
+ * A director-centric reactive plan triggered when a specific role signals an event.
+ * `WHEN ROLE Hero SIGNALS warning PRIORITY 5: WORLD DO PRINT("warning").`
+ */
+export type PlotWhenRoleSignalsBlock = ASTNode & {
+    type:         "PlotWhenRoleSignalsBlock";
+    role_name:    string;
+    event:        string;
+    priority:     number | null;
+    prefix_stmts: ImperativeStmt[];
+    branches:     PlotIfBranch[];
+    else_branch:  PlotElseBranch | null;
+    loc:          SourceLoc;
+};
+
+/**
  * A DURING block inside a Plot.
  * `DURING backstage: ...` (phase-specific, phase_name = "backstage")
  * `DURING PLOT: ...`      (plot-wide,      phase_name = null)
@@ -435,7 +449,7 @@ export type DuringBlock = ASTNode & {
     phase_name:    string | null;
     on_enters:     OnEnter[];
     on_exits:      OnExit[];
-    when_blocks:   (PlotWhenBlock | PlotWhenSubplotEndsBlock)[];
+    when_blocks:   (PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock)[];
     loc:           SourceLoc;
 };
 

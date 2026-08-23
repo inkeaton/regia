@@ -6,7 +6,7 @@
 
 ## 1. Overview
 
-The Regia editor is a two-panel web application that lets developers write Regia scripts and see an interactive visual representation of the Plot's phase-state machine update in real time.
+The Regia editor is a two-panel web application that lets developers write Regia scripts and see an interactive visual representation of the Plot's phase-state machine update in real time. It also supports **direct graph editing**: phases and transitions can be added from the canvas without touching source code.
 
 ```
   ┌────────────────────────────────────────────────────────────┐
@@ -124,7 +124,7 @@ type EditorState = {
 
 ### `setCode`
 
-Updates the `code` field in the store. Does **not** trigger parsing. It is called by the Monaco `onChange` callback on every keystroke.
+Updates the `code` field in the store. Does **not** trigger parsing. It is called by the Monaco `onChange` callback on every keystroke, and also by `useGraphEditing` whenever the user performs a canvas edit that writes back to source.
 
 ### `parseCode`
 
@@ -243,7 +243,9 @@ Program
 │   │   ├── RoleDecl
 │   │   └── DuringBlock
 │   │       ├── OnEnter / OnExit   (stmts: ImperativeStmt[])
-│   │       └── PlotWhenBlock / PlotWhenSubplotEndsBlock
+│   │       ├── PlotWhenBlock
+│   │       ├── PlotWhenSubplotEndsBlock
+│   │       └── PlotWhenRoleSignalsBlock     ← NEW
 │   │           ├── PlotIfBranch
 │   │           └── PlotElseBranch
 │   └── ImportDecl
@@ -255,6 +257,25 @@ Program
 `ImperativeStmt = AssignStmt | UnassignStmt | WorldDoStmt | RoleDoStmt | InlineTransitionStmt | StartSubplotStmt | PlotEndStmt`
 
 `SourceLoc` carries `line`, `column`, and `filename` for every node — reserved for click-to-navigate (a planned future feature).
+
+#### `PlotWhenRoleSignalsBlock`
+
+Added to support the `WHEN ROLE <RoleName> SIGNALS <EventName>:` grammar construct:
+
+```typescript
+export type PlotWhenRoleSignalsBlock = ASTNode & {
+    type:         "PlotWhenRoleSignalsBlock";
+    role_name:    string;
+    event:        string;
+    priority:     number | null;
+    prefix_stmts: ImperativeStmt[];
+    branches:     PlotIfBranch[];
+    else_branch:  PlotElseBranch | null;
+    loc:          SourceLoc;
+};
+```
+
+`DuringBlock.when_blocks` is typed as `(PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock)[]`.
 
 ### `types/transport.ts`
 
@@ -319,10 +340,10 @@ Keyword groups (used in the `cases` matcher for all-uppercase identifiers):
 | Group | Examples | Token class | Color |
 |---|---|---|---|
 | `declarationKeywords` | `ACTION EVENT FACT PLAYBOOK PLOT PHASE ROLE IMPORT` | `keyword.declaration` | `#7c7cff` bold |
-| `flowKeywords` | `DURING WHEN IF ELSE ON ENTER EXIT TRANSITION ENDS` | `keyword.flow` | `#9898ff` |
+| `flowKeywords` | `DURING WHEN IF ELSE ON ENTER EXIT TRANSITION ENDS SIGNALS` | `keyword.flow` | `#9898ff` |
 | `actionKeywords` | `DO ASSIGN UNASSIGN WORLD SIGNAL START SUBPLOT END MAPPING TO AS` | `keyword.action` | `#4ade80` |
 | `builtinKeywords` | `TELL BROADCAST ACHIEVE BELIEVE FORGET PRINT WAIT` | `keyword.builtin` | `#4ade80` italic |
-| `modifierKeywords` | `PRIORITY TEMPER EFFECTS INITIAL SELF FROM AND OR NOT` | `keyword.modifier` | `#9898b8` |
+| `modifierKeywords` | `PRIORITY TEMPER EFFECTS INITIAL SELF ENVIRONMENT FROM AND OR NOT` | `keyword.modifier` | `#9898b8` |
 
 The tokeniser matches uppercase sequences first, dispatching through the `cases` object to determine the token type. Identifiers that match none of the keyword lists fall through to `"identifier.type"` (PascalCase names like `SingerInBackstage`) or `"identifier"` (all-lowercase names like `greet_back`).
 
@@ -362,7 +383,7 @@ Used by `CodeEditor` with `delay = 500`. This means the store's `parseCode()` is
 
 ## 10. Graph Canvas (`components/canvas/AstCanvas.tsx`)
 
-`AstCanvas` renders the interactive React Flow canvas and orchestrates the full AST-to-graph pipeline.
+`AstCanvas` renders the interactive React Flow canvas and orchestrates the full AST-to-graph pipeline. It also hosts the interactive graph-editing UI.
 
 ### Behaviour
 
@@ -377,12 +398,32 @@ Used by `CodeEditor` with `delay = 500`. This means the store's `parseCode()` is
 ### React Flow Configuration
 
 - `nodeTypes = { phaseNode: PhaseNode }` — registers the custom phase node renderer.
+- `edgeTypes = { transitionEdge: TransitionEdge }` — registers the custom edge renderer with staggered label support.
 - `fitView` with `padding: 0.2` — fits all nodes in view after every layout recalculation.
+- `onConnect` — wired to `useGraphEditing().onConnect` to intercept user-drawn connections.
+- `nodesDraggable: false` — phases cannot be repositioned manually; layout is always Dagre-computed.
+- `nodesConnectable: true` — enables drag-to-connect handles on each phase node.
 - `Background`, `Controls` — built-in React Flow plugins for the dotted grid background and zoom/pan buttons.
 
-### Export Panel
+### Info Panel (top-left)
 
-A `<Panel position="top-right">` contains two buttons (PNG and SVG) that call `exportCanvas()` from `export/toImage.ts`. Currently hardcoded to `plotName = "plot"`.
+Shown when a Plot is loaded. Displays:
+- The Plot name.
+- Chip badges for each declared Role.
+- An **"+ Add Phase"** button that triggers `useGraphEditing().onPaneDoubleClick()`.
+
+### Export Panel (top-right)
+
+Contains two buttons (PNG and SVG) that call `exportCanvas()` from `export/toImage.ts`. Currently hardcoded to `plotName = "plot"`.
+
+### Modals
+
+Two overlay modals are rendered conditionally on top of the canvas:
+
+| Modal | Condition | Purpose |
+|---|---|---|
+| `<AddPhaseModal />` | `isAddingPhase === true` | Prompts the user for a phase name, then calls `confirmAddPhase` |
+| `<EventPickerModal />` | `pendingConnection !== null` | Prompts the user to pick or type an event name for a new transition, then calls `confirmAddTransition` |
 
 ### Custom Node Type Registry
 
@@ -391,7 +432,6 @@ New node types are registered in the `NODE_TYPES` constant object at the top of 
 ```typescript
 const NODE_TYPES = {
     phaseNode: PhaseNode,
-    // Add new custom nodes here
 };
 ```
 
@@ -399,7 +439,68 @@ The key (`"phaseNode"`) must match the `type` field set by `astToGraph.ts` when 
 
 ---
 
-## 11. Phase Node (`components/canvas/PhaseNode.tsx`)
+## 11. Graph Editing (`hooks/useGraphEditing.ts` + `services/codeTransformer.ts`)
+
+The graph editing subsystem enables **bidirectional (canvas → source)** editing: when the user adds a phase or draws a transition on the canvas, the source code is updated to reflect the change. The debounced `parseCode()` then re-parses the new code, and the graph re-renders from the fresh AST.
+
+### `useGraphEditing` Hook
+
+Manages the interaction state machine and coordinates between React Flow events and the code transformer:
+
+```typescript
+// State
+pendingConnection: PendingConnection | null  // set when a drag-to-connect completes
+isAddingPhase:     boolean                   // set when "Add Phase" button is clicked
+
+// Handlers wired to React Flow
+onConnect(connection)        // called when user drags an edge between two handles
+onPaneDoubleClick()          // called by the "Add Phase" button
+
+// Confirmed actions
+confirmAddPhase(phaseName)   // called by AddPhaseModal on submit
+confirmAddTransition(event)  // called by EventPickerModal on submit
+cancelPending()              // dismisses any open modal
+```
+
+**Interaction flow for a new transition:**
+1. User drags from a source handle to a target handle on the canvas.
+2. React Flow calls `onConnect(connection)`. A `PendingConnection { source, target }` is stored.
+3. `<EventPickerModal />` appears (because `pendingConnection !== null`).
+4. User types or selects an event name and confirms.
+5. `confirmAddTransition(eventName)` is called. It delegates to `addTransition()`.
+6. The store's `code` is updated. `parseCode()` fires after the debounce delay.
+
+**Interaction flow for a new phase:**
+1. User clicks "**+ Add Phase**" in the info panel.
+2. `onPaneDoubleClick()` sets `isAddingPhase: true`.
+3. `<AddPhaseModal />` appears.
+4. User types a name and confirms.
+5. `confirmAddPhase(phaseName)` delegates to `addPhase()`.
+6. The store's `code` is updated. `parseCode()` fires after the debounce delay.
+
+### `services/codeTransformer.ts`
+
+Pure functions that perform **AST-aware string manipulation** on the source code. They operate by finding the correct insertion line from the AST's `loc` metadata and then inserting lines at that position. They do **not** generate or parse a complete AST — the Python server handles that after the edit.
+
+#### `addPhase(code, ast, rawName): string`
+
+Inserts a new phase into the source. `rawName` is converted to `snake_case`.
+
+1. **PhaseDecl**: Finds the last `PhaseDecl` in the Plot header (by `loc.line`) and inserts `PHASE name.` on the next line.
+2. **DuringBlock**: Appends a new `DURING name: ON ENTER: WORLD DO PRINT("name started").` skeleton at the end of the file (after all existing `DURING` blocks).
+
+The skeleton body ensures the new phase is immediately valid — it has a `DURING` block with an `ON ENTER` hook — so the compiler does not reject it.
+
+#### `addTransition(code, ast, sourcePhaseName, targetPhaseName, rawEventName): string`
+
+Inserts a `WHEN event: TRANSITION TO target.` block inside the source phase's `DURING` block.
+
+1. **Event declaration**: checks whether the event already exists in the AST. If not, inserts `EVENT eventName.` right before the `PLOT` declaration, then tracks a `linesShifted` offset.
+2. **WHEN block**: finds the `DuringBlock` whose `phase_name === sourcePhaseName`. Inserts `WHEN event: TRANSITION TO target.` just before the start of the next `DuringBlock` (or at EOF if it is the last one), accounting for the `linesShifted` offset from step 1.
+
+---
+
+## 12. Phase Node (`components/canvas/PhaseNode.tsx`)
 
 `PhaseNode` is the custom React Flow node renderer for Regia phases.
 
@@ -436,7 +537,28 @@ The node footer displays the source line number. This is currently cosmetic; it 
 
 ---
 
-## 12. Layout Engine (`layout/`)
+## 13. Transition Edge (`components/canvas/TransitionEdge.tsx`)
+
+`TransitionEdge` is a custom React Flow edge renderer that draws transition arrows with staggered labels to avoid collision when multiple edges are present.
+
+### Props Used
+
+- `label` — the event name string (e.g. `"emergency"`, `"ROLE Hero SIGNALS warning"`).
+- `data.slot` — an integer assigned by `astToGraph.ts` indicating which collision-avoidance slot this edge occupies.
+- Standard React Flow geometry props (`sourceX/Y`, `targetX/Y`, `sourcePosition`, `targetPosition`).
+
+### Label Staggering
+
+The `slot` value drives a vertical `yOffset` applied to the label `translate`:
+- **Slot 0** (immediate forward / straight line): no offset — label sits at the midpoint.
+- **Odd slots** (right-arc edges): label shifts **up** by `25 × ⌈slot/2⌉` px.
+- **Even slots > 0** (left-arc edges): label shifts **down** by `25 × ⌈slot/2⌉` px.
+
+This ensures that even when many edges share the same label midpoint region, their labels fan out vertically instead of overlapping.
+
+---
+
+## 14. Layout Engine (`layout/`)
 
 ### `astToGraph.ts` — AST → Graph Mapper
 
@@ -455,7 +577,13 @@ The node footer displays the source line number. This is currently cosmetic; it 
 
 A `phaseIndexMap` records each phase's declaration order, used to classify edges as "immediate forward" or "lateral/reverse".
 
-**Edge creation**: Iterates all `DuringBlock.when_blocks` (skipping `DURING PLOT` blocks, which have `phase_name = null`). For each `PlotWhenBlock`, scans `prefix_stmts`, `branches[*].stmts`, and `else_branch.stmts` for `InlineTransitionStmt` nodes. Each one becomes a directed edge.
+**Edge creation**: Iterates all `DuringBlock.when_blocks` (skipping `DURING PLOT` blocks, which have `phase_name = null`). For each `when_block` of any type, scans `prefix_stmts`, `branches[*].stmts`, and `else_branch.stmts` for `InlineTransitionStmt` nodes. Each one becomes a directed edge. The edge **label** is determined by the when block's type:
+
+| Block type | Label format |
+|---|---|
+| `PlotWhenBlock` | `event` — the bare event name |
+| `PlotWhenSubplotEndsBlock` | `"SUBPLOT <name> ENDS"` |
+| `PlotWhenRoleSignalsBlock` | `"ROLE <role> SIGNALS <event>"` |
 
 **Smart edge routing**: Decides the handle pair and edge type based on two criteria:
 
@@ -463,6 +591,8 @@ A `phaseIndexMap` records each phase's declaration order, used to classify edges
 2. **All other edges** (reverse, skip, bidirectional): uses `"default"` (Bezier) routing through alternating left/right lateral handles. A `lateralCounter` alternates between right-side and left-side pairs to prevent all curved edges from stacking on the same side.
 
 An `edgePairCounts` dict keyed by the **unordered** node pair (`[source, target].sort().join("-")`) tracks how many edges already exist for each pair, ensuring a second edge in the same direction still gets lateral routing.
+
+All edges are of type `"transitionEdge"` (the custom `TransitionEdge` component), and carry `data.slot` for label staggering.
 
 **Current limitation**: only the first `PlotDef` in the program is visualised. Multi-Plot support is documented as deferred.
 
@@ -502,9 +632,11 @@ All geometry values in one place:
 
 The `emitRegia` method stub is already declared in the `Transport` interface as a comment, and the corresponding `/emit-regia` server endpoint is planned. The round-trip guarantee is that the Python server is the authoritative source for both parsing and emission.
 
+> **Note**: Direct graph editing (§11) currently works by writing Regia source text directly, bypassing this round-trip. `convertGraphToAst` will be needed only if the canonical edit path switches to AST-first emission.
+
 ---
 
-## 13. Export (`export/toImage.ts`)
+## 15. Export (`export/toImage.ts`)
 
 `exportCanvas(format, plotName)` captures the React Flow viewport and downloads it as an image.
 
@@ -518,7 +650,7 @@ Implementation:
 
 ---
 
-## 14. Module Map
+## 16. Module Map
 
 ```
 editor/src/
@@ -532,13 +664,15 @@ editor/src/
 │
 ├── services/
 │   ├── transport.ts                Transport interface, HttpTransport, factory.
-│   └── regiaLanguage.ts            Monaco language: Monarch tokeniser, theme, config.
+│   ├── regiaLanguage.ts            Monaco language: Monarch tokeniser, theme, config.
+│   └── codeTransformer.ts         AST-aware source mutations: addPhase, addTransition.
 │
 ├── store/
 │   └── useStore.ts                 Zustand store: code, ast, errors, actions.
 │
 ├── hooks/
-│   └── useDebounce.ts              Generic debounce hook.
+│   ├── useDebounce.ts              Generic debounce hook.
+│   └── useGraphEditing.ts          Interaction state machine for canvas editing.
 │
 ├── types/
 │   ├── ast.ts                      TypeScript mirror of Python ast_nodes.py.
@@ -549,10 +683,15 @@ editor/src/
 │   │   ├── CodeEditor.tsx          Monaco wrapper; debounced parse; inline markers.
 │   │   └── CodeEditor.module.css   Editor panel layout.
 │   └── canvas/
-│       ├── AstCanvas.tsx           React Flow canvas; orchestrates layout pipeline.
-│       ├── AstCanvas.module.css    Canvas wrapper, dimmed state, export panel.
+│       ├── AstCanvas.tsx           React Flow canvas; orchestrates layout + editing.
+│       ├── AstCanvas.module.css    Canvas wrapper, dimmed state, export/info panels.
 │       ├── PhaseNode.tsx           Custom React Flow node: phase card + 6 handles.
-│       └── PhaseNode.module.css    Phase card styles (initial badge, colours).
+│       ├── PhaseNode.module.css    Phase card styles (initial badge, colours).
+│       ├── TransitionEdge.tsx      Custom React Flow edge: Bezier path + staggered labels.
+│       ├── AddPhaseModal.tsx       Modal for naming a new phase.
+│       ├── AddPhaseModal.module.css
+│       ├── EventPickerModal.tsx    Modal for selecting/typing a transition event.
+│       └── EventPickerModal.module.css
 │
 ├── layout/
 │   ├── astToGraph.ts               AST → React Flow nodes/edges (smart routing).
@@ -566,7 +705,7 @@ editor/src/
 
 ---
 
-## 15. Key Data Flow: Keystroke to Graph
+## 17. Key Data Flow: Keystroke to Graph
 
 This section traces one complete update cycle from the user pressing a key to the graph updating.
 
@@ -613,6 +752,7 @@ AstCanvas useEffect([ast])
         │       iterates plot.phases → Node[]
         │       iterates during_blocks → Edge[] (InlineTransitionStmt)
         │       smart routing: immediate-forward vs lateral/reverse
+        │       edge labels: event / SUBPLOT ENDS / ROLE SIGNALS
         │
         ├── getLayoutedElements(rawNodes, rawEdges, "TB")
         │       dagre.layout() computes optimal positions
@@ -623,12 +763,54 @@ AstCanvas useEffect([ast])
                     ▼
         React Flow re-renders with new nodes and edges
         PhaseNode renders each phase card (INITIAL badge if is_initial)
-        Edges render with smoothstep/Bezier routing and animated dashes
+        TransitionEdge renders Bezier paths with staggered event labels
 ```
 
 ---
 
-## 16. Error Flow: Compile Failure to Monaco Squiggles
+## 18. Canvas Edit Flow: Graph to Source
+
+This section traces an edit initiated from the canvas (e.g. drawing a transition).
+
+```
+User drags from PhaseA.bottom-s to PhaseB.top-t
+        │
+        ▼
+React Flow fires onConnect({ source: "phaseA", target: "phaseB" })
+        │
+        ▼
+useGraphEditing.onConnect()
+        │  sets pendingConnection = { source, target }
+        ▼
+<EventPickerModal /> renders (pendingConnection !== null)
+        │
+User types "quest_started" and clicks Confirm
+        │
+        ▼
+confirmAddTransition("quest_started")
+        │
+        ▼
+addTransition(code, ast, "phaseA", "phaseB", "quest_started")
+        │  1. EVENT quest_started not found → inserts "EVENT quest_started." before PLOT
+        │  2. Finds DURING phaseA block → inserts:
+        │       WHEN quest_started:
+        │           TRANSITION TO phaseB.
+        ▼
+store.setCode(newCode)   ← store.code updated
+        │
+        ▼
+useDebounce fires after 500ms
+        │
+        ▼
+store.parseCode() → POST /parse → fresh AST
+        │
+        ▼
+AstCanvas re-renders with the new edge phaseA → phaseB (label: "quest_started")
+```
+
+---
+
+## 19. Error Flow: Compile Failure to Monaco Squiggles
 
 ```
 compile_source() returns result.success = False

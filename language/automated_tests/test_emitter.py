@@ -961,8 +961,169 @@ class TestMultiFile:
             ACTION greet.
         """)
 
+
         result = compile_files([file_a, file_b])
         assert not result.success
         error_msgs = [m for m in result.messages if m.severity.name == "ERROR"]
         assert any("greet" in m.message for m in error_msgs)
 
+
+# == Condition Parenthesization ================================================
+
+class TestConditionParenthesization:
+    """Tests that condition emission preserves operator precedence.
+
+    In Jason (like Prolog), & binds tighter than |.  Without explicit parens,
+    (A OR B) AND C would be emitted as ``A | B & C``, which Jason reads as
+    ``A | (B & C)`` -- semantically wrong.  The emitter must wrap any
+    ConditionOr that appears as a child of ConditionAnd in parentheses.
+    """
+
+    _PRELUDE = """
+        EVENT ev.
+        FACT hungry.
+        FACT thirsty.
+        FACT injured.
+        FACT angry.
+        PLAYBOOK Pb:
+    """
+
+    def _get_pb_asl(self, source: str) -> str:
+        """Compile and return the playbook ASL output.
+
+        Args:
+            source: Regia source code string.
+
+        Returns:
+            The playbook_pb.asl output string.
+        """
+        result = _compile(source)
+        assert result.success, result.messages
+        assert "playbook_pb.asl" in result.outputs
+        return result.outputs["playbook_pb.asl"]
+
+    def test_or_inside_and_is_parenthesized(self) -> None:
+        """(A OR B) AND C must emit as (a | b) & c, not a | b & c."""
+        source = self._PRELUDE + """
+            WHEN ev:
+                IF (hungry OR thirsty) AND injured:
+                    DO PRINT("ok").
+        """
+        asl = self._get_pb_asl(source)
+        assert "(hungry | thirsty) & injured" in asl
+        assert "hungry | thirsty & injured" not in asl
+
+    def test_simple_and_no_extra_parens(self) -> None:
+        """A AND B (no OR) must not gain unnecessary parentheses."""
+        source = self._PRELUDE + """
+            WHEN ev:
+                IF hungry AND injured:
+                    DO PRINT("ok").
+        """
+        asl = self._get_pb_asl(source)
+        assert "hungry & injured" in asl
+
+    def test_simple_or_no_extra_parens(self) -> None:
+        """A OR B at the top of a condition (not inside AND) needs no parens."""
+        source = self._PRELUDE + """
+            WHEN ev:
+                IF hungry OR thirsty:
+                    DO PRINT("ok").
+        """
+        asl = self._get_pb_asl(source)
+        assert "hungry | thirsty" in asl
+
+    def test_or_inside_and_with_not(self) -> None:
+        """(A OR B) AND NOT C must emit (a | b) & not (c)."""
+        source = self._PRELUDE + """
+            WHEN ev:
+                IF (hungry OR thirsty) AND NOT injured:
+                    DO PRINT("ok").
+        """
+        asl = self._get_pb_asl(source)
+        assert "(hungry | thirsty) & not (injured)" in asl
+
+    def test_multiple_or_inside_and(self) -> None:
+        """(A OR B) AND (C OR D) must emit (a | b) & (c | d)."""
+        source = self._PRELUDE + """
+            WHEN ev:
+                IF (hungry OR thirsty) AND (injured OR angry):
+                    DO PRINT("ok").
+        """
+        asl = self._get_pb_asl(source)
+        assert "(hungry | thirsty) & (injured | angry)" in asl
+
+
+class TestDocAnnotationEmission:
+    """Tests for emission of #@ doc annotations into ASL files."""
+
+    def test_playbook_doc_emission(self) -> None:
+        """Playbook docs are emitted as // comments."""
+        source = """
+        EVENT ev.
+        ACTION .print AS print.
+        
+        #@desc: This is a playbook.
+        #@author: Me
+        PLAYBOOK testpb:
+            WHEN ev:
+                DO .print.
+                
+        PLOT p.
+            PHASE start INITIAL.
+            ROLE r.
+            DURING start:
+                ON ENTER:
+                    ASSIGN testpb TO r.
+                    WORLD DO .print.
+        """
+        res = _compile(source)
+        assert res.success
+        asl = res.outputs["playbook_testpb.asl"]
+        assert "// desc: This is a playbook." in asl
+        assert "// author: Me" in asl
+
+    def test_plot_doc_emission(self) -> None:
+        """Plot docs are emitted as // comments in the director."""
+        source = """
+        ACTION act.
+        
+        #@desc: This is a plot.
+        #- with a multi-line continuation!
+        PLOT main.
+            PHASE start INITIAL.
+            ROLE r.
+            DURING start:
+                ON ENTER:
+                    WORLD DO act.
+        """
+        res = _compile(source)
+        assert res.success
+        asl = res.outputs["director_main.asl"]
+        assert "// desc: This is a plot." in asl
+        assert "//   with a multi-line continuation!" in asl
+
+    def test_vocabulary_docs_omitted(self) -> None:
+        """Docs on Action/Event/Fact are parsed but skipped by emitter."""
+        source = """
+        #@desc: Ignore me
+        ACTION act.
+        EVENT ev.
+        
+        PLAYBOOK testpb:
+            WHEN ev:
+                DO act.
+                
+        PLOT p.
+            PHASE start INITIAL.
+            ROLE r.
+            DURING start:
+                ON ENTER:
+                    ASSIGN testpb TO r.
+                    WORLD DO act.
+        """
+        res = _compile(source)
+        assert res.success
+        asl = res.outputs["playbook_testpb.asl"]
+        assert "Ignore me" not in asl
+        assert "// desc:" not in asl

@@ -183,7 +183,11 @@ export const convertAstToGraph = (ast: Program | null): { nodes: Node[]; edges: 
         // 1. Extract reactive/inline transitions (inside when_blocks)
         block.when_blocks.forEach((whenBlock) => {
             const source = block.phase_name as string;
-            const eventLabel = "event" in whenBlock ? whenBlock.event : `SUBPLOT ${whenBlock.subplot_name} ENDS`;
+            const eventLabel = whenBlock.type === "PlotWhenRoleSignalsBlock" 
+                ? `ROLE ${whenBlock.role_name} SIGNALS ${whenBlock.event}` 
+                : "event" in whenBlock 
+                    ? whenBlock.event 
+                    : `SUBPLOT ${whenBlock.subplot_name} ENDS`;
 
             // Helper to scan a list of imperative statements for inline transitions
             const scanStmts = (stmts: ImperativeStmt[]) => {

@@ -28,7 +28,7 @@ from lark import Transformer, Token, v_args
 
 from regia.ast_nodes import (
     # Shared
-    SourceLoc, Arg, EventOrigin, SPECIAL_ACTIONS,
+    SourceLoc, Arg, SPECIAL_ACTIONS,
     # Imports
     ImportDecl,
     # Base elements
@@ -45,6 +45,7 @@ from regia.ast_nodes import (
     # Plot
     OnEnter, OnExit,
     PlotIfBranch, PlotElseBranch, PlotWhenBlock, PlotWhenSubplotEndsBlock,
+    PlotWhenRoleSignalsBlock, PlaybookDef,
     DuringBlock, PhaseDecl, RoleDecl, PlotDef,
     # Root
     Program,
@@ -185,20 +186,18 @@ class ASTBuilder(Transformer):
 
     @v_args(meta=True)
     def event_decl(self, meta: Any, children: List) -> EventDecl:
-        """EVENT fan_greets. or EVENT check SELF.
+        """EVENT fan_greets. or EVENT check.
 
         Args:
             meta:     Position of the EVENT keyword.
-            children: [Token(ID, name), optional EventOrigin].
+            children: [Token(ID, name)].
 
         Returns:
             An EventDecl AST node.
         """
         name_token = children[0]
-        origin = children[1] if len(children) > 1 else None
         return EventDecl(
             name=str(name_token),
-            origin=origin,
             loc=_meta_loc(meta, self._filename),
         )
 
@@ -231,18 +230,6 @@ class ASTBuilder(Transformer):
             A plain list of strings (consumed by action_decl/fact_decl).
         """
         return [str(t) for t in children]
-
-    @v_args(inline=True)
-    def event_origin(self, token: Token) -> EventOrigin:
-        """SELF or ENVIRONMENT -> EventOrigin enum.
-
-        Args:
-            token: A SELF or ENVIRONMENT terminal token.
-
-        Returns:
-            The corresponding EventOrigin enum value.
-        """
-        return EventOrigin(str(token))
 
     # == Arguments and action names ============================================
 
@@ -898,6 +885,38 @@ class ASTBuilder(Transformer):
         )
 
     @v_args(meta=True)
+    def plot_when_role_signals_block(self, meta: Any, children: List) -> PlotWhenRoleSignalsBlock:
+        """WHEN ROLE role_name SIGNALS event PRIORITY n: body -> role-filtered signal plan.
+
+        Args:
+            meta:     Position of the WHEN keyword.
+            children: [Token(ID, role), Token(ID, event), optional int, body_tuple].
+
+        Returns:
+            A PlotWhenRoleSignalsBlock AST node.
+        """
+        role_token  = children[0]
+        event_token = children[1]
+
+        if len(children) == 4:
+            priority_val = children[2]
+            body = children[3]
+        else:
+            priority_val = None
+            body = children[2]
+
+        prefix_stmts, branches, else_branch = body
+        return PlotWhenRoleSignalsBlock(
+            role_name=str(role_token),
+            event=str(event_token),
+            priority=priority_val,
+            prefix_stmts=prefix_stmts,
+            branches=branches,
+            else_branch=else_branch,
+            loc=_meta_loc(meta, self._filename),
+        )
+
+    @v_args(meta=True)
     def on_enter(self, meta: Any, children: List) -> OnEnter:
         """ON ENTER: imperative_stmt+ -> phase entry hook.
 
@@ -1001,7 +1020,7 @@ class ASTBuilder(Transformer):
     ) -> Tuple[
         List[OnEnter],
         List[OnExit],
-        List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock]],
+        List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock]],
     ]:
         """Sort during_content items into typed lists.
 
@@ -1017,14 +1036,14 @@ class ASTBuilder(Transformer):
         """
         on_enters: List[OnEnter] = []
         on_exits: List[OnExit] = []
-        when_blocks: List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock]] = []
+        when_blocks: List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock]] = []
 
         for item in items:
             if isinstance(item, OnEnter):
                 on_enters.append(item)
             elif isinstance(item, OnExit):
                 on_exits.append(item)
-            elif isinstance(item, (PlotWhenBlock, PlotWhenSubplotEndsBlock)):
+            elif isinstance(item, (PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock)):
                 when_blocks.append(item)
 
         return (on_enters, on_exits, when_blocks)
