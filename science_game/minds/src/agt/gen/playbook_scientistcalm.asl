@@ -33,11 +33,21 @@
 
 @pb__ScientistCalm__tell_research__0
 +tell_research : playbook_active(scientistcalm, _) <-
-    !signal_directors(scientistcalm, tell_research).
+    vesna.via.set_dialogue_text("Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_back", "Fascinating. Let's talk about something else.", "back_to_main", "false");
+    vesna.via.add_dialogue_option("opt_leave", "I must go. (Leave)", "exit", "true").
 
 @pb__ScientistCalm__back_to_main__0
 +back_to_main : playbook_active(scientistcalm, _) <-
-    !signal_directors(scientistcalm, back_to_main).
+    vesna.via.set_dialogue_text("What else would you like to discuss?");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_research", "Tell me about your research again.", "tell_research", "false");
+    vesna.via.add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true");
+    vesna.via.add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true");
+    vesna.via.add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true");
+    vesna.via.add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true");
+    vesna.via.add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true").
 
 @pb__ScientistCalm__picked_up_flower__0
 +picked_up_flower : playbook_active(scientistcalm, _) <-
