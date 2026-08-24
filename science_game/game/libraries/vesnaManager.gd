@@ -37,6 +37,8 @@ func _ready() -> void:
 		set_process(false)
 	else:
 		Messages.print_message("Listening on port " + str(PORT), "NetworkManager")
+		
+	GameManager.item_picked_up_in_world.connect(_on_item_picked_up)
 
 # ==============================================================================
 # POLLING & CONNECTION
@@ -81,6 +83,10 @@ func _process(_delta: float) -> void:
 # ==============================================================================
 # OUTBOUND MESSAGE HELPERS
 # ==============================================================================
+
+func _on_item_picked_up(item_name: String) -> void:
+	var event_id = "picked_up_" + item_name.replace(" ", "_").to_lower()
+	send_regia_event(event_id)
 
 func send_data(data: Dictionary) -> void:
 	if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:

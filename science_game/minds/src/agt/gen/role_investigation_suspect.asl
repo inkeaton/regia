@@ -34,8 +34,8 @@
 // ============================================
 // == Director Commands ==
 // ============================================
-@role__investigation__suspect__add_dialogue_option__opt_deny__
-+!add_dialogue_option("opt_deny") <- vesna.via.add_dialogue_option("opt_deny").
+@role__investigation__suspect__add_dialogue_option__opt_deny____I_didn_t_steal_any_flower__Ask_the_cop_____deny_crime____false__
++!add_dialogue_option("opt_deny", "I didn't steal any flower! Ask the cop!", "deny_crime", "false") <- vesna.via.add_dialogue_option("opt_deny", "I didn't steal any flower! Ask the cop!", "deny_crime", "false").
 
 @role__investigation__suspect__remove_dialogue_option__opt_deny__
 +!remove_dialogue_option("opt_deny") <- vesna.via.remove_dialogue_option("opt_deny").

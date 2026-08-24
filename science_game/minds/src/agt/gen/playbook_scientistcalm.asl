@@ -31,6 +31,14 @@
     vesna.via.despawn_item("flower");
     vesna.via.utter("Flower banished!").
 
+@pb__ScientistCalm__tell_research__0
++tell_research : playbook_active(scientistcalm, _) <-
+    !signal_directors(scientistcalm, tell_research).
+
+@pb__ScientistCalm__back_to_main__0
++back_to_main : playbook_active(scientistcalm, _) <-
+    !signal_directors(scientistcalm, back_to_main).
+
 @pb__ScientistCalm__picked_up_flower__0
 +picked_up_flower : playbook_active(scientistcalm, _) <-
     .print("The player picked up the flower!");
@@ -40,5 +48,7 @@
 @pb__ScientistCalm__apologize_event__0
 +apologize_event : playbook_active(scientistcalm, _) <-
     .print("Apology received while calm!");
-    vesna.via.update_dialogue("apology_accepted").
+    vesna.via.set_dialogue_text("Wow, you got the flower! Thanks!");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_welcome", "You're welcome.", "exit", "true").
 

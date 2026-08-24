@@ -36,8 +36,8 @@
 // ============================================
 // == Director Commands ==
 // ============================================
-@role__investigation__suspect__add_dialogue_option__opt_deny__
-+!add_dialogue_option("opt_deny") <- vesna.via.add_dialogue_option("opt_deny").
+@role__investigation__suspect__add_dialogue_option__opt_deny____I_didn_t_steal_any_flower__Ask_the_cop_____deny_crime____false__
++!add_dialogue_option("opt_deny", "I didn't steal any flower! Ask the cop!", "deny_crime", "false") <- vesna.via.add_dialogue_option("opt_deny", "I didn't steal any flower! Ask the cop!", "deny_crime", "false").
 
 @role__investigation__suspect__remove_dialogue_option__opt_deny__
 +!remove_dialogue_option("opt_deny") <- vesna.via.remove_dialogue_option("opt_deny").
@@ -45,17 +45,50 @@
 @role__investigation__suspect__utter__Phew__That_was_close___
 +!utter("Phew. That was close.") <- vesna.via.utter("Phew. That was close.").
 
-@role__testfeatures__scientist__add_dialogue_option__opt_apologize__
-+!add_dialogue_option("opt_apologize") <- vesna.via.add_dialogue_option("opt_apologize").
+@role__testfeatures__scientist__add_dialogue_option__opt_apologize____I_am_sorry_for_taking_it_____apologize_event____false__
++!add_dialogue_option("opt_apologize", "I am sorry for taking it.", "apologize_event", "false") <- vesna.via.add_dialogue_option("opt_apologize", "I am sorry for taking it.", "apologize_event", "false").
 
-@role__testfeatures__scientist__remove_dialogue_option__opt_apologize__
-+!remove_dialogue_option("opt_apologize") <- vesna.via.remove_dialogue_option("opt_apologize").
+@role__testfeatures__scientist__add_dialogue_option__opt_back____Fascinating__Let_s_talk_about_something_else_____back_to_main____false__
++!add_dialogue_option("opt_back", "Fascinating. Let's talk about something else.", "back_to_main", "false") <- vesna.via.add_dialogue_option("opt_back", "Fascinating. Let's talk about something else.", "back_to_main", "false").
 
-@role__testfeatures__scientist__set_dialogue__scientist_angry__
-+!set_dialogue("scientist_angry") <- vesna.via.set_dialogue("scientist_angry").
+@role__testfeatures__scientist__add_dialogue_option__opt_despawn____Banish_the_flower_____test_despawn____true__
++!add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true") <- vesna.via.add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true").
 
-@role__testfeatures__scientist__set_dialogue__test_features__
-+!set_dialogue("test_features") <- vesna.via.set_dialogue("test_features").
+@role__testfeatures__scientist__add_dialogue_option__opt_leave____I_must_go___Leave_____exit____true__
++!add_dialogue_option("opt_leave", "I must go. (Leave)", "exit", "true") <- vesna.via.add_dialogue_option("opt_leave", "I must go. (Leave)", "exit", "true").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_leave____That_is_all___Leave_____exit____true__
++!add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true") <- vesna.via.add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_research____Tell_me_about_your_research_____tell_research____false__
++!add_dialogue_option("opt_research", "Tell me about your research.", "tell_research", "false") <- vesna.via.add_dialogue_option("opt_research", "Tell me about your research.", "tell_research", "false").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_research____Tell_me_about_your_research_again_____tell_research____false__
++!add_dialogue_option("opt_research", "Tell me about your research again.", "tell_research", "false") <- vesna.via.add_dialogue_option("opt_research", "Tell me about your research again.", "tell_research", "false").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_spawn____Conjure_a_flower_____test_spawn____true__
++!add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true") <- vesna.via.add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_utter____Speak_to_me_____test_utter____true__
++!add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true") <- vesna.via.add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true").
+
+@role__testfeatures__scientist__add_dialogue_option__opt_vanish____Perform_a_vanishing_act_____test_vanish____true__
++!add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true") <- vesna.via.add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true").
+
+@role__testfeatures__scientist__clear_dialogue_options
++!clear_dialogue_options <- vesna.via.clear_dialogue_options.
+
+@role__testfeatures__scientist__set_dialogue_text__Ah__Regia__It_empowers_me_to_structure_my_mind_using_logical_rules__separated_clearly_from_Godot_s_visual_engine__It_is_a_paradigm_shift___
++!set_dialogue_text("Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!") <- vesna.via.set_dialogue_text("Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!").
+
+@role__testfeatures__scientist__set_dialogue_text__Behold_my_new_Regia_capabilities__What_shall_I_do___
++!set_dialogue_text("Behold my new Regia capabilities! What shall I do?") <- vesna.via.set_dialogue_text("Behold my new Regia capabilities! What shall I do?").
+
+@role__testfeatures__scientist__set_dialogue_text__I_am_furious__Someone_stole_my_flower__What_do_you_want____
++!set_dialogue_text("I am furious! Someone stole my flower! What do you want?!") <- vesna.via.set_dialogue_text("I am furious! Someone stole my flower! What do you want?!").
+
+@role__testfeatures__scientist__set_dialogue_text__What_else_would_you_like_to_discuss___
++!set_dialogue_text("What else would you like to discuss?") <- vesna.via.set_dialogue_text("What else would you like to discuss?").
 
 @role__testfeatures__scientist__utter__The_subplot_has_officially_concluded___
 +!utter("The subplot has officially concluded!") <- vesna.via.utter("The subplot has officially concluded!").

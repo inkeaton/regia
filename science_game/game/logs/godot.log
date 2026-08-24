@@ -1,43 +1,312 @@
 Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
 Vulkan 1.4.354 - Forward+ - Using Device #0: AMD - AMD Radeon RX 7700 XT (RADV NAVI32)
 
-Dialogue database loaded successfully. Found 8 nodes.
-[MESSAGE] - from NetworkManager: Listening on port 9200
 [MESSAGE] - from NetworkManager: Listening on port 9001
 [MESSAGE] - from NetworkManager: Listening on port 9002
 [MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
 [MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
 [MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
 [MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
-[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
-[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "node": "test_features"
+        "text": "Behold my new Regia capabilities! What shall I do?"
     },
-    "type": "set_dialogue"
+    "type": "set_dialogue_text"
 }
-sci received new dialogue node: test_features
+sci received new dialogue text: Behold my new Regia capabilities! What shall I do?
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "node": "test_features"
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "tell_research",
+                "id": "opt_research",
+                "text": "Tell me about your research."
+            }
+        ]
     },
-    "type": "set_dialogue"
+    "type": "add_dialogue_options"
 }
-sci received new dialogue node: test_features
+sci added options. Total options: 1
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "node": "cop_idle"
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_utter",
+                "id": "opt_utter",
+                "text": "Speak to me!"
+            }
+        ]
     },
-    "type": "set_dialogue"
+    "type": "add_dialogue_options"
 }
-cop received new dialogue node: cop_idle
-Raycast hit: cop
+sci added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_vanish",
+                "id": "opt_vanish",
+                "text": "Perform a vanishing act."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 3
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_spawn",
+                "id": "opt_spawn",
+                "text": "Conjure a flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 4
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_despawn",
+                "id": "opt_despawn",
+                "text": "Banish the flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 5
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "That is all. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 6
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Move along, citizen. Nothing to see here."
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: Move along, citizen. Nothing to see here.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "Goodbye. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
 Raycast hit: sci
-VEsNA SIMULATION -> Sent event to Jason: test_utter from sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "tell_research"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!"
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "back_to_main",
+                "id": "opt_back",
+                "text": "Fascinating. Let's talk about something else."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "I must go. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "back_to_main"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "What else would you like to discuss?"
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: What else would you like to discuss?
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "tell_research",
+                "id": "opt_research",
+                "text": "Tell me about your research again."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_utter",
+                "id": "opt_utter",
+                "text": "Speak to me!"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_vanish",
+                "id": "opt_vanish",
+                "text": "Perform a vanishing act."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 3
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_spawn",
+                "id": "opt_spawn",
+                "text": "Conjure a flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 4
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_despawn",
+                "id": "opt_despawn",
+                "text": "Banish the flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 5
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "That is all. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 6
 [JSON] - from Sent Data:
 {
     "data": {
@@ -57,7 +326,52 @@ VEsNA SIMULATION -> Sent event to Jason: test_utter from sci
 sci queued utterance: 'Behold my speech bubble!' (Queue size: 1)
 sci is saying: 'Behold my speech bubble!' (3s timer started)
 sci finished speaking.
-VEsNA SIMULATION -> Sent event to Jason: test_spawn from sci
+Raycast hit: sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "test_vanish"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Poof! I'm gone! (Wait 5 seconds)"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Poof! I'm gone! (Wait 5 seconds)' (Queue size: 1)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "visible": false
+    },
+    "type": "set_visible"
+}
+sci visibility set to false
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "visible": true
+    },
+    "type": "set_visible"
+}
+sci visibility set to true
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "And I'm back!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'And I'm back!' (Queue size: 2)
+sci is saying: 'Poof! I'm gone! (Wait 5 seconds)' (3s timer started)
+Raycast hit: sci
+sci finished speaking.
+sci is saying: 'And I'm back!' (3s timer started)
 [JSON] - from Sent Data:
 {
     "data": {
@@ -86,9 +400,19 @@ GameManager: Spawned flower at garden
     "type": "utter"
 }
 sci queued utterance: 'Flower conjured!' (Queue size: 1)
+sci finished speaking.
 sci is saying: 'Flower conjured!' (3s timer started)
 sci finished speaking.
 Raycast hit: PickupItem
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
 [JSON] - from Sent Data:
 {
     "data": {
@@ -109,37 +433,141 @@ sci queued utterance: 'Hey! You took my flower!' (Queue size: 1)
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "node": "scientist_angry"
+        "text": "I am furious! Someone stole my flower! What do you want?!"
     },
-    "type": "set_dialogue"
+    "type": "set_dialogue_text"
 }
-sci received new dialogue node: scientist_angry
+sci received new dialogue text: I am furious! Someone stole my flower! What do you want?!
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "id": "opt_apologize"
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_utter",
+                "id": "opt_utter",
+                "text": "Speak to me!"
+            }
+        ]
     },
-    "type": "add_dialogue_option"
+    "type": "add_dialogue_options"
 }
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_vanish",
+                "id": "opt_vanish",
+                "text": "Perform a vanishing act."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_spawn",
+                "id": "opt_spawn",
+                "text": "Conjure a flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 3
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_despawn",
+                "id": "opt_despawn",
+                "text": "Banish the flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 4
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "That is all. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 5
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "apologize_event",
+                "id": "opt_apologize",
+                "text": "I am sorry for taking it."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 6
 sci is saying: 'Hey! You took my flower!' (3s timer started)
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "id": "opt_deny"
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "deny_crime",
+                "id": "opt_deny",
+                "text": "I didn't steal any flower! Ask the cop!"
+            }
+        ]
     },
-    "type": "add_dialogue_option"
+    "type": "add_dialogue_options"
 }
+sci added options. Total options: 7
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "id": "opt_bribe"
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "bribe_cop",
+                "id": "opt_bribe",
+                "text": "Here's 50 bucks. Look the other way."
+            }
+        ]
     },
-    "type": "add_dialogue_option"
+    "type": "add_dialogue_options"
 }
+cop added options. Total options: 2
 sci finished speaking.
 Raycast hit: cop
 Raycast hit: sci
-VEsNA SIMULATION -> Sent event to Jason: test_utter from sci
 [JSON] - from Sent Data:
 {
     "data": {
@@ -158,100 +586,8 @@ VEsNA SIMULATION -> Sent event to Jason: test_utter from sci
 }
 sci queued utterance: 'Don't talk to me! I'm mad about my flower!' (Queue size: 1)
 sci is saying: 'Don't talk to me! I'm mad about my flower!' (3s timer started)
-sci finished speaking.
-VEsNA SIMULATION -> Sent event to Jason: test_spawn from sci
-[JSON] - from Sent Data:
-{
-    "data": {
-        "type": "test_spawn"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "regia_event"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "No more flowers for you!"
-    },
-    "type": "utter"
-}
-sci queued utterance: 'No more flowers for you!' (Queue size: 1)
-sci is saying: 'No more flowers for you!' (3s timer started)
-sci finished speaking.
-VEsNA SIMULATION -> Sent event to Jason: deny_crime from sci
-[JSON] - from Sent Data:
-{
-    "data": {
-        "type": "deny_crime"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "regia_event"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "I am innocent! Ask the cop!"
-    },
-    "type": "utter"
-}
-sci queued utterance: 'I am innocent! Ask the cop!' (Queue size: 1)
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "id": "opt_deny"
-    },
-    "type": "remove_dialogue_option"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "The subplot has officially concluded!"
-    },
-    "type": "utter"
-}
-sci queued utterance: 'The subplot has officially concluded!' (Queue size: 2)
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "I have my eye on you, scientist."
-    },
-    "type": "utter"
-}
-cop queued utterance: 'I have my eye on you, scientist.' (Queue size: 1)
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "id": "opt_bribe"
-    },
-    "type": "remove_dialogue_option"
-}
-sci is saying: 'I am innocent! Ask the cop!' (3s timer started)
-cop is saying: 'I have my eye on you, scientist.' (3s timer started)
-sci finished speaking.
-cop finished speaking.
-sci is saying: 'The subplot has officially concluded!' (3s timer started)
-sci finished speaking.
 Raycast hit: sci
-VEsNA SIMULATION -> Sent event to Jason: apologize_event from sci
-[JSON] - from Sent Data:
-{
-    "data": {
-        "type": "apologize_event"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "regia_event"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "node": "apology_rejected"
-    },
-    "type": "update_dialogue"
-}
-VEsNA SIMULATION -> Sent event to Jason: test_vanish from sci
+sci finished speaking.
 [JSON] - from Sent Data:
 {
     "data": {
@@ -269,29 +605,185 @@ VEsNA SIMULATION -> Sent event to Jason: test_vanish from sci
     "type": "utter"
 }
 sci queued utterance: 'Fine! I'm taking a deep breath...' (Queue size: 1)
-sci is saying: 'Fine! I'm taking a deep breath...' (3s timer started)
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "id": "opt_apologize"
+        "text": "Behold my new Regia capabilities! What shall I do?"
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: Behold my new Regia capabilities! What shall I do?
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "tell_research",
+                "id": "opt_research",
+                "text": "Tell me about your research."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_utter",
+                "id": "opt_utter",
+                "text": "Speak to me!"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_vanish",
+                "id": "opt_vanish",
+                "text": "Perform a vanishing act."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 3
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_spawn",
+                "id": "opt_spawn",
+                "text": "Conjure a flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 4
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_despawn",
+                "id": "opt_despawn",
+                "text": "Banish the flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 5
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "That is all. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 6
+sci is saying: 'Fine! I'm taking a deep breath...' (3s timer started)
+sci finished speaking.
+Raycast hit: sci
+Raycast hit: cop
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "bribe_cop"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Phew. That was close."
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Phew. That was close.' (Queue size: 1)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Hmm. Very well. I didn't see anything."
+    },
+    "type": "utter"
+}
+cop queued utterance: 'Hmm. Very well. I didn't see anything.' (Queue size: 1)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_bribe"
     },
     "type": "remove_dialogue_option"
 }
+cop removed dialogue option: opt_bribe
+sci is saying: 'Phew. That was close.' (3s timer started)
+cop is saying: 'Hmm. Very well. I didn't see anything.' (3s timer started)
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "node": "test_features"
+        "id": "opt_deny"
     },
-    "type": "set_dialogue"
+    "type": "remove_dialogue_option"
 }
-sci received new dialogue node: test_features
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "node": "test_features"
-    },
-    "type": "set_dialogue"
-}
-sci received new dialogue node: test_features
+sci removed dialogue option: opt_deny
 sci finished speaking.
+cop finished speaking.
 Raycast hit: sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "test_despawn"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "item": "flower"
+    },
+    "receiver": "body",
+    "sender": "vesna",
+    "type": "despawn_item"
+}
+GameManager: Error despawning - Item 'flower' not found in world!
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Flower banished!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Flower banished!' (Queue size: 1)
+sci is saying: 'Flower banished!' (3s timer started)

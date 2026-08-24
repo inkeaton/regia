@@ -25,5 +25,7 @@
 @pb__ScientistAngry__apologize_event__0
 +apologize_event : playbook_active(scientistangry, _) <-
     .print("Apology received while angry!");
-    vesna.via.update_dialogue("apology_rejected").
+    vesna.via.set_dialogue_text("I accept your apology... but I'm still mad.");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_leave", "Understood. (Leave)", "exit", "true").
 

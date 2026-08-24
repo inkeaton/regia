@@ -7,11 +7,7 @@ mas science_game {
         port:       9001
     }
 
-    agent coordinator:ready_agent.asl {
-        ag-class:   vesna.VesnaAgent
-        address:    localhost
-        port:       9200
-    }
+
 
     agent cop:cop.asl {
         ag-class:   vesna.VesnaAgent

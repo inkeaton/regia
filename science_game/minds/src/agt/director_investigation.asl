@@ -52,14 +52,15 @@ current_phase(questioning).
 +!on_enter(questioning) <-
     !send_to_role(suspect, achieve, add_playbook(suspectplaybook));
     !send_to_role(officer, achieve, add_playbook(copplaybook));
-    !send_to_role(suspect, achieve, add_dialogue_option("opt_deny"));
-    !send_to_role(officer, achieve, add_dialogue_option("opt_bribe")).
+    !send_to_role(suspect, achieve, add_dialogue_option("opt_deny", "I didn't steal any flower! Ask the cop!", "deny_crime", "false"));
+    !send_to_role(officer, achieve, add_dialogue_option("opt_bribe", "Here's 50 bucks. Look the other way.", "bribe_cop", "false")).
 +!on_exit(_) <- true.
 +!on_enter(_) <- true.
 
 // ============================================
 // == Plot Lifecycle Infrastructure ==
 // ============================================
+// If the parent terminates, it signals children with !parent_ended
 +!parent_ended[source(Parent)] : parent_plot(Parent) <-
     .print("[Investigation] Parent plot ", Parent, " ended. Terminating this subplot...");
     -parent_plot(Parent);

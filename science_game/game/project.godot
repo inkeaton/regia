@@ -21,7 +21,6 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 [autoload]
 
 GameManager="*res://libraries/GameManager.gd"
-DialogueManager="*res://libraries/DialogueManager.gd"
 
 [debug]
 

@@ -29,77 +29,60 @@ var current_npc: Node2D
 ## Connects to the DialogueManager to listen for dialogue requests.
 func _ready() -> void:
 	visible = false
-	DialogueManager.request_dialogue.connect(start_dialogue)
-	DialogueManager.request_dialogue_update.connect(_on_dialogue_update)
+	add_to_group("dialogue_ui")
 	
-	# Listen to events for testing (simulating VEsNA transmission to Jason)
-	DialogueManager.dialogue_event.connect(func(event_id, npc):
-		print("VEsNA SIMULATION -> Sent event to Jason: ", event_id, " from ", npc.name)
-		
-		# --- HUD TESTING SIMULATION ---
-		if event_id == "told_dummy_nice":
-			GameManager.add_item("flower")
-			GameManager.add_diary_entry("Be nice to the dummy.")
-	)
+	# Listen to updates from NPCs if they update their dialogue while it's open.
+	# We will rely on NPC signals if needed, but for now we'll just check state on start.
 
 # ==============================================================================
 # DIALOGUE FLOW
 # ==============================================================================
 
-## Called by the DialogueManager when an NPC wants to start a dialogue.
+## Called by the NPC when it wants to start a dialogue.
 ##
-## @param node_id The ID of the dialogue node to start.
 ## @param player Reference to the player.
 ## @param npc Reference to the NPC.
-func start_dialogue(node_id: String, player: Node2D, npc: Node2D) -> void:
+func start_dialogue(player: Node2D, npc: Node2D) -> void:
 	current_player = player
 	current_npc = npc
 	current_player.can_move = false
 	visible = true
-	_load_node(node_id)
+	_render_current_state()
 
-## Loads a specific dialogue node and populates the UI elements.
-##
-## @param node_id The ID of the dialogue node to load.
-func _load_node(node_id: String) -> void:
+## Refreshes the UI elements based on the NPC's current state.
+func _render_current_state() -> void:
 	# Clear previous options
 	for child in options_container.get_children():
+		options_container.remove_child(child)
 		child.queue_free()
 		
-	var data = DialogueManager.get_node_data(node_id)
-	if data.is_empty():
+	if current_npc == null or not "current_dialogue_text" in current_npc:
+		_close_dialogue()
+		return
+		
+	var text = current_npc.current_dialogue_text
+	if text == "":
 		_close_dialogue()
 		return
 		
 	# Set Text
-	if data.has("text"):
-		text_label.text = data["text"]
+	text_label.text = text
 		
 	# Set Portrait
-	if data.has("portrait"):
-		var tex = load(data["portrait"])
-		if tex:
-			portrait_sprite.texture = tex
-			
+	if "portrait" in current_npc and current_npc.portrait:
+		portrait_sprite.texture = current_npc.portrait
+	else:
+		portrait_sprite.texture = null
+		
 	# Spawn Option Buttons
-	if data.has("options"):
-		for opt in data["options"]:
+	if "current_options" in current_npc:
+		for opt in current_npc.current_options:
 			_spawn_option_button(opt)
-			
-	# Spawn Injected Options
-	if current_npc and "injected_options" in current_npc:
-		for opt_id in current_npc.injected_options:
-			var opt_data = DialogueManager.get_injected_option(opt_id)
-			if not opt_data.is_empty():
-				_spawn_option_button(opt_data)
 
 ## Instantiates and adds an option button to the UI container.
 ##
 ## @param opt_data Dictionary containing the option's text, next node, and event.
 func _spawn_option_button(opt_data: Dictionary) -> void:
-	if current_npc and "removed_options" in current_npc and opt_data.has("id") and opt_data["id"] in current_npc.removed_options:
-		return
-		
 	if not option_button_scene:
 		print("DialogueUI Error: option_button_scene is not assigned!")
 		return
@@ -117,30 +100,32 @@ func _spawn_option_button(opt_data: Dictionary) -> void:
 ##
 ## @param opt_data The dictionary data associated with the clicked option.
 func _on_option_selected(opt_data: Dictionary) -> void:
-	if opt_data.get("remove_on_select", false) and current_npc and "removed_options" in current_npc and opt_data.has("id"):
-		if not opt_data["id"] in current_npc.removed_options:
-			current_npc.removed_options.append(opt_data["id"])
-			
-	# Fire event if present
-	if opt_data.has("event"):
-		DialogueManager.dialogue_event.emit(opt_data["event"], current_npc)
-		
-	# Handle flow
-	var next_id = opt_data.get("next", "exit")
-	if next_id == "exit":
+	# Fire event back to Regia
+	var event_id = opt_data.get("event", "")
+	
+	if event_id == "exit_dialogue" or event_id == "exit":
 		_close_dialogue()
-	elif next_id == "await_agent":
+		# Optionally we can still send the exit event to Jason if requested
+		if event_id == "exit_dialogue":
+			current_npc.vesna_manager.send_regia_event(event_id)
+		return
+		
+	if event_id != "":
+		current_npc.vesna_manager.send_regia_event(event_id)
+		
+	# Check if this option should close the UI
+	if opt_data.get("close_on_select", false):
+		_close_dialogue()
+	else:
 		# Disable options to indicate "thinking" state
 		for child in options_container.get_children():
 			if child is Button:
 				child.disabled = true
-	else:
-		_load_node(next_id)
 
 ## Called when an NPC receives a command from Jason to update the open dialogue.
-func _on_dialogue_update(node_id: String, npc: Node2D) -> void:
+func update_dialogue(npc: Node2D) -> void:
 	if current_npc == npc and visible:
-		_load_node(node_id)
+		_render_current_state()
 
 ## Closes the dialogue UI and unfreezes the player.
 func _close_dialogue() -> void:

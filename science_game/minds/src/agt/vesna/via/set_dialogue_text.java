@@ -7,24 +7,24 @@ import org.json.JSONObject;
 import vesna.VesnaAgent;
 
 /**
- * Internal action to remove a specific dialogue option by ID.
+ * Internal action to set the current dialogue text for an NPC.
  */
-public class remove_dialogue_option extends DefaultInternalAction {
+public class set_dialogue_text extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         if (args.length < 1) {
-            throw new JasonException("vesna.via.remove_dialogue_option requires a string argument representing the option ID.");
+            throw new JasonException("vesna.via.set_dialogue_text requires a string argument representing the dialogue text.");
         }
 
         VesnaAgent agent = (VesnaAgent) ts.getAg();
-        String optionId = args[0].toString().replace("\"", "");
+        String text = args[0].toString().replace("\"", "");
 
         JSONObject data = new JSONObject();
-        data.put("id", optionId);
+        data.put("text", text);
 
         JSONObject message = new JSONObject();
-        message.put("type", "remove_dialogue_option");
+        message.put("type", "set_dialogue_text");
         message.put("data", data);
 
         agent.perform(message.toString());

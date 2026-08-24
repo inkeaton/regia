@@ -22,6 +22,24 @@ current_phase(calm).
     !on_enter(calm).
 
 // == Director WHEN Plans ==
+@dir__TestFeatures__tell_research__0
++tell_research : current_phase(calm) <-
+    !send_to_role(scientist, achieve, set_dialogue_text("Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!"));
+    !send_to_role(scientist, achieve, clear_dialogue_options);
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_back", "Fascinating. Let's talk about something else.", "back_to_main", "false"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_leave", "I must go. (Leave)", "exit", "true")).
+
+@dir__TestFeatures__back_to_main__0
++back_to_main : current_phase(calm) <-
+    !send_to_role(scientist, achieve, set_dialogue_text("What else would you like to discuss?"));
+    !send_to_role(scientist, achieve, clear_dialogue_options);
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_research", "Tell me about your research again.", "tell_research", "false"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true")).
+
 @dir__TestFeatures__flower_stolen__0
 +flower_stolen : current_phase(calm) <-
     !switch_phase(angry).
@@ -50,15 +68,26 @@ current_phase(calm).
     !send_to_role(scientist, achieve, remove_playbook(scientistcalm)).
 +!on_enter(calm) <-
     !send_to_role(scientist, achieve, add_playbook(scientistcalm));
-    !send_to_role(scientist, achieve, set_dialogue("test_features")).
+    !send_to_role(scientist, achieve, set_dialogue_text("Behold my new Regia capabilities! What shall I do?"));
+    !send_to_role(scientist, achieve, clear_dialogue_options);
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_research", "Tell me about your research.", "tell_research", "false"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true")).
 +!on_exit(angry) <-
-    !send_to_role(scientist, achieve, remove_playbook(scientistangry));
-    !send_to_role(scientist, achieve, remove_dialogue_option("opt_apologize"));
-    !send_to_role(scientist, achieve, set_dialogue("test_features")).
+    !send_to_role(scientist, achieve, remove_playbook(scientistangry)).
 +!on_enter(angry) <-
     !send_to_role(scientist, achieve, add_playbook(scientistangry));
-    !send_to_role(scientist, achieve, set_dialogue("scientist_angry"));
-    !send_to_role(scientist, achieve, add_dialogue_option("opt_apologize"));
+    !send_to_role(scientist, achieve, set_dialogue_text("I am furious! Someone stole my flower! What do you want?!"));
+    !send_to_role(scientist, achieve, clear_dialogue_options);
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true"));
+    !send_to_role(scientist, achieve, add_dialogue_option("opt_apologize", "I am sorry for taking it.", "apologize_event", "false"));
     !start_subplot("investigation", investigation, [map(suspect, scientist), map(officer, cop)]).
 +!on_exit(_) <- true.
 +!on_enter(_) <- true.
@@ -66,6 +95,7 @@ current_phase(calm).
 // ============================================
 // == Plot Lifecycle Infrastructure ==
 // ============================================
+// If the parent terminates, it signals children with !parent_ended
 +!parent_ended[source(Parent)] : parent_plot(Parent) <-
     .print("[TestFeatures] Parent plot ", Parent, " ended. Terminating this subplot...");
     -parent_plot(Parent);

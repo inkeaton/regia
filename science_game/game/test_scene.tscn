@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://8d4du44d8614" path="res://bodies/npcs/npc.tscn" id="2_8pr8v"]
 [ext_resource type="PackedScene" uid="uid://6b0y547wk35g" path="res://ui/dialogue_ui.tscn" id="3_buypi"]
 [ext_resource type="PackedScene" uid="uid://dvyid5qdscqk" path="res://ui/hud.tscn" id="4_njel3"]
-[ext_resource type="Script" uid="uid://baip7bay0mxl4" path="res://libraries/Coordinator.gd" id="5_vr1i5"]
 [ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="6_rpuu0"]
 [ext_resource type="Texture2D" uid="uid://4km6j8a1y43v" path="res://resources/images/portraits/sci.png" id="7_8pr8v"]
 
@@ -28,13 +27,7 @@ visible = false
 
 [node name="level" type="Node2D" parent="." unique_id=566664281]
 
-[node name="Coordinator" type="Node" parent="level" unique_id=54124160]
-script = ExtResource("5_vr1i5")
 
-[node name="VesnaManager" type="Node" parent="level/Coordinator" unique_id=1133439527]
-script = ExtResource("6_rpuu0")
-PORT = 9200
-metadata/_custom_type_script = "uid://dvhqleqa5i43d"
 
 [node name="waypoints" type="Node2D" parent="level" unique_id=531407168]
 

@@ -6,10 +6,10 @@ ACTION vesna.via.utter(text) AS utter.
 ACTION vesna.via.spawn_item(item, waypoint) AS spawn_item.
 ACTION vesna.via.despawn_item(item) AS despawn_item.
 
-ACTION vesna.via.add_dialogue_option(id) AS add_dialogue_option.
+ACTION vesna.via.set_dialogue_text(text) AS set_dialogue_text.
+ACTION vesna.via.add_dialogue_option(id, text, event, close_ui) AS add_dialogue_option.
+ACTION vesna.via.clear_dialogue_options AS clear_dialogue_options.
 ACTION vesna.via.remove_dialogue_option(id) AS remove_dialogue_option.
-ACTION vesna.via.update_dialogue(node) AS update_dialogue.
-ACTION vesna.via.set_dialogue(node) AS set_dialogue.
 
 EVENT test_utter.
 EVENT test_vanish.
@@ -18,10 +18,12 @@ EVENT test_despawn.
 EVENT picked_up_flower.
 EVENT apologize_event.
 
-EVENT flower_stolen SELF.
-EVENT calmed_down SELF.
-EVENT deny_crime SELF.
-EVENT bribe_cop SELF.
+EVENT flower_stolen.
+EVENT calmed_down.
+EVENT deny_crime.
+EVENT bribe_cop.
+EVENT tell_research.
+EVENT back_to_main.
 
 # The Playbook that will be assigned to the scientist when calm
 PLAYBOOK ScientistCalm:
@@ -48,6 +50,12 @@ PLAYBOOK ScientistCalm:
         DO despawn_item("flower").
         DO utter("Flower banished!").
 
+    WHEN tell_research:
+        SIGNAL tell_research.
+
+    WHEN back_to_main:
+        SIGNAL back_to_main.
+
     WHEN picked_up_flower:
         DO PRINT("The player picked up the flower!").
         DO utter("Hey! You took my flower!").
@@ -55,7 +63,9 @@ PLAYBOOK ScientistCalm:
 
     WHEN apologize_event:
         DO PRINT("Apology received while calm!").
-        DO update_dialogue("apology_accepted").
+        DO set_dialogue_text("Wow, you got the flower! Thanks!").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_welcome", "You're welcome.", "exit", "true").
 
 # The Playbook that will be assigned to the scientist when angry
 PLAYBOOK ScientistAngry:
@@ -75,7 +85,9 @@ PLAYBOOK ScientistAngry:
 
     WHEN apologize_event:
         DO PRINT("Apology received while angry!").
-        DO update_dialogue("apology_rejected").
+        DO set_dialogue_text("I accept your apology... but I'm still mad.").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_leave", "Understood. (Leave)", "exit", "true").
 
 PLAYBOOK SuspectPlaybook:
     WHEN deny_crime:
@@ -97,8 +109,8 @@ PLOT Investigation.
         ON ENTER:
             ASSIGN SuspectPlaybook TO Suspect.
             ASSIGN CopPlaybook TO Officer.
-            Suspect DO add_dialogue_option("opt_deny").
-            Officer DO add_dialogue_option("opt_bribe").
+            Suspect DO add_dialogue_option("opt_deny", "I didn't steal any flower! Ask the cop!", "deny_crime", "false").
+            Officer DO add_dialogue_option("opt_bribe", "Here's 50 bucks. Look the other way.", "bribe_cop", "false").
         ON EXIT:
             UNASSIGN SuspectPlaybook FROM Suspect.
             UNASSIGN CopPlaybook FROM Officer.
@@ -122,22 +134,49 @@ PLOT TestFeatures.
     DURING calm:
         ON ENTER:
             ASSIGN ScientistCalm TO Scientist.
-            Scientist DO set_dialogue("test_features").
+            Scientist DO set_dialogue_text("Behold my new Regia capabilities! What shall I do?").
+            Scientist DO clear_dialogue_options.
+            Scientist DO add_dialogue_option("opt_research", "Tell me about your research.", "tell_research", "false").
+            Scientist DO add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true").
+            Scientist DO add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true").
+            Scientist DO add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true").
+            Scientist DO add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true").
+            Scientist DO add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true").
         ON EXIT:
             UNASSIGN ScientistCalm FROM Scientist.
+        WHEN tell_research:
+            Scientist DO set_dialogue_text("Ah, Regia! It empowers me to structure my mind using logical rules, separated clearly from Godot's visual engine. It is a paradigm shift!").
+            Scientist DO clear_dialogue_options.
+            Scientist DO add_dialogue_option("opt_back", "Fascinating. Let's talk about something else.", "back_to_main", "false").
+            Scientist DO add_dialogue_option("opt_leave", "I must go. (Leave)", "exit", "true").
+        WHEN back_to_main:
+            Scientist DO set_dialogue_text("What else would you like to discuss?").
+            Scientist DO clear_dialogue_options.
+            Scientist DO add_dialogue_option("opt_research", "Tell me about your research again.", "tell_research", "false").
+            Scientist DO add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true").
+            Scientist DO add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true").
+            Scientist DO add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true").
+            Scientist DO add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true").
+            Scientist DO add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true").
         WHEN flower_stolen:
             TRANSITION TO angry.
 
     DURING angry:
         ON ENTER:
             ASSIGN ScientistAngry TO Scientist.
-            Scientist DO set_dialogue("scientist_angry").
-            Scientist DO add_dialogue_option("opt_apologize").
+            Scientist DO set_dialogue_text("I am furious! Someone stole my flower! What do you want?!").
+            Scientist DO clear_dialogue_options.
+            Scientist DO add_dialogue_option("opt_utter", "Speak to me!", "test_utter", "true").
+            Scientist DO add_dialogue_option("opt_vanish", "Perform a vanishing act.", "test_vanish", "true").
+            Scientist DO add_dialogue_option("opt_spawn", "Conjure a flower.", "test_spawn", "true").
+            Scientist DO add_dialogue_option("opt_despawn", "Banish the flower.", "test_despawn", "true").
+            Scientist DO add_dialogue_option("opt_leave", "That is all. (Leave)", "exit", "true").
+            Scientist DO add_dialogue_option("opt_apologize", "I am sorry for taking it.", "apologize_event", "false").
             START SUBPLOT Investigation MAPPING Scientist TO Suspect, Cop TO Officer.
         ON EXIT:
             UNASSIGN ScientistAngry FROM Scientist.
-            Scientist DO remove_dialogue_option("opt_apologize").
-            Scientist DO set_dialogue("test_features").
+            # We don't need to manually remove apologize or reset text here because 
+            # transitioning to 'calm' will trigger calm's ON ENTER which clears and sets the baseline.
         WHEN calmed_down:
             TRANSITION TO calm.
         WHEN SUBPLOT Investigation ENDS:

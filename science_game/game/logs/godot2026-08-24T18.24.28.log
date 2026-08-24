@@ -1,0 +1,153 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+Vulkan 1.4.354 - Forward+ - Using Device #0: AMD - AMD Radeon RX 7700 XT (RADV NAVI32)
+
+[MESSAGE] - from NetworkManager: Listening on port 9001
+[MESSAGE] - from NetworkManager: Listening on port 9002
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Behold my new Regia capabilities! What shall I do?"
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: Behold my new Regia capabilities! What shall I do?
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "tell_research",
+                "id": "opt_research",
+                "text": "Tell me about your research."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_utter",
+                "id": "opt_utter",
+                "text": "Speak to me!"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_vanish",
+                "id": "opt_vanish",
+                "text": "Perform a vanishing act."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 3
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_spawn",
+                "id": "opt_spawn",
+                "text": "Conjure a flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 4
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "test_despawn",
+                "id": "opt_despawn",
+                "text": "Banish the flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 5
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "That is all. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 6
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Move along, citizen. Nothing to see here."
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: Move along, citizen. Nothing to see here.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit",
+                "id": "opt_leave",
+                "text": "Goodbye. (Leave)"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
+Raycast hit: cop
+Raycast hit: sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "tell_research"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}

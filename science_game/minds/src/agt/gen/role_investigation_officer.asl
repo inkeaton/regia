@@ -34,8 +34,8 @@
 // ============================================
 // == Director Commands ==
 // ============================================
-@role__investigation__officer__add_dialogue_option__opt_bribe__
-+!add_dialogue_option("opt_bribe") <- vesna.via.add_dialogue_option("opt_bribe").
+@role__investigation__officer__add_dialogue_option__opt_bribe____Here_s_50_bucks__Look_the_other_way_____bribe_cop____false__
++!add_dialogue_option("opt_bribe", "Here's 50 bucks. Look the other way.", "bribe_cop", "false") <- vesna.via.add_dialogue_option("opt_bribe", "Here's 50 bucks. Look the other way.", "bribe_cop", "false").
 
 @role__investigation__officer__remove_dialogue_option__opt_bribe__
 +!remove_dialogue_option("opt_bribe") <- vesna.via.remove_dialogue_option("opt_bribe").

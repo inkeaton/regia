@@ -13,6 +13,9 @@ class_name NPC
 ## Movement speed of the NPC.
 @export var speed: float = 100.0
 
+## Portrait texture to display in dialogue UI.
+@export var portrait: Texture2D
+
 # ==============================================================================
 # DEPENDENCIES
 # ==============================================================================
@@ -24,10 +27,9 @@ class_name NPC
 # STATE
 # ==============================================================================
 
-var current_dialogue_id: String = ""
+var current_dialogue_text: String = ""
+var current_options: Array[Dictionary] = []
 var current_target_waypoint: String = ""
-var injected_options: Array[String] = []
-var removed_options: Array[String] = []
 
 var utterance_queue: Array[String] = []
 @onready var utterance_panel: PanelContainer = $SpeechBubble
@@ -44,7 +46,7 @@ func _ready() -> void:
 		vesna_manager.command_received.connect(_on_command_received)
 		
 	# Listen to the global dialogue event to forward it to Jason
-	DialogueManager.dialogue_event.connect(_on_global_dialogue_event)
+	# (We leave this for now, but DialogueManager is gone, so we must remove it)
 	
 	if utterance_panel:
 		utterance_panel.visible = false
@@ -74,14 +76,14 @@ func _physics_process(_delta: float) -> void:
 # INTERACTION
 # ==============================================================================
 
-## Called when the player interacts with this NPC.
-##
-## @param player The Node2D representing the player.
 func interact(player: Node2D) -> void:
-	if current_dialogue_id != "":
-		DialogueManager.start_dialogue(current_dialogue_id, player, self)
+	if current_dialogue_text != "":
+		# We emit a signal that the UI will catch. We'll implement a custom event later or pass references.
+		var dialogue_ui = get_tree().get_first_node_in_group("dialogue_ui")
+		if dialogue_ui:
+			dialogue_ui.start_dialogue(player, self)
 	else:
-		print(name, " has no dialogue set by Jason right now.")
+		print(name, " has no dialogue text set by Jason right now.")
 
 func _play_next_utterance() -> void:
 	var text = utterance_queue.pop_front()
@@ -107,9 +109,32 @@ func _on_command_received(intention: Dictionary) -> void:
 	var type = intention.get("type", "")
 	var data = intention.get("data", {})
 	
-	if type == "set_dialogue":
-		current_dialogue_id = data.get("node", "")
-		print(name, " received new dialogue node: ", current_dialogue_id)
+	var dialogue_updated = false
+	
+	if type == "set_dialogue_text":
+		current_dialogue_text = data.get("text", "")
+		print(name, " received new dialogue text: ", current_dialogue_text)
+		dialogue_updated = true
+		
+	elif type == "add_dialogue_options":
+		var opts = data.get("options", [])
+		for opt in opts:
+			current_options.append(opt)
+		print(name, " added options. Total options: ", current_options.size())
+		dialogue_updated = true
+		
+	elif type == "clear_dialogue_options":
+		current_options.clear()
+		print(name, " cleared dialogue options.")
+		dialogue_updated = true
+		
+	elif type == "remove_dialogue_option":
+		var opt_id = data.get("id", "")
+		for i in range(current_options.size() - 1, -1, -1):
+			if current_options[i].get("id") == opt_id:
+				current_options.remove_at(i)
+		print(name, " removed dialogue option: ", opt_id)
+		dialogue_updated = true
 		
 	elif type == "move_to":
 		var target_name = data.get("target", "")
@@ -168,23 +193,12 @@ func _on_command_received(intention: Dictionary) -> void:
 	elif type == "remove_diary_entry":
 		GameManager.remove_diary_entry(data.get("text", ""))
 		
-	elif type == "add_dialogue_option":
-		var opt_id = data.get("id", "")
-		if opt_id != "":
-			if not opt_id in injected_options:
-				injected_options.append(opt_id)
-			if opt_id in removed_options:
-				removed_options.erase(opt_id)
-			
-	elif type == "remove_dialogue_option":
-		var opt_id = data.get("id", "")
-		if opt_id in injected_options:
-			injected_options.erase(opt_id)
-			
-	elif type == "update_dialogue":
-		var node_id = data.get("node", "")
-		if node_id != "":
-			DialogueManager.request_dialogue_update.emit(node_id, self)
+	if dialogue_updated:
+		var dialogue_ui = get_tree().get_first_node_in_group("dialogue_ui")
+		if dialogue_ui and dialogue_ui.has_method("update_dialogue"):
+			dialogue_ui.update_dialogue(self)
+		
+
 
 ## Forwards global dialogue events specific to this NPC to its Jason agent.
 ##
