@@ -38,7 +38,7 @@ def test_check_command(tmp_path: Path) -> None:
     
     assert result.exit_code == 0
     assert "Checking valid.regia..." in result.output
-    assert "Check passed!" in result.output
+    assert "Check successful!" in result.output
     
     # Ensure no files were written to the current dir or tmp_path
     asl_files = list(tmp_path.glob("*.asl"))

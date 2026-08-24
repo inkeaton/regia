@@ -402,9 +402,9 @@ plot_end_stmt: "END" "PLOT" "."
 
 // Parentheses override precedence.
 
-condition: condition_and ("OR" condition_and)*
+?condition: condition_and ("OR" condition_and)*
 
-condition_and: condition_atom ("AND" condition_atom)*
+?condition_and: condition_atom ("AND" condition_atom)*
 
 // NOT creates a separate node via -> alias, and is
 

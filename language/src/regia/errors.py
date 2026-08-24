@@ -6,7 +6,12 @@ Collects, formats, and displays compiler messages (errors and warnings).
 
 from dataclasses import dataclass
 from enum        import Enum, auto
-from typing      import Dict, List
+from typing      import Dict, List, Callable, Optional
+
+StyleFunc = Callable[..., str]
+
+def _default_style(text: str, **kwargs) -> str:
+    return text
 
 
 # == Severity ==================================================================
@@ -43,6 +48,48 @@ class CompilerMessage:
     hint:        str = ""
     source_line: str = ""
     filename:    str = ""
+
+
+
+def format_message(msg: CompilerMessage, style_func: Optional[StyleFunc] = None) -> str:
+    """Format a single message with header, text, hint, and caret.
+
+    Args:
+        msg: The compiler message to format.
+        style_func: Optional function to style text (e.g., click.style).
+
+    Returns:
+        A formatted multi-line string for this diagnostic.
+    """
+    style = style_func or _default_style
+    divider = "=" * 60
+    
+    label = "ERROR" if msg.severity == Severity.ERROR else "WARNING"
+    if msg.severity == Severity.ERROR:
+        label = style(label, fg="red", bold=True)
+    else:
+        label = style(label, fg="yellow", bold=True)
+
+    if msg.filename:
+        colored_name = style(msg.filename, fg="blue")
+        location = f"{colored_name}:{msg.line}, col {msg.column}"
+    else:
+        location = f"line {msg.line}, col {msg.column}"
+
+    parts: List[str] = [
+        f"\n{divider}",
+        f" {label}  {location}",
+        f" {msg.message}",
+    ]
+    if msg.hint:
+        parts.append(f" Hint: {msg.hint}")
+    if msg.source_line:
+        parts.append("")
+        parts.append(f"    {msg.source_line}")
+        caret = style("^" * msg.length, fg="red", bold=True)
+        parts.append(" " * (4 + msg.column) + caret)
+    parts.append(divider)
+    return "\n".join(parts)
 
 
 # == Error reporter ============================================================
@@ -159,17 +206,20 @@ class ErrorReporter:
 
     # == Formatted output ======================================================
 
-    def format_all(self) -> str:
-        """Return all messages as a formatted string, sorted by line.
+    def format_all(self, style_func: Optional[StyleFunc] = None, quiet: bool = False) -> str:
+        """Return all messages as a formatted string, sorted by filename and line.
 
         Returns:
             A multi-line string containing all diagnostics with carets
             and a final summary line.
         """
         parts: List[str] = []
-        for msg in sorted(self._messages, key=lambda m: m.line):
-            parts.append(self._format_message(msg))
-        parts.append(self._format_summary())
+        for msg in sorted(self._messages, key=lambda m: (m.filename, m.line)):
+            if quiet and msg.severity != Severity.ERROR:
+                continue
+            parts.append(format_message(msg, style_func))
+        if not quiet or self._error_count > 0:
+            parts.append(self._format_summary())
         return "\n".join(parts)
 
     # == Internal ==============================================================
@@ -227,38 +277,6 @@ class ErrorReporter:
             self._error_count += 1
         else:
             self._warning_count += 1
-
-    def _format_message(self, msg: CompilerMessage) -> str:
-        """Format a single message with header, text, hint, and caret.
-
-        Args:
-            msg: The compiler message to format.
-
-        Returns:
-            A formatted multi-line string for this diagnostic.
-        """
-        divider = "=" * 60
-        label   = "ERROR" if msg.severity == Severity.ERROR else "WARNING"
-
-        # Include filename in location when available
-        if msg.filename:
-            location = f"{msg.filename}:{msg.line}, column {msg.column}"
-        else:
-            location = f"line {msg.line}, column {msg.column}"
-
-        parts: List[str] = [
-            f"\n{divider}",
-            f" {label}  {location}",
-            f" {msg.message}",
-        ]
-        if msg.hint:
-            parts.append(f" Hint: {msg.hint}")
-        if msg.source_line:
-            parts.append("")
-            parts.append(f"    {msg.source_line}")
-            parts.append(" " * (4 + msg.column) + "^" * msg.length)
-        parts.append(divider)
-        return "\n".join(parts)
 
     def _format_summary(self) -> str:
         """Format the final compilation summary line.

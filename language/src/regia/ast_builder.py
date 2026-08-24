@@ -22,7 +22,7 @@ How Lark's Transformer works:
        (only for rules with a fixed number of children).
 """
 
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Tuple
 
 from lark import Transformer, Token, v_args
 
@@ -172,10 +172,11 @@ class ASTBuilder(Transformer):
         alias = None
         
         for child in children[1:]:
-            if isinstance(child, list):
-                params = child
-            elif isinstance(child, Token):
-                alias = str(child)
+            match child:
+                case list():
+                    params = child
+                case Token():
+                    alias = str(child)
 
         return ActionDecl(
             name=str(name_token),
@@ -332,11 +333,11 @@ class ASTBuilder(Transformer):
         effects_list: List[TemperEntry] = []
 
         for child in children:
-            if isinstance(child, TemperEntry):
-                dimensions.append(child)
-            elif isinstance(child, list):
-                # The effects rule returns a list of TemperEntry
-                effects_list = child
+            match child:
+                case TemperEntry():
+                    dimensions.append(child)
+                case list():
+                    effects_list = child
 
         return TemperSpec(dimensions=dimensions, effects=effects_list)
 
@@ -416,7 +417,7 @@ class ASTBuilder(Transformer):
     def pb_when_body(
         self,
         children: List,
-    ) -> Tuple[List, List[PbIfBranch], Optional[PbElseBranch]]:
+    ) -> Tuple[List, List[PbIfBranch], PbElseBranch | None]:
         """Body of a Playbook WHEN block -> (prefix, branches, else).
 
         Classifies the flat list of children (produced by ? inlining)
@@ -435,18 +436,18 @@ class ASTBuilder(Transformer):
         Returns:
             A (prefix_stmts, branches, else_branch) tuple.
         """
-        prefix_stmts: List[Union[DoStmt, SignalStmt]] = []
+        prefix_stmts: List[DoStmt | SignalStmt] = []
         branches: List[PbIfBranch] = []
-        else_branch: Optional[PbElseBranch] = None
+        else_branch: PbElseBranch | None = None
 
         for child in children:
-            if isinstance(child, PbElseBranch):
-                else_branch = child
-            elif isinstance(child, PbIfBranch):
-                branches.append(child)
-            else:
-                # DoStmt or SignalStmt
-                prefix_stmts.append(child)
+            match child:
+                case PbElseBranch():
+                    else_branch = child
+                case PbIfBranch():
+                    branches.append(child)
+                case _:
+                    prefix_stmts.append(child)
 
         return (prefix_stmts, branches, else_branch)
 
@@ -466,15 +467,16 @@ class ASTBuilder(Transformer):
         event_token = children[0]
 
         # Determine optional children by type inspection
-        priority_val: Optional[int] = None
-        temper_val: Optional[TemperSpec] = None
+        priority_val: int | None = None
+        temper_val: TemperSpec | None = None
         body = children[-1]  # Body is always the last child
 
         for child in children[1:-1]:
-            if isinstance(child, int):
-                priority_val = child
-            elif isinstance(child, TemperSpec):
-                temper_val = child
+            match child:
+                case int():
+                    priority_val = child
+                case TemperSpec():
+                    temper_val = child
 
         prefix_stmts, branches, else_branch = body
         return PbWhenBlock(
@@ -540,10 +542,8 @@ class ASTBuilder(Transformer):
             children: List of condition_and results.
 
         Returns:
-            A ConditionOr (if 2+ operands) or the single child.
+            A ConditionOr node.
         """
-        if len(children) == 1:
-            return children[0]
         return ConditionOr(operands=list(children), loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
@@ -562,10 +562,8 @@ class ASTBuilder(Transformer):
             children: List of condition_atom results.
 
         Returns:
-            A ConditionAnd (if 2+ operands) or the single child.
+            A ConditionAnd node.
         """
-        if len(children) == 1:
-            return children[0]
         return ConditionAnd(operands=list(children), loc=_meta_loc(meta, self._filename))
 
     @v_args(meta=True)
@@ -796,7 +794,7 @@ class ASTBuilder(Transformer):
     def plot_when_body(
         self,
         children: List,
-    ) -> Tuple[List, List[PlotIfBranch], Optional[PlotElseBranch]]:
+    ) -> Tuple[List, List[PlotIfBranch], PlotElseBranch | None]:
         """Body of a Plot WHEN block -> (prefix, branches, else).
 
         Same logic as pb_when_body but for imperative statements.
@@ -810,16 +808,16 @@ class ASTBuilder(Transformer):
         """
         prefix_stmts: List = []
         branches: List[PlotIfBranch] = []
-        else_branch: Optional[PlotElseBranch] = None
+        else_branch: PlotElseBranch | None = None
 
         for child in children:
-            if isinstance(child, PlotElseBranch):
-                else_branch = child
-            elif isinstance(child, PlotIfBranch):
-                branches.append(child)
-            else:
-                # AssignStmt, UnassignStmt, WorldDoStmt, or RoleDoStmt
-                prefix_stmts.append(child)
+            match child:
+                case PlotElseBranch():
+                    else_branch = child
+                case PlotIfBranch():
+                    branches.append(child)
+                case _:
+                    prefix_stmts.append(child)
 
         return (prefix_stmts, branches, else_branch)
 
@@ -995,7 +993,7 @@ class ASTBuilder(Transformer):
 
     def plot_header(
         self,
-        children: List[Union[PhaseDecl, RoleDecl]],
+        children: List[PhaseDecl | RoleDecl],
     ) -> Tuple[List[PhaseDecl], List[RoleDecl]]:
         """(phase_decl | role_decl)+ -> (phases, roles).
 
@@ -1020,7 +1018,7 @@ class ASTBuilder(Transformer):
     ) -> Tuple[
         List[OnEnter],
         List[OnExit],
-        List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock]],
+        List[PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock],
     ]:
         """Sort during_content items into typed lists.
 
@@ -1036,15 +1034,16 @@ class ASTBuilder(Transformer):
         """
         on_enters: List[OnEnter] = []
         on_exits: List[OnExit] = []
-        when_blocks: List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock]] = []
+        when_blocks: List[PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock] = []
 
         for item in items:
-            if isinstance(item, OnEnter):
-                on_enters.append(item)
-            elif isinstance(item, OnExit):
-                on_exits.append(item)
-            elif isinstance(item, (PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock)):
-                when_blocks.append(item)
+            match item:
+                case OnEnter():
+                    on_enters.append(item)
+                case OnExit():
+                    on_exits.append(item)
+                case PlotWhenBlock() | PlotWhenSubplotEndsBlock() | PlotWhenRoleSignalsBlock():
+                    when_blocks.append(item)
 
         return (on_enters, on_exits, when_blocks)
 

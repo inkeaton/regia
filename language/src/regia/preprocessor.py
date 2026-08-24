@@ -114,7 +114,7 @@ def preprocess(source: str, filename: str = "") -> SourceAnnotations:
     doc_comments: List[DocAnnotation]   = []
     import_paths: List[ImportDirective] = []
     
-    last_doc_idx: Optional[int] = None
+    last_doc_idx: int | None = None
 
     for line_num, raw_line in enumerate(source.splitlines(), start=1):
         doc_match      = _DOC_RE.match(raw_line)
@@ -171,10 +171,10 @@ def resolve_imports(
     entry_abs = entry_file.resolve()
 
     # Maps each file to the file that imported it (and the line number).
-    imported_from: Dict[Path, Optional[Tuple[Path, int]]] = {entry_abs: None}
+    imported_from: Dict[Path, Tuple[Path, int] | None] = {entry_abs: None}
 
     # BFS queue of (file_to_process, importing_file_or_None, line_number_in_importing_file)
-    queue: Deque[Tuple[Path, Optional[Path], int]] = deque()
+    queue: Deque[Tuple[Path, Path | None, int]] = deque()
     queue.append((entry_abs, None, 0))
 
     # Preserves insertion order (Python 3.7+).

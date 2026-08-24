@@ -40,6 +40,7 @@ from regia.ast_builder   import ASTBuilder
 from regia.ast_nodes     import (
     DocAnnotation, ImportDecl,
     ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef,
+    PhaseDecl, RoleDecl, PbWhenBlock, BasePlotWhenBlock,
     Program,
 )
 from regia.errors        import ErrorReporter, CompilerMessage
@@ -69,10 +70,80 @@ class CompileResult:
     error_count:   int
     warning_count: int
     messages:      List[CompilerMessage]
-    ast:           Optional[Program] = None
+    ast:           Program | None = None
 
 
 # == Public API ================================================================
+
+def parse_source(
+    source:   str,
+    filename: str,
+    reporter: ErrorReporter,
+) -> Program | None:
+    """Run Stages 0-3 (Preprocess, Parse, Build, Annotate) for a single string.
+
+    Args:
+        source:   The Regia source code as a string.
+        filename: Filename for diagnostics.
+        reporter: The shared ErrorReporter to use.
+
+    Returns:
+        The built AST Program, or None if parsing/building failed.
+    """
+    # == Stage 0: Preprocess ===================================================
+    annotations = preprocess(source, filename=filename)
+    reporter.register_source(filename, source)
+
+    # == Stage 1: Parse ========================================================
+    try:
+        tree = parse(source)
+    except (UnexpectedToken, UnexpectedCharacters) as e:
+        report_syntax_error(e, reporter, filename=filename)
+        return None
+
+    # == Stage 2: Build AST ====================================================
+    builder = ASTBuilder(filename=filename)
+    program: Program = builder.transform(tree)
+    if reporter.has_errors():
+        return None
+
+    # == Stage 3: Annotate =====================================================
+    _attach_doc_comments(program, annotations.doc_comments)
+    return program
+
+
+def parse_files(
+    filepaths: list[Path],
+    reporter:  ErrorReporter,
+) -> Program | None:
+    """Run Stages 0-3 for multiple files and return the merged AST.
+
+    Args:
+        filepaths: List of paths to Regia source files.
+        reporter:  The shared ErrorReporter to use.
+
+    Returns:
+        The merged Program AST, or None if any file failed to parse/build.
+    """
+    programs: list[Program] = []
+
+    for fpath in filepaths:
+        filename = fpath.name
+        raw_source = fpath.read_text(encoding="utf-8")
+        
+        program = parse_source(raw_source, filename, reporter)
+        if program is not None:
+            programs.append(program)
+
+    if reporter.has_errors():
+        return None
+
+    merged = Program()
+    for prog in programs:
+        merged.items.extend(prog.items)
+        merged.doc_comments.extend(prog.doc_comments)
+    return merged
+
 
 def compile_source(
     source:   str,
@@ -81,62 +152,31 @@ def compile_source(
 ) -> CompileResult:
     """Compile a Regia source string through the full pipeline.
 
-    Note: IMPORT statements inside a raw source string cannot be
-    resolved (there is no file system context). If the source contains
-    IMPORTs they will parse successfully but the imported files will
-    not be included. Use compile_file() to get IMPORT resolution.
-
     Stages:
-        0. Preprocess (extract doc comments; IMPORTs noted but not resolved)
-        1. Parse    (source string to Lark tree)
-        2. Build    (Lark tree to typed AST)
-        3. Annotate (attach doc comments to AST nodes)
-        4. Validate (semantic checks on AST)
-        5. Emit     (AST to AgentSpeak strings)
-
-    Args:
-        source:   The Regia source code as a string.
-        filename: Optional filename for diagnostics (defaults to '<string>').
-        emit:     If False, skip emission and return empty outputs.
-
-    Returns:
-        A CompileResult with success status, outputs, and diagnostics.
+        0. Preprocess (extract doc comments)
+        1. Parse      (source string to Lark tree)
+        2. Build      (Lark tree to typed AST)
+        3. Annotate   (attach doc comments to AST nodes)
+        4. Validate   (semantic checks on AST)
+        5. Emit       (AST to AgentSpeak strings)
     """
     reporter = ErrorReporter()
+    program = parse_source(source, filename, reporter)
 
-    # == Stage 0: Preprocess ===================================================
-    annotations = preprocess(source, filename=filename) # (preprocessor.py)
-    reporter.register_source(filename, source) # register source to later give context to the error reporter
-
-    # == Stage 1: Parse ========================================================
-    try:
-        tree = parse(source) # parse the clean source (parser.py)
-    except (UnexpectedToken, UnexpectedCharacters) as e:
-        report_syntax_error(e, reporter, filename=filename) # report syntax error (syntax_errors.py)
-        return _failure(reporter) # return failure (here)
-
-    # == Stage 2: Build AST ====================================================
-    builder = ASTBuilder(filename=filename) # builder is a lark transformer
-
-    program: Program = builder.transform(tree) # transform the tree to an AST (ast_builder.py)
-    if reporter.has_errors(): # if there are errors after building the AST, return failure
-        return _failure(reporter) # return failure (here)
-
-    # == Stage 3: Annotate =====================================================
-    _attach_doc_comments(program, annotations.doc_comments) # attach doc comments to AST nodes (ast_builder.py)
+    if program is None or reporter.has_errors():
+        return _failure(reporter)
 
     # == Stage 4: Validate =====================================================
-    validator = Validator(reporter) # validator checks for semantic errors (validator.py)
+    validator = Validator(reporter)
+    validator.validate(program)
+    if reporter.has_errors():
+        return _failure(reporter)
 
-    validator.validate(program) # validate the AST
-    if reporter.has_errors(): # if there are errors after validation, return failure
-        return _failure(reporter) # return failure (here)
-
-    # == Stage 5: Emit AgentSpeak ==============================================
-    outputs: Dict[str, str] = {}
+    # == Stage 5: Emit =========================================================
+    outputs: dict[str, str] = {}
     if emit:
-        emitter = Emitter() # emitter converts AST to AgentSpeak strings (emitter.py)
-        outputs = emitter.emit(program) # emit the AST (emitter.py)
+        emitter = Emitter()
+        outputs = emitter.emit(program)
 
     return CompileResult(
         success       = True,
@@ -149,16 +189,13 @@ def compile_source(
 
 
 def compile_file(
-    filepath: Union[str, Path],
+    filepath: str | Path,
     emit:     bool = True,
 ) -> CompileResult:
-    """Compile a single .regia file through the full pipeline.
-
-    If the file contains IMPORT statements, they are resolved and all
-    dependent files are compiled together (delegating to compile_files).
+    """Compile a .regia file (and all its imports) through the full pipeline.
 
     Args:
-        filepath: Path to the Regia source file.
+        filepath: Path to the entry Regia source file.
         emit:     If False, skip emission and return empty outputs.
 
     Returns:
@@ -167,108 +204,28 @@ def compile_file(
     filepath = Path(filepath).resolve()
     reporter = ErrorReporter()
 
-    # Quick pre-scan: resolve the full import graph starting from this file.
-    all_files = resolve_imports(
-        filepath,
-        reporter=reporter,
-    )
-
+    # Pre-scan: resolve the full import graph starting from this file.
+    all_files = resolve_imports(filepath, reporter=reporter)
     if reporter.has_errors():
         return _failure(reporter)
 
-    # If there is only this file (no imports), use the single-file path
-    # for a simpler, slightly faster pipeline.
-    if len(all_files) == 1:
-        source = filepath.read_text(encoding="utf-8")
-        return compile_source(source, filename=filepath.name, emit=emit)
-
-    # Multiple files (import graph): delegate to the multi-file pipeline.
-    return compile_files(all_files, emit=emit)
-
-
-def compile_files(
-    filepaths: List[Path],
-    emit:      bool = True,
-) -> CompileResult:
-    """Compile multiple .regia files through the full pipeline.
-
-    Each file is preprocessed, parsed, and built into a Program
-    independently. The Programs are then merged into one combined
-    Program for validation and emission. File order does not matter
-    for correctness (declarations are merged into a shared namespace).
-
-    Stages:
-        0. Preprocess each file (extract doc comments)
-        1. Parse each file (continue on error to report all failures)
-        2. Build AST for each file
-        3. Annotate each Program with its doc comments
-        4. Merge all Programs into one
-        5. Validate merged Program
-        6. Emit AgentSpeak
-
-    Args:
-        filepaths: List of paths to Regia source files.
-        emit:      If False, skip emission and return empty outputs.
-
-    Returns:
-        A CompileResult with success status, outputs, and diagnostics.
-    """
-    # Single file: delegate to the simpler path
-    if len(filepaths) == 1:
-        return compile_file(filepaths[0], emit=emit)
-
-    reporter  = ErrorReporter()
-    programs: List[Program] = []
-
-    # == Stages 0, 1 & 2: Preprocess + Parse + Build each file ================
-    for fpath in filepaths:
-        filename = fpath.name
-        raw_source = fpath.read_text(encoding="utf-8")
-
-        # Stage 0: Preprocess (extract annotations, but no longer modify source)
-        annotations = preprocess(raw_source, filename=filename)
-
-        # We no longer rely on the preprocessor to generate a clean source.
-        # Lark handles doc-comments and imports natively.
-        reporter.register_source(filename, raw_source)
-
-        # Stage 1: Parse
-        try:
-            tree = parse(raw_source)
-        except (UnexpectedToken, UnexpectedCharacters) as e:
-            report_syntax_error(e, reporter, filename=filename)
-            continue  # Try remaining files to report all errors at once
-
-        # Stage 2: Build
-        builder = ASTBuilder(filename=filename)
-        program: Program = builder.transform(tree)
-
-        # Stage 3: Annotate this file's Program
-        _attach_doc_comments(program, annotations.doc_comments)
-
-        programs.append(program)
-
-    # If any file failed to parse, stop here
-    if reporter.has_errors():
+    # Delegate to parse_files for Stages 0-3 across all files.
+    program = parse_files(all_files, reporter)
+    
+    if program is None or reporter.has_errors():
         return _failure(reporter)
 
-    # == Stage 4: Merge Programs ===============================================
-    merged = Program()
-    for prog in programs:
-        merged.items.extend(prog.items)
-        merged.doc_comments.extend(prog.doc_comments)
-
-    # == Stage 5: Validate =====================================================
+    # == Stage 4: Validate =====================================================
     validator = Validator(reporter)
-    validator.validate(merged)
+    validator.validate(program)
     if reporter.has_errors():
         return _failure(reporter)
 
-    # == Stage 6: Emit =========================================================
-    outputs: Dict[str, str] = {}
+    # == Stage 5: Emit =========================================================
+    outputs: dict[str, str] = {}
     if emit:
         emitter = Emitter()
-        outputs = emitter.emit(merged)
+        outputs = emitter.emit(program)
 
     return CompileResult(
         success       = True,
@@ -276,59 +233,32 @@ def compile_files(
         error_count   = reporter.error_count,
         warning_count = reporter.warning_count,
         messages      = reporter.messages,
+        ast           = program,
     )
-
-
-def parse_files(filepaths: List[Path]) -> Program:
-    """Parse one or more files and return the merged AST.
-
-    Stops after AST building, without validation or emission.
-    Prints parsing errors to stdout and exits if there are any,
-    otherwise returns the merged Program.
-
-    Args:
-        filepaths: List of paths to Regia source files.
-
-    Returns:
-        The merged Program AST.
-    """
-    reporter  = ErrorReporter()
-    programs: List[Program] = []
-
-    for fpath in filepaths:
-        filename   = fpath.name
-        raw_source = fpath.read_text(encoding="utf-8")
-
-        annotations = preprocess(raw_source, filename=filename)
-        reporter.register_source(filename, raw_source)
-
-        try:
-            tree = parse(raw_source)
-        except (UnexpectedToken, UnexpectedCharacters) as e:
-            report_syntax_error(e, reporter, filename=filename)
-            continue
-
-        builder = ASTBuilder(filename=filename)
-        program: Program = builder.transform(tree)
-        _attach_doc_comments(program, annotations.doc_comments)
-        programs.append(program)
-
-    if reporter.has_errors():
-        print(reporter.format_all())
-        print(f"\nParsing failed with {reporter.error_count} error(s).")
-        sys.exit(1)
-
-    merged = Program()
-    for prog in programs:
-        merged.items.extend(prog.items)
-        merged.doc_comments.extend(prog.doc_comments)
-    return merged
 
 
 # == Internal ==================================================================
 
 # Nodes that can have doc annotations attached to them.
-_ANNOTATABLE = (ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef)
+_ANNOTATABLE = (
+    ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef,
+    PhaseDecl, RoleDecl, PbWhenBlock, BasePlotWhenBlock,
+)
+
+def _iter_annotatables(program: Program):
+    """Yield all nodes in the AST that can receive doc annotations."""
+    for item in program.items:
+        if isinstance(item, _ANNOTATABLE):
+            yield item
+        
+        if isinstance(item, PlaybookDef):
+            yield from item.when_blocks
+        
+        elif isinstance(item, PlotDef):
+            yield from item.roles
+            yield from item.phases
+            for during in item.during_blocks:
+                yield from during.when_blocks
 
 
 def _attach_doc_comments(
@@ -353,18 +283,15 @@ def _attach_doc_comments(
 
     # Build a sorted list of (item_line, item) for annotatable nodes
     items_with_lines: List[tuple] = []
-    for item in program.items:
-        if isinstance(item, _ANNOTATABLE):
-            loc = getattr(item, "loc", None)
-            line = loc.line if loc else 0
-            if line > 0:
-                items_with_lines.append((line, item))
+    for item in _iter_annotatables(program):
+        loc = getattr(item, "loc", None)
+        line = loc.line if loc else 0
+        if line > 0:
+            items_with_lines.append((line, item))
 
     items_with_lines.sort(key=lambda t: t[0])
 
-    # Group annotations and assign each group to the nearest subsequent item
-    pending: List[DocAnnotation] = []
-
+    # Assign each annotation to the nearest subsequent item
     for annotation in doc_comments:
         # Find the first item that starts after this annotation's line
         target = None
@@ -374,7 +301,7 @@ def _attach_doc_comments(
                 break
 
         if target is not None:
-                target.docs.append(annotation)
+            target.docs.append(annotation)
         else:
             # No subsequent item: this is a file-level annotation
             program.doc_comments.append(annotation)

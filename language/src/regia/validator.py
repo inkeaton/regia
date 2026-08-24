@@ -18,7 +18,7 @@ Responsibilities:
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Set
 
 from regia.ast_nodes import (
     # Shared
@@ -191,34 +191,35 @@ class Validator:
             program: The root AST node.
         """
         for item in program.items:
-            if isinstance(item, ImportDecl):
-                pass  # Import paths are resolved before validation
-            elif isinstance(item, ActionDecl):
-                self._declare(
-                    self._symbols.actions, "action", item.name, item.loc, len(item.params)
-                )
-                if item.alias:
+            match item:
+                case ImportDecl():
+                    pass  # Import paths are resolved before validation
+                case ActionDecl():
                     self._declare(
-                        self._symbols.actions, "action alias", item.alias, item.loc, len(item.params)
+                        self._symbols.actions, "action", item.name, item.loc, len(item.params)
                     )
-                    self._action_aliases[item.alias] = item.name
-                    self._action_aliases[item.name] = item.alias
-            elif isinstance(item, EventDecl):
-                self._declare(
-                    self._symbols.events, "event", item.name, item.loc, 0
-                )
-            elif isinstance(item, FactDecl):
-                self._declare(
-                    self._symbols.facts, "fact", item.name, item.loc, len(item.params)
-                )
-            elif isinstance(item, PlaybookDef):
-                self._declare(
-                    self._symbols.playbooks, "playbook", item.name, item.loc, 0
-                )
-            elif isinstance(item, PlotDef):
-                # Plots themselves don't need a namespace check for
-                # now. But we could add duplicate plot detection if needed.
-                pass
+                    if item.alias:
+                        self._declare(
+                            self._symbols.actions, "action alias", item.alias, item.loc, len(item.params)
+                        )
+                        self._action_aliases[item.alias] = item.name
+                        self._action_aliases[item.name] = item.alias
+                case EventDecl():
+                    self._declare(
+                        self._symbols.events, "event", item.name, item.loc, 0
+                    )
+                case FactDecl():
+                    self._declare(
+                        self._symbols.facts, "fact", item.name, item.loc, len(item.params)
+                    )
+                case PlaybookDef():
+                    self._declare(
+                        self._symbols.playbooks, "playbook", item.name, item.loc, 0
+                    )
+                case PlotDef():
+                    # Plots themselves don't need a namespace check for
+                    # now. But we could add duplicate plot detection if needed.
+                    pass
 
     def _declare(
         self,
@@ -286,10 +287,11 @@ class Validator:
         Args:
             stmt: A DoStmt or SignalStmt.
         """
-        if isinstance(stmt, DoStmt):
-            self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
-        elif isinstance(stmt, SignalStmt):
-            self._check_event_ref(stmt.event, stmt.loc)
+        match stmt:
+            case DoStmt():
+                self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
+            case SignalStmt():
+                self._check_event_ref(stmt.event, stmt.loc)
 
     # == Phase 2b: validate Plots ==============================================
 
@@ -372,36 +374,38 @@ class Validator:
         # phase change and such statements would be ambiguous.
         for on_enter in block.on_enters:
             for stmt in on_enter.stmts:
-                if isinstance(stmt, InlineTransitionStmt):
-                    self._error(
-                        stmt.loc,
-                        "TRANSITION TO cannot appear inside ON ENTER.",
-                        hint="Move the transition to a WHEN block.",
-                    )
-                elif isinstance(stmt, PlotEndStmt):
-                    self._error(
-                        stmt.loc,
-                        "END PLOT cannot appear inside ON ENTER.",
-                        hint="Move END PLOT to a WHEN block.",
-                    )
-                else:
-                    self._validate_imperative_stmt(stmt, scope)
+                match stmt:
+                    case InlineTransitionStmt():
+                        self._error(
+                            stmt.loc,
+                            "TRANSITION TO cannot appear inside ON ENTER.",
+                            hint="Move the transition to a WHEN block.",
+                        )
+                    case PlotEndStmt():
+                        self._error(
+                            stmt.loc,
+                            "END PLOT cannot appear inside ON ENTER.",
+                            hint="Move END PLOT to a WHEN block.",
+                        )
+                    case _:
+                        self._validate_imperative_stmt(stmt, scope)
         for on_exit in block.on_exits:
             for stmt in on_exit.stmts:
-                if isinstance(stmt, InlineTransitionStmt):
-                    self._error(
-                        stmt.loc,
-                        "TRANSITION TO cannot appear inside ON EXIT.",
-                        hint="Move the transition to a WHEN block.",
-                    )
-                elif isinstance(stmt, PlotEndStmt):
-                    self._error(
-                        stmt.loc,
-                        "END PLOT cannot appear inside ON EXIT.",
-                        hint="Move END PLOT to a WHEN block.",
-                    )
-                else:
-                    self._validate_imperative_stmt(stmt, scope)
+                match stmt:
+                    case InlineTransitionStmt():
+                        self._error(
+                            stmt.loc,
+                            "TRANSITION TO cannot appear inside ON EXIT.",
+                            hint="Move the transition to a WHEN block.",
+                        )
+                    case PlotEndStmt():
+                        self._error(
+                            stmt.loc,
+                            "END PLOT cannot appear inside ON EXIT.",
+                            hint="Move END PLOT to a WHEN block.",
+                        )
+                    case _:
+                        self._validate_imperative_stmt(stmt, scope)
 
         # Validate WHEN blocks
         for when in block.when_blocks:
@@ -409,9 +413,9 @@ class Validator:
 
     def _validate_plot_when_block(
         self,
-        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock],
+        when: PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock,
         scope: "_PlotScope",
-        phase_name: Optional[str] = None,
+        phase_name: str | None = None,
     ) -> None:
         """Validate a Plot WHEN block or WHEN SUBPLOT ENDS block.
 
@@ -425,25 +429,26 @@ class Validator:
             phase_name: The phase this WHEN block lives in, or None
                         for DURING PLOT blocks.
         """
-        if isinstance(when, PlotWhenBlock):
-            self._check_event_ref(when.event, when.loc)
-        elif isinstance(when, PlotWhenRoleSignalsBlock):
-            self._check_event_ref(when.event, when.loc)
-            if when.role_name not in scope.roles:
-                self._error(
-                    when.loc,
-                    f"WHEN ROLE ... SIGNALS ... references undeclared role: "
-                    f"'{when.role_name}'.",
-                    hint=f"Add a 'ROLE {when.role_name}.' declaration to plot '{scope.plot_name}'.",
-                )
-        else:
-            if when.subplot_name not in self._plot_roles:
-                self._error(
-                    when.loc,
-                    f"WHEN SUBPLOT ENDS references undeclared plot: "
-                    f"'{when.subplot_name}'.",
-                    hint=f"Add a 'PLOT {when.subplot_name}. ...' definition.",
-                )
+        match when:
+            case PlotWhenBlock():
+                self._check_event_ref(when.event, when.loc)
+            case PlotWhenRoleSignalsBlock():
+                self._check_event_ref(when.event, when.loc)
+                if when.role_name not in scope.roles:
+                    self._error(
+                        when.loc,
+                        f"WHEN ROLE ... SIGNALS ... references undeclared role: "
+                        f"'{when.role_name}'.",
+                        hint=f"Add a 'ROLE {when.role_name}.' declaration to plot '{scope.plot_name}'.",
+                    )
+            case _:
+                if when.subplot_name not in self._plot_roles:
+                    self._error(
+                        when.loc,
+                        f"WHEN SUBPLOT ENDS references undeclared plot: "
+                        f"'{when.subplot_name}'.",
+                        hint=f"Add a 'PLOT {when.subplot_name}. ...' definition.",
+                    )
 
         # Validate prefix stmts and check position rules
         self._check_terminal_stmts(
@@ -478,29 +483,24 @@ class Validator:
             stmt:  The statement to validate.
             scope: The per-plot scope for role lookups.
         """
-        if isinstance(stmt, AssignStmt):
-            self._check_playbook_ref(stmt.playbook, stmt.loc)
-            self._check_role_ref(stmt.role, stmt.loc, scope)
-
-        elif isinstance(stmt, UnassignStmt):
-            self._check_playbook_ref(stmt.playbook, stmt.loc)
-            self._check_role_ref(stmt.role, stmt.loc, scope)
-
-        elif isinstance(stmt, WorldDoStmt):
-            self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
-
-        elif isinstance(stmt, RoleDoStmt):
-            self._check_role_ref(stmt.role, stmt.loc, scope)
-            self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
-
-        elif isinstance(stmt, InlineTransitionStmt):
-            self._check_inline_transition(stmt, scope)
-
-        elif isinstance(stmt, StartSubplotStmt):
-            self._check_start_subplot(stmt, scope)
-
-        # PlotEndStmt has no references to validate; placement is
-        # checked by _check_terminal_stmts.
+        match stmt:
+            case AssignStmt():
+                self._check_playbook_ref(stmt.playbook, stmt.loc)
+                self._check_role_ref(stmt.role, stmt.loc, scope)
+            case UnassignStmt():
+                self._check_playbook_ref(stmt.playbook, stmt.loc)
+                self._check_role_ref(stmt.role, stmt.loc, scope)
+            case WorldDoStmt():
+                self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
+            case RoleDoStmt():
+                self._check_role_ref(stmt.role, stmt.loc, scope)
+                self._check_action_ref(stmt.action, stmt.args, stmt.is_special, stmt.loc)
+            case InlineTransitionStmt():
+                self._check_inline_transition(stmt, scope)
+            case StartSubplotStmt():
+                self._check_start_subplot(stmt, scope)
+            case PlotEndStmt():
+                pass  # No references to validate; placement is checked by _check_terminal_stmts
 
     # == Condition validation ===================================================
 
@@ -512,19 +512,14 @@ class Validator:
         Args:
             cond: The condition expression to validate.
         """
-        if isinstance(cond, FactRef):
-            self._check_fact_ref(cond.name, cond.args, cond.loc)
-
-        elif isinstance(cond, ConditionNot):
-            self._validate_condition(cond.operand)
-
-        elif isinstance(cond, ConditionAnd):
-            for operand in cond.operands:
-                self._validate_condition(operand)
-
-        elif isinstance(cond, ConditionOr):
-            for operand in cond.operands:
-                self._validate_condition(operand)
+        match cond:
+            case FactRef():
+                self._check_fact_ref(cond.name, cond.args, cond.loc)
+            case ConditionNot():
+                self._validate_condition(cond.operand)
+            case ConditionAnd() | ConditionOr():
+                for op in cond.operands:
+                    self._validate_condition(op)
 
     # == Reference checkers ====================================================
     # Each checker verifies that a referenced name exists in the
@@ -599,8 +594,7 @@ class Validator:
         """Validate an inline TRANSITION TO statement.
 
         Checks that the target phase is declared in the current plot.
-        Position checking (must be last in list) is done by
-        _check_stmt_list_for_inline_transition before this method is
+        _check_terminal_stmts before this method is
         called.
 
         Args:
@@ -621,7 +615,7 @@ class Validator:
     def _check_terminal_stmts(
         self,
         stmts: List,
-        phase_name: Optional[str],
+        phase_name: str | None,
         context: str,
     ) -> None:
         """Enforce placement rules for terminal statements in a body list.
@@ -635,8 +629,6 @@ class Validator:
                DURING blocks (not in DURING PLOT).
             2. Both terminal statement types must be the last statement
                in the list. Any statement following one is an error.
-
-        This method replaces the older _check_stmt_list_for_inline_transition.
 
         Args:
             stmts:      The list of imperative statements to check.
@@ -671,10 +663,6 @@ class Validator:
                     hint="This statement type must be the last in a body "
                          "or branch.",
                 )
-
-    # Keep old name as alias for compatibility during transition
-    _check_stmt_list_for_inline_transition = _check_terminal_stmts
-
     # ==========================================================================
 
     def _check_action_ref(

@@ -19,7 +19,7 @@ compiler pipeline or CLI is responsible for writing them.
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Set, Tuple
 
 from regia.ast_nodes import (
     # Constants
@@ -171,7 +171,7 @@ class Emitter:
         self,
         stmts: list,
         plot_name: str,
-        phase_name: Optional[str],
+        phase_name: str | None,
     ) -> None:
         """Scan imperative statements for ASSIGN and Role DO.
 
@@ -181,35 +181,36 @@ class Emitter:
             phase_name: Name of the containing phase (None for PLOT-wide).
         """
         for stmt in stmts:
-            if isinstance(stmt, AssignStmt):
-                # Global tracking
-                self._role_playbooks.setdefault(stmt.role, set())
-                self._role_playbooks[stmt.role].add(stmt.playbook)
-                # Per-plot tracking
-                if plot_name in self._plot_role_playbooks:
-                    self._plot_role_playbooks[plot_name].setdefault(
-                        stmt.role, set(),
+            match stmt:
+                case AssignStmt():
+                    # Global tracking
+                    self._role_playbooks.setdefault(stmt.role, set())
+                    self._role_playbooks[stmt.role].add(stmt.playbook)
+                    # Per-plot tracking
+                    if plot_name in self._plot_role_playbooks:
+                        self._plot_role_playbooks[plot_name].setdefault(
+                            stmt.role, set(),
+                        )
+                        self._plot_role_playbooks[plot_name][stmt.role].add(
+                            stmt.playbook,
+                        )
+                case RoleDoStmt():
+                    if stmt.role not in self._role_directives:
+                        self._role_directives[stmt.role] = []
+                    self._role_directives[stmt.role].append(
+                        _RoleDirective(plot_name, phase_name, stmt)
                     )
-                    self._plot_role_playbooks[plot_name][stmt.role].add(
-                        stmt.playbook,
-                    )
-            elif isinstance(stmt, RoleDoStmt):
-                if stmt.role not in self._role_directives:
-                    self._role_directives[stmt.role] = []
-                self._role_directives[stmt.role].append(
-                    _RoleDirective(plot_name, phase_name, stmt)
-                )
-            elif isinstance(stmt, StartSubplotStmt):
-                for mapping in stmt.mappings:
-                    self._role_mappings.append(
-                        (plot_name, mapping.source_role, stmt.plot_name, mapping.target_role)
-                    )
+                case StartSubplotStmt():
+                    for mapping in stmt.mappings:
+                        self._role_mappings.append(
+                            (plot_name, mapping.source_role, stmt.plot_name, mapping.target_role)
+                        )
 
     def _prescan_when(
         self,
-        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock],
+        when: PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock,
         plot_name: str,
-        phase_name: Optional[str],
+        phase_name: str | None,
     ) -> None:
         """Scan a Plot WHEN block for ASSIGN and Role DO statements.
 
@@ -477,9 +478,9 @@ class Emitter:
 
     def _emit_when_as_director(
         self,
-        when: Union[PlotWhenBlock, PlotWhenSubplotEndsBlock],
-        phase_context: Optional[str],
-        source_phase: Optional[str],
+        when: PlotWhenBlock | PlotWhenSubplotEndsBlock,
+        phase_context: str | None,
+        source_phase: str | None,
         plot: PlotDef,
         lines: List[str],
     ) -> None:
@@ -571,8 +572,8 @@ class Emitter:
     def _emit_when_role_signals(
         self,
         when: PlotWhenRoleSignalsBlock,
-        phase_context: Optional[str],
-        source_phase: Optional[str],
+        phase_context: str | None,
+        source_phase: str | None,
         plot: PlotDef,
         lines: List[str],
     ) -> None:
@@ -605,7 +606,7 @@ class Emitter:
                 result.append(self._emit_imperative_stmt(s))
             return result
 
-        def _build_context(extra_condition: Optional[str] = None) -> List[str]:
+        def _build_context(extra_condition: str | None = None) -> List[str]:
             parts: List[str] = []
             if phase_context:
                 parts.append(phase_context)
@@ -1183,7 +1184,7 @@ class Emitter:
         context_parts: List[str],
         body_stmts: List[str],
         priority: int = 0,
-        temper: Optional[TemperSpec] = None,
+        temper: TemperSpec | None = None,
     ) -> None:
         """Write a complete AgentSpeak plan to the output.
 
@@ -1250,7 +1251,7 @@ class _RoleDirective:
     def __init__(
         self,
         plot_name: str,
-        phase_name: Optional[str],
+        phase_name: str | None,
         stmt: RoleDoStmt,
     ) -> None:
         """Initialise a role directive.
@@ -1261,5 +1262,5 @@ class _RoleDirective:
             stmt:       The RoleDoStmt.
         """
         self.plot_name: str = plot_name
-        self.phase_name: Optional[str] = phase_name
+        self.phase_name: str | None = phase_name
         self.stmt: RoleDoStmt = stmt

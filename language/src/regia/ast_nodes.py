@@ -36,7 +36,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List
 
 
 # == Constants =================================================================
@@ -133,7 +133,7 @@ class Arg:
         loc:       Source location.
     """
 
-    value:     Union[str, int]
+    value:     str | int
     is_string: bool = False
     loc:       SourceLoc = _NO_LOC
 
@@ -155,7 +155,7 @@ class ActionDecl:
 
     name:   str
     params: List[str]           = field(default_factory=list)
-    alias:  Optional[str]       = None
+    alias:  str | None       = None
     loc:    SourceLoc           = _NO_LOC
     docs:   List[DocAnnotation] = field(default_factory=list)
 
@@ -265,7 +265,7 @@ class ConditionOr:
 # Union type for any condition expression.
 # Used in IF guards, TRANSITION guards, and recursively inside
 # ConditionNot, ConditionAnd, ConditionOr.
-ConditionExpr = Union[ConditionOr, ConditionAnd, ConditionNot, FactRef]
+ConditionExpr = ConditionOr | ConditionAnd | ConditionNot | FactRef
 
 
 # == Playbook Statements =======================================================
@@ -311,7 +311,7 @@ class SignalStmt:
 
 
 # Type alias for statements valid inside a PLAYBOOK WHEN block.
-PbStmt = Union[DoStmt, SignalStmt]
+PbStmt = DoStmt | SignalStmt
 
 
 # == Playbook Branching ========================================================
@@ -397,12 +397,13 @@ class PbWhenBlock:
     """
 
     event:        str
-    priority:     Optional[int]               = None
-    temper:       Optional[TemperSpec]        = None
+    priority:     int | None               = None
+    temper:       TemperSpec | None        = None
     prefix_stmts: List[PbStmt]                = field(default_factory=list)
     branches:     List[PbIfBranch]            = field(default_factory=list)
-    else_branch:  Optional[PbElseBranch]      = None
+    else_branch:  PbElseBranch | None      = None
     loc:          SourceLoc                   = _NO_LOC
+    docs:         List[DocAnnotation]         = field(default_factory=list)
 
 
 @dataclass
@@ -585,10 +586,7 @@ class PlotEndStmt:
 # InlineTransitionStmt and PlotEndStmt must be the last statement
 # in their block; StartSubplotStmt is unrestricted.
 # PlotEndStmt is forbidden in ON ENTER / ON EXIT (validator enforces this).
-ImperativeStmt = Union[
-    AssignStmt, UnassignStmt, WorldDoStmt, RoleDoStmt,
-    InlineTransitionStmt, StartSubplotStmt, PlotEndStmt
-]
+ImperativeStmt = AssignStmt | UnassignStmt | WorldDoStmt | RoleDoStmt | InlineTransitionStmt | StartSubplotStmt | PlotEndStmt
 
 
 # == Plot Branching ============================================================
@@ -656,8 +654,22 @@ class OnExit:
     loc:   SourceLoc = _NO_LOC
 
 
-@dataclass
-class PlotWhenBlock:
+@dataclass(kw_only=True)
+class BasePlotWhenBlock:
+    """Base class for director-centric reactive plans inside a Plot.
+    
+    Holds all the common body fields. Subclasses define the specific triggers.
+    """
+    priority:     int | None                = None
+    prefix_stmts: List[ImperativeStmt]         = field(default_factory=list)
+    branches:     List[PlotIfBranch]           = field(default_factory=list)
+    else_branch:  PlotElseBranch | None     = None
+    loc:          SourceLoc                    = _NO_LOC
+    docs:         List[DocAnnotation]          = field(default_factory=list)
+
+
+@dataclass(kw_only=True)
+class PlotWhenBlock(BasePlotWhenBlock):
     """A director-centric reactive plan inside a Plot.
 
     Same structure as PbWhenBlock but uses imperative statements
@@ -673,16 +685,11 @@ class PlotWhenBlock:
         loc:          Source location of the WHEN keyword.
     """
 
-    event:        str
-    priority:     Optional[int]                = None
-    prefix_stmts: List[ImperativeStmt]         = field(default_factory=list)
-    branches:     List[PlotIfBranch]            = field(default_factory=list)
-    else_branch:  Optional[PlotElseBranch]      = None
-    loc:          SourceLoc                     = _NO_LOC
+    event: str
 
 
-@dataclass
-class PlotWhenSubplotEndsBlock:
+@dataclass(kw_only=True)
+class PlotWhenSubplotEndsBlock(BasePlotWhenBlock):
     """A director-centric reactive plan for when a subplot ends.
 
     Attributes:
@@ -695,15 +702,10 @@ class PlotWhenSubplotEndsBlock:
     """
 
     subplot_name: str
-    priority:     Optional[int]                = None
-    prefix_stmts: List[ImperativeStmt]         = field(default_factory=list)
-    branches:     List[PlotIfBranch]            = field(default_factory=list)
-    else_branch:  Optional[PlotElseBranch]      = None
-    loc:          SourceLoc                     = _NO_LOC
 
 
-@dataclass
-class PlotWhenRoleSignalsBlock:
+@dataclass(kw_only=True)
+class PlotWhenRoleSignalsBlock(BasePlotWhenBlock):
     """A director plan triggered when a specific Role's agent signals an event.
 
     Syntax: WHEN ROLE Hero SIGNALS retreat PRIORITY n: body
@@ -723,13 +725,8 @@ class PlotWhenRoleSignalsBlock:
         loc:          Source location of the WHEN keyword.
     """
 
-    role_name:    str
-    event:        str
-    priority:     Optional[int]                = None
-    prefix_stmts: List[ImperativeStmt]         = field(default_factory=list)
-    branches:     List[PlotIfBranch]            = field(default_factory=list)
-    else_branch:  Optional[PlotElseBranch]      = None
-    loc:          SourceLoc                     = _NO_LOC
+    role_name: str
+    event:     str
 
 
 # == During Blocks =============================================================
@@ -758,10 +755,10 @@ class DuringBlock:
         loc:         Source location of the DURING keyword.
     """
 
-    phase_name:  Optional[str]
+    phase_name:  str | None
     on_enters:   List[OnEnter]           = field(default_factory=list)
     on_exits:    List[OnExit]            = field(default_factory=list)
-    when_blocks: List[Union[PlotWhenBlock, PlotWhenSubplotEndsBlock, PlotWhenRoleSignalsBlock]] = field(default_factory=list)
+    when_blocks: List[PlotWhenBlock | PlotWhenSubplotEndsBlock | PlotWhenRoleSignalsBlock] = field(default_factory=list)
     loc:         SourceLoc               = _NO_LOC
 
 
@@ -778,8 +775,9 @@ class PhaseDecl:
     """
 
     name:       str
-    is_initial: bool      = False
-    loc:        SourceLoc = _NO_LOC
+    is_initial: bool                = False
+    loc:        SourceLoc           = _NO_LOC
+    docs:       List[DocAnnotation] = field(default_factory=list)
 
 
 @dataclass
@@ -796,7 +794,8 @@ class RoleDecl:
     """
 
     name: str
-    loc:  SourceLoc = _NO_LOC
+    loc:  SourceLoc           = _NO_LOC
+    docs: List[DocAnnotation] = field(default_factory=list)
 
 
 @dataclass
@@ -827,7 +826,7 @@ class PlotDef:
 # == Root ======================================================================
 
 # Type alias for any top-level item in a program.
-TopLevelItem = Union[ImportDecl, ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef]
+TopLevelItem = ImportDecl | ActionDecl | EventDecl | FactDecl | PlaybookDef | PlotDef
 
 
 @dataclass

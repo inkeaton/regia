@@ -14,7 +14,7 @@ import pytest
 
 from pathlib import Path
 
-from regia.compiler import compile_source, compile_files, CompileResult
+from regia.compiler import compile_source, compile_file, CompileResult
 
 
 def _compile(source: str) -> CompileResult:
@@ -862,6 +862,7 @@ class TestMultiFile:
 
         main_file = tmp_path / "main.regia"
         main_file.write_text("""
+            IMPORT "base.regia".
             PLAYBOOK P:
                 WHEN hello:
                     DO greet.
@@ -873,7 +874,7 @@ class TestMultiFile:
                         ASSIGN P TO NPC.
         """)
 
-        result = compile_files([base_file, main_file])
+        result = compile_file(main_file)
         assert result.success
         assert "playbook_p.asl" in result.outputs
         assert "director_q.asl" in result.outputs
@@ -900,6 +901,8 @@ class TestMultiFile:
 
         plot = tmp_path / "plot.regia"
         plot.write_text("""
+            IMPORT "decls.regia".
+            IMPORT "playbook.regia".
             PLOT Battle.
                 PHASE idle INITIAL.
                 PHASE fighting.
@@ -913,8 +916,8 @@ class TestMultiFile:
                     WHEN safe:
                         TRANSITION TO idle.
         """)
-
-        result = compile_files([decls, playbook, plot])
+    
+        result = compile_file(plot)
         assert result.success
         assert "playbook_combat.asl" in result.outputs
         assert "director_battle.asl" in result.outputs
@@ -929,6 +932,7 @@ class TestMultiFile:
 
         main_file = tmp_path / "main.regia"
         main_file.write_text("""
+            IMPORT "base.regia".
             PLAYBOOK P:
                 WHEN hello:
                     DO missing_action.
@@ -939,8 +943,8 @@ class TestMultiFile:
                     ON ENTER:
                         ASSIGN P TO NPC.
         """)
-
-        result = compile_files([base_file, main_file])
+    
+        result = compile_file(main_file)
         assert not result.success
         # Error should reference the file where the issue is
         error_msgs = [m for m in result.messages if m.severity.name == "ERROR"]
@@ -958,11 +962,12 @@ class TestMultiFile:
 
         file_b = tmp_path / "b.regia"
         file_b.write_text("""
+            IMPORT "a.regia".
             ACTION greet.
         """)
-
-
-        result = compile_files([file_a, file_b])
+    
+    
+        result = compile_file(file_b)
         assert not result.success
         error_msgs = [m for m in result.messages if m.severity.name == "ERROR"]
         assert any("greet" in m.message for m in error_msgs)

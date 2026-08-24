@@ -52,7 +52,7 @@ class ASTEncoder(json.JSONEncoder):
 @app.post("/parse")
 def parse_code(payload: CodePayload):
     print("--- NEW PARSE REQUEST ---")
-    result = compile_source(payload.source_code)
+    result = compile_source(payload.source_code, emit=False)
     
     if not result.success:
         print(f"Compilation Failed with {len(result.messages)} errors.")
