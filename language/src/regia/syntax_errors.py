@@ -81,6 +81,16 @@ def report_syntax_error(
         line     = error.line or 0
         column   = error.column or 0
         length   = len(text) if text != "$END" else 1
+
+        if text == "IMPORT":
+            reporter.error(
+                line, column - 1, length,
+                "Unexpected 'IMPORT' statement found here.",
+                "IMPORT statements must appear at the top of the file, before any declarations (ACTION, PLAYBOOK, PLOT, etc.).",
+                filename=filename,
+            )
+            return
+
         expected = _friendly_expected(error.expected)
 
         # Lark columns are 1-based; we store 0-based

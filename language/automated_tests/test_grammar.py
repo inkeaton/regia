@@ -594,3 +594,21 @@ class TestSyntaxErrors:
         """An unclosed parenthesis in an argument list should error."""
         with pytest.raises((UnexpectedToken, UnexpectedCharacters)):
             parse("ACTION give(item.")
+
+    def test_import_not_at_top(self) -> None:
+        """An IMPORT statement not at the top of the file should error."""
+        with pytest.raises((UnexpectedToken, UnexpectedCharacters)):
+            parse("""
+                ACTION run.
+                IMPORT "other_file.regia".
+            """)
+
+    def test_else_without_if(self) -> None:
+        """An ELSE branch without an IF branch should error."""
+        with pytest.raises((UnexpectedToken, UnexpectedCharacters)):
+            parse("""
+                PLAYBOOK P:
+                    WHEN e:
+                        ELSE:
+                            DO a.
+            """)

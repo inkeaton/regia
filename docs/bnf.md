@@ -19,7 +19,7 @@ The grammar uses the following conventions:
 
 A Regia file is a flat sequence of **import declarations** followed by **element declarations**, **Playbook definitions**, and **Plot definitions**, in any order. However, the compiler enforces that all `IMPORT` statements come before any other top-level item.
 ```
-<program>        ::= (<import-stmt> | <item>)+
+<program>        ::= <import-stmt>+ <item>* | <item>+
 
 <import-stmt>    ::= 'IMPORT' STRING '.'
 
@@ -110,10 +110,11 @@ The body supports three patterns:
 3. **Mixed (prefix + conditional)**: unconditional statements prepended to every branch's body at emission time.
 
 ```
-<pb-when-body>      ::= <pb-body-item>+ <pb-else-branch>?
+<pb-when-body>      ::= <pb-prefix-stmts>
+                      | <pb-prefix-stmts> <pb-if-branch>+ <pb-else-branch>?
+                      | <pb-if-branch>+ <pb-else-branch>?
 
-<pb-body-item>      ::= <pb-stmt>
-                      | <pb-if-branch>
+<pb-prefix-stmts>   ::= <pb-stmt>+
 
 <pb-stmt>           ::= <do-stmt>
                       | <signal-stmt>
@@ -265,10 +266,11 @@ WHEN ROLE Hero SIGNALS warning PRIORITY 5:
 All three WHEN block forms share the same body grammar:
 
 ```
-<plot-when-body>    ::= <plot-body-item>+ <plot-else-branch>?
+<plot-when-body>    ::= <plot-prefix-stmts>
+                      | <plot-prefix-stmts> <plot-if-branch>+ <plot-else-branch>?
+                      | <plot-if-branch>+ <plot-else-branch>?
 
-<plot-body-item>    ::= <imperative-stmt>
-                      | <plot-if-branch>
+<plot-prefix-stmts> ::= <imperative-stmt>+
 
 <plot-if-branch>    ::= 'IF' <condition> ':' <imperative-stmt>+
 <plot-else-branch>  ::= 'ELSE' ':' <imperative-stmt>+
@@ -380,7 +382,8 @@ STRING  ::= "[^"]*"
 ## 9. Quick Reference Summary
 
 ```
-<program>  ::= (<import-stmt> | <element-decl> | <playbook-def> | <plot-def>)+
+<program>  ::= <import-stmt>+ (<element-decl> | <playbook-def> | <plot-def>)*
+           | (<element-decl> | <playbook-def> | <plot-def>)+
 
 <import-stmt>    ::= 'IMPORT' STRING '.'
 <action-decl>    ::= 'ACTION' ID <param-names>? ('AS' ID)? '.'
@@ -389,7 +392,9 @@ STRING  ::= "[^"]*"
 
 <playbook-def>   ::= 'PLAYBOOK' ID ':' <pb-when-block>+
 <pb-when-block>  ::= 'WHEN' ID ('PRIORITY' NUMBER)? ('TEMPER' ...)? ':' <pb-when-body>
-<pb-when-body>   ::= (<do-stmt> | <signal-stmt> | <pb-if-branch>)+ <pb-else-branch>?
+<pb-when-body>   ::= (<do-stmt> | <signal-stmt>)+
+                   | (<do-stmt> | <signal-stmt>)+ <pb-if-branch>+ <pb-else-branch>?
+                   | <pb-if-branch>+ <pb-else-branch>?
 <pb-if-branch>   ::= 'IF' <condition> ':' (<do-stmt> | <signal-stmt>)+
 <pb-else-branch> ::= 'ELSE' ':'       (<do-stmt> | <signal-stmt>)+
 <do-stmt>        ::= 'DO' <action-name> <arg-list>? '.'
@@ -409,7 +414,9 @@ STRING  ::= "[^"]*"
 <plot-when-block>                ::= 'WHEN' ID ('PRIORITY' NUMBER)? ':' <plot-when-body>
 <plot-when-subplot-ends-block>   ::= 'WHEN' 'SUBPLOT' ID 'ENDS' ('PRIORITY' NUMBER)? ':' <plot-when-body>
 <plot-when-role-signals-block>   ::= 'WHEN' 'ROLE' ID 'SIGNALS' ID ('PRIORITY' NUMBER)? ':' <plot-when-body>
-<plot-when-body>                 ::= (<imperative-stmt> | <plot-if-branch>)+ <plot-else-branch>?
+<plot-when-body>                 ::= <imperative-stmt>+
+                                   | <imperative-stmt>+ <plot-if-branch>+ <plot-else-branch>?
+                                   | <plot-if-branch>+ <plot-else-branch>?
 <plot-if-branch>                 ::= 'IF' <condition> ':' <imperative-stmt>+
 <plot-else-branch>               ::= 'ELSE' ':' <imperative-stmt>+
 

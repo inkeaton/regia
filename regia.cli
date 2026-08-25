@@ -1,0 +1,2 @@
+ACTION greet.
+IMPORT \"foo.regia\". compile bad_file.regia

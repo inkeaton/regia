@@ -17,6 +17,7 @@ FACT alert_level(value).
 #@desc: Reactive behaviour for the Thief while executing the heist.
 PLAYBOOK ThiefSneaking:
     WHEN spotted PRIORITY 8:
+        # DO PRINT("Thief noticed!").
         IF hidden:
             DO sneak.
         IF NOT hidden OR alert_level(low):

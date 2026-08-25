@@ -1,0 +1,173 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+Vulkan 1.4.303 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce GTX 1650 with Max-Q Design
+
+Dialogue database loaded successfully. Found 8 nodes.
+[MESSAGE] - from NetworkManager: Listening on port 9200
+[MESSAGE] - from NetworkManager: Listening on port 9001
+[MESSAGE] - from NetworkManager: Listening on port 9002
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "node": "test_features"
+    },
+    "type": "set_dialogue"
+}
+sci received new dialogue node: test_features
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "node": "cop_idle"
+    },
+    "type": "set_dialogue"
+}
+cop received new dialogue node: cop_idle
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "node": "test_features"
+    },
+    "type": "set_dialogue"
+}
+sci received new dialogue node: test_features
+Raycast hit: sci
+VEsNA SIMULATION -> Sent event to Jason: test_spawn from sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "test_spawn"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "item": "flower",
+        "waypoint": "garden"
+    },
+    "receiver": "body",
+    "sender": "vesna",
+    "type": "spawn_item"
+}
+GameManager: Spawned flower at garden
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Flower conjured!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Flower conjured!' (Queue size: 1)
+sci is saying: 'Flower conjured!' (3s timer started)
+sci finished speaking.
+Raycast hit: PickupItem
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Hey! You took my flower!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Hey! You took my flower!' (Queue size: 1)
+sci is saying: 'Hey! You took my flower!' (3s timer started)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "node": "scientist_angry"
+    },
+    "type": "set_dialogue"
+}
+sci received new dialogue node: scientist_angry
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_apologize"
+    },
+    "type": "add_dialogue_option"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_bribe"
+    },
+    "type": "add_dialogue_option"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_deny"
+    },
+    "type": "add_dialogue_option"
+}
+sci finished speaking.
+Raycast hit: cop
+VEsNA SIMULATION -> Sent event to Jason: bribe_cop from cop
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "bribe_cop"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Phew. That was close."
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Phew. That was close.' (Queue size: 1)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Hmm. Very well. I didn't see anything."
+    },
+    "type": "utter"
+}
+cop queued utterance: 'Hmm. Very well. I didn't see anything.' (Queue size: 1)
+sci is saying: 'Phew. That was close.' (3s timer started)
+cop is saying: 'Hmm. Very well. I didn't see anything.' (3s timer started)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_deny"
+    },
+    "type": "remove_dialogue_option"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "The subplot has officially concluded!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'The subplot has officially concluded!' (Queue size: 1)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_bribe"
+    },
+    "type": "remove_dialogue_option"
+}
+sci finished speaking.
+cop finished speaking.
+sci is saying: 'The subplot has officially concluded!' (3s timer started)
+sci finished speaking.

@@ -420,14 +420,10 @@ class ASTBuilder(Transformer):
     ) -> Tuple[List, List[PbIfBranch], PbElseBranch | None]:
         """Body of a Playbook WHEN block -> (prefix, branches, else).
 
-        Classifies the flat list of children (produced by ? inlining)
-        into three categories for the parent pb_when_block:
-          1. prefix_stmts:  DoStmt/SignalStmt that appear before branches
-          2. branches:      PbIfBranch objects
-          3. else_branch:   optional PbElseBranch
-
-        The validator (Pass 4) checks that prefix stmts come before
-        branches (no interleaving).
+        Classifies the children into three categories for the parent:
+          1. prefix_stmts:  List of DoStmt/SignalStmt before branches
+          2. branches:      List of PbIfBranch objects
+          3. else_branch:   Optional PbElseBranch
 
         Args:
             children: Flat list of DoStmt, SignalStmt, PbIfBranch,
@@ -442,14 +438,17 @@ class ASTBuilder(Transformer):
 
         for child in children:
             match child:
-                case PbElseBranch():
-                    else_branch = child
+                case list():
+                    prefix_stmts = child
                 case PbIfBranch():
                     branches.append(child)
-                case _:
-                    prefix_stmts.append(child)
+                case PbElseBranch():
+                    else_branch = child
 
         return (prefix_stmts, branches, else_branch)
+
+    def pb_prefix_stmts(self, children: List) -> List:
+        return children
 
     @v_args(meta=True)
     def pb_when_block(self, meta: Any, children: List) -> PbWhenBlock:
@@ -812,14 +811,17 @@ class ASTBuilder(Transformer):
 
         for child in children:
             match child:
-                case PlotElseBranch():
-                    else_branch = child
+                case list():
+                    prefix_stmts = child
                 case PlotIfBranch():
                     branches.append(child)
-                case _:
-                    prefix_stmts.append(child)
+                case PlotElseBranch():
+                    else_branch = child
 
         return (prefix_stmts, branches, else_branch)
+
+    def plot_prefix_stmts(self, children: List) -> List:
+        return children
 
     @v_args(meta=True)
     def plot_when_block(self, meta: Any, children: List) -> PlotWhenBlock:

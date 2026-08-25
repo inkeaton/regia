@@ -50,9 +50,8 @@
 
 ?start: program
 
-// added so linter does not protest
-
-program: (import_stmt | _item)+
+program: import_stmt+ _item*
+       | _item+
 
 _item: element_decl
     | playbook_def
@@ -170,14 +169,11 @@ effects: "EFFECTS" temper_entry ("," temper_entry)*
 
 // every branch's plan body in AgentSpeak.
 
-pb_when_body: pb_body_item+ pb_else_branch?
+pb_when_body: pb_prefix_stmts
+            | pb_prefix_stmts pb_if_branch+ pb_else_branch?
+            | pb_if_branch+ pb_else_branch?
 
-// Inlined: pb_when_body directly contains do_stmt,
-
-// signal_stmt, or pb_if_branch nodes.
-
-?pb_body_item: pb_stmt
-    | pb_if_branch
+pb_prefix_stmts: pb_stmt+
 
 ?pb_stmt: do_stmt
     | signal_stmt
@@ -309,10 +305,11 @@ plot_when_subplot_ends_block: "WHEN" "SUBPLOT" ID "ENDS" priority? ":" plot_when
 
 plot_when_role_signals_block: "WHEN" "ROLE" ID "SIGNALS" ID priority? ":" plot_when_body
 
-plot_when_body: plot_body_item+ plot_else_branch?
+plot_when_body: plot_prefix_stmts
+              | plot_prefix_stmts plot_if_branch+ plot_else_branch?
+              | plot_if_branch+ plot_else_branch?
 
-?plot_body_item: imperative_stmt
-    | plot_if_branch
+plot_prefix_stmts: imperative_stmt+
 
 // IF happy: Singer DO greet.
 

@@ -80,7 +80,7 @@ const MONARCH_LANGUAGE: MonacoType.languages.IMonarchLanguage = {
     ],
     flowKeywords: [
         "DURING", "WHEN", "IF", "ELSE", "ON", "ENTER",
-        "EXIT", "TRANSITION", "ENDS",
+        "EXIT", "TRANSITION", "ENDS", "SIGNALS",
     ],
     actionKeywords: [
         "DO", "ASSIGN", "UNASSIGN", "WORLD", "SIGNAL",
