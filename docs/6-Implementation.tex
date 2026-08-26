@@ -1,0 +1,955 @@
+\chapter{Implementation}
+\label{ch:implementation}
+%Here we should describe and talk about the code base design of teh transpiler and editor. Show all of teh pipeline the tools used, how the two communicate, etc.
+
+In the previous chapter we described Regia from the point of view of an author writing a \lstinline|.regia| file: its syntax, its constructs, and how each one maps onto AgentSpeak. In this chapter we describe the same system from the point of view of the tools which implement it. 
+
+Two artifacts realize Regia in practice: a Python transpiler that turns \lstinline|.regia| source into AgentSpeak, usable from the command line, and a browser-based visual editor which enables graphic visualization of the language constructs. We describe the architecture of each in turn, focusing on why the code is organized the way it is. We avoid restating the syntax-to-AgentSpeak mappings already given in Chapter \ref{ch:design}, except where necessary.
+
+The artifacts here described are not two independent implementations of Regia. The visual editor's backend imports the transpiler as a library and calls its \lstinline|compile_source()| entry point directly. We return to this connection concretely in Section \ref{subsec:backend}.
+
+Table \ref{tab:tech-stack} summarises the technology each artifact is built on.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Artifact} & \textbf{Layer} & \textbf{Technology} \\
+\hline
+\multirow{3}{*}{Transpiler} & Language & Python \\
+                            & Parsing  & Lark (LALR(1)) \\
+                            & CLI      & Click \\
+\hline
+\multirow{5}{*}{Visual Editor} & Backend           & Python, FastAPI, uvicorn \\
+                                & Frontend build    & Vite, TypeScript, React \\
+                                & Code editor       & Monaco Editor \\
+                                & Graph canvas       & React Flow, Dagre (automatic layout) \\
+                                & Frontend state     & Zustand \\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:tech-stack}
+
+Section \ref{sec:transpiler} follows the transpiler's pipeline order, phase by phase, as established in the previous chapter's outline. Throoughout it we continue tracing the \lstinline|RoyalBanquet| running example introduced in the previous chapter. Section \ref{sec:editor} instead follows the editor's own architectural split: the frontend's static structure, the backend server, and then the two directions its data flow can take, source changes propagating to the graph, and graph edits propagating back to source, before closing with its error handling and known limitations.
+
+
+\section{Transpiler}
+\label{sec:transpiler}
+The transpiler is the component that turns a Regia program into one or more AgentSpeak agents. Internally, it is a classic multi-pass compiler: rather than translating source text into target code in a single traversal, it applies a fixed sequence of independent transformations, each consuming the representation the previous one produced and emitting a new, more structured representation of its own. We chose this design over a single-pass translator for three concrete reasons, each of which the following subsections revisit in more depth.
+
+\tbde{Maybe cite something on compiler structures?}
+
+First, a multi-pass design lets each phase stay narrow in scope, which facilitates testing in isolation. The Preprocessor, described in Section \ref{sec:preprocessing}, never needs to know what a Playbook is; the Validator, described in Section \ref{sec:semantic-validation}, never needs to know what an AgentSpeak plan looks like. Second, it lets the pipeline fail fast and precisely, stopping at the first phase that produces an error rather than allowing a malformed input to propagate into later phases that assume well-formed input, an architectural choice we return to below. Third, and most consequentially for the chapter as a whole, structuring the transpiler as a sequence of plain functions, rather than as one monolithic procedure invoked only from the command line, is precisely what allows the visual editor described in Section \ref{sec:editor} to reuse the transpiler as a library: its backend server calls the same entry point the CLI calls, and stops it partway through, rather than reimplementing any part of parsing or validation on its own.
+
+We trace a single fragment of our running example, the \lstinline|food_served| plan from \lstinline|NobleSocializing| (Section \ref{sec:playbooks}), through every phase of this pipeline, so that each subsection below can be read both as a description of one phase in isolation and as one step of a single, continuous example.
+
+\subsection{Pipeline Overview}
+\label{sec:pipeline-overview}
+The transpiler runs six sequential phases: Preprocessing, Parsing, AST Construction, Comment Attachment, Semantic Validation, and Emission. Table \ref{tab:pipeline-phases} lists each phase together with the module that implements it and the data type it produces; Figure \ref{fig:pipeline-overview} shows the same information as a linear pipeline diagram.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Phase} & \textbf{Module} & \textbf{Produces} \\
+\hline
+0. Preprocess & \lstinline|preprocessor.py| & \lstinline|SourceAnnotations| \\
+1. Parse      & \lstinline|parser.py|       & \lstinline|lark.Tree| \\
+2. Build AST  & \lstinline|ast_builder.py| & \lstinline|Program| \\
+3. Annotate   & \lstinline|compiler.py| (internal) & \lstinline|Program|, with doc comments attached \\
+4. Validate   & \lstinline|validator.py|    & \lstinline|Program|, validated, or failure \\
+5. Emit       & \lstinline|emitter.py|      & \lstinline|Dict[str, str]| \\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:pipeline-phases}
+
+% TBD: replace this ASCII with a pipeline figure.
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{schema.png}
+    \begin{codeblock}[]{}
+      .regia source (str)
+            |
+      [Preprocess]  ->  SourceAnnotations (clean_source, doc_comments, import_paths)
+            |
+      [Parse]       ->  lark.Tree (concrete syntax tree)
+            |
+      [Build AST]   ->  Program (typed AST)
+            |
+      [Annotate]    ->  Program (with doc comments attached)
+            |
+      [Validate]    ->  Program (validated) or failure
+            |
+      [Emit]        ->  Dict[str, str] (filename -> AgentSpeak source)
+    \end{codeblock}
+    \caption{The six-phase transpiler pipeline and the data type produced by each phase.}
+    \label{fig:pipeline-overview}
+\end{figure}
+
+Briefly, each phase's role is as follows. Preprocessing scans the raw source text for two constructs that need capturing before anything else runs, doc comments and import paths, without modifying that text. Parsing hands the unmodified source to Lark, producing a concrete syntax tree shaped by the grammar's own conventions. AST Construction walks that tree bottom-up and rebuilds it as a set of typed, Regia-specific dataclasses, the vocabulary every later phase is written against. Comment Attachment reconnects the doc comments Preprocessing extracted to the AST nodes they precede, matching the two by source position. Semantic Validation walks the finished AST and checks the rules the grammar cannot express on its own, that every reference resolves, that a Plot's structure is well-formed, reporting errors and warnings but never altering the tree. Emission, finally, walks a validated AST one last time and produces the AgentSpeak source text itself, the only phase whose output is not another representation of the Regia program.
+
+Two properties hold across all six phases, and both are best understood once the code that implements them has actually been shown: the pipeline is fail-fast, each phase runs only if the one before it produced no errors, and every public entry point exposes this uniformly through a single shared result type. We return to both points concretely in Section \ref{sec:orchestration}, once \lstinline|compile_source| and \lstinline|compile_file| are on the table.
+
+We now walk through each of the six phases in turn, beginning with Preprocessing.
+
+\subsection{Preprocessing}
+\label{sec:preprocessing}
+Preprocessing is the first phase of the pipeline, and the only one that reads the source file as plain text rather than as a parse tree. The module exposes two functions, each addressing a different scope. \lstinline|preprocess()| scans a single file's text once, extracting whatever a doc comment or an import statement in that file says, without changing the text itself. \lstinline|resolve_imports()| builds on top of it: starting from one entry file, it calls \lstinline|preprocess()| on every file reachable through a chain of imports, to discover the complete set of files a compilation involves before any of them is parsed. We look at each in turn, then discuss why both exist as a separate pass rather than as part of the grammar.
+
+\subsubsection{Doc Comment Extraction}
+A \lstinline|#@key: value| line lets an author attach freeform metadata to whatever declaration follows it, a short description of a Plot, for instance. Because this text has no grammatical role, the grammar's own comment rule, \lstinline|COMMENT: /#[^\n]*/|, discards any line starting with \lstinline|#| outright during lexing, described further in Section \ref{sec:lexing-and-parsing}. \lstinline|preprocess()|'s first job is to rescue that text before it is thrown away, recording it as a \lstinline|DocAnnotation|:
+\begin{codeblock}[]{Py}
+@dataclass
+class DocAnnotation:
+    key:      str
+    value:    str
+    line:     int
+    filename: str = ""
+\end{codeblock}
+Two regular expressions recognise the two lines a doc comment can take:
+\begin{codeblock}[]{Py}
+_DOC_RE      = re.compile(r"^\s*#@([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*(.*?)\s*$")
+_DOC_CONT_RE = re.compile(r"^\s*#-\s*(.*?)\s*$")
+\end{codeblock}
+\lstinline|_DOC_RE| matches the opening \lstinline|#@key: value| line; \lstinline|_DOC_CONT_RE| matches a \lstinline|#-| continuation line, letting a description span several lines without a dedicated multi-line syntax.
+
+\lstinline|preprocess()| walks the source one line at a time, testing each line against these two patterns, in addition to the import pattern described below:
+\begin{codeblock}[]{Py}
+for line_num, raw_line in enumerate(source.splitlines(), start=1):
+    doc_match      = _DOC_RE.match(raw_line)
+    doc_cont_match = _DOC_CONT_RE.match(raw_line)
+    import_match   = _IMPORT_RE.match(raw_line)
+
+    if doc_match:
+        doc_comments.append(DocAnnotation(
+            key      = doc_match.group(1),
+            value    = doc_match.group(2),
+            line     = line_num,
+            filename = filename,
+        ))
+        last_doc_idx = len(doc_comments) - 1
+    elif doc_cont_match:
+        if last_doc_idx is not None:
+            doc_comments[last_doc_idx].value += "\n" + doc_cont_match.group(1)
+    elif import_match:
+        import_paths.append(ImportDirective(path=import_match.group(1), line=line_num))
+        last_doc_idx = None
+    else:
+        if raw_line.strip() != "":
+            last_doc_idx = None
+\end{codeblock}
+A doc comment line appends a new \lstinline|DocAnnotation| and remembers its own position in \lstinline|doc_comments| as \lstinline|last_doc_idx|, so that a following continuation line knows which annotation to extend. A continuation line appends its text to whichever annotation \lstinline|last_doc_idx| currently points at; if none is open, the line is silently dropped, since a continuation with nothing to continue carries no useful content. Any other, non-blank line resets \lstinline|last_doc_idx| to \lstinline|None|, which is a small but necessary safeguard: without it, a stray \lstinline|#-| line appearing after ordinary Regia code, rather than genuinely continuing a doc comment, would silently attach itself to whatever annotation happened to be open earlier in the file.
+
+Our running example carries two such annotations, one on each Plot declaration:
+\begin{codeblock}[]{Regia}
+#@desc: A dummy subplot to satisfy the START SUBPLOT requirement.
+PLOT HonorDuel.
+...
+#@desc: The main narrative flow of the Royal Banquet.
+PLOT RoyalBanquet.
+\end{codeblock}
+Each \lstinline|#@desc:| line matches \lstinline|_DOC_RE|, so \lstinline|preprocess()| records one \lstinline|DocAnnotation| for \lstinline|HonorDuel| and one for \lstinline|RoyalBanquet|. Neither is followed by a \lstinline|#-| line, so \lstinline|last_doc_idx| resets the moment the corresponding \lstinline|PLOT| line is reached. Both annotations exist independently of the AST at this point; they are matched to the nodes they describe later, in Comment Attachment (Section \ref{sec:comment-attachment}), once that AST exists.
+
+\subsubsection{Import Resolution}
+An \lstinline|IMPORT "path".| statement is different in kind from a doc comment: it matches a genuine grammar rule, \lstinline|import_stmt|, and is not discarded during lexing at all. What the grammar cannot do is tell the pipeline, before any file is parsed, which \emph{other} files a program built from several imported modules actually consists of. \lstinline|resolve_imports()| exists to answer exactly that question:
+\begin{codeblock}[]{Py}
+def resolve_imports(entry_file: Path, reporter: ErrorReporter) -> List[Path]:
+\end{codeblock}
+It performs a breadth-first walk of the import graph, starting from \lstinline|entry_file|, using two structures to drive it: a map, \lstinline|imported_from|, from every file discovered so far to the file (and line) that first imported it, which doubles as the "already scheduled" check and as provenance for error messages; and a queue of files still waiting to be examined, seeded with the entry file itself. For each file it pops from the queue, the walk checks that the file exists, calls \lstinline|preprocess()| on it purely to recover that file's own \lstinline|import_paths|, records the file as visited, and then resolves and enqueues every path found in those imports, relative to the importing file's own directory. If a resolved path is already present in \lstinline|imported_from|, the walk has looped back to a file already in its own import chain, and this is reported as a circular import through the shared \lstinline|ErrorReporter|, rather than enqueued a second time; a missing file is reported the same way. Neither failure stops the walk: it continues resolving the rest of the graph regardless, so an author with two unrelated broken imports sees both reported from a single run.
+
+To make this concrete, suppose our running example were split across two files, with the vocabulary block factored into a shared module, as Section \ref{sec:program-definition} suggested a larger project might do:
+\begin{codeblock}[]{Regia}
+% banquet_vocab.regia
+ACTION toast(target).
+ACTION eat_food.
+...
+FACT hates(person).
+
+% royal_banquet.regia
+IMPORT "banquet_vocab.regia".
+
+PLAYBOOK NobleSocializing:
+    ...
+\end{codeblock}
+Calling \lstinline|resolve_imports(royal_banquet.regia, ...)| pops \lstinline|royal_banquet.regia| first, preprocesses it to recover the single import path \lstinline|"banquet_vocab.regia"|, resolves it relative to \lstinline|royal_banquet.regia|'s own directory, and enqueues it. The next iteration pops \lstinline|banquet_vocab.regia|, finds no further imports, and the walk ends, returning \lstinline|[royal_banquet.regia, banquet_vocab.regia]|. This is a hypothetical restructuring for illustration only; the actual \lstinline|long_test.regia| we trace throughout this chapter declares no imports, so \lstinline|resolve_imports()| on it simply returns \lstinline|[long_test.regia]|, and \lstinline|compile_file()| (Section \ref{sec:orchestration}) proceeds identically either way.
+
+\subsubsection{Design Rationale}
+Both halves of this phase exist for the same underlying reason: each captures something the grammar's own handling of the corresponding construct would otherwise make unavailable, and each must do so before that handling takes effect.
+
+For doc comments, the grammar's treatment is a silent discard: \lstinline|%ignore COMMENT| deletes a \lstinline|#@| line exactly as it deletes any other comment, with no hook for retaining what it throws away. If a doc comment's payload is to survive at all, something has to read it before the lexer runs, since nothing downstream of lexing will ever see it again. \lstinline|preprocess()| is that something, and it does its work directly on the raw source text, once, in a single pass, rather than needing to touch the grammar at all.
+
+For imports, the grammar's treatment is not a discard, \lstinline|import_stmt| parses correctly and produces a real \lstinline|ImportDecl| node, but that node only tells a caller what one already-parsed file imports, after the fact. Knowing which files a compilation involves \emph{before} parsing any of them is a different question, one the grammar has no way to answer, since answering it requires following import statements across files the parser has not yet been pointed at. \lstinline|resolve_imports()| answers this question the same way \lstinline|preprocess()| answers the doc-comment question, by scanning text directly rather than waiting for a later phase, and for the same reason: by the time Parsing (Section \ref{sec:lexing-and-parsing}) is ready to run on any file, the full set of files it needs to run on must already be settled.
+
+We now turn to what happens to that unmodified source once Preprocessing has recorded what it needs from it: Parsing.
+
+\subsection{Lexing and Parsing}
+\label{sec:lexing-and-parsing}
+Parsing takes the source text Preprocessing has already scanned, unmodified, and turns it into a concrete syntax tree. It is the only phase that interacts with Lark, a general-purpose parsing library, and that interaction is deliberately small: one module, \lstinline|parser.py|, loads the grammar and exposes a single \lstinline|parse()| function; everything else in this subsection is really about the grammar file itself, \lstinline|regia.lark|, and the conventions it follows to make the tree it produces easy to work with. We look at \lstinline|parser.py| first, then four grammar-authoring conventions used throughout the grammar, then the specific mechanism that gives Regia's conditions their operator precedence, and finally what all of this produces for a concrete fragment of our running example.
+
+\begin{codeblock}[]{Py}
+_GRAMMAR_PATH: Path = Path(__file__).parent / "grammars" / "regia.lark"
+
+_parser: Lark = Lark(
+    _GRAMMAR_PATH.read_text(encoding="utf-8"),
+    parser="lalr",
+    start="program",
+    propagate_positions=True,
+)
+
+def parse(source: str) -> Tree:
+    return _parser.parse(source)
+\end{codeblock}
+The grammar file is read once, at import time, and compiled into an LALR parsing table that every subsequent call to \lstinline|parse()| reuses. Three constructor arguments configure this table. \lstinline|parser="lalr"| selects a deterministic, single-pass parsing strategy with one token of lookahead, discussed further under Design Rationale below. \lstinline|start="program"| tells Lark which grammar rule is the root of a complete file, corresponding to the \lstinline|<program>| rule already introduced in Section \ref{sec:program-definition}. \lstinline|propagate_positions=True| instructs Lark to attach a line and column to every node it builds, not only to leaf tokens; this is the only place in the entire pipeline where position information originates, a point we return to below.
+
+\subsubsection{Grammar-Authoring Conventions}
+The grammar follows four conventions consistently, each aimed at bringing the resulting tree as close as possible to the shape of the final AST, before the AST Builder (Section \ref{sec:ast-construction}) ever sees it.
+
+\textbf{Rule inlining.} A rule prefixed with \lstinline|?| is inlined whenever it matches exactly one alternative: Lark discards the wrapper node and promotes the matched child directly into the parent. The grammar's own \lstinline|element_decl| rule is a direct example:
+\begin{codeblock}[]{BNF}
+?element_decl: action_decl
+    | event_decl
+    | fact_decl
+\end{codeblock}
+Because of the leading \lstinline|?|, a \lstinline|program| node's children are \lstinline|action_decl|, \lstinline|event_decl|, \lstinline|fact_decl|, \lstinline|playbook_def|, and \lstinline|plot_def| nodes directly; no \lstinline|element_decl| wrapper ever appears in the tree that the next phase has to unwrap.
+
+Inlining like this comes in two flavours, worth distinguishing. \lstinline|element_decl| inlines for a \emph{structural} reason: each of its three alternatives always produces exactly one child, by construction, so the wrapper is redundant on every possible input. The condition grammar, described below, inlines for a \emph{data-dependent} reason instead: whether a wrapper collapses depends on what the author actually wrote, not on which grammar alternative matched.
+
+The same technique extends beyond disambiguating a single rule's alternatives to enforcing an ordering constraint across an entire file. The \lstinline|program| rule is written as two alternatives, not one repeated group:
+\begin{codeblock}[]{Py}
+program: import_stmt+ _item* | _item+
+\end{codeblock}
+
+Once the parser has committed to the second alternative, no items at all followed immediately by more items, there is no transition in the resulting LALR table back to \lstinline|import_stmt|; an \lstinline|IMPORT| appearing after the first item simply has nowhere left to go. The rule stated in Section \ref{sec:program-definition}, that imports must appear before any item, is therefore not a check performed after parsing succeeds; it is a direct consequence of which two shapes this one rule admits.
+
+\textbf{Alternative aliasing.} Where a rule has several alternatives that the AST needs to distinguish by kind, rather than by inspecting their contents, the grammar names each alternative explicitly with \lstinline|-> alias|:
+\begin{codeblock}[]{BNF}
+phase_decl: "PHASE" ID "INITIAL" "." -> initial_phase_decl
+    | "PHASE" ID "."
+
+during_block: "DURING" ID ":" during_content+ -> during_phase
+    | "DURING" "PLOT" ":" during_content+ -> during_plot_wide
+\end{codeblock}
+This is what lets the AST Builder dispatch a \lstinline|PHASE ... INITIAL.| declaration to a different method than a plain \lstinline|PHASE ... .| declaration, and a phase-scoped \lstinline|DURING| to a different method than \lstinline|DURING PLOT|, purely from the node's name, without either method needing to re-inspect its children to figure out which case it is handling.
+
+\textbf{Anonymous versus named terminals.} String literals written directly in a rule, such as \lstinline|"WHEN"|, \lstinline|"DO"|, or \lstinline|"ASSIGN"|, become anonymous terminals that Lark filters out of the tree automatically, since the rule's own name already conveys that a \lstinline|WHEN| block or a \lstinline|DO| statement was matched. A small set of keywords is declared differently, as named terminals that remain in the tree as \lstinline|Token| objects:
+\begin{codeblock}[]{BNF}
+TELL: "TELL"
+BROADCAST: "BROADCAST"
+ACHIEVE: "ACHIEVE"
+BELIEVE: "BELIEVE"
+FORGET: "FORGET"
+PRINT: "PRINT"
+WAIT: "WAIT"
+\end{codeblock}
+These are terminals whose values carry semantic meaning and need to appear in the tree. \lstinline|action_name: ID | TELL | BROADCAST | ACHIEVE | BELIEVE | FORGET | PRINT | WAIT| is the concrete case that requires it: the AST Builder must know \emph{which} of these eight alternatives matched, since a \lstinline|TELL| produces a different statement at Emission time than a plain \lstinline|ID|, described in Section \ref{sec:playbooks}, and this can only be known if the matched keyword itself survives as a token.
+
+\textbf{The \lstinline|ID| terminal.} A single regular expression governs every identifier in the language:
+
+\begin{codeblock}[]{BNF}
+ID: /\.?[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*/
+\end{codeblock}
+
+The optional leading dot and the internal dot-separated groups are what let \lstinline|engine.security.summon_guards|, its alias \lstinline|call_guards|, and the special action name \lstinline|.print| all parse as single \lstinline|ID| tokens, exactly as used in Section \ref{sec:vocabulary} and Section \ref{sec:playbooks}, without a separate grammar production for dotted or dot-prefixed names.
+
+\subsubsection{Condition Precedence as Grammar Structure}
+\label{sec:condition-precedence}
+The three-rule chain that governs conditions is worth examining on its own, since it does not merely describe precedence, it enforces it structurally, purely through which rule is allowed to call which:
+
+\begin{codeblock}[]{BNF}
+?condition:       condition_and ("OR" condition_and)*
+?condition_and:   condition_atom ("AND" condition_atom)*
+?condition_atom: "NOT" condition_atom -> condition_not
+               | fact_ref
+               | "(" condition ")" -> condition_group
+\end{codeblock}
+
+Read bottom-up: a \lstinline|condition_atom| is either a negation, a bare Fact reference, or a fully parenthesized condition, nothing else. A \lstinline|condition_and| is one or more \lstinline|condition_atom|s joined by \lstinline|AND|. A \lstinline|condition| is one or more \lstinline|condition_and|s joined by \lstinline|OR|. Crucially, nothing in a \lstinline|condition_and| lets it contain a bare \lstinline|condition| directly, its only building block is \lstinline|condition_atom|, and \lstinline|condition_atom| itself offers no unparenthesized route back to \lstinline|condition| either, only through \lstinline|NOT| recursing on itself, or through explicit parentheses.
+
+\tbde{maybe add a table or snippet that summarises this following prose in a schema}
+
+The consequence is easiest to see by tracing a string with no parentheses at all: \lstinline|a AND b OR c|. \lstinline|condition_and| greedily consumes every \lstinline|AND|-joined run of atoms it can, so it consumes \lstinline|a AND b| as one two-operand \lstinline|condition_and|, having no rule available to stop early and hand \lstinline|b| up to a hypothetical \lstinline|OR| nested inside it, since no such rule exists. Only once that run ends does \lstinline|condition| take over, treating the already-built \lstinline|a AND b| as a single \lstinline|condition_and| operand and joining it with \lstinline|c| via \lstinline|OR|. The string therefore parses as \lstinline|(a AND b) OR c|, and could not parse any other way: there is no grammatically legal derivation that places the \lstinline|OR| inside the \lstinline|AND|, since doing so would require \lstinline|condition_and| to accept a \lstinline|condition| as one of its atoms, which it does not. \lstinline|NOT| binds tightest, then \lstinline|AND|, then \lstinline|OR|, as a direct consequence of this call structure, with no separate precedence table or declaration anywhere in the grammar.
+
+All three rules also carry the \lstinline|?| prefix, for the data-dependent reason distinguished above: whenever the optional \lstinline|("OR" condition_and)*| or \lstinline|("AND" condition_atom)*| part matches zero times, meaning the author wrote no \lstinline|OR| or \lstinline|AND| at that level, Lark collapses the wrapper automatically.
+
+Parsing the \lstinline|food_served| condition from our running example, \lstinline|(is_hungry OR is_drunk) AND NOT hates(host)|, exercises all three rules and the explicit grouping alternative at once. The outer \lstinline|condition_and| rule sees two \lstinline|condition_atom|s joined by \lstinline|AND|: the first is a \lstinline|"(" condition ")"| match, aliased to \lstinline|condition_group|, whose inner \lstinline|condition| is itself \lstinline|is_hungry OR is_drunk|; the second is a \lstinline|"NOT" condition_atom| match, aliased to \lstinline|condition_not|, wrapping the \lstinline|fact_ref| \lstinline|hates(host)|. Here the parentheses are doing real work, giving \lstinline|condition_atom| the one legal route back up to \lstinline|condition| that lets the \lstinline|OR| exist at all inside what is, at the top level, an \lstinline|AND|. The resulting tree already reflects the grouping and precedence the author wrote, before the AST Builder does anything further with it.
+
+\subsubsection{The Resulting Tree}
+We can now see these conventions converge on the same \lstinline|food_served| block whose condition we just traced. That block has two parts: the header, \lstinline|WHEN food_served:|, and the body containing the \lstinline|IF|/\lstinline|ELSE| pair whose condition Section \ref{sec:condition-precedence} already followed through the grammar. Applying the conventions above to the header alone, it reduces to a \lstinline|pb_when_block| node whose first child is an \lstinline|ID| token holding the text \lstinline|food_served|; neither the \lstinline|"WHEN"| keyword nor the \lstinline|":"| appears anywhere in the tree, since both are anonymous string literals filtered out at the lexer level. The node's second child is the \lstinline|pb_when_body| subtree, inside which the \lstinline|condition_group|/\lstinline|condition_not| structure from the previous subsubsection sits nested. Between the two children, the tree already carries everything the next phase needs: which event triggers the plan, from the node's one surviving token, and what its guarded body contains, from the precedence-correct subtree already built beneath it.
+
+The self-inlining condition rules produce a second, contrasting trace worth setting beside the first. \lstinline|IF is_hungry:|, from the \lstinline|digestion_check| plan, has no \lstinline|OR| and no \lstinline|AND| at any level, so both \lstinline|condition_and| and \lstinline|condition| collapse away entirely; parsing it produces no \lstinline|condition| or \lstinline|condition_and| node at all, only a bare \lstinline|fact_ref| sitting directly where \lstinline|pb_if_branch|'s condition child is expected. The \lstinline|food_served| condition traced above collapses at neither level, since both its \lstinline|condition_and| groups have two operands. The shape of the tree Parsing hands to AST Construction therefore already reflects how many real operators the author wrote, with no uniform "one node per grammar rule" structure for the next phase to normalise.
+
+Not every input reduces this cleanly. If the source is malformed, for instance the same block missing its trailing colon, \lstinline|parse()| does not attempt any recovery: Lark raises \lstinline|UnexpectedToken| or \lstinline|UnexpectedCharacters| directly, and propagates it to the caller. \lstinline|parse()| itself catches nothing; it is \lstinline|compile_source()| that wraps the call in a \lstinline|try/except| and forwards any such exception to \lstinline|syntax_errors.py|, described in Section \ref{sec:error-reporting}, for translation into a \lstinline|CompilerMessage| an author can act on.
+
+\subsubsection{Design Rationale}
+Everything examined in this subsection follows from treating \lstinline|parser.py| and the grammar it loads as infrastructure to be built once and leaned on heavily by every later phase, rather than as a self-contained concern whose job ends once a tree exists. Three consequences follow from this, in decreasing order of how directly they are visible in the code.
+
+The most direct is containment. Confining every interaction with Lark's API to \lstinline|parser.py| is a narrower claim than parser-independence, and worth stating precisely as such: \lstinline|ASTBuilder|, described next, is itself a Lark \lstinline|Transformer|, and could not be pointed at a tree produced by a different parsing library without changes. What this containment does provide is narrower still: every module downstream of Parsing depends only on the \emph{shape} of a \lstinline|lark.Tree| or, once built, on the typed AST, never on Lark's configuration or grammar-loading mechanism; a change to how the grammar file is located or compiled touches \lstinline|parser.py| alone. Lark's own exception types are a partial exception to this containment: \lstinline|syntax_errors.py|, described in Section \ref{sec:error-reporting}, imports \lstinline|UnexpectedToken| and \lstinline|UnexpectedCharacters| directly, so grammar-loading and exception-handling end up confined to one module each, but not to the same one.
+
+A second, less visible consequence is that \lstinline|propagate_positions=True| is not a convenience setting, it is the single origin point for every position value used anywhere downstream, which is precisely why it matters that Parsing, and only Parsing, sets it. AST Construction (Section \ref{sec:ast-construction}) reads a node's line and column from the \lstinline|meta| object this flag populates and stores it as a \lstinline|SourceLoc| on the corresponding AST node; Semantic Validation (Section \ref{sec:semantic-validation}) reports every error against exactly this \lstinline|SourceLoc|; and the caret display described in Section \ref{sec:error-reporting} ultimately traces back to the same value. No later phase re-derives position information independently, so disabling this one flag would silence location reporting for the entire pipeline at once, not merely for parse errors.
+
+The least visible consequence, but arguably the most consequential for the rest of this chapter, is that the grammar's consistent use of \lstinline|?| inlining and \lstinline|->| aliasing is work deliberately shifted earlier in the pipeline. Every alternative the grammar disambiguates by name, and every wrapper it collapses, is one fewer case the AST Builder has to inspect and branch on. We see the effect of this concretely in the next subsection, where building the AST from this tree turns out to be a comparatively direct, per-rule transformation, rather than a second parsing pass in disguise.
+
+We now turn to what the AST Builder does with the tree Parsing has produced.
+
+\subsection{AST Construction}
+\label{sec:ast-construction}
+AST Construction takes the concrete syntax tree Parsing produced and turns it into the typed abstract syntax tree every later phase operates on. It is implemented by \lstinline|ASTBuilder|, a Lark \lstinline|Transformer|, and it is the only module in the transpiler that knows the Lark tree exists at all; Semantic Validation and Emission, described later in this chapter, work exclusively against the typed AST it produces, never against a raw \lstinline|Tree|. We look at how a builder method is invoked and how it recovers a source location, then at the target shape the builder is working towards, and finally at two specific places where turning the parse tree into that shape takes real, deliberate work, rather than a mechanical, one-to-one copy of the grammar's own structure.
+
+\subsubsection{Dispatch and Source Locations}
+Lark's \lstinline|Transformer| pattern drives construction bottom-up: the tree is walked from its leaves to its root, and at every node, Lark calls the \lstinline|ASTBuilder| method whose name matches the grammar rule that produced it, passing in children that have already themselves been transformed. A \lstinline|?|-inlined rule, described in Section \ref{sec:lexing-and-parsing}, needs no corresponding method at all, since Lark never builds a wrapper node for it in the first place; a rule with a \lstinline|-> alias| is matched by a method named after the alias, not the original rule.
+
+Two decorators control how a builder method receives its children. \lstinline|@v_args(meta=True)| passes both a \lstinline|meta| object, carrying the node's source position, and the list of already-built children, as in \lstinline|action_decl|:
+
+\begin{codeblock}[]{Py}
+@v_args(meta=True)
+def action_decl(self, meta: Any, children: List) -> ActionDecl:
+    ...
+\end{codeblock}
+
+\lstinline|@v_args(inline=True)| instead unpacks the children list into separate positional arguments, used for simple, fixed-arity rules such as \lstinline|event_origin|, which always receives exactly one token and returns it as an \lstinline|EventOrigin| member directly.
+
+Every method that needs a \lstinline|SourceLoc| obtains it through one of two small helpers, \lstinline|_meta_loc(meta, filename)| and \lstinline|_token_loc(token, filename)|, both of which read a \lstinline|.line| and \lstinline|.column| off whatever Lark object they are given. This is the direct continuation of \lstinline|propagate_positions=True|, introduced in Section \ref{sec:lexing-and-parsing}: without that flag, \lstinline|meta.line| and \lstinline|meta.column| would simply not exist, and neither helper would have anything to read. Centralising extraction into two functions, rather than computing a \lstinline|SourceLoc| inline inside every one of the more than forty builder methods, guarantees that every AST node's position is derived the same way, from the same two fields, regardless of which method built it.
+
+\subsubsection{The Target Shape}
+Figure \ref{fig:ast-hierarchy} shows the node hierarchy \lstinline|ASTBuilder| is working towards.
+\begin{codeblock}[]{}
+Program
+├── ImportDecl                           (import declarations)
+├── ActionDecl / EventDecl / FactDecl    (base elements)
+├── PlaybookDef                          (reactive behaviour sets)
+│   └── PbWhenBlock
+│       ├── DoStmt / SignalStmt
+│       ├── PbIfBranch
+│       └── PbElseBranch
+└── PlotDef                              (narrative scenarios)
+    ├── PhaseDecl / RoleDecl
+    └── DuringBlock
+        ├── OnEnter / OnExit
+        └── PlotWhenBlock / PlotWhenSubplotEndsBlock / PlotWhenRoleSignalsBlock
+            ├── AssignStmt / UnassignStmt
+            ├── WorldDoStmt / RoleDoStmt
+            ├── InlineTransitionStmt
+            ├── PlotIfBranch
+            └── PlotElseBranch
+\end{codeblock}
+\label{fig:ast-hierarchy}
+\begin{center}
+(Figure \ref{fig:ast-hierarchy}: the AST node hierarchy \lstinline|ASTBuilder| produces.)
+\end{center}
+Every node in this tree is a plain \lstinline|@dataclass|, and every one carries a \lstinline|SourceLoc|, populated exactly as described above. For most rules, building the corresponding node is a direct copy: the grammar's own inlining and aliasing, described in Section \ref{sec:lexing-and-parsing}, already leave a builder method with close to nothing to do beyond wrapping its children in the right dataclass. Two cases are not this simple, and are worth examining together, since both turn out to be instances of the same underlying problem: a single grammar rule sometimes produces one flat, undifferentiated list of children that the target AST shape needs split apart before it means anything.
+
+%TBD: may need to remove this subsection
+
+\subsubsection{Classifying a WHEN Body}
+The grammar's \lstinline|pb_when_body| rule states its three patterns directly, as three alternatives:
+\begin{codeblock}[]{Py}
+pb_when_body: pb_prefix_stmts
+            | pb_prefix_stmts pb_if_branch+ pb_else_branch?
+            | pb_if_branch+ pb_else_branch?
+\end{codeblock}
+None of the three alternatives carries a \lstinline|-> alias|, so Lark's \lstinline|Transformer| still calls the same single method, \lstinline|pb_when_body|, regardless of which one matched, and still hands it one flat list of already-built children. What that list contains is nonetheless far more regular than it would be without \lstinline|pb_prefix_stmts| grouping the leading statements into a rule of its own: at most three kinds of child can appear, a single Python \lstinline|list| holding every prefix statement together, zero or more \lstinline|PbIfBranch| nodes, and at most one \lstinline|PbElseBranch|. The builder still needs to recognise which of these it is looking at, but recognising a kind is a much smaller task than the old grammar would have required, disentangling individual, interleaved \lstinline|DoStmt|/\lstinline|SignalStmt| nodes one at a time:
+\begin{codeblock}[]{Py}
+def pb_when_body(self, children: List) -> Tuple[List, List[PbIfBranch], PbElseBranch | None]:
+    prefix_stmts: List[DoStmt | SignalStmt] = []
+    branches: List[PbIfBranch] = []
+    else_branch: PbElseBranch | None = None
+
+    for child in children:
+        match child:
+            case list():
+                prefix_stmts = child
+            case PbIfBranch():
+                branches.append(child)
+            case PbElseBranch():
+                else_branch = child
+
+    return (prefix_stmts, branches, else_branch)
+
+def pb_prefix_stmts(self, children: List) -> List:
+    return children
+\end{codeblock}
+\lstinline|pb_prefix_stmts| itself does nothing beyond returning its children unchanged, a plain pass-through; its only purpose is to give the group of leading statements a distinct node type, \lstinline|list|, so that \lstinline|pb_when_body|'s \lstinline|match| can recognise the whole group in one case rather than needing to inspect each statement individually. As before, this method does not return an AST node at all, only a plain tuple, passed up to \lstinline|pb_when_block|, which unpacks it directly into \lstinline|PbWhenBlock|'s three corresponding fields:
+\begin{codeblock}[]{Py}
+prefix_stmts, branches, else_branch = body
+return PbWhenBlock(
+    event=str(event_token),
+    priority=priority_val,
+    temper=temper_val,
+    prefix_stmts=prefix_stmts,
+    branches=branches,
+    else_branch=else_branch,
+    loc=_meta_loc(meta, self._filename),
+)
+\end{codeblock}
+Tracing this against the \lstinline|food_served| plan from our running example: its \lstinline|pb_when_body| matches the second alternative, and arrives as a three-element list, a Python \lstinline|list| containing the single \lstinline|DoStmt| for \lstinline|DO PRINT(...)|, one \lstinline|PbIfBranch| for the \lstinline|IF|, and one \lstinline|PbElseBranch| for the \lstinline|ELSE|. The \lstinline|match| sorts these into \lstinline|prefix_stmts = [DoStmt(...)]|, \lstinline|branches = [PbIfBranch(...)]|, and \lstinline|else_branch = PbElseBranch(...)|, exactly the three-way split \lstinline|PbWhenBlock| expects.
+
+The same pattern, an internal carrier that exists purely to help one builder method recognise what it received, shows up again, smaller in scope, around action names. An action name in the grammar can be a plain identifier or one of seven reserved keywords, described in Section \ref{sec:vocabulary}, and \lstinline|do_stmt|, \lstinline|world_do_stmt|, and \lstinline|role_do_stmt| all need to know which, without each re-deriving it independently. \lstinline|action_name| builds a small internal carrier once, and every caller reads it back:
+\begin{codeblock}[]{Py}
+class _ActionInfo:
+    __slots__ = ("name", "is_special")
+    def __init__(self, name: str, is_special: bool) -> None:
+        self.name = name
+        self.is_special = is_special
+\end{codeblock}
+Every caller that builds a \lstinline|DO|-family statement reads \lstinline|.name| and \lstinline|.is_special| off the same object, rather than re-checking the action name against \lstinline|SPECIAL_ACTIONS| three separate times. Neither this carrier nor the classification performed by \lstinline|pb_when_body| ever appears in \lstinline|ast_nodes.py|, and that is deliberate, not incidental, for reasons we return to below.
+
+\subsubsection{Design Rationale}
+The two mechanisms just examined both exist to solve the same problem the \lstinline|Transformer| pattern itself was chosen to solve, just at a smaller scale: a builder method sometimes has to recognise what kind of thing it received before it can act on it, since Lark's dispatch is by rule name alone, with no \lstinline|-> alias| to distinguish which of several grammar alternatives actually matched. This is why we treat all three as one connected argument rather than three separate design choices.
+
+Choosing a \lstinline|Transformer| subclass over manually walking \lstinline|Tree| objects with conditional branching on \lstinline|.data| is what makes this module's own boundary, being the only place in the transpiler that knows the Lark tree exists, actually enforceable rather than aspirational. Dispatch by rule name is automatic and exhaustive by construction: no builder method ever needs to inspect a node's shape to decide what it is looking at, and no other module ever needs a fallback path for a node type the builder chose not to handle explicitly. That boundary is only useful, however, if everything on the builder's own side of it, including the awkward, purely syntactic residue of translating a flat grammar-level child list into a properly shaped AST node, stays on that side too. This is exactly what the \lstinline|(prefix_stmts, branches, else_branch)| tuple and \lstinline|_ActionInfo| do: both solve a problem that has nothing to do with the final AST's semantic shape, only with how Lark happened to hand the builder its children, and keeping both local to \lstinline|ast_builder.py|, rather than promoting either into a real node inside \lstinline|ast_nodes.py|, is what stops construction-time plumbing from leaking into the vocabulary that Semantic Validation and Emission are written against. A module that is the only one allowed to know the tree exists should, by the same logic, be the only one that has to know how the tree's occasional untidiness gets cleaned up.
+
+We now turn to the fourth phase, which reconnects the doc comments Preprocessing extracted to the AST nodes we have just built: Comment Attachment.
+
+\subsection{Comment Attachment}
+\label{sec:comment-attachment}
+Comment Attachment reconnects two pieces of information that have been kept deliberately separate until now: the \lstinline|DocAnnotation| objects Preprocessing (Section \ref{sec:preprocessing}) extracted from raw text, and the AST that AST Construction (Section \ref{sec:ast-construction}) built from the parsed tree. It is the only phase that needs both simultaneously, since an annotation's line number is only known from the original source text, and a node's line number is only known once its \lstinline|SourceLoc| has been populated. The phase takes the built \lstinline|Program| and the ordered \lstinline|List[DocAnnotation]| as input, and mutates the \lstinline|Program| in place, appending each annotation to the \lstinline|.docs| list of the node it precedes, or, failing that, to \lstinline|Program.doc_comments| itself.
+
+Which node types can receive an annotation this way is fixed by a single tuple:
+\begin{codeblock}[]{Py}
+_ANNOTATABLE = (
+    ActionDecl, EventDecl, FactDecl, PlaybookDef, PlotDef,
+    PhaseDecl, RoleDecl, PbWhenBlock, BasePlotWhenBlock,
+)
+\end{codeblock}
+The first five entries are top-level declarations, directly reachable from \lstinline|program.items|. The last four are not: a \lstinline|PhaseDecl| or \lstinline|RoleDecl| lives inside a \lstinline|PlotDef|'s header, a \lstinline|PbWhenBlock| lives inside a \lstinline|PlaybookDef|'s \lstinline|when_blocks|, and a \lstinline|BasePlotWhenBlock| subclass lives inside one of a \lstinline|PlotDef|'s \lstinline|during_blocks|. Reaching these requires walking one level deeper than \lstinline|program.items| alone provides, which is exactly what a small generator does before matching begins:
+\begin{codeblock}[]{Py}
+def _iter_annotatables(program: Program):
+    for item in program.items:
+        if isinstance(item, _ANNOTATABLE):
+            yield item
+        if isinstance(item, PlaybookDef):
+            yield from item.when_blocks
+        elif isinstance(item, PlotDef):
+            yield from item.roles
+            yield from item.phases
+            for during in item.during_blocks:
+                yield from during.when_blocks
+\end{codeblock}
+For every top-level item, the generator yields the item itself if it is directly annotatable, and additionally, if the item is a \lstinline|PlaybookDef| or \lstinline|PlotDef|, yields every annotatable node nested inside it. The result is a single flat sequence of candidate nodes, regardless of whether each one came from the top level or from one level of nesting.
+
+\lstinline|_attach_doc_comments| builds its sorted candidate list from this flattened sequence:
+
+\begin{codeblock}[]{Py}
+items_with_lines: List[tuple] = []
+for item in _iter_annotatables(program):
+    loc = getattr(item, "loc", None)
+    line = loc.line if loc else 0
+    if line > 0:
+        items_with_lines.append((line, item))
+
+items_with_lines.sort(key=lambda t: t[0])
+
+for annotation in doc_comments:
+    target = None
+    for item_line, item in items_with_lines:
+        if item_line > annotation.line:
+            target = item
+            break
+
+    if target is not None:
+        target.docs.append(annotation)
+    else:
+        program.doc_comments.append(annotation)
+\end{codeblock}
+
+Matching itself is direct: sort every candidate by line, then, for each annotation in source order, attach it to the first candidate whose line comes strictly after the annotation's own line, or fall back to \lstinline|Program.doc_comments| if none does. These latter ones are not assigned to an element of the program, but to the file itself as a whole.
+
+We now turn to the fifth phase, Semantic Validation, which is the first to reject a program outright rather than merely reshape it.
+
+\subsection{Semantic Validation}
+\label{sec:semantic-validation}
+The grammar guarantees that a program is syntactically well-formed, but it has no way to enforce what makes that program meaningful: that every referenced Event, Action, or Fact was actually declared, that a Plot has exactly one starting Phase, or that a \lstinline|TRANSITION TO| statement is not stranded somewhere it can never execute. \lstinline|Validator| is the phase that enforces exactly these rules. It takes a built \lstinline|Program| as input and produces no new representation of its own; it only reads the AST and writes diagnostics into the same \lstinline|ErrorReporter| threaded through every phase since Preprocessing (Section \ref{sec:preprocessing}), never modifying the tree it walks.
+
+\lstinline|validate()| runs four groups of checks, in this order: Declaration Collection registers every name a program declares, building the tables every later check will look names up against; Structural and Positional Checks confirm that a Plot and its \lstinline|DURING| blocks are shaped correctly, independently of what any of their names actually refer to; Reference Checking confirms that every name a Playbook or Plot actually uses resolves to something Declaration Collection registered; and Unused Warnings, run last, flags anything declared but never referenced by any of the checks before it. We describe each in turn.
+
+Two data structures, used throughout all four groups, scope this checking, and the distinction between them matters. A single \lstinline|_SymbolTable| holds four flat namespaces, actions, events, facts, and playbooks, each mapping a declared name to a \lstinline|DeclInfo(loc, arity)|. These are the vocabulary elements introduced in Section \ref{sec:vocabulary}, and every one of them is visible from anywhere in the program, regardless of which Playbook or Plot references it. By contrast, each \lstinline|PlotDef| gets its own \lstinline|_PlotScope(plot_name, roles, phases)|: a Role or Phase name is only meaningful inside the Plot that declares it, so nothing prevents two unrelated Plots from each declaring a role with the same name.
+
+\subsubsection{Declaration Collection}
+Before anything else, every Plot's declared roles are collected into a single registry, \lstinline|plot_name -> {role names}|, by one pass over every top-level \lstinline|PlotDef|. This registry exists specifically so that later checks against a \lstinline|START SUBPLOT ... MAPPING| clause, described under Reference Checking below, can validate a target Plot's roles regardless of whether that Plot appears earlier or later in the file than the one starting it.
+
+Only after this registry exists does declaration collection proper run, registering every top-level \lstinline|ActionDecl|, \lstinline|EventDecl|, \lstinline|FactDecl|, and \lstinline|PlaybookDef| into the global symbol table through a single shared helper:
+\begin{codeblock}[]{Py}
+def _declare(self, namespace, kind, name, loc, arity=0):
+    if name in namespace:
+        prev = namespace[name]
+        self._error(
+            loc,
+            f"Duplicate {kind} declaration: '{name}'"
+            f" (previously declared at line {prev.loc.line}).",
+        )
+        return
+    namespace[name] = DeclInfo(loc, arity)
+\end{codeblock}
+The same function is reused, unchanged, for actions, events, facts, and playbooks here, and again for roles and phases inside each Plot's own scope; only the namespace dictionary and the human-readable \lstinline|kind| string passed in differ between calls.
+
+Aliased Actions register twice, once under each name, and are additionally recorded in a bidirectional map:
+\begin{codeblock}[]{Py}
+elif isinstance(item, ActionDecl):
+    self._declare(self._symbols.actions, "action", item.name, item.loc, len(item.params))
+    if item.alias:
+        self._declare(self._symbols.actions, "action alias", item.alias, item.loc, len(item.params))
+        self._action_aliases[item.alias] = item.name
+        self._action_aliases[item.name] = item.alias
+\end{codeblock}
+For our running example's \lstinline|ACTION engine.security.summon_guards AS call_guards.|, this registers both \lstinline|engine.security.summon_guards| and \lstinline|call_guards| as valid action names in the global table, and records each as the other's alias. We return to why this bidirectional link matters under Unused Warnings.
+
+\subsubsection{Structural and Positional Checks}
+With declarations collected, every Playbook and every Plot is walked in turn. A Plot's own checks begin with its scope: every declared \lstinline|PhaseDecl| and \lstinline|RoleDecl| is registered into a fresh \lstinline|_PlotScope| through the same \lstinline|_declare| helper shown above, catching a duplicate role or phase name the identical way a duplicate top-level declaration would be caught.
+
+Exactly one Phase must be marked \lstinline|INITIAL|, and both failure directions are checked explicitly and reported with distinct messages:
+\begin{codeblock}[]{Py}
+initial_phases = [p for p in plot.phases if p.is_initial]
+if len(initial_phases) == 0:
+    self._error(plot.loc, f"Plot '{plot.name}' has no INITIAL phase.", ...)
+elif len(initial_phases) > 1:
+    second = initial_phases[1]
+    self._error(second.loc, f"Plot '{plot.name}' has multiple INITIAL phases "
+        f"(first at line {initial_phases[0].loc.line}).", ...)
+\end{codeblock}
+\lstinline|RoyalBanquet|, with exactly one \lstinline|PHASE reception INITIAL.|, satisfies this and triggers neither branch.
+
+Each \lstinline|DURING| block is checked next. A phase-specific block's \lstinline|phase_name| must appear in the Plot's own scope; a \lstinline|DURING PLOT| block, whose \lstinline|phase_name| is \lstinline|None|, skips this check entirely, since it applies to every phase by definition. At most one \lstinline|ON ENTER| and one \lstinline|ON EXIT| are permitted per block, checked by a plain length comparison against each list. Inside whichever \lstinline|ON ENTER|/\lstinline|ON EXIT| hooks do exist, two statement types are explicitly forbidden, each with its own message naming the specific hook:
+\begin{codeblock}[]{Py}
+if isinstance(stmt, InlineTransitionStmt):
+    self._error(stmt.loc, "TRANSITION TO cannot appear inside ON ENTER.", ...)
+elif isinstance(stmt, PlotEndStmt):
+    self._error(stmt.loc, "END PLOT cannot appear inside ON ENTER.", ...)
+\end{codeblock}
+with the identical pair of checks repeated for \lstinline|ON EXIT|. Every other statement inside these hooks is instead passed to the reference-checking pass described next.
+
+The same two statement types are also subject to a positional rule wherever they legitimately can appear, inside a \lstinline|WHEN| block's prefix statements, \lstinline|IF| branches, and \lstinline|ELSE| branch. One shared function enforces this rule uniformly across all three locations:
+\begin{codeblock}[]{Py}
+for i, stmt in enumerate(stmts):
+    is_terminal = isinstance(stmt, (InlineTransitionStmt, PlotEndStmt))
+    if not is_terminal:
+        continue
+
+    if isinstance(stmt, InlineTransitionStmt) and phase_name is None:
+        self._error(stmt.loc, f"Inline TRANSITION TO cannot appear inside "
+            f"DURING PLOT ({context}).", ...)
+        continue
+
+    if i < len(stmts) - 1:
+        self._error(stmts[i + 1].loc, f"Unreachable statement after "
+            f"{'TRANSITION TO' if isinstance(stmt, InlineTransitionStmt) else 'END PLOT'} "
+            f"in {context}.", ...)
+\end{codeblock}
+Two things are worth noting about this function. First, an \lstinline|InlineTransitionStmt| inside \lstinline|DURING PLOT| is rejected outright, since there is then no single current phase for it to leave, exactly the constraint stated in Section \ref{sec:transitions}. Second, when a terminal statement is followed by anything else in the same list, the reported error location is the \emph{following} statement, not the terminal itself, since it is that following statement which is unreachable and therefore the one an author needs to look at.
+
+\subsubsection{Reference Checking}
+Every name a Playbook or Plot references, an Event in a \lstinline|WHEN| trigger, an Action in a \lstinline|DO|, a Fact in an \lstinline|IF| condition, a Playbook in an \lstinline|ASSIGN|, a Role anywhere one is named, or a Plot in a \lstinline|START SUBPLOT|, is checked against the structures built during Declaration Collection. All of these checks share one shape: look the name up, report an error with a corrective hint if it is missing, and otherwise record the name as used.
+
+Condition checking recurses over the same four-member union established in Section \ref{sec:ast-construction}, bottoming out at a \lstinline|FactRef| in every branch:
+\begin{codeblock}[]{Py}
+def _validate_condition(self, cond: ConditionExpr) -> None:
+    match cond:
+        case FactRef():
+            self._check_fact_ref(cond.name, cond.args, cond.loc)
+        case ConditionNot():
+            self._validate_condition(cond.operand)
+        case ConditionAnd() | ConditionOr():
+            for op in cond.operands:
+                self._validate_condition(op)
+\end{codeblock}
+Tracing this against \lstinline|food_served|'s condition, \lstinline|(is_hungry OR is_drunk) AND NOT hates(host)|, the recursion descends through the \lstinline|ConditionAnd| built for the top level, into the \lstinline|ConditionOr| built for the parenthesized group, checking \lstinline|is_hungry| and \lstinline|is_drunk| as Fact references, and separately into the \lstinline|ConditionNot|, checking \lstinline|hates(host)|. Every one of the three Facts declared in Section \ref{sec:vocabulary} is confirmed to exist, and each is marked used.
+
+Action and Fact references additionally carry an arity check, comparing the number of arguments supplied against the number recorded in the corresponding \lstinline|DeclInfo|:
+\begin{codeblock}[]{Py}
+decl = self._symbols.actions[name]
+if decl.arity != len(args):
+    self._error(loc, f"Action '{name}' expects {decl.arity} argument(s), "
+        f"but {len(args)} were provided.")
+\end{codeblock}
+Special Actions (\lstinline|TELL|, \lstinline|BROADCAST|, and the rest of the seven reserved keywords from Section \ref{sec:vocabulary}) skip both the existence check and the arity check entirely, since they are built into the language rather than declared by an author.
+
+A Role reference is checked against the current Plot's own scope, never the global symbol table, since Role names, as established above, are meaningful only within the Plot that declares them. A \lstinline|START SUBPLOT| statement is checked in three parts: the target Plot must appear in the registry built during Declaration Collection, every source role named in its \lstinline|MAPPING| clause must exist in the spawning Plot's own scope, and every target role must exist in the spawned Plot's roles, looked up from the same registry. Tracing \lstinline|RoyalBanquet|'s \lstinline|START SUBPLOT HonorDuel MAPPING Guest TO Challenger|, all three checks pass: \lstinline|HonorDuel| is a registered Plot, \lstinline|Guest| is a role of \lstinline|RoyalBanquet|, and \lstinline|Challenger| is a role of \lstinline|HonorDuel|. Omitting a \lstinline|MAPPING| clause entirely is not an error by itself, only a warning, and only when the target Plot actually declares roles to map.
+
+\subsubsection{Unused Warnings}
+Only once every Playbook and every Plot has been fully walked can a declared name be safely judged unused, since any reference anywhere in the program, however deeply nested, might still be the one that uses it. A final pass, \lstinline|_check_unused|, compares each of the four global namespaces against a parallel set of names actually referenced during Reference Checking, delegating the comparison itself to one shared helper called once per namespace:
+\begin{codeblock}[]{Py}
+def _check_unused(self) -> None:
+    self._warn_unused(self._symbols.actions, self._used_actions, "action")
+    self._warn_unused(self._symbols.events, self._used_events, "event")
+    self._warn_unused(self._symbols.facts, self._used_facts, "fact")
+    self._warn_unused(self._symbols.playbooks, self._used_playbooks, "playbook")
+
+def _warn_unused(self, declared, used, kind) -> None:
+    for name, decl in declared.items():
+        if name not in used:
+            self._warning(decl.loc, f"Declared {kind} '{name}' is never used.")
+\end{codeblock}
+This is also where the bidirectional alias map introduced under Declaration Collection is read back. Whenever a reference to \lstinline|call_guards| is confirmed valid, both \lstinline|call_guards| and its canonical counterpart \lstinline|engine.security.summon_guards| are marked used together, in the same step:
+\begin{codeblock}[]{Py}
+self._used_actions.add(name)
+if name in self._action_aliases:
+    self._used_actions.add(self._action_aliases[name])
+\end{codeblock}
+Without this, an author who correctly follows the alias mechanism, declaring a fully-qualified name once and then only ever writing its short alias in every script, would see the fully-qualified name reported as unused on every single compile, a false-positive warning for a name the alias exists specifically so the author never has to write directly.
+
+\subsubsection{Design Rationale}
+The choices behind \lstinline|Validator|'s structure sit on three different axes, worth distinguishing rather than treating as one undifferentiated list: what the checking structures are shaped like, in what order the checks run, and how much of the checking logic is written once versus repeated.
+
+On the first axis, separating a global symbol table from per-Plot scopes reflects a genuine difference in kind between two categories of name. Actions, Events, Facts, and Playbooks are shared vocabulary, meaningful anywhere in the program by design; Roles and Phases are local to the one Plot that declares them. Collapsing both into a single table would force one of two costs: either an author could never reuse a role name such as \lstinline|Guest| across two unrelated Plots, or every role reference in the language would need to be written qualified by its Plot name, which Regia's syntax, described in Section \ref{sec:plots}, never asks an author to do.
+
+On the second axis, ordering, building the Plot-to-roles registry as a dedicated first pass, before any Plot is otherwise validated, removes an ordering dependency that would otherwise be easy to introduce by accident: a \lstinline|START SUBPLOT| statement can legally target a Plot declared anywhere else in the file, and checking it against a registry built incrementally, only from Plots already visited, would make validation succeed or fail depending on the order Plots happen to appear in source, a failure mode that obscures the root cause of the error rather than pointing at it. The four-group ordering of the checks themselves follows the same logic at a larger scale: Reference Checking cannot run before Declaration Collection has populated the tables it looks names up against, and Unused Warnings cannot run before Reference Checking has finished marking every name it found, since a name is not safely "unused" until nothing later in the program could still turn out to reference it.
+
+On the third axis, code reuse, the same shared-helper pattern appears twice, once for declaring a name and once for warning about one never used. \lstinline|_declare| is reused, unchanged, across six different kinds of namespace, actions, events, facts, playbooks, and, per-Plot, roles and phases, avoiding six near-identical blocks of duplicate-detection logic that would otherwise need to be kept in sync by hand every time an error message's wording changed. \lstinline|_warn_unused| mirrors this exactly one phase later, called once per namespace rather than written as four separate copies of the same loop. The same instinct appears elsewhere in the transpiler: one shared \lstinline|_write_plan| for every kind of generated AgentSpeak plan in Section \ref{sec:emission}, and one shared classification pattern for sorting a flat list of children in Section \ref{sec:ast-construction}.
+
+We now turn to the final phase of the transpiler, and the only one whose output is not another representation of the Regia program but genuinely new: AgentSpeak Emission.
+
+\subsection{AgentSpeak Emission}
+\label{sec:emission}
+Emission is the final phase of the pipeline, and the only one that produces AgentSpeak rather than another representation of Regia itself. \lstinline|Emitter.emit(program)| takes a validated \lstinline|Program| as input and returns a plain \lstinline|Dict[str, str]|, mapping output filenames to AgentSpeak source text; it never touches the filesystem, writing the result to disk is left to the CLI, described in Section \ref{sec:orchestration}. We describe this phase in four parts: the files it produces and how they relate to one another, the passes \lstinline|emit()| runs to produce them, the shared machinery used to write an individual plan or statement, and the mechanism that translates a Regia condition into a correctly grouped AgentSpeak context.
+
+\subsubsection{File Structure}
+Compiling a program with several Plots, Playbooks, and Roles produces three kinds of file, listed in Table \ref{tab:emission-files}.
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Filename} & \textbf{One per} & \textbf{Contents} \\
+\hline
+\lstinline|playbook_<n>.asl| & Playbook & Static-gated \lstinline|WHEN| plans \\
+\lstinline|director_<plot>.asl| & Plot & Phase state machine, lifecycle infrastructure, Director \lstinline|WHEN| plans \\
+\lstinline|role_<plot>_<role>.asl| & Plot $\times$ Role & Playbook includes, activation handlers, one-off command handlers \\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:emission-files}
+
+Our running example accordingly produces \lstinline|playbook_noblesocializing.asl|, \lstinline|director_royalbanquet.asl|, \lstinline|director_honorduel.asl|, and one Role file for each Plot-Role pair, such as \lstinline|role_royalbanquet_host.asl| and \lstinline|role_honorduel_challenger.asl|.
+
+These three file kinds are not independent copies of the same information; a Role file never contains a Playbook's plans directly. Instead, it pulls them in with Jason's own file-inclusion directive:
+\begin{codeblock}[]{Py}
+{ include("playbook_noblesocializing.asl") }
+\end{codeblock}
+Every Playbook a given Role can ever be assigned, across every Plot it participates in, is included this way, once per Playbook, rather than duplicated into the body of the Role file itself. A Director file, by contrast, is fully self-contained: it never includes another generated file, since its own logic, phase transitions, lifecycle hooks, role registry, belongs to exactly one Plot and is never shared with another agent.
+
+\subsubsection{Emission Passes}
+\lstinline|emit()| runs five numbered phases, plus one intermediate step, in a fixed sequence.
+
+\textbf{Phase 1} indexes every top-level \lstinline|PlaybookDef| by name, and collects every Action's alias into a lookup table, consumed later whenever a \lstinline|DO| statement needs to be resolved to its canonical name.
+
+\textbf{Phase 2} pre-scans every Plot before any file is written. Three functions cooperate here: \lstinline|_prescan_plot| walks a Plot's \lstinline|DURING| blocks; \lstinline|_prescan_stmts| inspects the imperative statements inside \lstinline|ON ENTER|, \lstinline|ON EXIT|, or a \lstinline|WHEN| body, recording every \lstinline|AssignStmt| into two registries, one global (\lstinline|role_name -> \{playbook names\}| and one per-Plot, every \lstinline|RoleDoStmt| into a list of one-off directives keyed by Role, and every \lstinline|StartSubplotStmt|'s role mappings into a flat list of \lstinline|(source Plot, source Role, target Plot, target Role)| tuples; \lstinline|_prescan_when| simply forwards a Plot \lstinline|WHEN| block's prefix statements, branches, and else branch into \lstinline|_prescan_stmts| in turn. In our running example, this pass records that \lstinline|RoyalBanquet| assigns \lstinline|NobleSocializing| to \lstinline|Guest|, and that \lstinline|RoyalBanquet|'s \lstinline|Guest| maps to \lstinline|HonorDuel|'s \lstinline|Challenger|.
+
+\textbf{Phase 2.5} computes the transitive closure of the role-mapping graph collected above:
+\begin{codeblock}[]{Py}
+def _compute_role_transitive_closures(self) -> None:
+    adj: Dict[Tuple[str, str], List[Tuple[str, str]]] = {}
+    for src_plot, src_role, tgt_plot, tgt_role in self._role_mappings:
+        adj.setdefault((src_plot, src_role), []).append((tgt_plot, tgt_role))
+
+    for plot_name, roles_dict in self._plot_role_playbooks.items():
+        for role_name in roles_dict.keys():
+            closure = set()
+            stack = [(plot_name, role_name)]
+            while stack:
+                curr = stack.pop()
+                if curr not in closure:
+                    closure.add(curr)
+                    for nxt in adj.get(curr, []):
+                        stack.append(nxt)
+            self._role_closures[plot_name][role_name] = closure
+\end{codeblock}
+This is a plain iterative depth-first search, using a Python list as an explicit stack, starting from every known \lstinline|(Plot, Role)| pair and following every mapping edge outward until no new pair is discovered. For \lstinline|(RoyalBanquet, Guest)|, the search visits itself first, then follows the single edge to \lstinline|(HonorDuel, Challenger)|, and finds no further edges from there, so the closure is \lstinline|\{(RoyalBanquet, Guest), (HonorDuel, Challenger)\}|. The purpose of this closure is to solve a problem created directly by the static-gating design described in Section \ref{sec:playbooks}: since a Role file's Playbook inclusions are fixed at compile time, an agent playing \lstinline|Guest| must have \lstinline|NobleSocializing| available, but an agent playing \lstinline|Guest| who is later mapped into \lstinline|HonorDuel| as \lstinline|Challenger| must also have access to whatever \lstinline|HonorDuel| assigns \lstinline|Challenger|, even though nothing in \lstinline|RoyalBanquet|'s own text mentions it directly. Without this closure, the second Role file could be generated with an incomplete set of includes.
+
+\textbf{Phase 3} emits one file per Playbook, iterating \lstinline|sorted(self._playbook_defs.keys())| so output is produced in a deterministic order regardless of declaration order in the source. \textbf{Phase 4} emits one Director file per Plot. \textbf{Phase 5} emits one Role file per Plot-Role pair, using the closure computed in Phase 2.5 to decide which Playbooks to include and which one-off Role directives to generate handlers for.
+
+\subsubsection{Plan and Statement Generation}
+Every AgentSpeak plan, regardless of which of the five phases produced it, is written through one shared method:
+\begin{codeblock}[]{Py}
+def _write_plan(self, lines, label, event, context_parts, body_stmts,
+                 priority=0, temper=None):
+    annotations = []
+    if priority != 0:
+        annotations.append(f"priority({priority})")
+    if temper is not None:
+        dims = ", ".join(f"{e.name}({e.value})" for e in temper.dimensions)
+        annotations.append(f"temper([{dims}])")
+        if temper.effects:
+            effs = ", ".join(f"{e.name}({e.value})" for e in temper.effects)
+            annotations.append(f"effects([{effs}])")
+
+    lines.append(f"@{label}[{', '.join(annotations)}]" if annotations else f"@{label}")
+
+    context = " & ".join(context_parts) if context_parts else "true"
+    lines.append(f"+{event} : {context} <-")
+
+    if body_stmts:
+        lines.append(f"    {';\n    '.join(body_stmts)}.")
+    else:
+        lines.append("    true.")
+    lines.append("")
+\end{codeblock}
+Three defaults are worth noting explicitly, since they determine what a plan looks like in the absence of information rather than in its presence. An annotation list is only written if at least one annotation applies; a plan with default priority and no Temper carries no annotation block at all, rather than an empty one. A missing context defaults to the literal atom \lstinline|true|, which in AgentSpeak always succeeds, so a triggerless guard never produces a syntactically incomplete context. An empty body defaults to \lstinline|true.| for the same reason, guaranteeing every generated plan is syntactically complete even in a degenerate case with no statements to run.
+
+With plan formatting covered, we turn to how individual statements inside a plan are dispatched by kind, using Python's structural pattern matching throughout. Inside a Playbook, \lstinline|_emit_do_stmt| distinguishes an ordinary, user-declared Action from one of the seven special keywords introduced in Section \ref{sec:vocabulary}:
+\begin{codeblock}[]{Py}
+match stmt.action:
+    case "TELL":      return f".send({target}, tell, {msg})"
+    case "BROADCAST": return f".broadcast(tell, {msg})"
+    case "ACHIEVE":   return f"!{goal}"
+    case "BELIEVE":   return f"+{fact}"
+    case "FORGET":    return f"-{fact}"
+    case "PRINT":     return f".print({args_str})"
+    case "WAIT":      return f".wait({args_str})"
+\end{codeblock}
+An ordinary Action instead resolves its alias, if any, through the lookup table built in Phase 1, before emitting a plain call, \lstinline|action| or \lstinline|action(args)|.
+
+Inside a Director, \lstinline|_emit_imperative_stmt| dispatches across seven statement kinds in the same style, listed in Table \ref{tab:director-emit-dispatch}.
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia statement} & \textbf{Emitted AgentSpeak} \\
+\hline
+\lstinline|AssignStmt|             & \lstinline|!send_to_role(role, achieve, add_playbook(pb))| \\
+\lstinline|UnassignStmt|           & \lstinline|!send_to_role(role, achieve, remove_playbook(pb))| \\
+\lstinline|WorldDoStmt| (special)  & delegates to \lstinline|_emit_do_stmt|'s special-action branch \\
+\lstinline|WorldDoStmt| (ordinary) & plain call, \lstinline|action| or \lstinline|action(args)| \\
+\lstinline|RoleDoStmt|             & \lstinline|!send_to_role(role, achieve, goal)| \\
+\lstinline|InlineTransitionStmt|   & \lstinline|!switch_phase(target)| \\
+\lstinline|StartSubplotStmt|       & \lstinline|!start_subplot("child", plot, [map(tgt, src), ...])| \\
+\lstinline|PlotEndStmt|            & the fixed literal \lstinline|!end_plot| \\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:director-emit-dispatch}
+\lstinline|WorldDoStmt|'s special-action case is handled by constructing a temporary \lstinline|DoStmt| and passing it straight to \lstinline|_emit_do_stmt|, rather than by duplicating that function's seven-way match a second time. \lstinline|StartSubplotStmt| is the one entry that does not reduce to a single line inline; it delegates to \lstinline|_emit_start_subplot_stmts|, which builds the \lstinline|MAPPING| clause's role pairs, one \lstinline|map(target\_role, source\_role)| entry per mapping, before assembling the full \lstinline|!start\_subplot| call.
+
+One-off Role directives, generated once per reachable \lstinline|(Plot, Role)| pair in Phase 5, need a unique, well-formed AgentSpeak goal name to dispatch on, and the goal text itself may contain characters, such as dots from a qualified action name, that are not valid inside an atom used this way. A regular expression substitution sanitizes it before use:
+\begin{codeblock}[]{Py}
+safe_goal = re.sub(r'[^a-zA-Z0-9]', '_', goal)
+handler_plans.add(
+    f"@role__{p_name.lower()}__{r_name.lower()}__{safe_goal}\n"
+    f"+!{goal} <- {body}."
+)
+\end{codeblock}
+This is exactly the mechanism behind the \lstinline|call_guards| handler traced in Section \ref{sec:vocabulary}: \lstinline|Host DO call_guards| produces the goal \lstinline|call_guards|, already a valid atom, resolved through the same alias lookup used for ordinary \lstinline|DO| statements, to \lstinline|engine.security.summon_guards| in the handler's body.
+\subsubsection{Condition Emission}
+\label{sec:condition-emission}
+Translating a \lstinline|ConditionExpr| into an AgentSpeak context string recurses over the same four-member union established in Section \ref{sec:ast-construction}:
+\begin{codeblock}[]{Py}
+def _emit_condition(self, cond, _parent_is_and=False):
+    match cond:
+        case FactRef():
+            return f"{cond.name}({args})" if args else cond.name
+        case ConditionNot():
+            inner = self._emit_condition(cond.operand)
+            return f"not ({inner})"
+        case ConditionAnd():
+            parts = [self._emit_condition(op, _parent_is_and=True) for op in cond.operands]
+            return " & ".join(parts)
+        case ConditionOr():
+            parts = [self._emit_condition(op) for op in cond.operands]
+            result = " | ".join(parts)
+            return f"({result})" if _parent_is_and else result
+\end{codeblock}
+\lstinline|FactRef| and \lstinline|ConditionNot| translate directly, to a plain predicate call and to \lstinline|not (...)| respectively; parentheses around a negation are always safe to include unconditionally, since \lstinline|not| binds to exactly the single expression it wraps regardless of context. \lstinline|ConditionAnd| and \lstinline|ConditionOr| instead cooperate through the \lstinline|_parent_is_and| parameter. Every operand of a \lstinline|ConditionAnd| is emitted with \lstinline|_parent_is_and=True|; a \lstinline|ConditionOr| that receives this flag wraps its own joined result in parentheses before returning it, while one that does not receive it, because its parent is a top-level condition, a \lstinline|ConditionNot|, or another \lstinline|ConditionOr|, returns its result unparenthesized.
+
+Tracing this against \lstinline|food_served|'s condition, \lstinline|(is_hungry OR is_drunk) AND NOT hates(host)|, built in Section \ref{sec:ast-construction} as a \lstinline|ConditionAnd| of a \lstinline|ConditionOr| and a \lstinline|ConditionNot|: the outer call is \lstinline|_emit_condition(ConditionAnd, _parent_is_and=False)|, which recurses into its two operands with \lstinline|_parent_is_and=True|. The \lstinline|ConditionOr| operand, receiving this flag, produces \lstinline+is_hungry | is_drunk+ and then wraps it, returning \lstinline+(is_hungry | is_drunk)+; the \lstinline|ConditionNot| operand produces \lstinline|not (hates(host))| unconditionally. The outer \lstinline|ConditionAnd| joins the two with \lstinline|&|, giving the final context:
+\begin{codeblock}[]{Py}
+(is_hungry | is_drunk) & not (hates(host))
+\end{codeblock}
+This is precisely the grouping the source condition specified, and precisely what a compiled excerpt of \lstinline|playbook_noblesocializing.asl| shows for the \lstinline|food_served| plan. The mechanism is necessary because Jason's own operator precedence, like Prolog's, binds \lstinline|\&| tighter than \lstinline+|+: emitting the same expression without the parentheses that \lstinline|_parent_is_and| inserts would produce a string that parses under a different grouping than the one the Regia author wrote, even though every individual token would still be correct. \lstinline|_emit_condition| is therefore the point in the pipeline where the precedence guarantee the grammar establishes on the Regia side, is carried across into the target language.
+
+\subsubsection{Design Rationale}
+The choices behind Emission fall into three groups: two concern keeping a single piece of output-producing logic in exactly one place, one concerns freeing the phase from any dependency on the order in which Plots or Roles happen to be processed, and one, unlike anything discussed elsewhere in this chapter, concerns correctness surviving translation between two different languages rather than the organization of Regia-side logic alone.
+
+On the first axis, using \lstinline|include()| rather than duplicating a Playbook's plans into every Role file that uses it keeps each \lstinline|WHEN| block's compiled form in exactly one place; a change to \lstinline|NobleSocializing|, whether a bug fix or a new plan, is picked up by every Role file that includes it the next time the program is recompiled, without the emitter needing to track which Role files currently hold a copy of which Playbook's output. Routing every generated plan through the single shared \lstinline|_write_plan|, rather than letting each of the three emission passes format its own plan text, follows the same logic one level lower: formatting logic that would otherwise be duplicated across at least three call sites, the annotation list, the trigger-and-context line, the semicolon-joined body, is written and can be corrected exactly once. This is the same instinct named for \lstinline|_declare| and \lstinline|_warn_unused| in Section \ref{sec:semantic-validation}, now recurring at the level of an entire generated file rather than a single check.
+
+On the second axis, computing the pre-scan (Phase 2) and the transitive closure (Phase 2.5) before any file is written, rather than discovering Role-Playbook relationships lazily while emitting each Role file in turn, follows the same look-ahead-before-commit principle already established for the Validator's Phase 0 role registry: a Role file's required includes can depend on a subplot mapping declared in a Plot processed earlier or later in iteration order, and computing the full picture first removes any dependency on that order.
+
+The third axis is where Emission differs from every phase examined so far in this chapter, since it is the only one whose job is to carry a guarantee across a boundary between two languages rather than to organize checks or output within one. Regia's own condition grammar, described in Section \ref{sec:lexing-and-parsing}, guarantees a correct precedence structure on the source side by construction. That guarantee is a property of the AST, not of AgentSpeak's textual syntax; nothing about writing \lstinline|&| and \lstinline+|+ characters into a string automatically preserves it, since Jason resolves precedence from the text it receives, independently of how that text was produced. Threading \lstinline|_parent_is_and| through condition emission is therefore not an optimization or a convenience, in the way the first two axes largely are; it is what actively re-establishes, on the AgentSpeak side, a guarantee that would otherwise silently fail to cross the translation boundary at all.
+
+We now turn to the phase that runs alongside every other one, rather than after it: Error Reporting.
+
+\subsection{Error Reporting}
+\label{sec:error-reporting}
+Error Reporting is not a phase in the same sense as the six described above; it does not sit between two others in the pipeline, consuming one representation and producing the next. Instead, a single \lstinline|ErrorReporter| instance, created once inside \lstinline|compile_source()|, is passed down through every phase from Preprocessing (Section \ref{sec:preprocessing}) to Semantic Validation (Section \ref{sec:semantic-validation}), and every one of them writes into it directly rather than returning diagnostics of its own. We describe the reporter itself, then the one piece of translation logic that feeds it from outside the pipeline's own vocabulary: Lark's raw parse exceptions.
+
+\subsubsection{The Central Reporter}
+Every diagnostic, regardless of which phase produced it, takes the same shape:
+\begin{codeblock}[]{Py}
+@dataclass
+class CompilerMessage:
+    severity:    Severity
+    line:        int
+    column:      int
+    length:      int
+    message:     str
+    hint:        str = ""
+    source_line: str = ""
+    filename:    str = ""
+\end{codeblock}
+This uniformity is what allows \lstinline|CompileResult.messages|, described in Section \ref{sec:pipeline-overview}, to be one flat list at the end of a run, with no per-phase discriminator needed to interpret an individual entry.
+
+\lstinline|register_source(filename, source)| stores a file's text as a list of lines, keyed by filename, before that file is compiled. This registry is what lets any later diagnostic display the exact offending line and a caret beneath it, from any phase, without needing filesystem access at the point the diagnostic is raised; a \lstinline|CompilerMessage| already carries the filename, line, and column needed to look the line up after the fact. \lstinline|error()| and \lstinline|warning()| are thin public wrappers that both funnel into one private \lstinline|_add()|, which looks up the source line, constructs the \lstinline|CompilerMessage|, appends it, and increments the appropriate counter.
+
+\lstinline|has_errors()| is a single boolean query over that counter, and it is the literal condition tested by every \lstinline|if reporter.has_errors(): return _failure(reporter)| guard described in Section \ref{sec:pipeline-overview}: the fail-fast sequencing named there is implemented entirely through repeated calls to this one method, not through any exception-based control flow between phases.
+
+To make the shape this produces concrete, suppose an author mistyped \lstinline|is_hungry| as \lstinline|is_thirsty| inside \lstinline|food_served|'s condition, referencing a Fact that was never declared. The Validator's \lstinline|_check_fact_ref| would report this through \lstinline|reporter.error()|, and \lstinline|format\_message()| would render it as:
+\begin{verbatim}
+============================================================
+ ERROR  long_test.regia:34, col 11
+ Undeclared fact: 'is_thirsty'.
+ Hint: Add 'FACT is_thirsty.' at the top of the file.
+
+    IF (is_thirsty OR is_drunk) AND NOT hates(host):
+        ^^^^^^^^^^
+============================================================
+\end{verbatim}
+Every field on \lstinline|CompilerMessage| is visible in this one block: the severity label and location on the header line, the message and hint beneath it, and the source line with a caret spanning exactly \lstinline|length| characters, starting at \lstinline|column|. This example uses the no-op default style; passed \lstinline|click.style| instead, as \lstinline|cli.py| does (Section \ref{sec:orchestration}), the same block appears with the label, filename, and caret in color.
+
+\lstinline|format_all(style_func, quiet)| sorts every collected message by filename and then by line, optionally skipping every warning when \lstinline|quiet| is set, and renders each remaining message through a module-level function, \lstinline|format_message(msg, style_func)|, exactly the function that produced the block above. Every piece of text that benefits from emphasis, the severity label, the filename, the caret, is passed through a \lstinline|style_func| callback rather than styled directly; when none is supplied, a no-op default returns its argument unchanged, so the same formatting logic produces plain text for one caller and styled terminal output for another, depending only on which function that caller passes in. A trailing summary line, built by \lstinline|_format_summary()|, closes the output, and is still included in quiet mode whenever at least one error was recorded, so a quiet run never suppresses the one line stating that it failed.
+
+\subsubsection{Humanizing Syntax Errors}
+Parsing itself, described in Section \ref{sec:lexing-and-parsing}, raises Lark's own exceptions directly rather than reporting through \lstinline|ErrorReporter|; \lstinline|report_syntax_error()| is the function that bridges the two. It distinguishes two cases. An \lstinline|UnexpectedToken| carries the offending token and the set of terminal names Lark was expecting instead; an \lstinline|UnexpectedCharacters| carries only a position, since the lexer failed before any token could even be formed.
+
+Lark's terminal names are written for a parser, not a reader, so a small dictionary translates the ones that matter into plain English:
+\begin{codeblock}[]{Py}
+_FRIENDLY: Dict[str, str] = {
+    "ID":     "a name (e.g. 'run', 'enemy_spotted')",
+    "NUMBER": "an integer number (e.g. '1', '7')",
+    "STRING": "a text string (e.g. \"hello\")",
+    ...
+}
+\end{codeblock}
+Any terminal absent from this dictionary falls back to its own quoted name, so the mapping only needs entries for terminals whose raw name would otherwise be unclear, not for every terminal in the grammar; \lstinline|_FRIENDLY| currently covers \lstinline|ID|, \lstinline|NUMBER|, \lstinline|STRING|, and the five special-action keywords \lstinline|TELL|, \lstinline|BROADCAST|, \lstinline|ACHIEVE|, \lstinline|BELIEVE|, and \lstinline|FORGET|, described in Section \ref{sec:vocabulary}. \lstinline|_friendly_expected()| then joins the resulting phrases into a single readable fragment, using "or" before the last item and commas between the rest, so that a parser state expecting three different tokens is reported as one grammatical sentence rather than a raw set.
+
+Not every case is handled by relabeling a terminal name. A misplaced \lstinline|IMPORT|, one written after the first item in a file, is caught by the grammar rule described in Section \ref{sec:lexing-and-parsing}, but the generic path above would report it as an unexpected token followed by a plain list of what else was expected there, true, but silent about the one thing an author actually needs to know: that the problem is positional, not lexical. \lstinline|report_syntax_error| intercepts this specific case before falling through to the generic path:
+
+\begin{codeblock}[]{Py}
+if text == "IMPORT":
+    reporter.error(
+        line, column - 1, length,
+        "Unexpected 'IMPORT' statement found here.",
+        "IMPORT statements must appear at the top of the file, "
+        "before any declarations (ACTION, PLAYBOOK, PLOT, etc.).",
+        filename=filename,
+    )
+    return
+
+This is humanization taken one step further than a lookup table: rather than only translating a terminal's name, the function recognises one particular error shape and replaces the entire message with one that states the actual rule, since no amount of relabeling \lstinline|IMPORT| itself would have conveyed that the problem is where it appears, not what it is.
+
+The resulting message reuses the exact \lstinline|CompilerMessage| shape described above:
+\begin{codeblock}[]{Py}
+reporter.error(
+    line, column - 1, length,
+    f"Unexpected '{text}' found here.",
+    f"Expected {expected}.",
+    filename=filename,
+)
+\end{codeblock}
+
+The \lstinline|column - 1| adjustment is the same 1-based-to-0-based convention already named for the Validator's \lstinline|_error|/\lstinline|_warning| helpers in Section \ref{sec:semantic-validation}: Lark reports columns as 1-based, while \lstinline|ErrorReporter| stores and displays every column as 0-based, and this is the one place in the entire pipeline where that specific conversion happens for a syntax, rather than a semantic, error.
+
+\subsubsection{Design Rationale}
+Two questions are worth separating here: why a single shared reporter exists at all, and, more narrowly, why translating Lark's own exceptions was kept in a module of its own rather than folded into the reporter directly.
+
+On the first, routing every phase's diagnostics through one shared reporter, rather than having each phase collect and return its own list, is what makes a single, uniformly sorted, uniformly formatted report possible at all, the block shown above being one instance of it, regardless of which phase produced the message; the CLI's diagnostic printer, described in Section \ref{sec:orchestration}, never needs to know which phase produced a given message, only how to render a \lstinline|CompilerMessage|.
+
+On the second, keeping syntax-error humanization in its own module, rather than teaching \lstinline|ErrorReporter| itself about Lark's exception types, mirrors the separation Section \ref{sec:lexing-and-parsing} already drew around grammar mechanics, now applied to error handling instead: \lstinline|errors.py|'s own vocabulary, \lstinline|CompilerMessage|, \lstinline|Severity|, the source registry, has no dependency on Lark at all, and \lstinline|syntax_errors.py| is the one module responsible for translating a third-party exception into that vocabulary. As corrected in Section \ref{sec:lexing-and-parsing}, this means Lark's exception types are confined to a single module, just not the same one that confines its grammar and tree-construction machinery.
+
+We now turn to the phase that ties every other phase together into a single, callable pipeline: Pipeline Orchestration and the CLI.
+
+\subsection{Pipeline Orchestration and CLI}
+\label{sec:orchestration}
+Two modules wire the phases described above into something a person or another program can actually invoke. \lstinline|compiler.py| sequences the phases into a small set of callable entry points. \lstinline|cli.py| exposes those entry points as commands runnable from a terminal. We look at the entry points first, then the commands built on top of them.
+
+\subsubsection{The Compilation Entry Points}
+Two functions run Stages 0 through 3, Preprocess through Annotate, and are shared by every public entry point above them. \lstinline|parse_source(source, filename, reporter)| runs these four stages on a single string, writing into a reporter supplied by its caller:
+\begin{codeblock}[]{Py}
+def parse_source(source, filename, reporter):
+    annotations = preprocess(source, filename=filename)
+    reporter.register_source(filename, source)
+
+    try:
+        tree = parse(source)
+    except (UnexpectedToken, UnexpectedCharacters) as e:
+        report_syntax_error(e, reporter, filename=filename)
+        return None
+
+    builder = ASTBuilder(filename=filename)
+    program: Program = builder.transform(tree)
+    if reporter.has_errors():
+        return None
+
+    _attach_doc_comments(program, annotations.doc_comments)
+    return program
+\end{codeblock}
+\lstinline|parse_files(filepaths, reporter)| calls \lstinline|parse_source| once per file, collecting every successfully built \lstinline|Program|, and merges them with a plain \lstinline|list.extend()| on \lstinline|.items| and \lstinline|.doc_comments|; this merge is order-independent, since every declaration shares one global namespace, checked in Semantic Validation (Section \ref{sec:semantic-validation}).
+
+\lstinline|compile_source| and \lstinline|compile_file| each add Stages 4 and 5 on top of one of these two helpers:
+\begin{codeblock}[]{Py}
+def compile_source(source, filename="<string>", emit=True):
+    reporter = ErrorReporter()
+    program = parse_source(source, filename, reporter)
+    if program is None or reporter.has_errors():
+        return _failure(reporter)
+    ...
+
+def compile_file(filepath, emit=True):
+    filepath = Path(filepath).resolve()
+    reporter = ErrorReporter()
+    all_files = resolve_imports(filepath, reporter=reporter)
+    if reporter.has_errors():
+        return _failure(reporter)
+    program = parse_files(all_files, reporter)
+    if program is None or reporter.has_errors():
+        return _failure(reporter)
+    ...
+\end{codeblock}
+Both proceed identically from there: construct a \lstinline|Validator|, validate the merged \lstinline|Program|, check for errors, and, if \lstinline|emit| is true, construct an \lstinline|Emitter| and emit. \lstinline|compile_file| always calls \lstinline|parse_files|, regardless of how many files \lstinline|resolve_imports| returns, since that helper handles a single file exactly as well as several. \lstinline|compile_source| has no import-resolution step at all, since a bare string has no filesystem location to resolve a relative import path against; an \lstinline|IMPORT| statement inside such a string still parses into a genuine \lstinline|ImportDecl| node, described in Section \ref{sec:preprocessing}, but that node's path is never followed. This is exactly the entry point the Visual Editor's backend calls, described in Section \ref{subsec:backend}: a browser sends source text over HTTP, not a file path, so \lstinline|compile_source| is the only one of the two entry points a server-side request handler can use.
+
+Both entry points populate \lstinline|CompileResult.ast| identically, giving either caller access to the built AST regardless of which path produced it; the field's own comment in \lstinline|compiler.py| states its purpose directly, as the representation kept around for the editor server.
+
+\subsubsection{The CLI Commands}
+\lstinline|cli.py| exposes three commands built on Click, sharing one small piece of state:
+\begin{codeblock}[]{Py}
+@dataclass
+class CliState:
+    quiet:   bool = False
+    verbose: bool = False
+\end{codeblock}
+and two output helpers used by every command. \lstinline|_print_diagnostics| iterates a \lstinline|CompileResult|'s messages, sorted by filename and line, skipping warnings when quiet, and prints each one through the shared \lstinline|format_message| function described in Section \ref{sec:error-reporting}, passing \lstinline|click.style| as its styling callback so the terminal output is colored:
+\begin{codeblock}[]{Py}
+def _print_diagnostics(result, quiet: bool) -> None:
+    for msg in sorted(result.messages, key=lambda m: (m.filename, m.line)):
+        if quiet and msg.severity != Severity.ERROR:
+            continue
+        click.echo(format_message(msg, click.style))
+\end{codeblock}
+\lstinline|_print_summary| prints the closing pass/fail line and, on failure, terminates the process, parameterized by an \lstinline|action_name| so the same function can report either a compilation or a check:
+\begin{codeblock}[]{Py}
+def _print_summary(result, quiet: bool, action_name: str = "Compilation") -> None:
+    if not result.success:
+        click.secho(f"\n{action_name} failed with {result.error_count} error(s).", ...)
+        sys.exit(1)
+    if not quiet:
+        click.secho(f"\n{action_name} successful! ({result.warning_count} warning(s))", ...)
+\end{codeblock}
+
+All three commands funnel through the same underlying entry point, \lstinline|compile_file|, differing only in the \lstinline|emit| flag they pass and in what they do with the result. \lstinline|compile| runs with emission enabled, prints diagnostics and a summary, and, if any output was produced, writes every entry of \lstinline|result.outputs| to the chosen directory, or merely reports what it would write when \lstinline|--dry-run| is given. \lstinline|check| runs with \lstinline|emit=False|, prints diagnostics, and reports the same summary under the label \lstinline|"Check"|. \lstinline|parse|, marked \lstinline|hidden=True| since it exists for internal debugging rather than everyday use, also runs with \lstinline|emit=False|, but skips \lstinline|_print_diagnostics| entirely: it pretty-prints \lstinline|result.ast| whenever one was built, even if Validation later failed, and only afterward checks \lstinline|result.success| to decide whether to report a failure and exit non-zero. This makes it the one command that can still show useful output, the AST as far as it got, from a source file that ultimately fails to validate.
+
+\subsubsection{Design Rationale}
+Every choice examined in this subsection follows one principle at a different scale: write a piece of logic once, and let every caller or situation that needs it share the same implementation, rather than special-casing it per caller.
+
+At the smallest scale, this is fail-fast sequencing: each stage checking \lstinline|reporter.has_errors()| and returning early, as shown throughout \lstinline|parse_source|, \lstinline|compile_source|, and \lstinline|compile_file| above, applies the identical check uniformly after every stage rather than writing bespoke error-propagation logic per stage. This was chosen over the alternative of continuing past an error to collect as many diagnostics as possible in one run. A file with a genuine syntax error, for instance a missing colon after a \lstinline|WHEN| trigger, produces a parse tree that Lark cannot build at all; there is no partial \lstinline|Program| to hand to the Validator, since AST Construction only runs once Parsing has already succeeded. Attempting to validate a tree recovered by best-effort guessing from a broken parse would risk reporting a cascade of unrelated, confusing errors that all stem from the same root typo, costing the novice authors Regia targets more debugging time than it saves them. The cost of this choice is that an author with unrelated errors in different phases must fix and recompile once per phase rather than seeing every problem at once; we judge this an acceptable trade, particularly since most Regia programs, once they parse at all, tend to fail validation for one or two closely related reasons rather than many unrelated ones.
+
+At the level of a single result, the same principle produces one uniform \lstinline|CompileResult| shape returned by both entry points, rather than a different return type per phase or a raised exception on failure. This is what lets every caller, the CLI's commands and the editor's HTTP endpoint (Section \ref{subsec:backend}) alike, handle success and failure identically, inspecting the same \lstinline|success| flag and the same \lstinline|messages| list regardless of which phase stopped the pipeline. Populating \lstinline|ast| from both entry points serves two callers for two different reasons under this same shared shape: the CLI's hidden \lstinline|parse| command prints it directly for debugging, whenever Parsing and AST Construction succeeded even if Validation later failed, and the editor calls \lstinline|compile_source| with \lstinline|emit=False| and reads exactly this field, and nothing else, to render its graph.
+
+At the level of the pipeline's own structure, the same principle produces two shared Stage-0–3 helpers beneath two thin entry points, so that \lstinline|compile_source| and \lstinline|compile_file| differ only in the one respect that actually distinguishes them, whether there is a filesystem path to resolve imports against, and nowhere else; every other line of sequencing logic is written once and inherited by both.
+
+At the level of the CLI itself, the same principle shows up twice more. Having all three commands call the same \lstinline|compile_file| entry point, rather than each wiring its own combination of pipeline stages, reflects that they are not three different pipelines; they are three different \emph{views} onto the same pipeline's result, distinguished by whether emission runs, whether output is written, and what part of the result is shown. \lstinline|_print_summary|'s \lstinline|action_name| parameter follows the same reasoning at a smaller scale still: \lstinline|compile| and \lstinline|check| report the identical pass/fail structure, differing only in the verb used to describe it, so one parameterized function serves both rather than two copies of the same four lines. And, reaching back into Section \ref{sec:error-reporting}, \lstinline|format_message| accepting an injectable \lstinline|style_func| is the same principle applied to rendering itself: \lstinline|cli.py| obtains colored terminal output and \lstinline|ErrorReporter.format_all| obtains plain text from the exact same function, with no duplicated implementation of the divider-header-caret block anywhere in the codebase. \lstinline|format_all| remains useful in its own right as a one-shot convenience, a single call returning every diagnostic plus a summary as one string, for a caller that wants the whole report at once; \lstinline|cli.py| instead composes \lstinline|_print_diagnostics| and \lstinline|_print_summary| separately, since its three commands need finer control than a single combined string allows, different summary wording per command, and output-directory writing interleaved between the two.
+
+This closes our description of the transpiler. We now turn to the second artifact built on top of it: the Visual Editor.
+
+\section{Visual Editor}
+\label{sec:editor}
+    \subsection{Architecture Overview}
+    \subsection{Backend}
+    \label{subsec:backend}
+    \subsection{Data Flow}
+    \subsection{AST-To-Graph Mapping}
+    \subsection{Bidirectional Editing}
+    \subsection{Error Management}
+    \subsection{Limitations}
+

@@ -1,3 +1,7 @@
 # Antigravity IDE Agent Skills & Configs
 .agents/
 .venv/
+.pytest_cache/
+language/.pytest_cache/
+language/src/regia/__pycache__/
+language/automated_tests/__pycache__/

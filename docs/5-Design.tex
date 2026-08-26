@@ -1,0 +1,673 @@
+\chapter{Language Design}
+\label{ch:design}
+
+In the previous chapter we described the design process of the Regia language and its evolution. In this chapter we describe the syntax and architecture of the final design. We detail each component of the language, its role, and its translation into AgentSpeak. Chapter \ref{ch:implementation} later describes how this mapping is achieved inside the compiler pipeline. 
+
+We follow the BNF grammar notation of the language throughout this chapter. Moreover, we illustrate every construct using a single running example. Listing \ref{lst:royalbanquet-full} shows the complete source of this example: a royal banquet in which a guest, insulted by the host, may challenge them to a duel that interrupts the feast. We return to specific fragments of this listing throughout the chapter, referencing it by line range where useful.
+
+\begin{codeblock}[title=Regia DSL Example]{Regia}
+# Vocabulary Declarations
+
+# Actions used by Playbooks
+ACTION toast(target).
+ACTION eat_food.
+ACTION complain.
+
+# Actions used by the Director (WORLD DO and Role DO)
+ACTION engine.security.summon_guards AS call_guards.
+ACTION lock_doors.
+ACTION play_music.
+ACTION serve_wine.
+ACTION stop_music.
+
+# Events triggering Playbook and Plot WHEN blocks
+EVENT food_served.
+EVENT insult_heard.
+EVENT digestion_check.
+EVENT assassin_spotted.
+EVENT insult_thrown.
+EVENT duel_resolved.
+
+# Facts used in Playbook IF conditions
+FACT is_hungry.
+FACT is_drunk.
+FACT hates(person).
+
+# Playbooks
+
+#@desc: Reactive behaviour for guests mingling and eating at the banquet.
+PLAYBOOK NobleSocializing:
+
+    WHEN insult_heard PRIORITY 5 TEMPER sympathy(-0.5) EFFECTS aggressiveness(0.2):
+        IF NOT is_drunk AND hates(host):
+            DO complain.
+            SIGNAL insult_thrown.
+        ELSE:
+            DO toast(host).
+
+    WHEN digestion_check:
+        IF is_hungry:
+            DO eat_food.
+            DO FORGET(is_hungry).
+            DO PRINT("A guest finishes their meal.").
+
+    WHEN food_served:
+        DO PRINT("A guest notices food arriving.").
+        IF (is_hungry OR is_drunk) AND NOT hates(host):
+            DO eat_food.
+        ELSE:
+            DO complain.
+
+# Plots
+
+#@desc: A dummy subplot to satisfy the START SUBPLOT requirement.
+PLOT HonorDuel.
+
+    PHASE combat INITIAL.
+
+    ROLE Challenger.
+
+    DURING combat:
+        WHEN duel_resolved:
+            WORLD DO PRINT("The duel is over.").
+            END PLOT.
+
+#@desc: The main narrative flow of the Royal Banquet.
+PLOT RoyalBanquet.
+
+    PHASE reception INITIAL.
+    PHASE feast.
+    PHASE duel_interruption.
+
+    ROLE Host.
+    ROLE Guest.
+
+    DURING PLOT:
+        WHEN assassin_spotted PRIORITY 9:
+            WORLD DO lock_doors.
+            Host DO call_guards.
+            END PLOT.
+
+    DURING reception:
+        ON ENTER:
+            WORLD DO play_music.
+            ASSIGN NobleSocializing TO Guest.
+            
+        WHEN food_served:
+            TRANSITION TO feast.
+
+    DURING feast:
+        ON ENTER:
+            WORLD DO serve_wine.
+            
+        WHEN ROLE Guest SIGNALS insult_thrown:
+            WORLD DO stop_music.
+            START SUBPLOT HonorDuel MAPPING Guest TO Challenger.
+            TRANSITION TO duel_interruption.
+            
+        ON EXIT:
+            UNASSIGN NobleSocializing FROM Guest.
+
+    DURING duel_interruption:
+        WHEN SUBPLOT HonorDuel ENDS:
+            WORLD DO PRINT("The duel is settled. The banquet is ruined.").
+            END PLOT.
+\end{codeblock}
+\label{lst:royalbanquet-full}
+
+\begin{center}
+(Listing \ref{lst:royalbanquet-full}: the running example, a royal banquet interrupted by a duel.)
+\end{center}
+
+We start with the program itself.
+
+\section{Program Definition}
+\label{sec:program:definition}
+
+\begin{codeblock}[]{BNF}
+    <program>        ::= <import-stmt>+ <item>*
+                       | <item>+
+    
+    <import-stmt>    ::= 'IMPORT' STRING '.'
+\end{codeblock}
+
+A Regia program is defined as a series of import statements and items. An import statement pulls in the contents of a secondary Regia source file, referenced through its path, passed as a string. This mechanism allows an author to structure a project into separate file modules and to reuse the same module across multiple programs, which promotes reusability and keeps individual files small. 
+
+Import statements must appear at the top of the file; the grammar enforces this ordering constraint, and the compiler rejects any program in which an import statement follows another item. Listing \ref{lst:royalbanquet-full} declares no import, since it is self-contained, but a larger project would typically factor its vocabulary declarations into an imported file shared across several Plots, as in the following sketch:
+
+\begin{codeblock}[]{Regia}
+% banquet_vocab.regia
+FACT is_hungry.
+ACTION eat_food.
+...
+
+% royal_banquet.regia
+IMPORT "banquet_vocab.regia".
+
+PLAYBOOK NobleSocializing:
+    ...
+\end{codeblock}
+
+Every symbol declared in \lstinline|banquet_vocab.regia| becomes available inside \lstinline|royal_banquet.regia| once resolved, exactly as if both files had been written as one. We return to how this resolution is implemented in Chapter \ref{ch:implementation}, Section \ref{sec:preprocessing}.
+
+\begin{codeblock}[]{BNF}
+    <item>           ::= <element-decl>
+                       | <playbook-def>
+                       | <plot-def>
+\end{codeblock}
+
+After the import statements we find the items, the actual building blocks of a Regia program. There are three kinds of items:
+
+\begin{itemize}
+    \item \textbf{Element Declarations}: declarations of Facts, Events, and Actions, the shared vocabulary described in Section \ref{sec:vocabulary}.
+    \item \textbf{Playbook Definitions}: definitions of Playbooks, reusable bundles of reactive plans, described in Section \ref{sec:playbooks}.
+    \item \textbf{Plot Definitions}: definitions of Plots, narrative state machines, described in Section \ref{sec:plots}.
+\end{itemize}
+
+Listing \ref{lst:royalbanquet-full} follows this order: a vocabulary block, one Playbook definition, and two Plot definitions.
+
+\subsection{Comments}
+\label{sec:comments}
+
+%TBD: Better introduce comments
+
+Outside of the grammar we find comments. Two kinds of comment share the same \lstinline|#| prefix, but serve different purposes, and only one of them is discarded outright. An ordinary comment, a \lstinline|#| followed by any text, may appear on its own line anywhere in a Regia program and carries no meaning beyond documentation; Listing \ref{lst:royalbanquet-full} uses this form to separate the vocabulary, Playbook, and Plot sections of the file. A doc comment instead attaches a short, structured description to the declaration or definition that immediately follows it, using the form \lstinline|#@key: value|, optionally continued across further lines with \lstinline|#-|:
+
+\begin{codeblock}[]{Regia}
+#@desc: A dummy subplot to satisfy the START SUBPLOT requirement.
+PLOT HonorDuel.
+\end{codeblock}
+
+Our running example uses \lstinline|desc| as its only key, attaching a one-line summary to each of its two Plots, but the key is not otherwise restricted by the grammar; an author is free to introduce other keys for whatever metadata a downstream tool, such as the Visual Editor described in Chapter \ref{ch:implementation}, might want to read. Unlike an ordinary comment, a doc comment's content is not discarded: it is recovered before parsing and reattached to the AST node it precedes once one exists, a process described in full in Chapter \ref{ch:implementation}, Sections \ref{sec:preprocessing} and \ref{sec:comment-attachment}.
+
+We now focus on each of these components in turn, starting with the shared vocabulary.
+
+\section{Vocabulary: Facts, Actions, Events}
+\label{sec:vocabulary}
+\begin{codeblock}[]{BNF}
+    <element-decl>   ::= <action-decl>
+                       | <event-decl>
+                       | <fact-decl>
+\end{codeblock}
+Facts, Actions, and Events form the shared vocabulary of a Regia program. Both Playbooks and Plots reference this vocabulary, and the compiler requires that every element be declared before its first use. These declarations do not translate directly into code, but they are used for validation. This way, designers map out the elements needed for their narratives in one place, which can later be discussed with programmers.
+
+Lines 1 through 26 of Listing \ref{lst:royalbanquet-full} declare the vocabulary of our running example: three Actions available to Playbooks, five Actions available only to the Director, six Events, and three Facts. We now describe each of the three element declarations in turn.
+
+\subsection{Facts}
+\begin{codeblock}[]{BNF}
+    <fact-decl>      ::= 'FACT' ID <param-names>? '.'
+\end{codeblock}
+
+A Fact declares a named proposition that an agent can believe. A Fact may optionally carry a list of parameter names, as our running example illustrates.
+
+\begin{codeblock}[]{Regia}
+    FACT is_hungry.
+    FACT hates(person).
+\end{codeblock}
+
+A zero-arity Fact, such as \lstinline|is_hungry|, behaves as a boolean flag: the agent either holds the belief or does not. A parametric Fact, such as \lstinline|hates(person)|, carries a typed slot, and the agent may hold multiple instances of it, each bound to a different value; a Guest could believe both \lstinline|hates(host)| and \lstinline|hates(steward)| at once. Facts are the epistemic state of the agent, and they appear as guards inside \lstinline|IF| branches, described in Section \ref{sec:playbooks}. Table \ref{tab:fact-mapping} shows how Fact declarations and Fact references translate into AgentSpeak.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia} & \textbf{AgentSpeak} \\
+\hline
+\lstinline|FACT is_hungry.| & Belief \lstinline|is_hungry| \\
+\lstinline|FACT hates(person).| & Belief \lstinline|hates(X)| \\
+\lstinline|IF hates(host):| & Context clause \lstinline|: hates(host)| \\
+\hline
+\end{tabular}
+\caption{Fact declarations and Fact references, with their AgentSpeak translation.}
+\label{tab:fact-mapping}
+\end{table}
+
+\subsection{Actions}
+\begin{codeblock}[]{BNF}
+    <action-decl>    ::= 'ACTION' ID <param-names>? ('AS' ID)? '.'
+\end{codeblock}
+
+An Action declares a named operation that an agent can execute. As with Facts, an Action may carry a list of parameter names. An Action may also carry an optional alias, introduced by the \lstinline|AS| keyword, and placed after the fully-qualified name it stands for.
+
+\begin{codeblock}[]{Regia}
+    ACTION eat_food.
+    ACTION toast(target).
+    ACTION engine.security.summon_guards AS call_guards.
+\end{codeblock}
+
+The alias addresses a practical problem: some underlying AgentSpeak actions are deeply namespaced, and typing their full name inside every Playbook and Plot would clutter the script. When an author declares an alias, only the alias is used inside the Regia program, and the compiler substitutes the fully-qualified name at emission time. In our running example, the Director's \lstinline|ON PLOT| handler executes \lstinline|Host DO call_guards|, and the compiled Host role file shows the substitution taking place:
+
+\begin{codeblock}[]{AgentSpeak}
+@role__royalbanquet__host__call_guards
++!call_guards <- engine.security.summon_guards.
+\end{codeblock}
+
+An Action names an interface, not an implementation. Regia does not specify how an Action is realized; it only states that the Action exists and, optionally, which parameters it accepts. Table \ref{tab:action-mapping} shows two of the running example's Actions as they appear inside a compiled Playbook plan.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia} & \textbf{AgentSpeak} \\
+\hline
+\lstinline|ACTION eat_food.| & No output; declaration only \\
+\lstinline|DO eat_food.| & \lstinline|eat_food| \\
+\lstinline|DO toast(host).| & \lstinline|toast(host)| \\
+\hline
+\end{tabular}
+\caption{Action declarations and Action calls, with their AgentSpeak translation.}
+\label{tab:action-mapping}
+\end{table}
+
+\subsection{Events}
+\begin{codeblock}[]{BNF}
+    <event-decl>     ::= 'EVENT' ID '.'
+\end{codeblock}
+
+An Event declares a named trigger that an agent can perceive. Events drive plan selection inside the BDI cycle: when an Event occurs, the runtime searches for a matching Playbook or Plot handler. 
+
+Our running example declares six Events, among them \lstinline|food_served| and \lstinline|digestion_check|, used respectively by the \lstinline|NobleSocializing| Playbook's \lstinline|WHEN food_served:| and \lstinline|WHEN digestion_check:| blocks. Table \ref{tab:event-mapping} shows the resulting AgentSpeak plan trigger.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia} & \textbf{AgentSpeak plan trigger} \\
+\hline
+\lstinline|EVENT food_served.| & \lstinline|+food_served| \\
+\lstinline|EVENT digestion_check.| & \lstinline|+digestion_check| \\
+\hline
+\end{tabular}
+\caption{Event declarations and the AgentSpeak plan triggers they produce.}
+\label{tab:event-mapping}
+\end{table}
+
+Having introduced the shared vocabulary, we now turn to Playbooks, the first construct that consumes it.
+
+\section{Playbooks}
+\label{sec:playbooks}
+A Playbook is a named, reusable bundle of reactive plans. It describes how an agent behaves in a given context, and it has no knowledge of Plots or phases: a Playbook can only act on the agent itself, or signal back to the Director managing the Plot the agent is enrolled in. This context isolation keeps Playbooks composable, and it allows the same Playbook to be assigned to different agents, or even to different roles across different Plots.
+
+\begin{codeblock}[]{BNF}
+    <playbook-def>   ::= 'PLAYBOOK' ID ':' <pb-when-block>+
+\end{codeblock}
+
+Our running example declares a single Playbook, \lstinline|NobleSocializing| (lines 22 through 41 of Listing \ref{lst:royalbanquet-full}), which we use throughout this section. It contains three \lstinline|WHEN| blocks: one reacting to an overheard insult, one to a self-perceived digestion check, and one to food being served.
+
+\subsection{Plans}
+\begin{codeblock}[]{BNF}
+    <pb-when-block>  ::= 'WHEN' ID <priority>? <temper>? ':' <pb-when-body>
+\end{codeblock}
+
+Each \lstinline|WHEN| block defines a reactive plan: when the named Event occurs, the agent executes the block body. The Event name must refer to a declared \lstinline|EVENT|, and the body executes on the agent that perceives the Event. A \lstinline|WHEN| block may carry an optional \lstinline|PRIORITY| annotation, described further in Section \ref{sec:priority-temper}; a plan without a priority defaults to \lstinline|0|.
+
+At the AgentSpeak level, a Playbook is not always active. The Director enables it by executing an \lstinline|ASSIGN| statement, described in Section \ref{sec:plots}, and this in turn adds a \lstinline|playbook_active(Name, Director)| belief to the agent. Each \lstinline|WHEN| block compiles into one or more AgentSpeak plans, and every compiled plan is gated by this belief in its context, so a Playbook produces no observable behaviour until the Director assigns it. Table \ref{tab:plan-mapping} shows the compiled form of the \lstinline|digestion_check| plan.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia} & \textbf{AgentSpeak} \\
+\hline
+\lstinline|WHEN digestion_check:| & \lstinline|+digestion_check :| \\
+\lstinline|    IF is_hungry:| & \lstinline|    playbook_active(noblesocializing, _)| \\
+\lstinline|        DO eat_food.| & \lstinline|    & is_hungry <-| \\
+\lstinline|        DO FORGET(is_hungry).| & \lstinline|        eat_food;| \\
+\lstinline|        DO PRINT(...).| & \lstinline|        -is_hungry;| \\
+& \lstinline|        .print(...).| \\
+\hline
+\end{tabular}
+\caption{The compiled form of the \lstinline|digestion\_check| plan, line by line.}
+\label{tab:plan-mapping}
+\end{table}
+
+\subsection{Statements}
+\begin{codeblock}[]{BNF}
+    <pb-stmt>        ::= <do-stmt> | <signal-stmt>
+    <do-stmt>        ::= 'DO' <action-name> <arg-list>? '.'
+    <signal-stmt>    ::= 'SIGNAL' ID <arg-list>? '.'
+\end{codeblock}
+
+A plan body is a sequence of statements. Regia allows only two kinds of statements inside a Playbook: \lstinline|DO|, which executes an action on the agent itself, and \lstinline|SIGNAL|, which broadcasts a belief-change event to every Director managing a Plot the agent is currently enrolled in. \lstinline|SIGNAL| is the only channel through which a Playbook communicates upward to the narrative layer; a Playbook cannot address the Director, a Plot, or another agent directly.
+
+The action name in a \lstinline|DO| statement is either a user-declared \lstinline|ACTION|, or one of several reserved names that map to AgentSpeak primitives rather than to a user-declared action, as our example's \lstinline|DO FORGET(is_hungry)| and \lstinline|DO PRINT(...)| illustrate:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Special Action} & \textbf{AgentSpeak} \\
+\hline
+\lstinline|DO TELL(target, msg).| & \lstinline|.send(target, tell, msg)| \\
+\lstinline|DO BROADCAST(msg).| & \lstinline|.broadcast(tell, msg)| \\
+\lstinline|DO ACHIEVE(goal).| & \lstinline|!goal| \\
+\lstinline|DO BELIEVE(fact).| & \lstinline|+fact| \\
+\lstinline|DO FORGET(fact).| & \lstinline|-fact| \\
+\lstinline|DO PRINT(text).| & \lstinline|.print(text)| \\
+\lstinline|DO WAIT(ms).| & \lstinline|.wait(ms)| \\
+\hline
+\end{tabular}
+\caption{The seven special \lstinline|DO| actions and the AgentSpeak primitives they map to.}
+\label{tab:special-action-mapping}
+\end{table}
+
+These seven keywords fall into three groups. \lstinline|TELL| and \lstinline|BROADCAST| send a message to another agent or to every agent respectively, using Jason's own \lstinline|.send|/\lstinline|.broadcast| internal actions. \lstinline|ACHIEVE| posts a new achievement goal on the agent's own agenda, exactly as if a plan elsewhere had posted \lstinline|!goal| directly. \lstinline|BELIEVE| and \lstinline|FORGET| add or remove a belief from the agent's belief base; our running example uses \lstinline|FORGET| in the \lstinline|digestion_check| plan, so that a guest who has just eaten does not immediately eat again on the next check. \lstinline|PRINT| and \lstinline|WAIT| are development aids, writing to the console and pausing execution respectively, neither of which has any effect on the agent's beliefs or goals.
+
+The \lstinline|insult_heard| plan illustrates \lstinline|SIGNAL|: an insulted, sober Guest who hates the host executes \lstinline|DO complain|, then \lstinline|SIGNAL insult_thrown|. The compiler translates the latter into a call to \lstinline|signal_directors|, an infrastructural plan generated once per role file:
+
+\begin{codeblock}[]{AgentSpeak}
++!signal_directors(PbName, Payload) <-
+    .findall(D, playbook_active(PbName, D), Directors);
+    for ( .member(DirectorId, Directors) ) {
+        .send(DirectorId, untell, Payload);
+        .send(DirectorId, tell, Payload)
+    }.
+\end{codeblock}
+
+This plan looks up every Director currently holding the \lstinline|NobleSocializing| Playbook active for the signaling agent, and notifies each of them in turn. The paired \lstinline|untell|/\lstinline|tell| sequence exists to force Jason to process the signal as a genuinely new event even if the same signal was already told and never retracted, preventing a repeated insult from being silently ignored.
+
+\subsection{Conditional Branches}
+\begin{codeblock}[]{BNF}
+    <pb-when-body>      ::= <pb-stmt>+
+                          | <pb-stmt>+ <pb-if-branch>+ <pb-else-branch>?
+                          | <pb-if-branch>+ <pb-else-branch>?
+    <pb-if-branch>      ::= 'IF' <condition> ':' <pb-stmt>+
+    <pb-else-branch>    ::= 'ELSE' ':' <pb-stmt>+
+\end{codeblock}
+
+A \lstinline|WHEN| body follows one of three patterns, one for each alternative above. 
+
+\begin{itemize}
+    \item In the pure unconditional pattern, the body is a flat list of statements, and it always executes when the Event fires.
+    \item In the mixed pattern, unconditional statements precede one or more \lstinline|IF| branches; the compiler prepends these statements to every branch's body at emission time, so an author never needs to repeat a common prefix across branches.
+    \item In the pure conditional pattern, the body is one or more \lstinline|IF| branches with no leading statements, optionally closed by an \lstinline|ELSE| branch, as in the \lstinline|insult_heard| plan.
+\end{itemize}
+The \lstinline|food_served| plan illustrates the mixed pattern: \lstinline|DO PRINT("A guest notices food arriving.")| precedes the \lstinline|IF|, and the compiler prepends it to both the \lstinline|IF| and the \lstinline|ELSE| branch:
+
+\begin{codeblock}[]{AgentSpeak}
+@pb__NobleSocializing__food_served__0
++food_served : playbook_active(noblesocializing, _)
+    & (is_hungry | is_drunk) & not (hates(host)) <-
+    .print("A guest notices food arriving.");
+    eat_food.
+
+@pb__NobleSocializing__food_served__1
++food_served : playbook_active(noblesocializing, _)
+    & not ((is_hungry | is_drunk) & not (hates(host))) <-
+    .print("A guest notices food arriving.");
+    complain.
+\end{codeblock}
+
+The compiler does not rely on branch order at runtime; instead, it gives every branch a mutually exclusive context, so that at most one plan fires. The \lstinline|ELSE| branch of \lstinline|food_served| compiles to a context that negates the entire preceding condition, guaranteeing that the two plans generated from this \lstinline|WHEN| block never overlap, regardless of how many branches an author writes.
+
+\subsection{Conditions}
+\begin{codeblock}[]{BNF}
+    <condition>      ::= <condition-and> ('OR' <condition-and>)*
+    <condition-and>  ::= <condition-atom> ('AND' <condition-atom>)*
+    <condition-atom> ::= 'NOT' <condition-atom> | <fact-ref> | '(' <condition> ')'
+    <fact-ref>       ::= ID ('(' <arg> (',' <arg>)* ')')?
+\end{codeblock}
+
+A condition is a boolean expression over declared Facts, and it is the only kind of guard allowed inside an \lstinline|IF| branch. The operators \lstinline|NOT|, \lstinline|AND|, and \lstinline|OR| bind in that order, from tightest to loosest, and an author may override this precedence with parentheses. The \lstinline|food_served| plan's condition, \lstinline|(is_hungry OR is_drunk) AND NOT hates(host)|, exercises all three operators together with an explicit parenthesized group. Table \ref{tab:condition-mapping} lists the general translation rules, and the compiled context above confirms that the parenthesized group survives translation intact, as \lstinline+(is_hungry | is_drunk)+, rather than being flattened into an ambiguous mixture of \lstinline|&| and \lstinline+a|b+.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia} & \textbf{AgentSpeak} \\
+\hline
+\lstinline|IF is_hungry:| & Context clause \lstinline|: is_hungry| \\
+\lstinline|IF NOT is_drunk:| & Context clause \lstinline|: not is_drunk| \\
+\lstinline|IF a AND b:| & Context clause \lstinline|: a & b| \\
+\lstinline|IF (a OR b) AND c:| & Context clause \lstinline+: (a | b) & c+ \\
+\hline
+\end{tabular}
+\caption{Condition operators and their AgentSpeak translation.}
+\label{tab:condition-mapping}
+\end{table}
+
+\subsection{Annotations and Temper (VEsNA)}
+\label{sec:priority-temper}
+
+\begin{codeblock}[]{BNF}
+    <priority>      ::= 'PRIORITY' NUMBER
+    <temper>        ::= 'TEMPER' <temper-entry> (',' <temper-entry>)* <effects>?
+    <temper-entry>  ::= ID '(' FLOAT ')'
+    <effects>       ::= 'EFFECTS' <temper-entry> (',' <temper-entry>)*
+\end{codeblock}
+
+A \lstinline|WHEN| block may carry two further optional annotations, and both affect plan selection when multiple plans match the same Event. \lstinline|PRIORITY| orders plans by a plain integer, and the compiler emits it as the AgentSpeak annotation \lstinline|priority(N)|, in addition to using it to order plans inside the generated file. \lstinline|TEMPER| integrates with VEsNA, the agent's emotional and personality model: it declares one or more prerequisite dimension thresholds, and a plan only fires if the agent's current values for every listed dimension satisfy the threshold. \lstinline|EFFECTS| declares how executing the plan shifts those dimensions afterward.
+
+The \lstinline|insult_heard| plan carries both annotations at once: a sober, resentful Guest is only willing to \lstinline|complain| if their sympathy for the host is already low, and doing so further raises their aggressiveness.
+
+\begin{codeblock}[]{Regia}
+WHEN insult_heard PRIORITY 5 TEMPER sympathy(-0.5) EFFECTS aggressiveness(0.2):
+    IF NOT is_drunk AND hates(host):
+        DO complain.
+        SIGNAL insult_thrown.
+    ELSE:
+        DO toast(host).
+\end{codeblock}
+
+Both annotations compile to plan annotations rather than to context clauses, since they constrain plan applicability at the level of the BDI interpreter's selection function, not at the level of belief matching:
+
+\begin{codeblock}[]{AgentSpeak}
+@pb__NobleSocializing__insult_heard__0[priority(5),temper([sympathy(-0.5)]), effects([aggressiveness(0.2)])]
++insult_heard : playbook_active(noblesocializing, _)
+    & not (is_drunk) & hates(host) <-
+    complain;
+    !signal_directors(noblesocializing, insult_thrown).
+\end{codeblock}
+
+Table \ref{tab:temper-mapping} summarises the mapping.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Regia} & \textbf{AgentSpeak} \\
+\hline
+\lstinline|PRIORITY 5| & Plan annotation \lstinline|priority(5)|, and file ordering \\
+\lstinline|TEMPER sympathy(-0.5)| & Plan annotation \lstinline|temper([sympathy(-0.5)])| \\
+\lstinline|EFFECTS aggressiveness(0.2)| & Plan annotation \lstinline|effects([aggressiveness(0.2)])| \\
+\hline
+\end{tabular}
+\caption{\lstinline|PRIORITY|, \lstinline|TEMPER|, and \lstinline|EFFECTS| annotations, with their AgentSpeak translation.}
+\label{tab:temper-mapping}
+\end{table}
+
+Having described how a Playbook reacts to Events on the agent itself, we now turn to Plots, which coordinate multiple agents through the Director.
+
+\section{Plots}
+\label{sec:plots}
+A Plot is a structured narrative scenario. It describes the phases a scenario passes through, the roles that agents play in it, and how a dedicated orchestrator, the Director, manages transitions and world-level events. Unlike a Playbook, a Plot is not attached to a single agent: every active Plot instance spawns its own Director agent, which perceives events, tracks phase state, and sends directives to the agents bound to its roles. An individual agent does not know that it takes part in a Plot; it only receives and executes directives, so its Playbooks remain generic and reusable across different narratives.
+
+\begin{codeblock}[]{BNF}
+    <plot-def>   ::= 'PLOT' ID '.' <plot-header> <during-block>+
+\end{codeblock}
+
+Our running example declares two Plots, \lstinline|HonorDuel| and \lstinline|RoyalBanquet| (lines 43 through 78 of Listing \ref{lst:royalbanquet-full}). We focus mainly on \lstinline|RoyalBanquet|, the outer Plot, and return to \lstinline|HonorDuel|, its subplot, in Section \ref{sec:subplots}.
+
+\subsection{Phases and Roles}
+\begin{codeblock}[]{BNF}
+    <plot-header>  ::= (<phase-decl> | <role-decl>)+
+    <phase-decl>   ::= 'PHASE' ID 'INITIAL' '.' | 'PHASE' ID '.'
+    <role-decl>    ::= 'ROLE' ID '.'
+\end{codeblock}
+
+The Plot header, which must appear before any \lstinline|DURING| block, declares the phases and roles of the scenario. A Phase is a named, mutually exclusive stage of the Plot: at any moment, exactly one Phase is active. \lstinline|RoyalBanquet| declares three phases, \lstinline|reception|, \lstinline|feast|, and \lstinline|duel_interruption|, and marks \lstinline|reception| as \lstinline|INITIAL|. Every Plot must declare exactly one \lstinline|INITIAL| phase, and the compiler rejects a Plot that declares zero or more than one. The Director tracks the active Phase in a belief \lstinline|current_phase(Name)|, which the compiled \lstinline|RoyalBanquet| Director initializes to \lstinline|reception| in its boot plan:
+
+\begin{codeblock}[]{AgentSpeak}
+plot_name(royalbanquet).
+current_phase(reception).
+
+@boot__RoyalBanquet[atomic]
++!boot <-
+    .my_name(Me);
+    +plot_id(Me);
+    .print("[RoyalBanquet] Booting up director agent ", Me,
+        " in phase 'reception'...");
+    !on_enter(reception).
+\end{codeblock}
+
+A Role is a named placeholder for one or more agents that participate in the Plot; it is the layer of indirection between the narrative script, which refers only to abstract role names such as \lstinline|Host| and \lstinline|Guest|, and the concrete agents bound to those roles at runtime. This indirection is what allows the same \lstinline|RoyalBanquet| Plot to run unmodified with a different host and a different guest list each time it is instantiated. At the AgentSpeak level, the Director maintains this binding as a \lstinline|role_agent(Role, Agent)| registry, populated by \lstinline|start_plot| when the Plot begins:
+
+\begin{codeblock}[]{AgentSpeak}
++!start_plot(Bindings) <-
+    for ( .member(map(Role, Agents), Bindings) ) {
+        for ( .member(Agent, Agents) ) {
+            +role_agent(Role, Agent);
+        }
+    };
+    !boot.
+\end{codeblock}
+
+\subsection{DURING Blocks}
+\begin{codeblock}[]{BNF}
+    <during-block>   ::= 'DURING' ID ':' <during-content>+
+                       | 'DURING' 'PLOT' ':' <during-content>+
+\end{codeblock}
+
+A \lstinline|DURING| block scopes behaviour, either to a single named phase or to the Plot as a whole. \lstinline|DURING reception:| and \lstinline|DURING feast:| in our running example contain behaviour that is only active while the Plot is in the corresponding phase; the compiler injects a matching \lstinline|current_phase(...)| guard into every plan generated from these blocks. \lstinline|DURING PLOT:|, by contrast, contains behaviour that stays active across every phase, and no phase guard is injected. \lstinline|RoyalBanquet| uses it for the \lstinline|assassin_spotted| handler, which must fire whether the banquet is in reception, in full swing, or already interrupted by a duel:
+
+\begin{codeblock}[]{AgentSpeak}
+@dir__RoyalBanquet__assassin_spotted__0[priority(9)]
++assassin_spotted : true <-
+    lock_doors;
+    !send_to_role(host, achieve, call_guards);
+    !end_plot.
+\end{codeblock}
+
+Note the context here is simply \lstinline|true|: since \lstinline|DURING PLOT| carries no phase guard, this plan can preempt the narrative regardless of what the Host or the Guests are currently doing, which is precisely the point of a Plot-wide emergency handler.
+
+A \lstinline|DURING| block may contain three kinds of content: \lstinline|ON ENTER| and \lstinline|ON EXIT| lifecycle hooks, and \lstinline|WHEN| blocks, described in Sections \ref{sec:transitions} and \ref{sec:director-when} respectively. \lstinline|ON ENTER| and \lstinline|ON EXIT| may only appear inside a phase-specific \lstinline|DURING| block, since a Plot-wide block has no single phase to enter or exit; \lstinline|RoyalBanquet| uses \lstinline|ON ENTER| inside \lstinline|reception| to start the music and assign the \lstinline|NobleSocializing| Playbook to every Guest, and \lstinline|ON EXIT| inside \lstinline|feast| to remove that Playbook once the duel interrupts the banquet.
+
+\subsection{Transitions}
+\label{sec:transitions}
+\begin{codeblock}[]{BNF}
+    <inline-transition-stmt> ::= 'TRANSITION' 'TO' ID '.'
+\end{codeblock}
+
+A transition moves the Plot from its current phase to a new one, and is triggered by a \lstinline|TRANSITION TO| statement inside a \lstinline|WHEN| block. \lstinline|RoyalBanquet| transitions out of \lstinline|reception| unconditionally on \lstinline|food_served|, and out of \lstinline|feast| as the last step of handling an insult signal, described in Section \ref{sec:subplots}. A \lstinline|TRANSITION TO| statement must be the last statement in its block or branch, and it may not appear inside \lstinline|DURING PLOT|, since there is then no single current phase to leave.
+
+Executing a transition follows a fixed order: the Director evaluates any enclosing \lstinline|IF| condition, runs the \lstinline|ON EXIT| hook of the current phase, updates the \lstinline|current_phase| belief, and finally runs the \lstinline|ON ENTER| hook of the new phase. The compiled \lstinline|switch_phase| infrastructure plan, shared by every Plot, implements exactly this order:
+
+\begin{codeblock}[]{AgentSpeak}
+@switch_phase_atomic[atomic]
++!switch_phase(Target) : current_phase(Current) <-
+    !on_exit(Current);
+    -current_phase(Current);
+    +current_phase(Target);
+    !on_enter(Target).
+\end{codeblock}
+
+This ordering guarantees that teardown logic for a phase, such as unassigning \lstinline|NobleSocializing| from every Guest, always runs before setup logic for the next phase, so an agent is never left with two conflicting Playbooks active at once.
+
+\subsection{Director WHEN Blocks}
+\label{sec:director-when}
+\begin{codeblock}[]{BNF}
+    <plot-when-block>                 ::= 'WHEN' ID <priority>? ':' <plot-when-body>
+    <plot-when-subplot-ends-block>     ::= 'WHEN' 'SUBPLOT' ID 'ENDS' <priority>? ':' <plot-when-body>
+    <plot-when-role-signals-block>     ::= 'WHEN' 'ROLE' ID 'SIGNALS' ID <priority>? ':' <plot-when-body>
+\end{codeblock}
+
+A Director \lstinline|WHEN| block defines a reactive plan, in the same sense as a Playbook \lstinline|WHEN| block: it fires when a matching trigger occurs, and its body may use \lstinline|PRIORITY| and the branching constructs described in Section \ref{sec:playbooks}. Three variants of the trigger exist in our running example. 
+
+\begin{itemize}
+    \item The plain form, \lstinline|WHEN assassin_spotted PRIORITY 9:|, reacts to any occurrence of the named Event, regardless of which agent emitted it.
+    \item The \lstinline|WHEN SUBPLOT HonorDuel ENDS:| form, described further in Section \ref{sec:subplots}, reacts when the \lstinline|HonorDuel| subplot terminates.
+        \item The \lstinline|WHEN ROLE Guest SIGNALS insult_thrown:| form reacts to the \lstinline|insult_thrown| signal only when it was emitted by an agent currently bound to the \lstinline|Guest| role.
+\end{itemize}  
+
+Unlike a Playbook \lstinline|WHEN| block, none of these three variants may carry a \lstinline|TEMPER| annotation: VEsNA, described in Section \ref{sec:priority-temper}, models the emotional and personality state of an individual agent, and the Director is not itself such an agent, only an orchestrator, so a Temper precondition has no state to evaluate against at the Plot level.
+
+For the last variant, the Director filters the incoming signal by checking the \lstinline|source| annotation of the message against its \lstinline|role_agent| registry at the AgentSpeak level, so that only a signal genuinely sent by a \lstinline|Guest|-bound agent satisfies the context:
+
+\begin{codeblock}[]{AgentSpeak}
+@dir__RoyalBanquet__guest_signals_insult_thrown__0
++insult_thrown[source(Sender)] : current_phase(feast)
+    & role_agent(guest, Sender) <-
+    stop_music;
+    !start_subplot("honorduel", honorduel, [map(challenger, guest)]);
+    !switch_phase(duel_interruption).
+\end{codeblock}
+
+\subsection{Director Statements}
+\begin{codeblock}[]{BNF}
+    <imperative-stmt>   ::= <assign-stmt> | <unassign-stmt> 
+                          | <world-do-stmt>| <role-do-stmt> 
+                          | <inline-transition-stmt>
+                          | <start-subplot-stmt> | <plot-end-stmt>
+\end{codeblock}
+
+Inside \lstinline|ON ENTER|, \lstinline|ON EXIT|, and any Director \lstinline|WHEN| body, the Director draws on a different statement set from the one available to Playbooks, since the Director acts on the world and on other agents rather than on itself. Table \ref{tab:director-stmt-mapping} lists each statement and its purpose, with an example drawn from \lstinline|RoyalBanquet| wherever one is available.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Statement} & \textbf{Example from RoyalBanquet} \\
+\hline
+\lstinline|ASSIGN Pb TO Role.| & \lstinline|ASSIGN NobleSocializing TO Guest.| \\
+\lstinline|UNASSIGN Pb FROM Role.| & \lstinline|UNASSIGN NobleSocializing FROM Guest.| \\
+\lstinline|WORLD DO action.| & \lstinline|WORLD DO play_music.| \\
+\lstinline|RoleName DO action.| & \lstinline|Host DO call_guards.| \\
+\lstinline|TRANSITION TO phase.| & \lstinline|TRANSITION TO feast.| \\
+\lstinline|START SUBPLOT Plot MAPPING ...| & \lstinline|START SUBPLOT HonorDuel MAPPING Guest TO Challenger.| \\
+\lstinline|END PLOT.| & (executed by the \lstinline|assassin_spotted| handler) \\
+\hline
+\end{tabular}
+\caption{Director statements available inside \lstinline|ON ENTER|, \lstinline|ON EXIT|, and \lstinline|WHEN| bodies, with examples from \lstinline|RoyalBanquet|.}
+\label{tab:director-stmt-mapping}
+\end{table}
+
+\lstinline|ASSIGN NobleSocializing TO Guest| compiles to a one-off achievement goal sent to every agent currently bound to the \lstinline|Guest| role, instructing it to add the named Playbook to its own belief base:
+
+\begin{codeblock}[]{AgentSpeak}
++!on_enter(reception) <-
+    play_music;
+    !send_to_role(guest, achieve, add_playbook(noblesocializing)).
+\end{codeblock}
+
+\lstinline|RoleName DO action.| is different in kind from \lstinline|ASSIGN|, even though both address a Role: \lstinline|ASSIGN| installs a standing behaviour, a Playbook, that stays active until explicitly \lstinline|UNASSIGN|ed, while \lstinline|RoleName DO| dispatches a single, one-off achievement goal to every agent bound to that Role, executed once and not retained. \lstinline|Host DO call_guards| in our running example's \lstinline|assassin_spotted| handler is an instance of the latter: it does not add anything to the Host's belief base, it simply asks the Host to perform \lstinline|call_guards| immediately, resolved through the alias mechanism shown in Section \ref{sec:vocabulary} to \lstinline|engine.security.summon_guards|.
+
+\lstinline|TRANSITION TO| and \lstinline|END PLOT| must each be the last statement in their block or branch, and neither is allowed inside \lstinline|ON ENTER| or \lstinline|ON EXIT|, since a Plot cannot leave a phase, or terminate itself, while it is still in the middle of entering or leaving one.
+
+\subsection{Subplots}
+\label{sec:subplots}
+
+\begin{codeblock}[]{BNF}
+    <start-subplot-stmt>     ::= 'START' 'SUBPLOT' ID ('MAPPING' <role-mapping> (',' <role-mapping>)*)? '.'
+    <role-mapping>           ::= ID 'TO' ID
+    <plot-end-stmt>          ::= 'END' 'PLOT' '.'
+\end{codeblock}
+
+A Plot may spawn one or more child Plots, or subplots, through the \lstinline|START SUBPLOT| statement. This allows a complex narrative to delegate part of its story to a smaller, self-contained scenario, without folding every detail into a single Plot definition. The \lstinline|MAPPING| clause binds roles of the parent Plot to roles of the child Plot. When \lstinline|RoyalBanquet| detects that a Guest has signaled \lstinline|insult_thrown|, it starts the \lstinline|HonorDuel| subplot, mapping its own \lstinline|Guest| role onto \lstinline|HonorDuel|'s \lstinline|Challenger| role:
+
+\begin{codeblock}[]{Regia}
+START SUBPLOT HonorDuel MAPPING Guest TO Challenger.
+\end{codeblock}
+
+\lstinline|HonorDuel| is itself a minimal, self-contained Plot: a single phase, \lstinline|combat|, and a single handler that ends the Plot once a \lstinline|duel_resolved| Event occurs. Communication between the parent and the child is bidirectional. The parent reacts to the end of the child through \lstinline|WHEN SUBPLOT HonorDuel ENDS:|, compiled as a handler for the \lstinline|child_ended| achievement goal:
+
+\begin{codeblock}[]{AgentSpeak}
+@dir__RoyalBanquet__subplot_honorduel_ended__0
++!child_ended(honorduel, _) : current_phase(duel_interruption) <-
+    .print("The duel is settled. The banquet is ruined.");
+    !end_plot.
+\end{codeblock}
+
+Conversely, a subplot reacts to the termination of its own parent through the reserved event \lstinline|parent_ended|, delivered to every \lstinline|DURING PLOT| block; every compiled Director, including \lstinline|HonorDuel|'s, carries this handler unconditionally, whether or not the specific Plot declares any subplot of its own:
+
+\begin{codeblock}[]{AgentSpeak}
++!parent_ended[source(Parent)] : parent_plot(Parent) <-
+    -parent_plot(Parent);
+    !end_plot.
+\end{codeblock}
+
+This handler always terminates the child when its parent ends; the current design offers no way for an author to specify a different reaction, such as letting an orphaned subplot continue independently. We discuss this as a possible direction for future work later in this thesis.
+
+\lstinline|END PLOT| terminates the current Plot instance: it notifies every child subplot via \lstinline|parent_ended|, notifies the parent, if any, via \lstinline|child_ended|, and finally destroys the Director agent. Both the \lstinline|assassin_spotted| handler and the \lstinline|HonorDuel|-ends handler in our running example use it to bring the banquet to a close, one through violent interruption, the other through the duel's resolution. Like \lstinline|TRANSITION TO|, it must be the last statement in its block or branch, and it is forbidden inside \lstinline|ON ENTER| and \lstinline|ON EXIT|.
+
+This concludes our description of Regia's syntax and its translation into AgentSpeak. Chapter \ref{ch:implementation} now turns to how this translation is actually implemented, walking the transpiler that performs it phase by phase, and the visual editor built on top of it.
+

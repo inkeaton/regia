@@ -1,5 +1,12 @@
-lark<2,>=1.2
 click<9,>=8.1
+fastapi
+lark<2,>=1.2
+pydantic
+uvicorn
+
+[benchmarks]
+pandas
+matplotlib
 
 [dev]
 pytest>=8.0

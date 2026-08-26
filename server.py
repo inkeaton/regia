@@ -3,6 +3,7 @@ import dataclasses
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import uvicorn
 
 # Import your compiler pipeline
 from language.src.regia.compiler import compile_source
@@ -64,11 +65,6 @@ def parse_code(payload: CodePayload):
             safe_errors.append(msg_dict)
             
         raise HTTPException(status_code=400, detail=safe_errors)
-    
-    # Check if AST exists
-    if not result.ast:
-        print("CRITICAL: result.ast is None! compiler.py is still not attaching it.")
-        return None
 
     # Convert to JSON and print a tiny preview
     ast_dict = json.loads(json.dumps(result.ast, cls=ASTEncoder))
@@ -82,6 +78,5 @@ def parse_code(payload: CodePayload):
     return ast_dict
 
 if __name__ == "__main__":
-    import uvicorn
     # Runs the server on http://127.0.0.1:8000
     uvicorn.run(app, host="127.0.0.1", port=8000)

@@ -28,6 +28,48 @@ function toSnakeCase(str: string): string {
         .trim();
 }
 
+/**
+ * Scans downwards from a start line to find the end of a Regia block.
+ * Uses Regia's major keywords to detect the start of the next block.
+ * Ignores purely blank lines and comments.
+ * Returns the 1-indexed line number where new code should be injected (right after the block).
+ */
+function findBlockEnd(code: string, startLine: number): number {
+    const lines = code.split("\n");
+    let index = startLine; // startLine is 1-indexed, so index points to the line *after* it
+    
+    const boundaryRegex = /^\s*(DURING|PHASE|ROLE|PLOT|PLAYBOOK|EVENT|ACTION|FACT)\b/;
+    
+    while (index < lines.length) {
+        const line = lines[index];
+        const trimmed = line.trim();
+        
+        if (trimmed === "" || trimmed.startsWith("#") || trimmed.startsWith("//")) {
+            index++;
+            continue;
+        }
+        
+        if (boundaryRegex.test(line)) {
+            break;
+        }
+        
+        index++;
+    }
+    
+    let endIndex = index - 1;
+    // Backtrack past trailing blank lines and comments
+    // But don't backtrack past the actual start line!
+    while (endIndex >= startLine) {
+        const trimmed = lines[endIndex].trim();
+        if (trimmed !== "" && !trimmed.startsWith("#") && !trimmed.startsWith("//")) {
+            break;
+        }
+        endIndex--;
+    }
+    
+    return endIndex + 2; // +1 for 1-indexing, +1 to insert *after* the line
+}
+
 // ==============================================================================
 // PUBLIC API
 // ==============================================================================
@@ -55,18 +97,18 @@ export function addPhase(code: string, ast: Program, rawName: string): string {
 
     newCode = insertLines(newCode, phaseInsertLine, [`    PHASE ${name}.`]);
 
-    // Re-split lines because we added one, which shifts all subsequent line numbers by +1
-    // We need to account for this shift when calculating the DURING insert line.
-    
     // 2. Insert DuringBlock
-    // Infer the end of the last during block
-    // We don't have loc_end. A DuringBlock goes until the next DuringBlock, or EOF.
-    let duringInsertLine = newCode.split("\n").length + 1; // Default to EOF
-
-    // Note: since we inserted a line above, the original line numbers below phaseInsertLine
-    // are now shifted by +1. But we just append to the end anyway, so EOF is safe.
-    // To be precise, if there's anything after PlotDef (which shouldn't be per grammar),
-    // it would be tricky. Appending to EOF is the safest heuristic for Regia.
+    let duringInsertLine = newCode.split("\n").length + 1; // Fallback to EOF
+    
+    if (plot.during_blocks.length > 0) {
+        const lastDuring = plot.during_blocks[plot.during_blocks.length - 1];
+        // Find block end in original code, then shift +1 because we inserted a PhaseDecl above it
+        const originalEndLine = findBlockEnd(code, lastDuring.loc.line);
+        duringInsertLine = originalEndLine + 1;
+    } else {
+        // No during blocks yet, insert right after the phase we just added
+        duringInsertLine = phaseInsertLine + 1;
+    }
 
     newCode = insertLines(newCode, duringInsertLine, [
         "",
@@ -114,17 +156,11 @@ export function addTransition(
     const sourceBlock = plot.during_blocks.find((b) => b.phase_name === sourcePhaseName);
     if (!sourceBlock) return newCode;
 
-    // Find the end of this DuringBlock to append the WHEN block
-    let endOfBlockLine = newCode.split("\n").length + 1; // Default to EOF
-
-    // Find the next block in the list to determine where this one ends
-    const index = plot.during_blocks.indexOf(sourceBlock);
-    if (index >= 0 && index < plot.during_blocks.length - 1) {
-        // The next block's start line (adjusted for the lines we might have shifted above)
-        endOfBlockLine = plot.during_blocks[index + 1].loc.line + linesShifted;
-    } else {
-        // It's the last block, so insert at EOF
-    }
+    // Find the end of this DuringBlock in the ORIGINAL code
+    const originalEndLine = findBlockEnd(code, sourceBlock.loc.line);
+    
+    // The actual insert line in newCode is shifted by however many lines we prepended
+    const endOfBlockLine = originalEndLine + linesShifted;
 
     newCode = insertLines(newCode, endOfBlockLine, [
         `    WHEN ${eventName}:`,

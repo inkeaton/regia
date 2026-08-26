@@ -12,6 +12,13 @@ export const useGraphEditing = () => {
     const { ast, code, setCode } = useStore();
     const [pendingConnection, setPendingConnection] = useState<PendingConnection | null>(null);
     const [isAddingPhase, setIsAddingPhase] = useState<boolean>(false);
+    const [dragStartNodeId, setDragStartNodeId] = useState<string | null>(null);
+
+    const onConnectStart = useCallback((_: any, params: { nodeId: string | null }) => {
+        if (params.nodeId) {
+            setDragStartNodeId(params.nodeId);
+        }
+    }, []);
 
     const onConnect = useCallback((connection: Connection) => {
         if (!connection.source || !connection.target) return;
@@ -19,11 +26,18 @@ export const useGraphEditing = () => {
         // Prevent self-connections
         if (connection.source === connection.target) return;
 
+        // Bypassing React Flow's internal connection normalization by explicitly
+        // using the node where the user started dragging as the logical source.
+        const logicalSource = dragStartNodeId || connection.source;
+        const logicalTarget = logicalSource === connection.source ? connection.target : connection.source;
+
         setPendingConnection({
-            source: connection.source,
-            target: connection.target,
+            source: logicalSource,
+            target: logicalTarget,
         });
-    }, []);
+        
+        setDragStartNodeId(null);
+    }, [dragStartNodeId]);
 
     const onPaneDoubleClick = useCallback(() => {
         setIsAddingPhase(true);
@@ -56,6 +70,7 @@ export const useGraphEditing = () => {
 
     return {
         onConnect,
+        onConnectStart,
         onPaneDoubleClick,
         pendingConnection,
         isAddingPhase,

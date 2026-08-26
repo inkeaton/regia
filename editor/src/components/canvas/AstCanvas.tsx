@@ -1,6 +1,6 @@
 // src/components/canvas/AstCanvas.tsx
 import { useEffect, useState } from "react";
-import ReactFlow, { Background, Controls, type Node, type Edge, Panel } from "reactflow";
+import ReactFlow, { Background, Controls, type Node, type Edge, Panel, ConnectionMode } from "reactflow";
 
 import { useStore } from "../../store/useStore";
 import type { PlotDef } from "../../types/ast";
@@ -58,6 +58,7 @@ export const AstCanvas = () => {
 
     const {
         onConnect,
+        onConnectStart,
         onPaneDoubleClick,
         pendingConnection,
         isAddingPhase,
@@ -105,8 +106,10 @@ export const AstCanvas = () => {
                 fitView
                 fitViewOptions={{ padding: 0.2 }}
                 onConnect={onConnect}
+                onConnectStart={onConnectStart}
                 nodesDraggable={false}
                 nodesConnectable={true}
+                connectionMode={ConnectionMode.Loose}
             >
                 <Background color="var(--color-border)" gap={20} />
                 <Controls />
