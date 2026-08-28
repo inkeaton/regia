@@ -15,10 +15,19 @@ mas science_game {
         port:       9002
     }
 
-    agent testfeatures_director:gen/director_testfeatures.asl {
-        beliefs: role_agent(scientist, scientist),
-                 role_agent(cop, cop)
-        goals: boot
+    agent dog:dog.asl {
+        ag-class:   vesna.VesnaAgent
+        address:    localhost
+        port:       9003
     }
 
+    agent forscience_director:gen/director_forscience.asl {
+        ag-class:   vesna.VesnaAgent
+        address:    localhost
+        port:       9004
+        beliefs: role_agent(scientist, scientist),
+                 role_agent(cop, cop),
+                 role_agent(dog, dog)
+        goals: boot
+    }
 }

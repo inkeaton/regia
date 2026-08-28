@@ -944,12 +944,245 @@ This closes our description of the transpiler. We now turn to the second artifac
 
 \section{Visual Editor}
 \label{sec:editor}
-    \subsection{Architecture Overview}
-    \subsection{Backend}
-    \label{subsec:backend}
-    \subsection{Data Flow}
-    \subsection{AST-To-Graph Mapping}
-    \subsection{Bidirectional Editing}
-    \subsection{Error Management}
-    \subsection{Limitations}
+
+The Visual Editor is the second artifact built on top of the transpiler, and this section treats it differently from how Section \ref{sec:transpiler} treated the transpiler itself. Most of the editor's frontend is a conventional single-page web application, a component tree, a global store, a handful of CSS design tokens, and walking through that structure module by module would not teach anything specific to Regia; we therefore keep that part brief, and reserve real depth for the two places that do involve genuine, Regia-specific engineering: the bridge between the browser and the transpiler, and the logic that turns a parsed program into a graph. The tool itself should also be read with the right expectations: it is a working prototype demonstrating one way to visualize Regia's narrative structure, not a production authoring environment, and we are explicit about what it does not yet do in Section \ref{sec:editor-limitations}.
+
+We proceed in four parts: an overview of what the tool is and how its pieces fit together, a walkthrough of using it, a closer look at the backend and how it integrates with the transpiler, and the specific mapping from AST to graph. We close with the tool's limitations, stated plainly.
+
+\subsection{Overview}
+\label{sec:editor-overview}
+The Regia editor is a browser-based tool that lets an author write Regia source in a conventional code editor while a Plot's phase-and-transition structure renders live as an interactive graph alongside it. The interface is split into two panels, a code editor on the left and a graph canvas on the right, and the two stay in sync as the author types: every edit that produces a valid, parseable program redraws the graph to match it, without any manual refresh step.
+
+% TODO: replace with a real screenshot of the two-panel editor.
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{figures/editor_two_panel.png}
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{4cm}Placeholders\vspace{4cm}}}
+    \caption{The Visual Editor's two-panel layout: a Monaco-based code editor and a React Flow graph canvas.}
+    \label{fig:editor-two-panel}
+\end{figure}
+
+The left panel is built on Monaco, the same code editor used in Visual Studio Code, configured with a custom Regia language definition; the right panel is a React Flow canvas, laid out automatically by Dagre. Both are named components inside a larger, conventional React application, and both are described further in Table \ref{tab:tech-stack} in this chapter's introduction, which lists the full technology stack for both the editor and the transpiler together; we do not repeat it here.
+
+At a high level, an edit to the source text triggers a round trip through the transpiler itself, not through any code duplicated inside the editor: the browser sends the current source to a small backend server, which calls the transpiler directly, exactly as the CLI does, and returns either a parsed and validated program or a list of structured error messages. Figure \ref{fig:editor-pipeline} shows this round trip at the level of the artifacts it produces; Section \ref{sec:editor-backend} traces the same round trip again at the level of the code that implements it.
+
+% TODO: replace with a polished version of this diagram.
+\begin{figure}[h]
+    \centering
+    \begin{codeblock}[]{}
+   Regia source (in Monaco, browser)
+         |
+         |  POST /parse { source_code }
+         v
+   Backend (FastAPI)  --calls-->  compile_source()
+         |                        (transpiler Phases 0-4, no emission)
+         |  JSON-serialised AST
+         v
+   Frontend: Program (TypeScript)
+         |
+         |  AST-to-graph mapping (Section \ref{sec:ast-to-graph})
+         v
+   AstCanvas (React Flow graph)
+    \end{codeblock}
+    
+    \caption{The editor's round trip, from source text to rendered graph, at the level of the artifact produced at each stage.}
+    \label{fig:editor-pipeline}
+\end{figure}
+
+Two of the diagram's stages are worth naming as forward pointers, rather than explained here. The call to \lstinline|compile_source()| is the same entry point described in Section \ref{sec:orchestration}, reused without modification; and the AST-to-graph mapping is Regia-specific logic with no equivalent in the transpiler, described in full in Section \ref{sec:ast-to-graph}. We turn first, in the next subsection, to what using the tool actually looks like, before returning to these two stages in more technical depth.
+ \subsection{Usage}
+\label{sec:editor-usage}
+This subsection describes what using the editor looks like, from the point of view of an author rather than of the code behind it; the mechanisms responsible for each interaction described here are covered separately in Sections \ref{sec:backend} and \ref{sec:ast-to-graph}.
+
+\subsubsection{Editing and Live Feedback}
+
+\tbde{add screenshots}
+
+Returning to our previous example, Loading \lstinline|RoyalBanquet| into the code panel populates the graph canvas automatically: a node appears for each of the three declared Phases, \lstinline|reception|, \lstinline|feast|, and \lstinline|duel_interruption|, with \lstinline|reception| marked distinctly to show it is the Plot's \lstinline|INITIAL| phase, and an edge connects each pair of Phases between which a \lstinline|TRANSITION TO| exists, labelled with the Event that triggers it. No action beyond typing or pasting the source is required to produce this view.
+
+The graph stays live as the source changes. Editing the code, for instance renaming \lstinline|duel_interruption| to \lstinline|duel_aftermath| throughout the script, updates the corresponding node's label a short moment after the author stops typing, without any manual refresh. The same responsiveness applies to a mistake. Misspelling \lstinline|hates| as \lstinline|haets| inside a condition, for example, produces two visible effects at once: the offending line is underlined directly in the code panel, and the graph canvas dims to signal that what it shows may no longer reflect the current source. Correcting the typo clears both signals and restores the graph to normal within the same short delay. At no point does a mistake in one part of the script prevent the rest of the editor from remaining usable; the author can keep working in the code panel regardless of what state the graph is currently in.
+
+\subsubsection{Direct Graph Editing}
+The canvas is not read-only. Two kinds of edit can originate there directly, rather than in the code panel, and in both cases the code panel updates to match once the edit is made, the same way it would if the author had typed the equivalent Regia themselves.
+
+Adding a Phase is the simpler of the two: a control on the canvas prompts for a name, and confirming it adds a new Phase node to the graph, with the corresponding \lstinline|PHASE| declaration appearing in the source.
+
+Adding a Transition is the more involved interaction, and worth walking through in full. Suppose an author wants to extend our running example with a Phase reached after the duel is over They first add a Phase named \lstinline|aftermath|, as above. They then drag a connection on the canvas from the \lstinline|duel_interruption| node to the new \lstinline|aftermath| node. This does not immediately draw an edge; instead, a small prompt asks the author to name the Event that should trigger the transition. Typing \lstinline|guests_leave| and confirming completes the interaction: an edge labelled \lstinline|guests_leave| appears between the two Phases, and, looking back at the code panel, the author finds that an \lstinline|EVENT guests_leave.| declaration has been added near the top of the file, and a \lstinline|WHEN guests_leave: TRANSITION TO aftermath.| block has been added inside \lstinline|DURING duel_interruption:|, in the same place an author would have placed it by hand.
+
+These two operations, adding a Phase and adding a Transition, are the only edits currently supported from the canvas; we return to the scope of this support in Section \ref{sec:editor-limitations}.
+
+\subsection{Backend and Transpiler Integration}
+\label{sec:editor-backend}
+Three components bridge the editor's frontend to the transpiler: a small Python backend that exposes the compiler pipeline over HTTP, a communication layer on the frontend that abstracts how a request reaches that backend, and a client-side module that turns a canvas edit into a source-code change without going through the backend at all. We look at each in turn, then at the two complete request cycles they together produce, before closing with why each piece is shaped the way it is.
+
+\subsubsection{The Backend Server}
+The backend is a small FastAPI application exposing a single endpoint, \lstinline|POST /parse|, which accepts a JSON body matching a \lstinline|CodePayload| model, one field, \lstinline|source_code: str|:
+\begin{codeblock}[]{Py}
+@app.post("/parse")
+def parse_code(payload: CodePayload):
+    result = compile_source(payload.source_code, emit=False)
+
+    if not result.success:
+        safe_errors = []
+        for msg in result.messages:
+            msg_dict = msg.__dict__.copy()
+            if hasattr(msg_dict.get("severity"), "name"):
+                msg_dict["severity"] = msg_dict["severity"].name
+            safe_errors.append(msg_dict)
+        raise HTTPException(status_code=400, detail=safe_errors)
+
+    ast_dict = json.loads(json.dumps(result.ast, cls=ASTEncoder))
+    return ast_dict
+\end{codeblock}
+The call to \lstinline|compile_source(payload.source_code, emit=False)| is exactly the entry point described in Section \ref{sec:orchestration}, reused without modification: since the request carries raw text rather than a file path, \lstinline|compile_source| rather than \lstinline|compile_file| is the only one of the two entry points that fits, and \lstinline|emit=False| is set because the editor only ever needs a validated AST to render, never compiled AgentSpeak. On failure, each \lstinline|CompilerMessage| is copied into a plain dictionary and its \lstinline|Severity| enum member is converted to its name, since a raw enum instance is not itself JSON-serialisable; the resulting list is returned as the body of a 400 response. On success, \lstinline|result.ast| is serialised through a custom encoder.
+
+\lstinline|ASTEncoder| solves a specific problem: turning a tree of Python \lstinline|@dataclass| objects, potentially many levels deep, into JSON, while telling the frontend which kind of AST node each nested object represents.
+\begin{codeblock}[]{Py}
+class ASTEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if dataclasses.is_dataclass(obj):
+            d = obj.__dict__.copy()
+            d["type"] = obj.__class__.__name__
+            return d
+        if hasattr(obj, "value"):
+            return obj.value
+        return super().default(obj)
+\end{codeblock}
+The key detail is that \lstinline|obj.__dict__.copy()| is a shallow copy: it converts only the dataclass instance's own top-level attributes into a plain dictionary, and leaves any nested dataclass object inside that dictionary untouched, still a dataclass instance, not yet a dictionary. Because \lstinline|json.dumps| does not know how to serialise a dataclass on its own, it calls \lstinline|default()| again for every one of those still-unconverted nested objects, which is what causes the \lstinline|"type"| field to be injected at every level of the tree, not only at the root, recursively, with no explicit recursion written anywhere in the encoder itself. The endpoint then round-trips the result once more through \lstinline|json.loads|, turning the serialised string back into a plain Python dictionary before returning it, so that FastAPI's own response serialisation, which expects ordinary dictionaries and lists, has nothing left to encode that it does not already know how to handle.
+
+\subsubsection{The Transport Abstraction}
+The frontend never calls \lstinline|fetch| directly from its components or its store; every request to the backend goes through a \lstinline|Transport| interface, currently implemented by a single class, \lstinline|HttpTransport|:
+\begin{codeblock}[]{Py}
+interface Transport {
+    parse(sourceCode: string): Promise<Program>;
+}
+\end{codeblock}
+\lstinline|HttpTransport.parse()| posts the source to \lstinline|/parse| and distinguishes two failure modes, both normalised into the same \lstinline|TransportError| shape before being thrown: a network failure, the request never reaching the server at all, produces a generic, user-facing message with an empty message list; a compiler failure, a non-\lstinline|ok| HTTP response, extracts the structured \lstinline|CompilerMessage| array from the response body and carries it forward unchanged. A single factory function, \lstinline|createTransport()|, decides which implementation to construct, and the rest of the application imports one shared instance from it rather than constructing a transport itself.
+
+The interface as written supports only one direction, source text going in, a parsed AST coming back; a second, reverse method for turning a modified AST back into source text is anticipated in the interface's own definition but not yet implemented, and no corresponding backend endpoint exists for it. The two Direct Graph Editing interactions described in Section \ref{sec:editor-usage}, adding a Phase and adding a Transition, therefore do not use this reverse direction at all; they are handled entirely on the frontend, described next.
+
+\subsubsection{Graph-to-Source Generation}
+Turning a canvas edit into source text is the job of a small, self-contained module that manipulates the code as a list of lines, guided by positions already known from the current AST, rather than by asking the backend to regenerate the file. Two helpers do most of the work. \lstinline|insertLines(code, lineNumber, linesToInsert)| splices new lines into the source at a given 1-indexed position. \lstinline|findBlockEnd(code, startLine)| scans downward from a given line until it finds the next line beginning with one of Regia's top-level keywords, \lstinline|DURING|, \lstinline|PHASE|, \lstinline|ROLE|, \lstinline|PLOT|, \lstinline|PLAYBOOK|, \lstinline|EVENT|, \lstinline|ACTION|, or \lstinline|FACT|, treating that as the boundary of the current block, then backtracks past any trailing blank or comment lines to find the exact line after which new content should be inserted.
+
+\lstinline|addTransition()| is the function behind the \lstinline|guests_leave| example walked through in Section \ref{sec:editor-usage}. Given the source and target Phase names and a raw event name, it first checks whether an \lstinline|EventDecl| with that name already exists in the current AST; if not, it inserts a new \lstinline|EVENT| declaration immediately before the \lstinline|PLOT| keyword. It then locates the source Phase's \lstinline|DuringBlock|, finds where that block ends using \lstinline|findBlockEnd|, and inserts a \lstinline|WHEN eventName: TRANSITION TO targetPhaseName.| block at that position. Because inserting the \lstinline|EVENT| line earlier in the file shifts every line number that follows it, the function tracks how many lines it has already added and offsets the second insertion accordingly, so the position computed from the original, pre-edit AST still lands in the right place in the modified text. \lstinline|addPhase()| follows the same pattern for the simpler case: a new \lstinline|PHASE| declaration is inserted after the last existing one, and a corresponding \lstinline|DURING| block, with a default \lstinline|ON ENTER| hook, is inserted after the last existing \lstinline|DURING| block. Both functions also normalise whatever name the author typed into \lstinline|snake_case| before writing it into the source, so a Phase or Event named through the UI matches the identifier conventions the rest of the language uses.
+
+\subsubsection{The Full Request Cycle}
+Figure \ref{fig:editor-keystroke-flow} traces a single successful edit from keystroke to redrawn graph, and Figure \ref{fig:editor-error-flow} traces what happens instead when the edited source fails to compile.
+
+% TODO: replace with a polished version of this diagram.
+\begin{figure}[h]
+    \centering
+    \begin{codeblock}[]{}
+Monaco onChange(value)  ->  store.setCode(value)
+        |
+        v (debounced, 500ms after the last keystroke)
+store.parseCode()  ->  transport.parse(code)
+        |
+        v  POST /parse { source_code }
+server.py: compile_source(source, emit=False)
+        |
+        v  result.success == True
+json.dumps(result.ast, cls=ASTEncoder)  ->  HTTP 200, AST as JSON
+        |
+        v
+store.ast = parsed Program
+        |
+        v
+convertAstToGraph(ast)  +  Dagre layout
+        |
+        v
+React Flow re-renders nodes and edges
+    \end{codeblock}
+    \caption{The keystroke-to-graph request cycle.}
+    \label{fig:editor-keystroke-flow}
+\end{figure}
+
+% TODO: replace with a polished version of this diagram.
+\begin{figure}[h]
+    \centering
+    \begin{codeblock}[]{}
+server.py: compile_source(source, emit=False)
+        |
+        v  result.success == False
+[CompilerMessage, ...]  ->  HTTP 400 { detail: [...] }
+        |
+        v
+HttpTransport.parse() throws TransportError { messages }
+        |
+        v
+store.parseCode() catches it
+        |
+        v
+store.ast = null;  store.compilerMessages = [...]
+        |
+        v
+CodeEditor: monaco.editor.setModelMarkers(...)  ->  red squiggles
+AstCanvas: dims to signal it is out of sync
+    \end{codeblock}
+    \caption{The error request cycle, from a failed compilation to visible feedback in both panels.}
+    \label{fig:editor-error-flow}
+\end{figure}
+
+The second diagram is a direct payoff of a decision discussed in Section \ref{sec:error-reporting}: the same \lstinline|CompilerMessage| dataclass that drives terminal output in \lstinline|cli.py| is, unchanged, what \lstinline|server.py| serialises and what the frontend unpacks to draw Monaco's inline error markers. One diagnostic shape, produced by one Validator, is consumed by two entirely different renderers, a terminal and a browser-based code editor, without either one needing to know anything about the other.
+
+Keeping the \lstinline|Transport| interface between the frontend and \lstinline|fetch| narrow, a single \lstinline|parse| method, one input, one return type, means that everything downstream of it, the store, the code editor, the canvas, depends only on that interface, never on how a request actually reaches the backend; a different transport mechanism could be substituted behind the same interface without any of those consumers changing. This is the same containment principle already argued for \lstinline|parser.py| in Section \ref{sec:lexing-and-parsing}, applied here to a network boundary instead of a parsing library.
+
+\subsection{AST-to-Graph Mapping}
+\label{sec:ast-to-graph}
+Converting a parsed program into something the canvas can draw is the job of a single function, \lstinline|convertAstToGraph(ast)|, which takes the \lstinline|Program| returned by the backend and produces a plain pair of arrays, \lstinline|nodes| and \lstinline|edges|, in React Flow's own vocabulary. The function looks for the first \lstinline|PlotDef| in the program's items and maps only that one; we return to this restriction, and to the fact that a program's Playbooks, Facts, Actions, and Events have no visual representation at all, in Section \ref{sec:editor-limitations}. We look at how Phases become nodes, then at how transitions between them become edges.
+
+\subsubsection{Mapping Phases to Nodes}
+Every \lstinline|PhaseDecl| in the Plot's header becomes one node, but the node carries more than just a name. Each one's \lstinline|data| payload is built by looking up the matching \lstinline|DuringBlock|, if one exists, and recording the Phase's declared line, how many \lstinline|WHEN| blocks that block contains, whether it declares an \lstinline|ON ENTER| or \lstinline|ON EXIT| hook, and whether it is terminal.
+
+Terminal status is the one piece of real logic here: a Phase is considered terminal if any statement reachable from any of its \lstinline|WHEN| blocks is a \lstinline|PlotEndStmt|, checked with a small recursive-style scan applied to every prefix statement, every \lstinline|IF| branch, and the \lstinline|ELSE| branch in turn:
+\begin{codeblock}[]{Py}
+const hasEndPlot = (stmts: ImperativeStmt[]): boolean => {
+    for (const stmt of stmts) {
+        if (stmt.type === "PlotEndStmt") return true;
+    }
+    return false;
+};
+
+for (const whenBlock of block.when_blocks) {
+    if (hasEndPlot(whenBlock.prefix_stmts)) { isTerminal = true; break; }
+    for (const branch of whenBlock.branches) {
+        if (hasEndPlot(branch.stmts)) { isTerminal = true; break; }
+    }
+    if (!isTerminal && whenBlock.else_branch) {
+        if (hasEndPlot(whenBlock.else_branch.stmts)) { isTerminal = true; break; }
+    }
+    if (isTerminal) break;
+}
+\end{codeblock}
+Tracing this against \lstinline|RoyalBanquet|: \lstinline|duel_interruption| is flagged terminal, since its \lstinline|WHEN SUBPLOT HonorDuel ENDS| handler ends in \lstinline|END PLOT|; \lstinline|reception| and \lstinline|feast| are not, since neither Phase's \lstinline|WHEN| blocks reach an \lstinline|END PLOT| statement directly. A terminal Phase is marked distinctly on the canvas, giving an author a visual signal that reaching this Phase ends the Plot, without needing to read every handler inside it.
+
+\subsubsection{Mapping Transitions to Edges}
+Edges come from a single source: every \lstinline|InlineTransitionStmt| found inside a phase-specific \lstinline|DuringBlock|. \lstinline|DURING PLOT| blocks are explicitly skipped, since \lstinline|phase_name| is \lstinline|null| for them and a Plot-wide handler has no single source Phase to draw an edge from, consistent with \lstinline|TRANSITION TO| being forbidden inside \lstinline|DURING PLOT| altogether, as established in Section \ref{sec:transitions}.
+
+An edge's label depends on which of the three Director \lstinline|WHEN| variants from Section \ref{sec:director-when} produced it, not on a single generic string:
+\begin{codeblock}[]{Py}
+const eventLabel = whenBlock.type === "PlotWhenRoleSignalsBlock"
+    ? `ROLE ${whenBlock.role_name} SIGNALS ${whenBlock.event}`
+    : "event" in whenBlock
+        ? whenBlock.event
+        : `SUBPLOT ${whenBlock.subplot_name} ENDS`;
+\end{codeblock}
+This is a direct reflection of the language's own vocabulary in the graph, rather than a generic state-machine abstraction imposed over it: a plain \lstinline|WHEN food_served:| labels its edge with the Event name alone, while a \lstinline|WHEN ROLE Guest SIGNALS insult_thrown:| labels its edge with the Role and the signal together, exactly as an author wrote it.
+
+Where two Phases are connected by more than one transition, the edges are routed to avoid drawing directly on top of one another. Every unordered pair of Phases is tracked by a counter; the first edge found between a given pair connects straight from the source's bottom handle to the target's top handle, while any further edge between that same pair is routed laterally instead, alternating between the left and right sides of the two nodes:
+\begin{codeblock}[]{Py}
+const pairKey = [source, target].sort().join("-");
+const slot = edgePairCounts[pairKey]++;
+
+if (slot === 0) {
+    sourceHandle = "bottom-s"; targetHandle = "top-t";
+} else {
+    if (lateralCounter \% 2 === 0) { sourceHandle = "right-s"; targetHandle = "right-t"; }
+    else                          { sourceHandle = "left-s";  targetHandle = "left-t";  }
+    lateralCounter++;
+}
+\end{codeblock}
+\lstinline|RoyalBanquet| only ever exercises the first case: \lstinline|reception|-to-\lstinline|feast| and \lstinline|feast|-to-\lstinline|duel_interruption| are each the only transition between their respective pair of Phases, so both are drawn straight. The lateral case exists for a Plot where two Phases are connected by more than one distinct transition, for instance two different Events each capable of moving the narrative between the same pair of Phases, a pattern our running example does not happen to use.
+
+The nodes and edges these two mappings produce carry no position information of their own; Dagre computes the actual layout in a separate pass, \lstinline|getLayoutedElements|, which is a call into a general-purpose graph-layout library rather than Regia-specific logic, and is not discussed further here.
 

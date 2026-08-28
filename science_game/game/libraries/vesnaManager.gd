@@ -70,7 +70,14 @@ func _process(_delta: float) -> void:
 			var intention = JSON.parse_string(msg)
 			if intention:
 				Messages.print_json(intention, "Received Raw Message")
-				command_received.emit(intention)
+				if intention.get("type") == "trigger_game_over":
+					var reason = intention.get("data", {}).get("reason", "Unknown")
+					print("=========================================")
+					print("GAME OVER! Reason: ", reason)
+					print("=========================================")
+					_show_game_over_screen(reason)
+				else:
+					command_received.emit(intention)
 			else:
 				Warnings.print_warning("Failed to parse JSON message", "NetworkManager")
 				
@@ -168,3 +175,22 @@ func is_mind_connected() -> bool:
 func _exit_tree() -> void:
 	ws.close()
 	tcp_server.stop()
+
+# ==============================================================================
+# UI HELPERS
+# ==============================================================================
+
+func _show_game_over_screen(reason: String) -> void:
+	var game_over_scene = load("res://ui/game_over_ui.tscn") as PackedScene
+	if game_over_scene:
+		var game_over_instance = game_over_scene.instantiate()
+		get_tree().root.add_child(game_over_instance)
+		
+		# If you add a script to the root of game_over_ui with a setup(reason) function:
+		if game_over_instance.has_method("setup"):
+			game_over_instance.setup(reason)
+		
+		get_tree().paused = true
+	else:
+		print("GAME OVER! Reason: ", reason)
+		get_tree().quit()

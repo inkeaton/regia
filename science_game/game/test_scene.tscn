@@ -4,13 +4,17 @@
 [ext_resource type="PackedScene" uid="uid://8d4du44d8614" path="res://bodies/npcs/npc.tscn" id="2_8pr8v"]
 [ext_resource type="PackedScene" uid="uid://6b0y547wk35g" path="res://ui/dialogue_ui.tscn" id="3_buypi"]
 [ext_resource type="PackedScene" uid="uid://dvyid5qdscqk" path="res://ui/hud.tscn" id="4_njel3"]
-[ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="6_rpuu0"]
+[ext_resource type="Texture2D" uid="uid://dw8pwvatrylkw" path="res://resources/images/portraits/dog.png" id="6_8pr8v"]
 [ext_resource type="Texture2D" uid="uid://4km6j8a1y43v" path="res://resources/images/portraits/sci.png" id="7_8pr8v"]
+[ext_resource type="Script" uid="uid://bwc76awhthmvs" path="res://ui/debug_ui.gd" id="debug_script"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_hjrdo"]
+font_size = 40
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_7ht8i"]
-vertices = PackedVector2Array(1193.7578, 613.09375, -1146.0625, 634.8906, -1045.7109, -499.46875, 1159.2578, -886.1328)
+vertices = PackedVector2Array(1582.75, 1183.9688, -1758.8984, 1177.0313, -1047.9063, -499.07813, 1161.1406, -886.46094)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-1055, -508, -1157, 645, 1204, 623, 1169, -898)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-1055, -508, -1774, 1187, 1595, 1194, 1169, -898)])
 
 [node name="Test" type="Node2D" unique_id=1387244453]
 
@@ -27,26 +31,40 @@ visible = false
 
 [node name="level" type="Node2D" parent="." unique_id=566664281]
 
-
-
 [node name="waypoints" type="Node2D" parent="level" unique_id=531407168]
 
 [node name="garden" type="Marker2D" parent="level/waypoints" unique_id=1487946543 groups=["waypoints"]]
-position = Vector2(-167, -454)
+position = Vector2(544, -454)
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="level/waypoints/garden" unique_id=888431435]
+offset_right = 80.0
+offset_bottom = 49.0
+text = "Garden
+"
+label_settings = SubResource("LabelSettings_hjrdo")
+metadata/_edit_use_anchors_ = true
 
 [node name="lab" type="Marker2D" parent="level/waypoints" unique_id=1846446058 groups=["waypoints"]]
-position = Vector2(-1004, 518)
+position = Vector2(-906, -1182)
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="level/waypoints/lab" unique_id=2131338458]
+offset_right = 80.0
+offset_bottom = 49.0
+text = "Lab "
+label_settings = SubResource("LabelSettings_hjrdo")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="level" unique_id=1173154093]
-position = Vector2(-11, -161)
+position = Vector2(-456, -686)
 navigation_polygon = SubResource("NavigationPolygon_7ht8i")
 
 [node name="Camera2D" type="Camera2D" parent="level" unique_id=1667814174]
-position = Vector2(-439, -488)
+position = Vector2(-42, -881)
 zoom = Vector2(0.7, 0.7)
 
 [node name="Player" parent="." unique_id=1424175727 instance=ExtResource("1_7cbxl")]
-position = Vector2(-439, -488)
+position = Vector2(-42, -881)
 metadata/_edit_group_ = true
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player" unique_id=1644528650]
@@ -60,11 +78,25 @@ metadata/_edit_group_ = true
 texture = ExtResource("7_8pr8v")
 
 [node name="cop" parent="." unique_id=1477466107 instance=ExtResource("2_8pr8v")]
-position = Vector2(-445, 100)
+position = Vector2(-1434, -777)
 metadata/_edit_group_ = true
 
-[node name="VesnaManager" parent="cop" index="1" unique_id=1688373293]
+[node name="VesnaManager" parent="cop" index="2" unique_id=1688373293]
 PORT = 9002
+
+[node name="dog" parent="." unique_id=549978571 instance=ExtResource("2_8pr8v")]
+position = Vector2(-1176, 54)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" parent="dog/CollisionShape2D" parent_id_path=PackedInt32Array(549978571, 1504639406) index="0" unique_id=187120093]
+texture = ExtResource("6_8pr8v")
+
+[node name="VesnaManager" parent="dog" index="2" unique_id=1688373293]
+PORT = 9003
+
+[node name="DebugUI" type="CanvasLayer" parent="." unique_id=1056932769]
+script = ExtResource("debug_script")
 
 [editable path="sci"]
 [editable path="cop"]
+[editable path="dog"]

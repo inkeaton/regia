@@ -11,7 +11,10 @@ Responsibilities:
 import csv
 import hashlib
 import json
+import logging
 import sys
+import tempfile
+import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import List
@@ -100,6 +103,7 @@ class BenchmarkRecord:
 
     # ================== Performance metrics ==================
     compile_time_s: float
+    io_time_s: float
     peak_ram_mb: float
 
     # ================== Compilation result ==================
@@ -229,12 +233,20 @@ def _run_single(
     output_loc_total: int = 0
     output_loc_per_file: str = "{}"
     loc_ratio: float = 0.0
+    io_time_s: float = 0.0
 
     if compile_result.success and compile_result.outputs:
         output_files = len(compile_result.outputs)
         output_loc_total, per_file_dict = count_output_loc(compile_result.outputs)
         output_loc_per_file = json.dumps(per_file_dict)
         loc_ratio = output_loc_total / max(input_loc, 1)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            t_start = time.perf_counter()
+            for fname, fcontent in compile_result.outputs.items():
+                (tmp_path / fname).write_text(fcontent, encoding="utf-8")
+            io_time_s = time.perf_counter() - t_start
 
     sys_info = get_system_info()
 
@@ -265,6 +277,7 @@ def _run_single(
         output_loc_per_file=output_loc_per_file,
         loc_ratio=loc_ratio,
         compile_time_s=wall_time,
+        io_time_s=io_time_s,
         peak_ram_mb=peak_mb,
         success=compile_result.success,
         warning_count=compile_result.warning_count,
@@ -328,7 +341,7 @@ def _print_progress(
         f"phases={cfg.n_phases:<3} "
         f"sub={cfg.n_subplot_breadth}x{cfg.n_subplot_depth}  "
         f"-> {status}  "
-        f"t={record.compile_time_s:.4f}s  "
+        f"t={record.compile_time_s:.4f}s (io={record.io_time_s:.4f}s)  "
         f"ram={record.peak_ram_mb:.2f}MB  "
         f"loc={record.input_loc}->{record.output_loc_total} ({record.loc_ratio:.1f}x)",
         file=sys.stdout,

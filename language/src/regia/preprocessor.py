@@ -170,19 +170,18 @@ def resolve_imports(
     """
     entry_abs = entry_file.resolve()
 
-    # Maps each file to the file that imported it (and the line number).
-    imported_from: Dict[Path, Tuple[Path, int] | None] = {entry_abs: None}
-
-    # BFS queue of (file_to_process, importing_file_or_None, line_number_in_importing_file)
-    queue: Deque[Tuple[Path, Path | None, int]] = deque()
-    queue.append((entry_abs, None, 0))
+    # BFS queue of (file_to_process, importing_file_or_None, line_number_in_importing_file, ancestors_set)
+    queue: Deque[Tuple[Path, Path | None, int, frozenset]] = deque()
+    queue.append((entry_abs, None, 0, frozenset([entry_abs])))
 
     # Preserves insertion order (Python 3.7+).
     # We use a list so we can control dependency ordering.
     visit_order: List[Path] = []
+    # We use a set for O(1) idempotency checks.
+    visited: Set[Path] = set()
 
     while queue:
-        current, from_file, import_line = queue.popleft()
+        current, from_file, import_line, ancestors = queue.popleft()
 
         if not current.exists():
             msg = (
@@ -195,7 +194,7 @@ def resolve_imports(
             )
             continue
 
-        if current in [p for p in visit_order]:
+        if current in visited:
             # Already processed, skip (idempotent imports).
             continue
 
@@ -212,11 +211,12 @@ def resolve_imports(
 
         annotations = preprocess(raw_source, filename=current.name)
         visit_order.append(current)
+        visited.add(current)
 
         for imp_dir in annotations.import_paths:
             child = (current.parent / imp_dir.path).resolve()
 
-            if child in imported_from:
+            if child in ancestors:
                 # Cycle detection
                 reporter.error(
                     imp_dir.line, 0, 1,
@@ -227,7 +227,6 @@ def resolve_imports(
                 )
                 continue
 
-            imported_from[child] = (current, imp_dir.line)
-            queue.append((child, current, imp_dir.line))
+            queue.append((child, current, imp_dir.line, ancestors | frozenset([child])))
 
     return visit_order

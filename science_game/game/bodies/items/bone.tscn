@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://cvvkmp3ovu4s3"]
+
+[ext_resource type="PackedScene" uid="uid://le7n3mdn6upa" path="res://bodies/items/pickup_item.tscn" id="1_ihoh6"]
+[ext_resource type="Texture2D" uid="uid://cbmjqd26vwmyk" path="res://resources/images/bone.png" id="2_ihoh6"]
+
+[node name="PickupItem" unique_id=578275695 instance=ExtResource("1_ihoh6")]
+item_name = "bone"
+
+[node name="Sprite2D" parent="CollisionShape2D" parent_id_path=PackedInt32Array(820798002) index="0" unique_id=549646332]
+position = Vector2(-3, 2)
+scale = Vector2(0.10254989, 0.10254989)
+texture = ExtResource("2_ihoh6")

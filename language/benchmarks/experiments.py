@@ -10,6 +10,7 @@ Usage in the CLI:
     python -m benchmarks run --all
 """
 
+import itertools
 from dataclasses import replace
 from typing import Dict, List
 
@@ -58,6 +59,20 @@ def _sweep(
         List of GeneratorConfig instances, one per value.
     """
     return [replace(base, **{param: v}) for v in values]
+
+
+def _sweep_2d(
+    param1: str, values1: List[int],
+    param2: str, values2: List[int],
+    base: GeneratorConfig = BASELINE,
+) -> List[GeneratorConfig]:
+    """
+    Helper to generate a Cartesian product of two parameters.
+    """
+    return [
+        replace(base, **{param1: v1, param2: v2})
+        for v1, v2 in itertools.product(values1, values2)
+    ]
 
 
 # ======================================================
@@ -184,4 +199,45 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
         replace(BASELINE, n_subplot_depth=d, n_phases=p, n_subplot_breadth=2)
         for d, p in [(1, 2), (2, 5), (3, 10), (4, 20), (5, 50)]
     ],
+
+    # ================== Game Design Interactions ==================
+
+    # "Growing Cast" - As the number of roles grows, the vocabulary needed grows.
+    # "interaction_growing_cast": [
+    #     replace(BASELINE, n_roles=n, n_actions=n, n_events=n, n_facts=max(n // 2, 1))
+    #     for n in [5, 10, 50, 100, 250, 500, 1000]
+    # ],
+
+    # # "Full Game" - Scaling structural dimensions together. 
+    # # This triggers the quadratic assignment logic + linear playbook logic at the same time.
+    # "interaction_full_game": [
+    #     replace(BASELINE, n_roles=n, n_phases=n, n_playbooks=n, n_plans_per_playbook=n)
+    #     for n in [1, 2, 5, 10, 20, 50, 100]
+    # ],
+
+    # # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
+    # "interaction_subplot_scope": [
+    #     replace(BASELINE, n_subplot_depth=d, n_roles=r, n_subplot_breadth=2)
+    #     for d, r in [(1, 10), (2, 20), (3, 50), (4, 100), (5, 200)]
+    # ],
+
+    # # "Dense AI" - Focused on pure behavioral depth. Many playbooks, huge action sequences.
+    # "interaction_dense_ai": [
+    #     replace(BASELINE, n_playbooks=n, n_stmts_per_branch=n)
+    #     for n in [5, 10, 25, 50, 100, 250, 500]
+    # ],
+
+    # ================== 2D Grid Sweeps ==================
+
+    # 2D Grid: Phases vs Roles. Tests the $O(P \times R)$ assignment explosion in full Cartesian space.
+    "grid_phases_roles": _sweep_2d(
+        "n_phases", [2, 10, 25, 50],
+        "n_roles", [2, 10, 25, 50],
+    ),
+
+    # 2D Grid: Playbook Logic. Playbooks vs Plans per playbook.
+    "grid_playbook_logic": _sweep_2d(
+        "n_playbooks", [2, 5, 10, 25, 50],
+        "n_plans_per_playbook", [2, 5, 10, 25, 50],
+    ),
 }

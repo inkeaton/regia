@@ -71,6 +71,17 @@ current_phase(combat).
     .send(Parent, achieve, child_ended(honorduel, Me)).
 +!notify_parent <- true.
 
+// Infrastructural cleanup when a child plot ends
+@dir__infrastructure__child_ended[atomic]
++!child_ended(SubplotName, ChildId) <-
+    .term2string(ChildId, ChildIdStr);
+    .print("[HonorDuel] Subplot ", SubplotName, " (", ChildIdStr, ") ended. Cleaning up registry...");
+    -child_plot(ChildIdStr, SubplotName, _);
+    !!subplot_ended(SubplotName).
+
+// Fallback to prevent Jason warnings if the user didn't write a WHEN SUBPLOT ENDS block
++!subplot_ended(_) <- true.
+
 @start_subplot_atomic[atomic]
 +!start_subplot(SubplotStr, SubplotAtom, MappingsData) <-
     !build_bindings(MappingsData, Bindings);

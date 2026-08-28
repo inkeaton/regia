@@ -4,12 +4,21 @@
 [ext_resource type="Texture2D" uid="uid://21p4djv5h3vg" path="res://resources/images/portraits/cop.png" id="2_yief8"]
 [ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="3_jsqdi"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_hjrdo"]
+radius = 241.40791
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ht8i"]
 size = Vector2(121, 216)
 
 [node name="test_npc" type="CharacterBody2D" unique_id=1761570622]
 scale = Vector2(1.5, 1.5)
 script = ExtResource("1_yief8")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=764076512]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=79621659]
+shape = SubResource("CircleShape2D_hjrdo")
+debug_color = Color(0.6544178, 0.5144068, 0.1696189, 0.41960785)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1504639406]
 position = Vector2(-3.5, -1)
@@ -26,6 +35,8 @@ PORT = 9001
 metadata/_custom_type_script = "uid://dvhqleqa5i43d"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1524213935]
+avoidance_enabled = true
+radius = 29.23
 
 [node name="SpeechBubble" type="PanelContainer" parent="." unique_id=793708288]
 visible = false

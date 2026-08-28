@@ -383,6 +383,15 @@ class Emitter:
             "    .my_name(Me);\n"
             f"    .send(Parent, achieve, child_ended({plot.name.lower()}, Me)).\n"
             "+!notify_parent <- true.\n\n"
+            "// Infrastructural cleanup when a child plot ends\n"
+            "@dir__infrastructure__child_ended[atomic]\n"
+            "+!child_ended(SubplotName, ChildId) <-\n"
+            "    .term2string(ChildId, ChildIdStr);\n"
+            f"    .print(\"[{plot.name}] Subplot \", SubplotName, \" (\", ChildIdStr, \") ended. Cleaning up registry...\");\n"
+            "    -child_plot(ChildIdStr, SubplotName, _);\n"
+            "    !!subplot_ended(SubplotName).\n\n"
+            "// Fallback to prevent Jason warnings if the user didn't write a WHEN SUBPLOT ENDS block\n"
+            "+!subplot_ended(_) <- true.\n\n"
             "@start_subplot_atomic[atomic]\n"
             "+!start_subplot(SubplotStr, SubplotAtom, MappingsData) <-\n"
             "    !build_bindings(MappingsData, Bindings);\n"
@@ -505,7 +514,7 @@ class Emitter:
         plot_name = plot.name
         
         if isinstance(when, PlotWhenSubplotEndsBlock):
-            event_name = f"!child_ended({when.subplot_name.lower()}, _)"
+            event_name = f"!subplot_ended({when.subplot_name.lower()})"
             event_label = f"subplot_{when.subplot_name.lower()}_ended"
         else:
             event_name = f"!{when.event}" if when.event in ["parent_ended", "child_ended"] else when.event
@@ -1028,10 +1037,11 @@ class Emitter:
                     )
                     return self._emit_do_stmt(do)
     
+                action_name = self._action_aliases.get(stmt.action, stmt.action)
                 args = self._emit_args(stmt.args)
                 if args:
-                    return f"{stmt.action}({args})"
-                return stmt.action
+                    return f"{action_name}({args})"
+                return action_name
             case RoleDoStmt():
                 role_lower = stmt.role.lower()
                 args = self._emit_args(stmt.args)

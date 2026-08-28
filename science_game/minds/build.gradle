@@ -20,6 +20,13 @@ task run(type: JavaExec, dependsOn: 'classes') {
     mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'science.jcm'
     classpath sourceSets.main.runtimeClasspath
+    
+    // Set logging to console
+    standardOutput = System.out
+    errorOutput = System.err
+    
+    // Direct Java Util Logging to Console
+    systemProperty 'java.util.logging.config.class', 'java.util.logging.SimpleFormatter'
 }
 
 sourceSets {

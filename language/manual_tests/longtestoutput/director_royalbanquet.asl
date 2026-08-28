@@ -42,7 +42,7 @@ current_phase(reception).
     !switch_phase(duel_interruption).
 
 @dir__RoyalBanquet__subplot_honorduel_ended__0
-+!child_ended(honorduel, _) : current_phase(duel_interruption) <-
++!subplot_ended(honorduel) : current_phase(duel_interruption) <-
     .print("The duel is settled. The banquet is ruined.");
     !end_plot.
 
@@ -93,6 +93,17 @@ current_phase(reception).
     .my_name(Me);
     .send(Parent, achieve, child_ended(royalbanquet, Me)).
 +!notify_parent <- true.
+
+// Infrastructural cleanup when a child plot ends
+@dir__infrastructure__child_ended[atomic]
++!child_ended(SubplotName, ChildId) <-
+    .term2string(ChildId, ChildIdStr);
+    .print("[RoyalBanquet] Subplot ", SubplotName, " (", ChildIdStr, ") ended. Cleaning up registry...");
+    -child_plot(ChildIdStr, SubplotName, _);
+    !!subplot_ended(SubplotName).
+
+// Fallback to prevent Jason warnings if the user didn't write a WHEN SUBPLOT ENDS block
++!subplot_ended(_) <- true.
 
 @start_subplot_atomic[atomic]
 +!start_subplot(SubplotStr, SubplotAtom, MappingsData) <-

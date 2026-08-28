@@ -31,10 +31,20 @@ var current_dialogue_text: String = ""
 var current_options: Array[Dictionary] = []
 var current_target_waypoint: String = ""
 
+# Movement State
+var movement_mode: String = "idle" # idle, directed, wandering, paused
+var previous_movement_mode: String = "idle"
+var wandering_radius: float = 500.0
+var wandering_anchor: Vector2 = Vector2.ZERO
+
 var utterance_queue: Array[String] = []
 @onready var utterance_panel: PanelContainer = $SpeechBubble
 @onready var utterance_label: Label = $SpeechBubble/Text
 @onready var utterance_timer: Timer = $UtteranceTimer
+@onready var vision_area: Area2D = $Area2D
+
+var last_seen_times: Dictionary = {}
+const SIGHT_COOLDOWN_MSEC: int = 10000
 
 # ==============================================================================
 # LIFECYCLE
@@ -48,6 +58,11 @@ func _ready() -> void:
 	# Listen to the global dialogue event to forward it to Jason
 	# (We leave this for now, but DialogueManager is gone, so we must remove it)
 	
+	if nav_agent:
+		nav_agent.velocity_computed.connect(_on_safe_velocity_computed)
+	if vision_area:
+		vision_area.body_entered.connect(_on_vision_body_entered)
+		
 	if utterance_panel:
 		utterance_panel.visible = false
 	if utterance_timer:
@@ -60,30 +75,93 @@ func _process(_delta: float) -> void:
 
 ## Processes physics and navigation logic.
 func _physics_process(_delta: float) -> void:
+	if movement_mode == "paused": return
+	
 	if nav_agent and not nav_agent.is_navigation_finished():
 		var current_agent_position: Vector2 = global_position
 		var next_path_position: Vector2 = nav_agent.get_next_path_position()
 		
-		velocity = current_agent_position.direction_to(next_path_position) * speed
-		move_and_slide()
+		var desired_velocity = current_agent_position.direction_to(next_path_position) * speed
+		
+		# If avoidance is enabled, feed the desired velocity to the agent and wait for the callback.
+		if nav_agent.avoidance_enabled:
+			nav_agent.set_velocity(desired_velocity)
+		else:
+			velocity = desired_velocity
+			move_and_slide()
 		
 		if nav_agent.is_navigation_finished():
-			if current_target_waypoint != "":
+			if movement_mode == "directed" and current_target_waypoint != "":
 				vesna_manager.send_navigation_update("reached", current_target_waypoint)
 				current_target_waypoint = ""
+				movement_mode = "idle"
+			elif movement_mode == "wandering":
+				get_tree().create_timer(randf_range(2.0, 5.0)).timeout.connect(_pick_random_wander_target)
+
+func _on_safe_velocity_computed(safe_velocity: Vector2) -> void:
+	if movement_mode == "paused": return
+	velocity = safe_velocity
+	move_and_slide()
+
+func _on_vision_body_entered(body: Node2D) -> void:
+	if body == self: return
+	
+	if body.name == "Player" or body.is_in_group("npcs"):
+		var now = Time.get_ticks_msec()
+		var last_seen = last_seen_times.get(body.name, 0)
+		
+		# Only emit sighted event if we haven't seen them in the last 10 seconds
+		if now - last_seen > SIGHT_COOLDOWN_MSEC:
+			last_seen_times[body.name] = now
+			var event_str = "sighted_" + body.name.to_lower()
+			print(name, " spotted ", body.name, ", emitting: ", event_str)
+			vesna_manager.send_regia_event(event_str)
 
 # ==============================================================================
 # INTERACTION
 # ==============================================================================
 
 func interact(player: Node2D) -> void:
-	if current_dialogue_text != "":
-		# We emit a signal that the UI will catch. We'll implement a custom event later or pass references.
-		var dialogue_ui = get_tree().get_first_node_in_group("dialogue_ui")
-		if dialogue_ui:
-			dialogue_ui.start_dialogue(player, self)
-	else:
-		print(name, " has no dialogue text set by Jason right now.")
+	if movement_mode != "idle" and movement_mode != "paused":
+		previous_movement_mode = movement_mode
+		movement_mode = "paused"
+		nav_agent.target_position = global_position # Halt
+		
+	# 1. Clear previous dialogue state
+	current_options.clear()
+	current_dialogue_text = "..."
+	
+	# 2. Ask Jason for what to say
+	vesna_manager.send_regia_event("player_greet")
+	
+	# 3. Open the UI immediately (it will dynamically refresh when Jason replies)
+	var dialogue_ui = get_tree().get_first_node_in_group("dialogue_ui")
+	if dialogue_ui:
+		dialogue_ui.start_dialogue(player, self)
+
+func end_interaction() -> void:
+	if previous_movement_mode != "idle":
+		movement_mode = previous_movement_mode
+		previous_movement_mode = "idle"
+		if movement_mode == "wandering":
+			_pick_random_wander_target()
+		elif movement_mode == "directed" and current_target_waypoint != "":
+			var waypoints = get_tree().get_nodes_in_group("waypoints")
+			for wp in waypoints:
+				if wp.name == current_target_waypoint:
+					nav_agent.target_position = wp.global_position
+					break
+
+func _pick_random_wander_target() -> void:
+	if movement_mode != "wandering": return
+	
+	# Pick a random angle and a random distance within the radius
+	var angle = randf() * TAU
+	var dist = randf_range(0.0, wandering_radius)
+	var random_offset = Vector2(cos(angle), sin(angle)) * dist
+	
+	nav_agent.target_position = wandering_anchor + random_offset
+	print(name, " picked random wander coordinate: ", nav_agent.target_position)
 
 func _play_next_utterance() -> void:
 	var text = utterance_queue.pop_front()
@@ -139,6 +217,7 @@ func _on_command_received(intention: Dictionary) -> void:
 	elif type == "move_to":
 		var target_name = data.get("target", "")
 		current_target_waypoint = target_name
+		movement_mode = "directed"
 		
 		var waypoints = get_tree().get_nodes_in_group("waypoints")
 		var found = false
@@ -151,6 +230,17 @@ func _on_command_received(intention: Dictionary) -> void:
 		if not found:
 			print("Error: Waypoint '", target_name, "' not found!")
 			vesna_manager.send_navigation_update("failed", target_name)
+			
+	elif type == "start_wandering":
+		movement_mode = "wandering"
+		wandering_radius = float(data.get("radius", 500))
+		wandering_anchor = global_position
+		print(name, " starting to wander with radius: ", wandering_radius, " around ", wandering_anchor)
+		_pick_random_wander_target()
+		
+	elif type == "stop_wandering":
+		movement_mode = "idle"
+		nav_agent.target_position = global_position
 			
 	elif type == "set_visible":
 		var is_visible = data.get("visible", true)

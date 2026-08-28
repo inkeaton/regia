@@ -5,3 +5,4 @@
 language/.pytest_cache/
 language/src/regia/__pycache__/
 language/automated_tests/__pycache__/
+language/benchmarks/__pycache__/

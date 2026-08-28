@@ -1,0 +1,61 @@
+# =============================================================
+# Vocabulary Declarations
+# =============================================================
+
+# Actions
+ACTION vesna.via.set_visible(visible) AS set_visible.
+ACTION vesna.via.utter(text) AS utter.
+ACTION vesna.via.spawn_item(item, waypoint) AS spawn_item.
+ACTION vesna.via.despawn_item(item) AS despawn_item.
+ACTION vesna.via.add_item(item) AS add_item.
+ACTION vesna.via.remove_item(item) AS remove_item.
+ACTION vesna.via.set_dialogue_text(text) AS set_dialogue_text.
+ACTION vesna.via.add_dialogue_option(id, text, event, close_ui) AS add_dialogue_option.
+ACTION vesna.via.clear_dialogue_options AS clear_dialogue_options.
+ACTION vesna.via.remove_dialogue_option(id) AS remove_dialogue_option.
+ACTION vesna.via.trigger_game_over(reason) AS trigger_game_over.
+ACTION vesna.via.move_to(target) AS move_to.
+ACTION vesna.via.start_wandering(radius) AS start_wandering.
+ACTION vesna.via.stop_wandering AS stop_wandering.
+
+# Environment Events (From Godot UI)
+EVENT player_greet.
+EVENT picked_up_flower.
+EVENT picked_up_bone.
+EVENT picked_up_corpse.
+EVENT ask_flower_reason.
+EVENT give_flower.
+EVENT reached_lab.
+EVENT give_bone.
+EVENT give_corpse.
+EVENT ask_dog_bone.
+EVENT ask_dog_donut.
+EVENT ask_cop_rudely.
+EVENT ask_cop_trade.
+EVENT attack_cop.
+EVENT denounce_cop.
+EVENT garden_door_opened.
+EVENT item_in_potion.
+
+# Perception Events
+EVENT sighted_player.
+EVENT sighted_scientist.
+EVENT sighted_cop.
+EVENT sighted_dog.
+
+# Internal Narrative Signals
+EVENT player_got_donut.
+EVENT bone_acquired.
+EVENT cop_killed.
+EVENT player_arrested.
+EVENT scientist_arrested.
+
+# Epistemic Facts
+FACT door_open.
+FACT has_bone.
+FACT has_donut.
+FACT player_has_flower.
+FACT player_has_bone.
+FACT player_has_corpse.
+FACT cop_annoyed.
+FACT cop_very_annoyed.

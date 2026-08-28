@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://pt4cylaqogyv"]
+
+[ext_resource type="Script" uid="uid://dbmk6882toh03" path="res://ui/game_over_ui.gd" id="1_mh6r7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_hjrdo"]
+font_size = 70
+font_color = Color(1, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_15rjb"]
+font_size = 25
+
+[node name="GameOverUI" type="CanvasLayer" unique_id=579908617]
+process_mode = 3
+script = ExtResource("1_mh6r7")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=507613922]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.1, 0.1, 0.1, 0.42352942)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=102756973]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -10.0
+offset_right = 20.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="ColorRect/VBoxContainer" unique_id=387390769]
+layout_mode = 2
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_hjrdo")
+
+[node name="ReasonLabel" type="Label" parent="ColorRect/VBoxContainer" unique_id=38784603]
+layout_mode = 2
+text = "Reason goes here"
+label_settings = SubResource("LabelSettings_15rjb")
+horizontal_alignment = 1
+
+[node name="QuitButton" type="Button" parent="ColorRect/VBoxContainer" unique_id=582758555]
+layout_mode = 2
+text = "QUIT GAME"

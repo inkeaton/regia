@@ -1,0 +1,79 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+Vulkan 1.4.354 - Forward+ - Using Device #0: AMD - AMD Radeon RX 7700 XT (RADV NAVI32)
+
+[MESSAGE] - from NetworkManager: Listening on port 9001
+sci Initial overlapping bodies: []
+[MESSAGE] - from NetworkManager: Listening on port 9002
+cop Initial overlapping bodies: []
+[MESSAGE] - from NetworkManager: Listening on port 9003
+dog Initial overlapping bodies: []
+[MESSAGE] - from NetworkManager: Listening on port 9004
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[MESSAGE] - from NetworkManager: New TCP connection accepted. Handshaking...
+[MESSAGE] - from NetworkManager: WebSocket Handshake complete. Channel OPEN.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "item": "flower",
+        "waypoint": "garden"
+    },
+    "receiver": "body",
+    "sender": "vesna",
+    "type": "spawn_item"
+}
+GameManager: Spawned flower at garden
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "target": "lab"
+    },
+    "type": "move_to"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "radius": 800.0
+    },
+    "type": "start_wandering"
+}
+dog starting to wander with radius: 800.0 around (-1176.0, 54.0)
+dog picked random wander coordinate: (-1005.459, 195.5126)
+sci Area2D detected body: Player groups: [&"player"]
+sci spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+dog Area2D detected body: Player groups: [&"player"]
+dog spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+sci Area2D detected body: Player groups: [&"player"]
+cop Area2D detected body: Player groups: [&"player"]
+cop spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}

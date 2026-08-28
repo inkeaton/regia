@@ -104,17 +104,24 @@ func _on_option_selected(opt_data: Dictionary) -> void:
 	var event_id = opt_data.get("event", "")
 	
 	if event_id == "exit_dialogue" or event_id == "exit":
-		_close_dialogue()
 		# Optionally we can still send the exit event to Jason if requested
-		if event_id == "exit_dialogue":
+		if event_id == "exit_dialogue" and current_npc != null:
 			current_npc.vesna_manager.send_regia_event(event_id)
+		_close_dialogue()
 		return
 		
 	if event_id != "":
 		current_npc.vesna_manager.send_regia_event(event_id)
 		
 	# Check if this option should close the UI
-	if opt_data.get("close_on_select", false):
+	var close_val = opt_data.get("close_on_select", false)
+	var should_close = false
+	if typeof(close_val) == TYPE_STRING:
+		should_close = (close_val.to_lower() == "true")
+	else:
+		should_close = bool(close_val)
+		
+	if should_close:
 		_close_dialogue()
 	else:
 		# Disable options to indicate "thinking" state
@@ -133,4 +140,7 @@ func _close_dialogue() -> void:
 	if current_player:
 		current_player.can_move = true
 		current_player = null
-	current_npc = null
+	if current_npc:
+		if current_npc.has_method("end_interaction"):
+			current_npc.end_interaction()
+		current_npc = null

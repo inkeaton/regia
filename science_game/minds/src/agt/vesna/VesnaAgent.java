@@ -195,6 +195,9 @@ public class VesnaAgent extends Agent{
 				case "regia_event":
 					handleRegiaEvent( data );
 					break;
+				case "navigation":
+					handleNavigationEvent( data );
+					break;
 				default:
 					logger.warning( "Unknown message type: " + type );
 			}
@@ -257,6 +260,18 @@ public class VesnaAgent extends Agent{
 		//} catch (Exception e) {}
 		sense(perception);
 	}
+
+	private void handleNavigationEvent( JSONObject event ) {
+		String status = event.getString("status");
+		String waypoint = event.getString("waypoint");
+		
+		if (status.equals("reached")) {
+			String eventName = "reached_" + waypoint;
+			Literal perception = createLiteral(eventName);
+			sense(perception);
+		}
+	}
+
 
 	/****************************************/
 	/* TEMPER OVERRIDES                     */

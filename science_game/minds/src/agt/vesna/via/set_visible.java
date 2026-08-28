@@ -33,7 +33,7 @@ public class set_visible extends DefaultInternalAction {
         }
         
         boolean isVisible = false;
-        String argString = args[0].toString();
+        String argString = args[0].toString().replace("\"", "");
         
         if (argString.equals("true")) {
             isVisible = true;

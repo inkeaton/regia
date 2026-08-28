@@ -46,7 +46,6 @@ _data = {
 }
 
 [node name="Player" type="CharacterBody2D" unique_id=1424175727 groups=["player"]]
-collision_layer = 4
 script = ExtResource("2_atwkx")
 DEFAULT_SPEED = 300.0
 DEFAULT_WEIGHT = 50.0
