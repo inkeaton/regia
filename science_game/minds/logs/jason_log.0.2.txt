@@ -1,62 +1,62 @@
-ago 28, 2026 4:34:59 PM sun.rmi.transport.LiveRef <init>
+ago 29, 2026 5:32:44 PM sun.rmi.transport.LiveRef <init>
 BUONO: main: localHostKnown = true, localHost = 192.168.1.117
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
 BUONO: main: Version = 2, ep = [192.168.1.117:0]
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
 BUONO: main: created local endpoint for socket factory null on port 0
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPTransport exportObject
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPTransport exportObject
 BUONO: main: (port 0) create server socket
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPEndpoint newServerSocket
-BUONO: main: default port for server socket factory null and client socket factory null set to 46005
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPTransport$AcceptLoop run
-BUONO: RMI TCP Accept-0: listening on port 46005
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
-BUONO: main: Version = 2, ep = [192.168.1.117:38013]
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
-BUONO: main: created local endpoint for socket factory null on port 38013
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPTransport exportObject
-BUONO: main: (port 38013) create server socket
-ago 28, 2026 4:34:59 PM sun.rmi.transport.tcp.TCPTransport$AcceptLoop run
-BUONO: RMI TCP Accept-38013: listening on port 38013
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl <init>
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPEndpoint newServerSocket
+BUONO: main: default port for server socket factory null and client socket factory null set to 43025
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPTransport$AcceptLoop run
+BUONO: RMI TCP Accept-0: listening on port 43025
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
+BUONO: main: Version = 2, ep = [192.168.1.117:36793]
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPEndpoint getLocalEndpoint
+BUONO: main: created local endpoint for socket factory null on port 36793
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPTransport exportObject
+BUONO: main: (port 36793) create server socket
+ago 29, 2026 5:32:44 PM sun.rmi.transport.tcp.TCPTransport$AcceptLoop run
+BUONO: RMI TCP Accept-36793: listening on port 36793
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl <init>
 BUONO: HttpServer created http 0.0.0.0/0.0.0.0:3272
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl createContext
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl createContext
 BUONO: context created: /
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl createContext
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl createContext
 BUONO: context created: /agents
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl createContext
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl createContext
 BUONO: context created: /agent-mind/no_ag
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl createContext
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl createContext
 BUONO: context created: /df
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl <init>
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl <init>
 BUONO: HttpServer created http 0.0.0.0/0.0.0.0:3273
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl createContext
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl createContext
 BUONO: context created: /
-ago 28, 2026 4:34:59 PM sun.net.httpserver.ServerImpl createContext
+ago 29, 2026 5:32:44 PM sun.net.httpserver.ServerImpl createContext
 BUONO: context created: /indexarts
-ago 28, 2026 4:34:59 PM io.netty.util.internal.logging.InternalLoggerFactory newDefaultFactory
+ago 29, 2026 5:32:44 PM io.netty.util.internal.logging.InternalLoggerFactory newDefaultFactory
 BUONO: Using java.util.logging as the default logging framework
-ago 28, 2026 4:34:59 PM io.netty.util.ResourceLeakDetector <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.ResourceLeakDetector <clinit>
 BUONO: -Dio.netty.leakDetection.level: simple
-ago 28, 2026 4:34:59 PM io.netty.util.ResourceLeakDetector <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.ResourceLeakDetector <clinit>
 BUONO: -Dio.netty.leakDetection.targetRecords: 4
-ago 28, 2026 4:34:59 PM io.netty.channel.MultithreadEventLoopGroup <clinit>
+ago 29, 2026 5:32:44 PM io.netty.channel.MultithreadEventLoopGroup <clinit>
 BUONO: -Dio.netty.eventLoopThreads: 48
-ago 28, 2026 4:34:59 PM io.netty.channel.nio.NioEventLoop <clinit>
+ago 29, 2026 5:32:44 PM io.netty.channel.nio.NioEventLoop <clinit>
 BUONO: -Dio.netty.noKeySetOptimization: false
-ago 28, 2026 4:34:59 PM io.netty.channel.nio.NioEventLoop <clinit>
+ago 29, 2026 5:32:44 PM io.netty.channel.nio.NioEventLoop <clinit>
 BUONO: -Dio.netty.selectorAutoRebuildThreshold: 512
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 explicitNoUnsafeCause0
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 explicitNoUnsafeCause0
 BUONO: -Dio.netty.noUnsafe: false
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 javaVersion0
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 javaVersion0
 BUONO: Java version: 23
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: sun.misc.Unsafe.theUnsafe: available
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: sun.misc.Unsafe.copyMemory: available
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: java.nio.Buffer.address: available
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: direct buffer constructor: unavailable
 java.lang.NoSuchMethodException: java.nio.DirectByteBuffer.<init>(long,int)
 	at java.base/java.lang.Class.getConstructor0(Class.java:3833)
@@ -98,9 +98,9 @@ java.lang.NoSuchMethodException: java.nio.DirectByteBuffer.<init>(long,int)
 	at jacamo.infra.JaCaMoLauncher.create(JaCaMoLauncher.java:334)
 	at jacamo.infra.JaCaMoLauncher.main(JaCaMoLauncher.java:74)
 
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: java.nio.Bits.unaligned: available, true
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @5e4c8041
 	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:398)
@@ -143,419 +143,449 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 	at jacamo.infra.JaCaMoLauncher.create(JaCaMoLauncher.java:334)
 	at jacamo.infra.JaCaMoLauncher.main(JaCaMoLauncher.java:74)
 
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent0 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent0 <clinit>
 BUONO: java.nio.DirectByteBuffer.<init>(long, int): unavailable
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent unsafeUnavailabilityCause0
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent unsafeUnavailabilityCause0
 BUONO: sun.misc.Unsafe: available
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent maxDirectMemory0
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent maxDirectMemory0
 BUONO: maxDirectMemory: 8174698496 bytes (maybe)
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent tmpdir0
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent tmpdir0
 BUONO: -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent bitMode0
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent bitMode0
 BUONO: -Dio.netty.bitMode: 64 (sun.arch.data.model)
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent <clinit>
 BUONO: -Dio.netty.maxDirectMemory: -1 bytes
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent <clinit>
 BUONO: -Dio.netty.uninitializedArrayAllocationThreshold: -1
-ago 28, 2026 4:34:59 PM io.netty.util.internal.CleanerJava9 <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.CleanerJava9 <clinit>
 BUONO: java.nio.ByteBuffer.cleaner(): available
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent <clinit>
 BUONO: -Dio.netty.noPreferDirect: false
-ago 28, 2026 4:34:59 PM io.netty.util.internal.PlatformDependent$Mpsc <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.internal.PlatformDependent$Mpsc <clinit>
 BUONO: org.jctools-core.MpscChunkedArrayQueue: available
-ago 28, 2026 4:34:59 PM io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider <clinit>
+ago 29, 2026 5:32:44 PM io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider <clinit>
 BUONO: Default DNS servers: [/1.1.1.1:53, /1.0.0.1:53, /192.168.1.1:53, /[fe80:0:0:0:0:0:0:1%enp14s0]:53] (sun.net.dns.ResolverConfiguration)
-ago 28, 2026 4:34:59 PM io.netty.util.NetUtil <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.NetUtil <clinit>
 BUONO: -Djava.net.preferIPv4Stack: false
-ago 28, 2026 4:34:59 PM io.netty.util.NetUtil <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.NetUtil <clinit>
 BUONO: -Djava.net.preferIPv6Addresses: false
-ago 28, 2026 4:34:59 PM io.netty.util.NetUtil <clinit>
+ago 29, 2026 5:32:44 PM io.netty.util.NetUtil <clinit>
 BUONO: Loopback interface: lo (lo, 0:0:0:0:0:0:0:1%lo)
-ago 28, 2026 4:34:59 PM io.netty.util.NetUtil$1 run
+ago 29, 2026 5:32:44 PM io.netty.util.NetUtil$1 run
 BUONO: /proc/sys/net/core/somaxconn: 4096
-ago 28, 2026 4:34:59 PM jason.infra.local.RunLocalMAS createAgs
+ago 29, 2026 5:32:44 PM jason.infra.local.RunLocalMAS createAgs
 BUONO: Creating agent scientist (1/1)
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: No temper or strategy provided. Running without temper system.
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: Body is at localhost : 9001
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initBody
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initBody
 INFORMAZIONI: WebSocket connection established successfully.
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_scientistboneplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_scientistcorpseplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_scientistflowerplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/role_forscience_scientist.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'file:src/agt/scientist.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'jar:file:/home/inkeaton/.gradle/caches/modules-2/files-2.1/io.github.jason-lang/jason-interpreter/3.2.1/9700b9f1306b1d0dc91757a11bb1402c1e06413c/jason-interpreter-3.2.1.jar!/asl/kqmlPlans.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], events = [+!start[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]]
-ago 28, 2026 4:34:59 PM jacamo.infra.JaCaMoAgArch init
+ago 29, 2026 5:32:44 PM jacamo.infra.JaCaMoAgArch init
 BUONO: Using parameters from project science_game for agent scientist
-ago 28, 2026 4:34:59 PM jason.infra.local.RunLocalMAS createAgs
+ago 29, 2026 5:32:44 PM jason.infra.local.RunLocalMAS createAgs
 BUONO: Creating agent cop (1/1)
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: No temper or strategy provided. Running without temper system.
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: Body is at localhost : 9002
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initBody
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initBody
 INFORMAZIONI: WebSocket connection established successfully.
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
-BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_copbaselineplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
+BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_copboneplaybook.asl' parsed successfully!
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_copcorpseplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
+BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_copflowerplaybook.asl' parsed successfully!
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_copsubplotplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/role_forscience_cop.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'file:src/agt/cop.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'jar:file:/home/inkeaton/.gradle/caches/modules-2/files-2.1/io.github.jason-lang/jason-interpreter/3.2.1/9700b9f1306b1d0dc91757a11bb1402c1e06413c/jason-interpreter-3.2.1.jar!/asl/kqmlPlans.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], events = [+!start[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]]
-ago 28, 2026 4:34:59 PM jacamo.infra.JaCaMoAgArch init
+ago 29, 2026 5:32:44 PM jacamo.infra.JaCaMoAgArch init
 BUONO: Using parameters from project science_game for agent cop
-ago 28, 2026 4:34:59 PM jason.infra.local.RunLocalMAS createAgs
+ago 29, 2026 5:32:44 PM jason.infra.local.RunLocalMAS createAgs
 BUONO: Creating agent dog (1/1)
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: No temper or strategy provided. Running without temper system.
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: Body is at localhost : 9003
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initBody
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initBody
 INFORMAZIONI: WebSocket connection established successfully.
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_dogmainplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/playbook_dogsubplotplaybook.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSyntax.directives.Include process
+ago 29, 2026 5:32:44 PM jason.asSyntax.directives.Include process
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/role_forscience_dog.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'file:src/agt/dog.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'jar:file:/home/inkeaton/.gradle/caches/modules-2/files-2.1/io.github.jason-lang/jason-interpreter/3.2.1/9700b9f1306b1d0dc91757a11bb1402c1e06413c/jason-interpreter-3.2.1.jar!/asl/kqmlPlans.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], events = [+!start[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]]
-ago 28, 2026 4:34:59 PM jacamo.infra.JaCaMoAgArch init
+ago 29, 2026 5:32:44 PM jacamo.infra.JaCaMoAgArch init
 BUONO: Using parameters from project science_game for agent dog
-ago 28, 2026 4:34:59 PM jason.infra.local.RunLocalMAS createAgs
+ago 29, 2026 5:32:44 PM jason.infra.local.RunLocalMAS createAgs
 BUONO: Creating agent forscience_director (1/1)
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: No temper or strategy provided. Running without temper system.
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initAg
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initAg
 INFORMAZIONI: Body is at localhost : 9004
-ago 28, 2026 4:34:59 PM vesna.VesnaAgent initBody
+ago 29, 2026 5:32:44 PM vesna.VesnaAgent initBody
 INFORMAZIONI: WebSocket connection established successfully.
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'file:src/agt/gen/director_forscience.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for role_agent(scientist,scientist)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added role_agent(scientist,scientist)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +role_agent(scientist,scientist)[source(self)], events = [+role_agent(scientist,scientist)[source(self)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for role_agent(cop,cop)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added role_agent(cop,cop)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +role_agent(cop,cop)[source(self)], events = [+role_agent(scientist,scientist)[source(self)], +role_agent(cop,cop)[source(self)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for role_agent(dog,dog)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added role_agent(dog,dog)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +role_agent(dog,dog)[source(self)], events = [+role_agent(scientist,scientist)[source(self)], +role_agent(cop,cop)[source(self)], +role_agent(dog,dog)[source(self)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for current_phase(flower)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added current_phase(flower)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +current_phase(flower)[source(self)], events = [+role_agent(scientist,scientist)[source(self)], +role_agent(cop,cop)[source(self)], +role_agent(dog,dog)[source(self)], +current_phase(flower)[source(self)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for plot_name(forscience)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added plot_name(forscience)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +plot_name(forscience)[source(self)], events = [+role_agent(scientist,scientist)[source(self)], +role_agent(cop,cop)[source(self)], +role_agent(dog,dog)[source(self)], +current_phase(flower)[source(self)], +plot_name(forscience)[source(self)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent parseAS
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent parseAS
 BUONO: as2j: AgentSpeak program 'jar:file:/home/inkeaton/.gradle/caches/modules-2/files-2.1/io.github.jason-lang/jason-interpreter/3.2.1/9700b9f1306b1d0dc91757a11bb1402c1e06413c/jason-interpreter-3.2.1.jar!/asl/kqmlPlans.asl' parsed successfully!
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], events = [+role_agent(scientist,scientist)[source(self)], +role_agent(cop,cop)[source(self)], +role_agent(dog,dog)[source(self)], +current_phase(flower)[source(self)], +plot_name(forscience)[source(self)], +!boot[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]]
-ago 28, 2026 4:34:59 PM jacamo.infra.JaCaMoAgArch init
+ago 29, 2026 5:32:44 PM jacamo.infra.JaCaMoAgArch init
 BUONO: Using parameters from project science_game for agent forscience_director
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_scientist),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)], events = [+!start[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_scientist),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_dog),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)], events = [+!start[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_dog),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_cop),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)], events = [+!start[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_cop),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_forscience_director),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)], events = [+role_agent(scientist,scientist)[source(self)], +role_agent(cop,cop)[source(self)], +role_agent(dog,dog)[source(self)], +current_phase(flower)[source(self)], +plot_name(forscience)[source(self)], +!boot[source(self)], +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_forscience_director),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +!start[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +!start[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +!start[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +role_agent(scientist,scientist)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!start[source(self)] is plan p__11[source(self),url("file:src/agt/dog.asl")] +!start : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!start[source(self)] is plan p__1[source(self),url("file:src/agt/scientist.asl")] +!start : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!start[source(self)] is plan p__6[source(self),url("file:src/agt/cop.asl")] +!start : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      p__11[source(self),url("file:src/agt/dog.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!start[source(self)] is plan p__11[source(self),url("file:src/agt/dog.asl")] +!start : null -- with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      p__1[source(self),url("file:src/agt/scientist.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      p__6[source(self),url("file:src/agt/cop.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      p__11[source(self),url("file:src/agt/dog.asl")] is applicable with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +role_agent(cop,cop)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@p__6[source(self),url("file:src/agt/cop.asl")] +!start <- .print("Cop Test Agent started.").,{}) for event +!start[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@p__11[source(self),url("file:src/agt/dog.asl")] +!start <- .print("Dog Test Agent started.").,{}) for event +!start[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@p__1[source(self),url("file:src/agt/scientist.asl")] +!start <- .print("Scientist Test Agent started.").,{}) for event +!start[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +role_agent(dog,dog)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@p__6[source(self),url("file:src/agt/cop.asl")] +!start <- .print("Cop Test Agent started.").,{}) for event +!start[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@p__1[source(self),url("file:src/agt/scientist.asl")] +!start <- .print("Scientist Test Agent started.").,{}) for event +!start[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@p__11[source(self),url("file:src/agt/dog.asl")] +!start <- .print("Dog Test Agent started.").,{}) for event +!start[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +current_phase(flower)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +plot_name(forscience)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 2: 
-    +!start[source(self)] <- ... .print("Dog Test Agent started.") / {}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 1: 
-    +!start[source(self)] <- ... .print("Cop Test Agent started.") / {}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!boot[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!boot[source(self)] is plan boot__ForScience[atomic,source(self),url("file:src/agt/gen/director_forscience.asl")] +!boot : null -- with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 3: 
     +!start[source(self)] <- ... .print("Scientist Test Agent started.") / {}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!boot[source(self)]
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
-INFORMAZIONI: Dog Test Agent started.
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
-INFORMAZIONI: Cop Test Agent started.
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
-INFORMAZIONI: Scientist Test Agent started.
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!boot[source(self)] is plan boot__ForScience[atomic,source(self),url("file:src/agt/gen/director_forscience.asl")] +!boot : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM p__11[source(self),url("file:src/agt/dog.asl")], te=+!start[source(self)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM p__1[source(self),url("file:src/agt/scientist.asl")], te=+!start[source(self)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 1: 
+    +!start[source(self)] <- ... .print("Dog Test Agent started.") / {}
+
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 2: 
+    +!start[source(self)] <- ... .print("Cop Test Agent started.") / {}
+
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      boot__ForScience[atomic,source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM p__6[source(self),url("file:src/agt/cop.asl")], te=+!start[source(self)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
+INFORMAZIONI: Scientist Test Agent started.
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
+INFORMAZIONI: Cop Test Agent started.
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
+INFORMAZIONI: Dog Test Agent started.
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@boot__ForScience[atomic,source(self),url("file:src/agt/gen/director_forscience.asl")] +!boot <- .my_name(Me); +plot_id(Me); .print("[ForScience] Booting up director agent ",Me," in phase 'flower'..."); !on_enter(flower).,{}) for event +!boot[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM p__6[source(self),url("file:src/agt/cop.asl")], te=+!start[source(self)] unif={}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM p__1[source(self),url("file:src/agt/scientist.asl")], te=+!start[source(self)] unif={}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM p__11[source(self),url("file:src/agt/dog.asl")], te=+!start[source(self)] unif={}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_dog),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_cop),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_scientist),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for plot_id(forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_cop),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added plot_id(forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_scientist),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_dog),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +plot_id(forscience_director)[source(self)]
 intention 4: 
     +!boot[source(self)] <- ... +plot_id(Me); .print("[ForScience] Booting up director agent ",Me," in phase 'flower'..."); !on_enter(flower) / {Me=forscience_director}
 , events = [+kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)], +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_forscience_director),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
 INFORMAZIONI: [ForScience] Booting up director agent forscience_director in phase 'flower'...
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!on_enter(flower)[source(self)] is plan p__17[source(self),url("file:src/agt/gen/director_forscience.asl")] +!on_enter(flower) : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      p__17[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!on_enter(flower)[source(self)] is plan p__23[source(self),url("file:src/agt/gen/director_forscience.asl")] +!on_enter(_92) : null -- with unification {_92=flower}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      p__23[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {_92=flower}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@p__17[source(self),url("file:src/agt/gen/director_forscience.asl")] +!on_enter(flower) <- !send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook)); !send_to_role(cop,achieve,add_playbook(copbaselineplaybook)); !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")).,{}) for event +!on_enter(flower)[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!on_enter(flower)[source(self)] is plan p__23[source(self),url("file:src/agt/gen/director_forscience.asl")] +!on_enter(_118) : null -- with unification {_118=flower}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      p__23[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {_118=flower}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@p__17[source(self),url("file:src/agt/gen/director_forscience.asl")] +!on_enter(flower) <- !send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook)); !send_to_role(cop,achieve,add_playbook(copflowerplaybook)); !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")).,{}) for event +!on_enter(flower)[source(self)]
 intention 4: 
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=scientist, Content=add_playbook(scientistflowerplaybook), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=scientist, Content=add_playbook(scientistflowerplaybook), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=scientist, Content=add_playbook(scientistflowerplaybook), Performative=achieve}) for event +!send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook))[source(self)]
 intention 4: 
-    +!on_enter(flower)[source(self)] <- ... !send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook)); !send_to_role(cop,achieve,add_playbook(copbaselineplaybook)); !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
+    +!on_enter(flower)[source(self)] <- ... !send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook)); !send_to_role(cop,achieve,add_playbook(copflowerplaybook)); !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | for role_agent(Role,A), belief role_agent(scientist,scientist)[source(self)] is an option -- {Role=scientist, Performative=achieve, A=scientist, Content=add_playbook(scientistflowerplaybook)}
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(scientist,achieve,add_playbook(scientistflowerplaybook))[source(self)] unif={Role=scientist, Content=add_playbook(scientistflowerplaybook), Agents=[scientist], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!send_to_role(cop,achieve,add_playbook(copbaselineplaybook))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=cop, Content=add_playbook(copbaselineplaybook), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=cop, Content=add_playbook(copbaselineplaybook), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=cop, Content=add_playbook(copbaselineplaybook), Performative=achieve}) for event +!send_to_role(cop,achieve,add_playbook(copbaselineplaybook))[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!send_to_role(cop,achieve,add_playbook(copflowerplaybook))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=cop, Content=add_playbook(copflowerplaybook), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=cop, Content=add_playbook(copflowerplaybook), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=cop, Content=add_playbook(copflowerplaybook), Performative=achieve}) for event +!send_to_role(cop,achieve,add_playbook(copflowerplaybook))[source(self)]
 intention 4: 
-    +!on_enter(flower)[source(self)] <- ... !send_to_role(cop,achieve,add_playbook(copbaselineplaybook)); !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
+    +!on_enter(flower)[source(self)] <- ... !send_to_role(cop,achieve,add_playbook(copflowerplaybook)); !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
-BUONO:      | for role_agent(Role,A), belief role_agent(cop,cop)[source(self)] is an option -- {Role=cop, Performative=achieve, A=cop, Content=add_playbook(copbaselineplaybook)}
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
+BUONO:      | for role_agent(Role,A), belief role_agent(cop,cop)[source(self)] is an option -- {Role=cop, Performative=achieve, A=cop, Content=add_playbook(copflowerplaybook)}
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(cop,achieve,add_playbook(copflowerplaybook))[source(self)] unif={Role=cop, Content=add_playbook(copflowerplaybook), Agents=[cop], Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
 BUONO: received message: <mid1,forscience_director,achieve,scientist,add_playbook(scientistflowerplaybook)>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(cop,achieve,add_playbook(copbaselineplaybook))[source(self)] unif={Role=cop, Content=add_playbook(copbaselineplaybook), Agents=[cop], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!add_playbook(scientistflowerplaybook)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!add_playbook(scientistflowerplaybook)[source(forscience_director)] is plan p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!add_playbook(Name)[source(Sender)] : null -- with unification {Sender=forscience_director, Name=scientistflowerplaybook}
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
-BUONO: received message: <mid2,forscience_director,achieve,cop,add_playbook(copbaselineplaybook)>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] is applicable with unification {Sender=forscience_director, Name=scientistflowerplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!add_playbook(copbaselineplaybook)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid2,forscience_director,achieve,cop,add_playbook(copflowerplaybook)>
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!send_to_role(dog,achieve,add_playbook(dogmainplaybook))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=dog, Content=add_playbook(dogmainplaybook), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!add_playbook(Name)[source(Sender)] <- .print("[Scientist] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender).,{Sender=forscience_director, Name=scientistflowerplaybook}) for event +!add_playbook(scientistflowerplaybook)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!add_playbook(copbaselineplaybook)[source(forscience_director)] is plan p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")] +!add_playbook(Name)[source(Sender)] : null -- with unification {Sender=forscience_director, Name=copbaselineplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!add_playbook(scientistflowerplaybook)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!add_playbook(copflowerplaybook)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=dog, Content=add_playbook(dogmainplaybook), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 5: 
-    +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... .print("[Scientist] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")] is applicable with unification {Sender=forscience_director, Name=copbaselineplaybook}
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
-INFORMAZIONI: [Scientist] Added playbook scientistflowerplaybook from forscience_director
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!add_playbook(scientistflowerplaybook)[source(forscience_director)] is plan p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!add_playbook(Name)[source(Sender)] : null -- with unification {Sender=forscience_director, Name=scientistflowerplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!add_playbook(copflowerplaybook)[source(forscience_director)] is plan p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")] +!add_playbook(Name)[source(Sender)] : null -- with unification {Sender=forscience_director, Name=copflowerplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=dog, Content=add_playbook(dogmainplaybook), Performative=achieve}) for event +!send_to_role(dog,achieve,add_playbook(dogmainplaybook))[source(self)]
 intention 4: 
     +!on_enter(flower)[source(self)] <- ... !send_to_role(dog,achieve,add_playbook(dogmainplaybook)); !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")] +!add_playbook(Name)[source(Sender)] <- .print("[Cop] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender).,{Sender=forscience_director, Name=copbaselineplaybook}) for event +!add_playbook(copbaselineplaybook)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] is applicable with unification {Sender=forscience_director, Name=scientistflowerplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")] is applicable with unification {Sender=forscience_director, Name=copflowerplaybook}
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | for role_agent(Role,A), belief role_agent(dog,dog)[source(self)] is an option -- {Role=dog, Performative=achieve, A=dog, Content=add_playbook(dogmainplaybook)}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!add_playbook(Name)[source(Sender)] <- .print("[Scientist] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender).,{Sender=forscience_director, Name=scientistflowerplaybook}) for event +!add_playbook(scientistflowerplaybook)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")] +!add_playbook(Name)[source(Sender)] <- .print("[Cop] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender).,{Sender=forscience_director, Name=copflowerplaybook}) for event +!add_playbook(copflowerplaybook)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
+BUONO:      | NO more options for role_agent(Role,A)
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 6: 
-    +!add_playbook(copbaselineplaybook)[source(forscience_director)] <- ... .print("[Cop] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copbaselineplaybook}
+    +!add_playbook(copflowerplaybook)[source(forscience_director)] <- ... .print("[Cop] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copflowerplaybook}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 5: 
+    +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... .print("[Scientist] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
+
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
+INFORMAZIONI: [Cop] Added playbook copflowerplaybook from forscience_director
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
+INFORMAZIONI: [Scientist] Added playbook scientistflowerplaybook from forscience_director
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(dog,achieve,add_playbook(dogmainplaybook))[source(self)] unif={Role=dog, Content=add_playbook(dogmainplaybook), Agents=[dog], Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid3,forscience_director,achieve,dog,add_playbook(dogmainplaybook)>
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 6: 
+    +!add_playbook(copflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copflowerplaybook}
+
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 5: 
     +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
 
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
-BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
-INFORMAZIONI: [Cop] Added playbook copbaselineplaybook from forscience_director
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!add_playbook(dogmainplaybook)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
+BUONO: Doing (add) brf for playbook_active(copflowerplaybook,forscience_director)[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for playbook_active(scientistflowerplaybook,forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!add_playbook(dogmainplaybook)[source(forscience_director)] is plan p__12[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!add_playbook(Name)[source(Sender)] : null -- with unification {Sender=forscience_director, Name=dogmainplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!send_to_role(scientist,achieve,spawn_item("flower","garden"))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=scientist, Content=spawn_item("flower","garden"), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
+BUONO: brf added playbook_active(copflowerplaybook,forscience_director)[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added playbook_active(scientistflowerplaybook,forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(dog,achieve,add_playbook(dogmainplaybook))[source(self)] unif={Role=dog, Content=add_playbook(dogmainplaybook), Agents=[dog], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 6: 
-    +!add_playbook(copbaselineplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copbaselineplaybook}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      p__12[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] is applicable with unification {Sender=forscience_director, Name=dogmainplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=scientist, Content=spawn_item("flower","garden"), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
+BUONO: Added event +playbook_active(copflowerplaybook,forscience_director)[source(self)]
+intention 6: 
+    +!add_playbook(copflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copflowerplaybook}
+, events = [+playbook_active(copflowerplaybook,forscience_director)[source(self)]
+intention 6: 
+    +!add_playbook(copflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copflowerplaybook}
+]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +playbook_active(scientistflowerplaybook,forscience_director)[source(self)]
 intention 5: 
     +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
@@ -563,107 +593,75 @@ intention 5:
 intention 5: 
     +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
 ]
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
-BUONO: received message: <mid3,forscience_director,achieve,dog,add_playbook(dogmainplaybook)>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
-BUONO: Doing (add) brf for playbook_active(copbaselineplaybook,forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!add_playbook(dogmainplaybook)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
-BUONO: brf added playbook_active(copbaselineplaybook,forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +playbook_active(scientistflowerplaybook,forscience_director)[source(self)]
-intention 5: 
-    +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!add_playbook(dogmainplaybook)[source(forscience_director)] is plan p__12[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!add_playbook(Name)[source(Sender)] : null -- with unification {Sender=forscience_director, Name=dogmainplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!send_to_role(scientist,achieve,spawn_item("flower","garden"))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=scientist, Content=spawn_item("flower","garden"), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
-BUONO: Added event +playbook_active(copbaselineplaybook,forscience_director)[source(self)]
-intention 6: 
-    +!add_playbook(copbaselineplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copbaselineplaybook}
-, events = [+playbook_active(copbaselineplaybook,forscience_director)[source(self)]
-intention 6: 
-    +!add_playbook(copbaselineplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copbaselineplaybook}
-]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 5: 
-    +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- . / {Sender=forscience_director, Name=scientistflowerplaybook}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      p__12[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] is applicable with unification {Sender=forscience_director, Name=dogmainplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")], te=+!add_playbook(scientistflowerplaybook)[source(forscience_director)] unif={Sender=forscience_director, Name=scientistflowerplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=scientist, Content=spawn_item("flower","garden"), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@p__12[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!add_playbook(Name)[source(Sender)] <- .print("[Dog] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender).,{Sender=forscience_director, Name=dogmainplaybook}) for event +!add_playbook(dogmainplaybook)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=scientist, Content=spawn_item("flower","garden"), Performative=achieve}) for event +!send_to_role(scientist,achieve,spawn_item("flower","garden"))[source(self)]
 intention 4: 
     +!on_enter(flower)[source(self)] <- ... !send_to_role(scientist,achieve,spawn_item("flower","garden")); !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +playbook_active(copbaselineplaybook,forscience_director)[source(self)]
-intention 6: 
-    +!add_playbook(copbaselineplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copbaselineplaybook}
-
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 7: 
     +!add_playbook(dogmainplaybook)[source(forscience_director)] <- ... .print("[Dog] Added playbook ",Name," from ",Sender); +playbook_active(Name,Sender) / {Sender=forscience_director, Name=dogmainplaybook}
 
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | for role_agent(Role,A), belief role_agent(scientist,scientist)[source(self)] is an option -- {Role=scientist, Performative=achieve, A=scientist, Content=spawn_item("flower","garden")}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 6: 
-    +!add_playbook(copbaselineplaybook)[source(forscience_director)] <- . / {Sender=forscience_director, Name=copbaselineplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +playbook_active(copflowerplaybook,forscience_director)[source(self)]
+intention 6: 
+    +!add_playbook(copflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=copflowerplaybook}
 
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
-BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.stdlib.println execute
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +playbook_active(scientistflowerplaybook,forscience_director)[source(self)]
+intention 5: 
+    +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=scientistflowerplaybook}
+
+ago 29, 2026 5:32:44 PM jason.stdlib.println execute
 INFORMAZIONI: [Dog] Added playbook dogmainplaybook from forscience_director
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")], te=+!add_playbook(copbaselineplaybook)[source(forscience_director)] unif={Sender=forscience_director, Name=copbaselineplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
+BUONO:      | NO more options for role_agent(Role,A)
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 6: 
+    +!add_playbook(copflowerplaybook)[source(forscience_director)] <- . / {Sender=forscience_director, Name=copflowerplaybook}
+
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 5: 
+    +!add_playbook(scientistflowerplaybook)[source(forscience_director)] <- . / {Sender=forscience_director, Name=scientistflowerplaybook}
+
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM p__7[source(self),url("file:src/agt/gen/role_forscience_cop.asl")], te=+!add_playbook(copflowerplaybook)[source(forscience_director)] unif={Sender=forscience_director, Name=copflowerplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(scientist,achieve,spawn_item("flower","garden"))[source(self)] unif={Role=scientist, Content=spawn_item("flower","garden"), Agents=[scientist], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM p__2[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")], te=+!add_playbook(scientistflowerplaybook)[source(forscience_director)] unif={Sender=forscience_director, Name=scientistflowerplaybook}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 7: 
     +!add_playbook(dogmainplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=dogmainplaybook}
 
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
-BUONO: received message: <mid4,forscience_director,achieve,scientist,spawn_item("flower","garden")>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: Doing (add) brf for playbook_active(dogmainplaybook,forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!spawn_item("flower","garden")[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid4,forscience_director,achieve,scientist,spawn_item("flower","garden")>
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
 BUONO: brf added playbook_active(dogmainplaybook,forscience_director)[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!spawn_item("flower","garden")[source(forscience_director)] is plan role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!spawn_item("flower","garden") : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!send_to_role(dog,achieve,believe(has_bone))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=dog, Content=believe(has_bone), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +playbook_active(dogmainplaybook,forscience_director)[source(self)]
 intention 7: 
     +!add_playbook(dogmainplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=dogmainplaybook}
@@ -671,82 +669,90 @@ intention 7:
 intention 7: 
     +!add_playbook(dogmainplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=dogmainplaybook}
 ]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!spawn_item("flower","garden")[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=dog, Content=believe(has_bone), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!spawn_item("flower","garden") <- vesna.via.spawn_item("flower","garden").,{}) for event +!spawn_item("flower","garden")[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!spawn_item("flower","garden")[source(forscience_director)] is plan role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!spawn_item("flower","garden") : null -- with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=dog, Content=believe(has_bone), Performative=achieve}) for event +!send_to_role(dog,achieve,believe(has_bone))[source(self)]
 intention 4: 
     +!on_enter(flower)[source(self)] <- ... !send_to_role(dog,achieve,believe(has_bone)); !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +playbook_active(dogmainplaybook,forscience_director)[source(self)]
 intention 7: 
     +!add_playbook(dogmainplaybook)[source(forscience_director)] <- ... +playbook_active(Name,Sender) / {Sender=forscience_director, Name=dogmainplaybook}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 8: 
-    +!spawn_item("flower","garden")[source(forscience_director)] <- ... vesna.via.spawn_item("flower","garden") / {}
-
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | for role_agent(Role,A), belief role_agent(dog,dog)[source(self)] is an option -- {Role=dog, Performative=achieve, A=dog, Content=believe(has_bone)}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] is applicable with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 7: 
     +!add_playbook(dogmainplaybook)[source(forscience_director)] <- . / {Sender=forscience_director, Name=dogmainplaybook}
 
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!spawn_item("flower","garden") <- vesna.via.spawn_item("flower","garden").,{}) for event +!spawn_item("flower","garden")[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM p__12[source(self),url("file:src/agt/gen/role_forscience_dog.asl")], te=+!add_playbook(dogmainplaybook)[source(forscience_director)] unif={Sender=forscience_director, Name=dogmainplaybook}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
-BUONO: received message: <mid5,forscience_director,achieve,dog,believe(has_bone)>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(dog,achieve,believe(has_bone))[source(self)] unif={Role=dog, Content=believe(has_bone), Agents=[dog], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!believe(has_bone)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!believe(has_bone)[source(forscience_director)] is plan role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!believe(has_bone) : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!send_to_role(dog,achieve,start_wandering(800))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=dog, Content=start_wandering(800), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!believe(has_bone) <- +has_bone.,{}) for event +!believe(has_bone)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=dog, Content=start_wandering(800), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
-BUONO: Selected intention intention 9: 
-    +!believe(has_bone)[source(forscience_director)] <- ... +has_bone / {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 8: 
+    +!spawn_item("flower","garden")[source(forscience_director)] <- ... vesna.via.spawn_item("flower","garden") / {}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(dog,achieve,believe(has_bone))[source(self)] unif={Role=dog, Content=believe(has_bone), Agents=[dog], Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid5,forscience_director,achieve,dog,believe(has_bone)>
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!believe(has_bone)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!send_to_role(dog,achieve,start_wandering(800))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=dog, Content=start_wandering(800), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!believe(has_bone)[source(forscience_director)] is plan role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!believe(has_bone) : null -- with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=dog, Content=start_wandering(800), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] is applicable with unification {}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=dog, Content=start_wandering(800), Performative=achieve}) for event +!send_to_role(dog,achieve,start_wandering(800))[source(self)]
 intention 4: 
     +!on_enter(flower)[source(self)] <- ... !send_to_role(dog,achieve,start_wandering(800)); !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
-BUONO: Doing (add) brf for has_bone[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!believe(has_bone) <- +has_bone.,{}) for event +!believe(has_bone)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | for role_agent(Role,A), belief role_agent(dog,dog)[source(self)] is an option -- {Role=dog, Performative=achieve, A=dog, Content=start_wandering(800)}
-ago 28, 2026 4:34:59 PM jason.asSemantics.Agent brf
-BUONO: brf added has_bone[source(self)]
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 9: 
+    +!believe(has_bone)[source(forscience_director)] <- ... +has_bone / {}
+
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem updateEvents
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
+BUONO: Doing (add) brf for has_bone[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.Agent brf
+BUONO: brf added has_bone[source(self)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(dog,achieve,start_wandering(800))[source(self)] unif={Role=dog, Content=start_wandering(800), Agents=[dog], Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem updateEvents
 BUONO: Added event +has_bone[source(self)]
 intention 9: 
     +!believe(has_bone)[source(forscience_director)] <- ... +has_bone / {}
@@ -754,282 +760,750 @@ intention 9:
 intention 9: 
     +!believe(has_bone)[source(forscience_director)] <- ... +has_bone / {}
 ]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(dog,achieve,start_wandering(800))[source(self)] unif={Role=dog, Content=start_wandering(800), Agents=[dog], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
 BUONO: received message: <mid6,forscience_director,achieve,dog,start_wandering(800)>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")], te=+!spawn_item("flower","garden")[source(forscience_director)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +!send_to_role(scientist,achieve,move_to("lab"))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=scientist, Content=move_to("lab"), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +has_bone[source(self)]
 intention 9: 
     +!believe(has_bone)[source(forscience_director)] <- ... +has_bone / {}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=scientist, Content=move_to("lab"), Performative=achieve}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 9: 
     +!believe(has_bone)[source(forscience_director)] <- . / {}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO: option for +!send_to_role(scientist,achieve,move_to("lab"))[source(self)] is plan dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) : null -- with unification {Role=scientist, Content=move_to("lab"), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
-BUONO: Returning from IM role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")], te=+!believe(has_bone)[source(forscience_director)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
-BUONO:      dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] is applicable with unification {Role=scientist, Content=move_to("lab"), Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")] +!send_to_role(Role,Performative,Content) <- .findall(A,role_agent(Role,A),Agents); .send(Agents,Performative,Content).,{Role=scientist, Content=move_to("lab"), Performative=achieve}) for event +!send_to_role(scientist,achieve,move_to("lab"))[source(self)]
 intention 4: 
     +!on_enter(flower)[source(self)] <- ... !send_to_role(scientist,achieve,move_to("lab")) / {}
     +!boot[source(self)] <- ... !on_enter(flower) / {Me=forscience_director}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!start_wandering(800)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM role__forscience__dog__believe_has_bone_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")], te=+!believe(has_bone)[source(forscience_director)] unif={}
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM role__forscience__scientist__spawn_item__flower____garden__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")], te=+!spawn_item("flower","garden")[source(forscience_director)] unif={}
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | for role_agent(Role,A), belief role_agent(scientist,scientist)[source(self)] is an option -- {Role=scientist, Performative=achieve, A=scientist, Content=move_to("lab")}
-ago 28, 2026 4:34:59 PM jason.asSyntax.Literal$1 get
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSyntax.Literal$1 get
 BUONO:      | NO more options for role_agent(Role,A)
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!start_wandering(800)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!start_wandering(800)[source(forscience_director)] is plan role__forscience__dog__start_wandering_800_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!start_wandering(800) : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      role__forscience__dog__start_wandering_800_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
-BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM dir__ForScience__send_to_role__0[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!send_to_role(scientist,achieve,move_to("lab"))[source(self)] unif={Role=scientist, Content=move_to("lab"), Agents=[scientist], Performative=achieve}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
-BUONO: Selected option (@role__forscience__dog__start_wandering_800_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!start_wandering(800) <- vesna.via.start_wandering(800).,{}) for event +!start_wandering(800)[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.infra.local.LocalAgArch checkMail
+ago 29, 2026 5:32:44 PM jason.infra.local.LocalAgArch checkMail
 BUONO: received message: <mid7,forscience_director,achieve,scientist,move_to("lab")>
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@role__forscience__dog__start_wandering_800_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")] +!start_wandering(800) <- vesna.via.start_wandering(800).,{}) for event +!start_wandering(800)[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM p__17[source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!on_enter(flower)[source(self)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +!move_to("lab")[source(forscience_director)]
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 10: 
     +!start_wandering(800)[source(forscience_director)] <- ... vesna.via.start_wandering(800) / {}
 
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
-BUONO: Selected event +!move_to("lab")[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM boot__ForScience[atomic,source(self),url("file:src/agt/gen/director_forscience.asl")], te=+!boot[source(self)] unif={Me=forscience_director}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO: option for +!move_to("lab")[source(forscience_director)] is plan role__forscience__scientist__move_to__lab__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!move_to("lab") : null -- with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applicablePlans
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applicablePlans
 BUONO:      role__forscience__scientist__move_to__lab__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] is applicable with unification {}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM role__forscience__dog__start_wandering_800_[source(self),url("file:src/agt/gen/role_forscience_dog.asl")], te=+!start_wandering(800)[source(forscience_director)] unif={}
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +kqml::clear_source_self([],[])[hide_in_mind_inspector,source(self)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelAppl
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelAppl
 BUONO: Selected option (@role__forscience__scientist__move_to__lab__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")] +!move_to("lab") <- vesna.via.move_to("lab").,{}) for event +!move_to("lab")[source(forscience_director)]
-ago 28, 2026 4:34:59 PM jason.asSemantics.TransitionSystem applySelEv
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelEv
 BUONO: Selected event +joinedWsp(cobj_0,main,"/main")[artifact_id(cobj_1),artifact_name(session_forscience_director),percept_type(obs_prop),source(percept),workspace("/main",cobj_0)]
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem applySelInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applySelInt
 BUONO: Selected intention intention 11: 
     +!move_to("lab")[source(forscience_director)] <- ... vesna.via.move_to("lab") / {}
 
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem applyClrInt
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem applyClrInt
 BUONO: Returning from IM role__forscience__scientist__move_to__lab__[source(self),url("file:src/agt/gen/role_forscience_scientist.asl")], te=+!move_to("lab")[source(forscience_director)] unif={}
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:44 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:00 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:45 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:46 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:46 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:46 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:01 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:46 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:02 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:02 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:02 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:02 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:03 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:03 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:03 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:03 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:47 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:03 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:48 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:04 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:48 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:04 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:48 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:04 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:48 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:04 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:49 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:04 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:49 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:05 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:49 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:05 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:49 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:05 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:50 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:06 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:50 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:06 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:50 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:06 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:50 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:07 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:51 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:07 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:51 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:07 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:51 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:07 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:51 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:08 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:52 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:08 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:52 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:08 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:52 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:08 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:52 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:09 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:53 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:09 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:53 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:09 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:53 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:09 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:53 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:10 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:54 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:10 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:54 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:10 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:54 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:10 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:54 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:11 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:55 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:55 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:56 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:56 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:57 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:57 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:57 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:57 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:32:58 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid8,dog,signal,dog,sighted_player>
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +sighted_player[signal,source(self)]
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +sighted_player[signal,source(self)] is plan pb__DogMainPlaybook__sighted_player__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] +sighted_player : playbook_active(dogmainplaybook,_88) -- with unification {}
+ago 29, 2026 5:32:58 PM jason.asSyntax.Literal$1 get
+BUONO:      | for playbook_active(dogmainplaybook,_88), belief playbook_active(dogmainplaybook,forscience_director)[source(self)] is an option -- {_88=forscience_director}
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      pb__DogMainPlaybook__sighted_player__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] is applicable with unification {_88=forscience_director}
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +sighted_player[signal,source(self)] is plan pb__DogSubplotPlaybook__sighted_player__0[source(self),url("file:src/agt/gen/playbook_dogsubplotplaybook.asl")] +sighted_player : (playbook_active(dogsubplotplaybook,_93) & has_donut) -- with unification {}
+ago 29, 2026 5:32:58 PM jason.asSyntax.Literal$1 get
+BUONO:      | NO more options for playbook_active(dogsubplotplaybook,_93)
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      pb__DogSubplotPlaybook__sighted_player__0[source(self),url("file:src/agt/gen/playbook_dogsubplotplaybook.asl")] is not applicable
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@pb__DogMainPlaybook__sighted_player__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] +sighted_player : playbook_active(dogmainplaybook,_88) <- vesna.via.utter("*Woof!*").,{_88=forscience_director}) for event +sighted_player[signal,source(self)]
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 12: 
+    +sighted_player[signal,source(self)] <- ... vesna.via.utter("*Woof!*") / {_88=forscience_director}
+
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM pb__DogMainPlaybook__sighted_player__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")], te=+sighted_player[signal,source(self)] unif={_88=forscience_director}
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:11 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:58 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:11 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:11 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:12 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:12 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:12 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:12 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:13 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid9,dog,signal,dog,player_greet>
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +player_greet[signal,source(self)]
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +player_greet[signal,source(self)] is plan pb__DogMainPlaybook__player_greet__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] +player_greet : (playbook_active(dogmainplaybook,_89) & has_bone) -- with unification {}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | for playbook_active(dogmainplaybook,_89), belief playbook_active(dogmainplaybook,forscience_director)[source(self)] is an option -- {_89=forscience_director}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | for has_bone, belief has_bone[source(self)] is an option -- {_89=forscience_director}
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      pb__DogMainPlaybook__player_greet__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] is applicable with unification {_89=forscience_director}
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +player_greet[signal,source(self)] is plan pb__DogMainPlaybook__player_greet__1[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] +player_greet : (playbook_active(dogmainplaybook,_90) & not (has_bone)) -- with unification {}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | for playbook_active(dogmainplaybook,_90), belief playbook_active(dogmainplaybook,forscience_director)[source(self)] is an option -- {_90=forscience_director}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | for has_bone, belief has_bone[source(self)] is an option -- {_90=forscience_director}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | NO more options for playbook_active(dogmainplaybook,_90)
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      pb__DogMainPlaybook__player_greet__1[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] is not applicable
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +player_greet[signal,source(self)] is plan pb__DogSubplotPlaybook__player_greet__0[source(self),url("file:src/agt/gen/playbook_dogsubplotplaybook.asl")] +player_greet : (playbook_active(dogsubplotplaybook,_94) & has_donut) -- with unification {}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | NO more options for playbook_active(dogsubplotplaybook,_94)
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      pb__DogSubplotPlaybook__player_greet__0[source(self),url("file:src/agt/gen/playbook_dogsubplotplaybook.asl")] is not applicable
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO: option for +player_greet[signal,source(self)] is plan pb__DogSubplotPlaybook__player_greet__1[source(self),url("file:src/agt/gen/playbook_dogsubplotplaybook.asl")] +player_greet : (playbook_active(dogsubplotplaybook,_95) & not (has_donut)) -- with unification {}
+ago 29, 2026 5:32:59 PM jason.asSyntax.Literal$1 get
+BUONO:      | NO more options for playbook_active(dogsubplotplaybook,_95)
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applicablePlans
+BUONO:      pb__DogSubplotPlaybook__player_greet__1[source(self),url("file:src/agt/gen/playbook_dogsubplotplaybook.asl")] is not applicable
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applySelAppl
+BUONO: Selected option (@pb__DogMainPlaybook__player_greet__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")] +player_greet : (playbook_active(dogmainplaybook,_89) & has_bone) <- vesna.via.set_dialogue_text("*Woof*"); vesna.via.clear_dialogue_options; vesna.via.add_dialogue_option("opt_ask_bone","Give me the bone.","ask_dog_bone","false"); vesna.via.add_dialogue_option("opt_exit","Goodbye.","exit_dialogue","true").,{_89=forscience_director}) for event +player_greet[signal,source(self)]
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 13: 
+    +player_greet[signal,source(self)] <- ... vesna.via.set_dialogue_text("*Woof*"); vesna.via.clear_dialogue_options; vesna.via.add_dialogue_option("opt_ask_bone","Give me the bone.","ask_dog_bone","false"); vesna.via.add_dialogue_option("opt_exit","Goodbye.","exit_dialogue","true") / {_89=forscience_director}
+
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:13 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 13: 
+    +player_greet[signal,source(self)] <- ... vesna.via.clear_dialogue_options; vesna.via.add_dialogue_option("opt_ask_bone","Give me the bone.","ask_dog_bone","false"); vesna.via.add_dialogue_option("opt_exit","Goodbye.","exit_dialogue","true") / {_89=forscience_director}
+
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:13 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 13: 
+    +player_greet[signal,source(self)] <- ... vesna.via.add_dialogue_option("opt_ask_bone","Give me the bone.","ask_dog_bone","false"); vesna.via.add_dialogue_option("opt_exit","Goodbye.","exit_dialogue","true") / {_89=forscience_director}
+
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:13 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applySelInt
+BUONO: Selected intention intention 13: 
+    +player_greet[signal,source(self)] <- ... vesna.via.add_dialogue_option("opt_exit","Goodbye.","exit_dialogue","true") / {_89=forscience_director}
+
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem applyClrInt
+BUONO: Returning from IM pb__DogMainPlaybook__player_greet__0[source(self),url("file:src/agt/gen/playbook_dogmainplaybook.asl")], te=+player_greet[signal,source(self)] unif={_89=forscience_director}
+ago 29, 2026 5:32:59 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:14 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:00 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:14 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:00 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:14 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:00 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:14 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:00 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:15 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:00 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:15 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:00 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:15 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:15 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:16 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:16 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:16 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:01 PM jason.infra.local.LocalAgArch checkMail
+BUONO: received message: <mid10,dog,signal,dog,exit_dialogue>
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem applySelEv
+BUONO: Selected event +exit_dialogue[signal,source(self)]
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:16 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:01 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:17 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:02 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:17 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:02 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:17 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:02 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:17 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:02 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:18 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:02 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:18 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:03 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:18 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:03 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:18 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:03 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:19 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:03 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:19 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:03 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:19 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:04 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:19 PM jason.asSemantics.TransitionSystem sense
+ago 29, 2026 5:33:04 PM jason.asSemantics.TransitionSystem sense
 BUONO: Start sense
-ago 28, 2026 4:35:20 PM java.lang.Shutdown logRuntimeExit
+ago 29, 2026 5:33:04 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:04 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:05 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:05 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:05 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:05 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:06 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:06 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:06 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:06 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:07 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:07 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:07 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:07 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:08 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:08 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:08 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:08 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:09 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:09 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:09 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:09 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:10 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:10 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:10 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:10 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:11 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:11 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:11 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:11 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:12 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:12 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:12 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:12 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:13 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:13 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:13 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:13 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:14 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:14 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:14 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:14 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:15 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:15 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:15 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:15 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:16 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:16 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:17 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:17 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:17 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:18 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:18 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:18 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:18 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:19 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:19 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:19 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:19 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:20 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:20 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:20 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:20 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:21 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:21 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:21 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:22 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:22 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:22 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:22 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:23 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:23 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:23 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:23 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:24 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:24 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:24 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:24 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:25 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:25 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:25 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:25 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:26 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:26 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:26 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:26 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:27 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:27 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:27 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:27 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:28 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:28 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:28 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:28 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:29 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:29 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:29 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:29 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:30 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:30 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:30 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:30 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:31 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:31 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:31 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:31 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:32 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:32 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:32 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:32 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:33 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:33 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:33 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:33 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:34 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:34 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:34 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:34 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:35 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:35 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:35 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:35 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:36 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:36 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:36 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:36 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:37 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:37 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:38 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:38 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:38 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:39 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:39 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:39 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:39 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:40 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:40 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:40 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:40 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:41 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:41 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:41 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:41 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:42 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:42 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:42 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:43 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:43 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:43 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:43 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:44 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:45 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:45 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:45 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:45 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:46 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:46 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:46 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:46 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:47 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:47 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:47 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:47 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:48 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:48 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:48 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:48 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:49 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:49 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:49 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:49 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:50 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:50 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:50 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:50 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:51 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:51 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:51 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:51 PM jason.asSemantics.TransitionSystem sense
+BUONO: Start sense
+ago 29, 2026 5:33:51 PM java.lang.Shutdown logRuntimeExit
 BUONO: Runtime.exit() called with status: 143
 java.lang.Throwable: Runtime.exit(143)
 	at java.base/java.lang.Shutdown.logRuntimeExit(Shutdown.java:179)

@@ -19,10 +19,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import List
 
-from regia.compiler import compile_source
+from regia.compiler import compile_source, compile_file
 
 from .config import GeneratorConfig
 from .generator import generate
+from .import_generator import generate_import_graph
 from .metrics import count_loc, count_output_loc, measure_time_and_ram, get_system_info
 
 
@@ -221,13 +222,29 @@ def _run_single(
     Returns:
         A fully populated BenchmarkRecord.
     """
-    input_loc: int = count_loc(source)
-    input_bytes: int = len(source.encode("utf-8"))
-
-    def _compile() -> object:
-        return compile_source(source, emit=True)
-
-    compile_result, wall_time, peak_mb = measure_time_and_ram(_compile)
+    if cfg.n_import_nodes > 0:
+        import_files = generate_import_graph(cfg)
+        input_loc = sum(len(content.splitlines()) for content in import_files.values())
+        input_bytes = sum(len(content.encode("utf-8")) for content in import_files.values())
+        
+        def _compile() -> object:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp_path = Path(tmpdir)
+                for fname, fcontent in import_files.items():
+                    (tmp_path / fname).write_text(fcontent, encoding="utf-8")
+                    
+                entry_file = tmp_path / "file_0.regia"
+                return compile_file(str(entry_file))
+                
+        compile_result, wall_time, peak_mb = measure_time_and_ram(_compile)
+    else:
+        input_loc = count_loc(source)
+        input_bytes = len(source.encode("utf-8"))
+    
+        def _compile() -> object:
+            return compile_source(source, emit=True)
+    
+        compile_result, wall_time, peak_mb = measure_time_and_ram(_compile)
 
     output_files: int = 0
     output_loc_total: int = 0

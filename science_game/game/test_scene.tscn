@@ -12,9 +12,9 @@
 font_size = 40
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_7ht8i"]
-vertices = PackedVector2Array(1582.75, 1183.9688, -1758.8984, 1177.0313, -1047.9063, -499.07813, 1161.1406, -886.46094)
+vertices = PackedVector2Array(2759.3906, 2106.4297, -2198.3438, 2279.5938, -1675.2734, -1241.6563, 1879.2891, -1528.3438)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-1055, -508, -1774, 1187, 1595, 1194, 1169, -898)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-1684, -1251, -2210, 2290, 2772, 2116, 1887, -1539)])
 
 [node name="Test" type="Node2D" unique_id=1387244453]
 
@@ -46,7 +46,7 @@ label_settings = SubResource("LabelSettings_hjrdo")
 metadata/_edit_use_anchors_ = true
 
 [node name="lab" type="Marker2D" parent="level/waypoints" unique_id=1846446058 groups=["waypoints"]]
-position = Vector2(-906, -1182)
+position = Vector2(-336, -1704)
 metadata/_edit_group_ = true
 
 [node name="Label" type="Label" parent="level/waypoints/lab" unique_id=2131338458]
@@ -56,7 +56,7 @@ text = "Lab "
 label_settings = SubResource("LabelSettings_hjrdo")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="level" unique_id=1173154093]
-position = Vector2(-456, -686)
+position = Vector2(-650, -637)
 navigation_polygon = SubResource("NavigationPolygon_7ht8i")
 
 [node name="Camera2D" type="Camera2D" parent="level" unique_id=1667814174]
@@ -71,21 +71,21 @@ metadata/_edit_group_ = true
 remote_path = NodePath("../../level/Camera2D")
 
 [node name="sci" parent="." unique_id=1761570622 instance=ExtResource("2_8pr8v")]
-position = Vector2(372, 68)
+position = Vector2(-1367, -1473)
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" parent="sci/CollisionShape2D" parent_id_path=PackedInt32Array(1761570622, 1504639406) index="0" unique_id=187120093]
 texture = ExtResource("7_8pr8v")
 
 [node name="cop" parent="." unique_id=1477466107 instance=ExtResource("2_8pr8v")]
-position = Vector2(-1434, -777)
+position = Vector2(471, -1371)
 metadata/_edit_group_ = true
 
 [node name="VesnaManager" parent="cop" index="2" unique_id=1688373293]
 PORT = 9002
 
 [node name="dog" parent="." unique_id=549978571 instance=ExtResource("2_8pr8v")]
-position = Vector2(-1176, 54)
+position = Vector2(-569, -31)
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" parent="dog/CollisionShape2D" parent_id_path=PackedInt32Array(549978571, 1504639406) index="0" unique_id=187120093]

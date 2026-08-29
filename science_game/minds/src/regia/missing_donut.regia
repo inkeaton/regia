@@ -1,60 +1,8 @@
 IMPORT "vocabulary.regia".
+IMPORT "cop_pb.regia".
+IMPORT "dog_pb.regia".
+IMPORT "sci_pb.regia".
 
-# =============================================================
-# Playbooks
-# =============================================================
-
-PLAYBOOK DogSubplotPlaybook:
-    WHEN player_greet:
-        IF has_donut:
-            DO set_dialogue_text("*Woof!* (Chews donut loudly)").
-            DO clear_dialogue_options.
-            DO add_dialogue_option("opt_donut", "Drop the donut!", "ask_dog_donut", "false").
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-        ELSE:
-            DO set_dialogue_text("*Woof!*").
-            DO clear_dialogue_options.
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN ask_dog_donut:
-        IF has_donut:
-            DO utter("*Happy barks* (Drops donut)").
-            DO FORGET(has_donut).
-            DO remove_dialogue_option("opt_donut").
-            DO add_item("donut").
-            SIGNAL player_got_donut.
-        ELSE:
-            DO utter("*Whines* (I don't have it)").
-
-PLAYBOOK CopSubplotPlaybook:
-    WHEN player_greet:
-        DO set_dialogue_text("I heard there's a donut around here...").
-        DO clear_dialogue_options.
-        DO add_dialogue_option("opt_rude", "Give me that bone!", "ask_cop_rudely", "false").
-        IF has_donut:
-            DO add_dialogue_option("opt_trade", "I have a donut. Trade for the bone?", "ask_cop_trade", "false").
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-        ELSE:
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN ask_cop_rudely:
-        IF cop_very_annoyed:
-            DO utter("You crossed the line! You are under arrest!").
-            SIGNAL player_arrested.
-        ELSE:
-            DO utter("Watch your tone! Fine, take this stupid bone.").
-            DO BELIEVE(cop_very_annoyed).
-            DO remove_dialogue_option("opt_rude").
-            DO add_item("bone").
-            SIGNAL bone_acquired.
-
-    WHEN ask_cop_trade:
-        DO utter("A donut! Finally. Here, take the bone.").
-        DO remove_item("donut").
-        DO remove_dialogue_option("opt_trade").
-        DO remove_dialogue_option("opt_rude").
-        DO add_item("bone").
-        SIGNAL bone_acquired.
 
 # =============================================================
 # Plots

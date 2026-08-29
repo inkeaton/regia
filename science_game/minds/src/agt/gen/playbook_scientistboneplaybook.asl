@@ -9,11 +9,19 @@
 +picked_up_bone : playbook_active(scientistboneplaybook, _) <-
     +player_has_bone.
 
+@pb__ScientistBonePlaybook__sighted_player__0
++sighted_player : playbook_active(scientistboneplaybook, _) <-
+    vesna.via.utter("Chop chop! I need that sturdy bone!").
+
+@pb__ScientistBonePlaybook__exit_dialogue__0
++exit_dialogue : playbook_active(scientistboneplaybook, _) <-
+    vesna.via.utter("Hurry back!").
+
 @pb__ScientistBonePlaybook__player_greet__0
 +player_greet : playbook_active(scientistboneplaybook, _) & player_has_bone <-
     vesna.via.set_dialogue_text("Excellent. Now I require a sturdy bone.");
     vesna.via.clear_dialogue_options;
-    vesna.via.add_dialogue_option("opt_give_bone", "Here is the bone.", "give_bone", "true");
+    vesna.via.add_dialogue_option("opt_give_bone", "Here is the bone.", "give_bone", "false");
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
 @pb__ScientistBonePlaybook__player_greet__1
@@ -25,5 +33,8 @@
 @pb__ScientistBonePlaybook__give_bone__0
 +give_bone : playbook_active(scientistboneplaybook, _) <-
     vesna.via.remove_item("bone");
+    vesna.via.set_dialogue_text("Finally... bring me a fresh corpse.");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true");
     !signal_directors(scientistboneplaybook, give_bone).
 

@@ -5,6 +5,11 @@
 // Plans are gated by playbook_active(dogsubplotplaybook, _).
 // Included by role templates that use this playbook.
 
+@pb__DogSubplotPlaybook__sighted_player__0
++sighted_player : playbook_active(dogsubplotplaybook, _) & has_donut <-
+    vesna.via.utter("*Wags tail hopefully*");
+    vesna.via.utter("*Wags tail happily* (Mmm, donut!)").
+
 @pb__DogSubplotPlaybook__player_greet__0
 +player_greet : playbook_active(dogsubplotplaybook, _) & has_donut <-
     vesna.via.set_dialogue_text("*Woof!* (Chews donut loudly)");

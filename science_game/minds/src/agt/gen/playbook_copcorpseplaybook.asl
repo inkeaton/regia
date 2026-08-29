@@ -5,15 +5,20 @@
 // Plans are gated by playbook_active(copcorpseplaybook, _).
 // Included by role templates that use this playbook.
 
+@pb__CopCorpsePlaybook__sighted_player__0
++sighted_player : playbook_active(copcorpseplaybook, _) <-
+    vesna.via.utter("Something feels... off today.").
+
 @pb__CopCorpsePlaybook__player_greet__0
 +player_greet : playbook_active(copcorpseplaybook, _) <-
     vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_denounce", "They want a fresh corpse!", "denounce_corpse", "false");
     vesna.via.add_dialogue_option("opt_attack", "Die, copper!", "attack_cop", "true");
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
 @pb__CopCorpsePlaybook__attack_cop__0
 +attack_cop : playbook_active(copcorpseplaybook, _) & cop_very_annoyed <-
-    vesna.via.utter("I saw you reaching! You are under arrest!");
+    vesna.via.set_dialogue_text("I saw you reaching! You are under arrest!");
     !signal_directors(copcorpseplaybook, player_arrested).
 
 @pb__CopCorpsePlaybook__attack_cop__1
@@ -23,8 +28,13 @@
     vesna.via.add_item("corpse");
     !signal_directors(copcorpseplaybook, cop_killed).
 
-@pb__CopCorpsePlaybook__denounce_cop__0
-+denounce_cop : playbook_active(copcorpseplaybook, _) <-
-    vesna.via.utter("I knew he was up to no good. I'm arresting him.");
+@pb__CopCorpsePlaybook__denounce_corpse__0
++denounce_corpse : playbook_active(copcorpseplaybook, _) & cop_very_annoyed <-
+    vesna.via.set_dialogue_text("That is it! You are under arrest for harassment!");
+    !signal_directors(copcorpseplaybook, player_arrested).
+
+@pb__CopCorpsePlaybook__denounce_corpse__1
++denounce_corpse : playbook_active(copcorpseplaybook, _) & not (cop_very_annoyed) <-
+    vesna.via.set_dialogue_text("A corpse?! I knew he was up to no good. I'm arresting him.");
     !signal_directors(copcorpseplaybook, scientist_arrested).
 

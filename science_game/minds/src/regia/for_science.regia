@@ -1,133 +1,8 @@
+IMPORT "vocabulary.regia".
 IMPORT "missing_donut.regia".
-
-# =============================================================
-# Playbooks
-# =============================================================
-
-# --- SCIENTIST PLAYBOOKS ---
-PLAYBOOK ScientistFlowerPlaybook:
-    WHEN picked_up_flower:
-        DO BELIEVE(player_has_flower).
-
-    WHEN sighted_player:
-        DO utter("Ah, hello there!").
-
-    WHEN reached_lab:
-        DO utter("Ah, finally some peace and quiet.").
-
-    WHEN player_greet:
-        DO set_dialogue_text("I need a flower for my experiment!").
-        DO clear_dialogue_options.
-        DO add_dialogue_option("opt_ask_reason", "Why do you need the flower?", "ask_flower_reason", "false").
-        IF player_has_flower:
-            DO add_dialogue_option("opt_give_flower", "Here is the flower.", "give_flower", "true").
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-        ELSE:
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN ask_flower_reason:
-        DO set_dialogue_text("Because it has magical properties, of course!").
-        DO remove_dialogue_option("opt_ask_reason").
-
-    WHEN give_flower:
-        DO remove_item("flower").
-        SIGNAL give_flower.
-
-PLAYBOOK ScientistBonePlaybook:
-    WHEN picked_up_bone:
-        DO BELIEVE(player_has_bone).
-
-    WHEN player_greet:
-        DO set_dialogue_text("Excellent. Now I require a sturdy bone.").
-        DO clear_dialogue_options.
-        IF player_has_bone:
-            DO add_dialogue_option("opt_give_bone", "Here is the bone.", "give_bone", "true").
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-        ELSE:
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN give_bone:
-        DO remove_item("bone").
-        SIGNAL give_bone.
-
-PLAYBOOK ScientistCorpsePlaybook:
-    WHEN picked_up_corpse:
-        DO BELIEVE(player_has_corpse).
-
-    WHEN player_greet:
-        DO set_dialogue_text("Finally... bring me a fresh corpse.").
-        DO clear_dialogue_options.
-        IF player_has_corpse:
-            DO add_dialogue_option("opt_give_corpse", "Here is the corpse.", "give_corpse", "true").
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-        ELSE:
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN give_corpse:
-        DO remove_item("corpse").
-        SIGNAL give_corpse.
-
-# --- DOG PLAYBOOKS ---
-PLAYBOOK DogMainPlaybook:
-    WHEN player_greet:
-        IF has_bone:
-            DO set_dialogue_text("*Woof*").
-            DO clear_dialogue_options.
-            DO add_dialogue_option("opt_ask_bone", "Give me the bone.", "ask_dog_bone", "false").
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-        ELSE:
-            DO set_dialogue_text("*Woof*").
-            DO clear_dialogue_options.
-            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN ask_dog_bone:
-        IF has_bone:
-            DO utter("*Woof!* (Drops bone)").
-            DO FORGET(has_bone).
-            DO remove_dialogue_option("opt_ask_bone").
-            DO add_item("bone").
-            SIGNAL bone_acquired.
-        ELSE:
-            DO utter("*Whines confusedly* (I don't have it!)").
-
-
-# --- COP PLAYBOOKS ---
-PLAYBOOK CopBaselinePlaybook:
-    WHEN player_greet:
-        DO set_dialogue_text("Move along, citizen. Nothing to see here.").
-        DO clear_dialogue_options.
-        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN denounce_cop:
-        IF cop_very_annoyed:
-            DO utter("That is it! You are under arrest for harassment!").
-            SIGNAL player_arrested.
-        ELSE:
-            DO utter("Stop making up stories. Leave the scientist alone.").
-            DO BELIEVE(cop_very_annoyed).
-
-PLAYBOOK CopCorpsePlaybook:
-    WHEN player_greet:
-        DO clear_dialogue_options.
-        DO add_dialogue_option("opt_attack", "Die, copper!", "attack_cop", "true").
-        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
-
-    WHEN attack_cop:
-        IF cop_very_annoyed:
-            DO utter("I saw you reaching! You are under arrest!").
-            SIGNAL player_arrested.
-        ELSE:
-            DO utter("What are you doing?! *Dies*").
-            DO set_visible("false").
-            DO add_item("corpse").
-            SIGNAL cop_killed.
-
-    WHEN denounce_cop:
-        DO utter("I knew he was up to no good. I'm arresting him.").
-        SIGNAL scientist_arrested.
-
-
-
+IMPORT "cop_pb.regia".
+IMPORT "dog_pb.regia".
+IMPORT "sci_pb.regia".
 
 # --- MAIN PLOT: FOR SCIENCE ---
 PLOT ForScience.
@@ -153,7 +28,7 @@ PLOT ForScience.
     DURING flower:
         ON ENTER:
             ASSIGN ScientistFlowerPlaybook TO Scientist.
-            ASSIGN CopBaselinePlaybook TO Cop.
+            ASSIGN CopFlowerPlaybook TO Cop.
             ASSIGN DogMainPlaybook TO Dog.
             Scientist DO spawn_item("flower", "garden").
             Dog DO BELIEVE(has_bone).
@@ -162,15 +37,17 @@ PLOT ForScience.
 
         WHEN give_flower:
             IF door_open:
-                UNASSIGN CopBaselinePlaybook FROM Cop.
+                UNASSIGN CopFlowerPlaybook FROM Cop.
                 UNASSIGN DogMainPlaybook FROM Dog.
                 START SUBPLOT MissingDonut MAPPING Cop TO Cop, Dog TO Dog.
                 TRANSITION TO bone.
             ELSE:
+                ASSIGN CopBonePlaybook TO Cop.
                 TRANSITION TO bone.
 
         ON EXIT:
             UNASSIGN ScientistFlowerPlaybook FROM Scientist.
+            UNASSIGN CopFlowerPlaybook FROM Cop.
 
 
     # Phase 2: Bone
@@ -180,7 +57,7 @@ PLOT ForScience.
 
         WHEN SUBPLOT MissingDonut ENDS:
             Scientist DO BELIEVE(player_has_bone).
-            ASSIGN CopBaselinePlaybook TO Cop.
+            ASSIGN CopBonePlaybook TO Cop.
             ASSIGN DogMainPlaybook TO Dog.
 
         WHEN ROLE Dog SIGNALS bone_acquired:
@@ -191,7 +68,7 @@ PLOT ForScience.
 
         ON EXIT:
             UNASSIGN ScientistBonePlaybook FROM Scientist.
-            UNASSIGN CopBaselinePlaybook FROM Cop.
+            UNASSIGN CopBonePlaybook FROM Cop.
             UNASSIGN DogMainPlaybook FROM Dog.
 
 
@@ -213,8 +90,7 @@ PLOT ForScience.
             Cop DO trigger_game_over("Scientist Arrested").
             END PLOT.
 
-        WHEN ROLE Scientist SIGNALS give_corpse:
-            Scientist DO utter("Experiment Complete!").
+        WHEN ROLE Scientist SIGNALS game_won:
             Scientist DO trigger_game_over("Victory").
             END PLOT.
 

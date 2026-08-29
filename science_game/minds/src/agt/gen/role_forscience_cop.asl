@@ -6,8 +6,9 @@
 // ============================================
 // == Included Playbooks ==
 // ============================================
-{ include("playbook_copbaselineplaybook.asl") }
+{ include("playbook_copboneplaybook.asl") }
 { include("playbook_copcorpseplaybook.asl") }
+{ include("playbook_copflowerplaybook.asl") }
 { include("playbook_copsubplotplaybook.asl") }
 
 // ============================================

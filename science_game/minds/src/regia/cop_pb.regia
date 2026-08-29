@@ -1,0 +1,142 @@
+IMPORT "vocabulary.regia".
+
+# --- COP PLAYBOOKS ---
+PLAYBOOK CopFlowerPlaybook:
+    WHEN sighted_player:
+        IF cop_very_annoyed:
+            DO utter("Keep walking, troublemaker.").
+        IF cop_annoyed:
+            DO utter("I've got my eye on you...").
+        ELSE:
+            DO utter("Nothing to report.").
+    WHEN player_greet:
+        DO set_dialogue_text("Move along, citizen. Nothing to see here.").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_denounce", "The scientist is asking for a flower...", "denounce_flower", "false").
+        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN denounce_flower:
+        IF cop_annoyed:
+            DO set_dialogue_text("I told you, it's just a flower.").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("It's only a flower, stop wasting my time.").
+            DO BELIEVE(cop_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+PLAYBOOK CopBonePlaybook:
+    WHEN sighted_player:
+        IF cop_very_annoyed:
+            DO utter("Don't test my patience today.").
+        IF cop_annoyed:
+            DO utter("Just stay out of my way.").
+        ELSE:
+            DO utter("Quiet day on patrol.").
+    WHEN player_greet:
+        DO set_dialogue_text("Move along, citizen. Nothing to see here.").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_denounce", "Now they want a bone!", "denounce_bone", "false").
+        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN denounce_bone:
+        IF cop_very_annoyed:
+            DO set_dialogue_text("Stop bothering me!").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        IF cop_annoyed:
+            DO set_dialogue_text("Stop making up stories!").
+            DO FORGET(cop_annoyed).
+            DO BELIEVE(cop_very_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("It's probably for a dog. Go away.").
+            DO BELIEVE(cop_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+PLAYBOOK CopCorpsePlaybook:
+    WHEN sighted_player:
+        DO utter("Something feels... off today.").
+    WHEN player_greet:
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_denounce", "They want a fresh corpse!", "denounce_corpse", "false").
+        DO add_dialogue_option("opt_attack", "Die, copper!", "attack_cop", "true").
+        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN attack_cop:
+        IF cop_very_annoyed:
+            DO set_dialogue_text("I saw you reaching! You are under arrest!").
+            SIGNAL player_arrested.
+        ELSE:
+            DO utter("What are you doing?! *Dies*").
+            DO set_visible("false").
+            DO add_item("corpse").
+            SIGNAL cop_killed.
+
+    WHEN denounce_corpse:
+        IF cop_very_annoyed:
+            DO set_dialogue_text("That is it! You are under arrest for harassment!").
+            SIGNAL player_arrested.
+        ELSE:
+            DO set_dialogue_text("A corpse?! I knew he was up to no good. I'm arresting him.").
+            SIGNAL scientist_arrested.
+
+PLAYBOOK CopSubplotPlaybook:
+    WHEN sighted_player:
+        DO utter("Where did that donut go...").
+
+    WHEN player_greet:
+        DO set_dialogue_text("I heard there's a donut around here...").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_rude", "Give me that bone!", "ask_cop_rudely", "false").
+        DO add_dialogue_option("opt_denounce", "Now they want a bone!", "denounce_bone", "false").
+        IF has_donut:
+            DO add_dialogue_option("opt_trade", "I have a donut. Trade for the bone?", "ask_cop_trade", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN ask_cop_rudely:
+        IF cop_annoyed:
+            DO set_dialogue_text("That's it, I'm extremely annoyed now! Take the bone and get out.").
+            DO BELIEVE(cop_very_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+            DO add_item("bone").
+            SIGNAL bone_acquired.
+        ELSE:
+            DO set_dialogue_text("Watch your tone! Fine, take this stupid bone.").
+            DO BELIEVE(cop_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+            DO add_item("bone").
+            SIGNAL bone_acquired.
+
+    WHEN ask_cop_trade:
+        DO utter("A donut! Finally. Here, take the bone.").
+        DO remove_item("donut").
+        DO remove_dialogue_option("opt_trade").
+        DO remove_dialogue_option("opt_rude").
+        DO remove_dialogue_option("opt_denounce").
+        DO add_item("bone").
+        SIGNAL bone_acquired.
+
+    WHEN denounce_bone:
+        IF cop_very_annoyed:
+            DO set_dialogue_text("Stop bothering me!").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        IF cop_annoyed:
+            DO set_dialogue_text("Stop making up stories!").
+            DO FORGET(cop_annoyed).
+            DO BELIEVE(cop_very_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("It's probably for a dog. Go away.").
+            DO BELIEVE(cop_annoyed).
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").

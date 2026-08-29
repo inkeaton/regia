@@ -22,6 +22,7 @@ class_name NPC
 
 @onready var vesna_manager: VesnaManager = $VesnaManager
 @onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
+@onready var sprite: Sprite2D = $CollisionShape2D/Sprite2D
 
 # ==============================================================================
 # STATE
@@ -52,6 +53,9 @@ const SIGHT_COOLDOWN_MSEC: int = 10000
 
 ## Initializes the NPC and connects necessary signals.
 func _ready() -> void:
+	if sprite and sprite.material:
+		sprite.material = sprite.material.duplicate()
+		
 	if vesna_manager:
 		vesna_manager.command_received.connect(_on_command_received)
 		
@@ -60,6 +64,7 @@ func _ready() -> void:
 	
 	if nav_agent:
 		nav_agent.velocity_computed.connect(_on_safe_velocity_computed)
+		nav_agent.target_desired_distance = 250.0
 	if vision_area:
 		vision_area.body_entered.connect(_on_vision_body_entered)
 		
@@ -75,7 +80,9 @@ func _process(_delta: float) -> void:
 
 ## Processes physics and navigation logic.
 func _physics_process(_delta: float) -> void:
-	if movement_mode == "paused": return
+	if movement_mode == "paused":
+		_update_walking_shader()
+		return
 	
 	if nav_agent and not nav_agent.is_navigation_finished():
 		var current_agent_position: Vector2 = global_position
@@ -89,19 +96,39 @@ func _physics_process(_delta: float) -> void:
 		else:
 			velocity = desired_velocity
 			move_and_slide()
-		
-		if nav_agent.is_navigation_finished():
-			if movement_mode == "directed" and current_target_waypoint != "":
-				vesna_manager.send_navigation_update("reached", current_target_waypoint)
-				current_target_waypoint = ""
-				movement_mode = "idle"
-			elif movement_mode == "wandering":
-				get_tree().create_timer(randf_range(2.0, 5.0)).timeout.connect(_pick_random_wander_target)
+	
+	# Check arrival separately — this fires on the frame AFTER movement stops,
+	# when is_navigation_finished() first returns true and the movement block above is skipped.
+	if nav_agent and nav_agent.is_navigation_finished():
+		if movement_mode == "directed" and current_target_waypoint != "":
+			print(name, " reached directed waypoint: ", current_target_waypoint)
+			vesna_manager.send_navigation_update("reached", current_target_waypoint)
+			current_target_waypoint = ""
+			movement_mode = "idle"
+		elif movement_mode == "wandering":
+			print(name, " reached wander target! Starting timer...")
+			movement_mode = "waiting"  # Prevent repeated timer spawns
+			get_tree().create_timer(randf_range(2.0, 5.0)).timeout.connect(
+				func() -> void:
+					if movement_mode == "waiting":
+						movement_mode = "wandering"
+					_pick_random_wander_target()
+			)
+	
+	_update_walking_shader()
 
 func _on_safe_velocity_computed(safe_velocity: Vector2) -> void:
-	if movement_mode == "paused": return
+	if movement_mode == "paused":
+		_update_walking_shader()
+		return
 	velocity = safe_velocity
 	move_and_slide()
+	_update_walking_shader()
+
+func _update_walking_shader() -> void:
+	if sprite and sprite.material is ShaderMaterial:
+		var is_moving = (movement_mode != "idle" and movement_mode != "paused") and velocity.length() > 0.1
+		sprite.material.set_shader_parameter("is_walking", is_moving)
 
 func _on_vision_body_entered(body: Node2D) -> void:
 	if body == self: return
@@ -153,6 +180,9 @@ func end_interaction() -> void:
 					break
 
 func _pick_random_wander_target() -> void:
+	if movement_mode != "wandering": return
+	
+	await get_tree().physics_frame
 	if movement_mode != "wandering": return
 	
 	# Pick a random angle and a random distance within the radius
@@ -236,7 +266,7 @@ func _on_command_received(intention: Dictionary) -> void:
 		wandering_radius = float(data.get("radius", 500))
 		wandering_anchor = global_position
 		print(name, " starting to wander with radius: ", wandering_radius, " around ", wandering_anchor)
-		_pick_random_wander_target()
+		call_deferred("_pick_random_wander_target")
 		
 	elif type == "stop_wandering":
 		movement_mode = "idle"

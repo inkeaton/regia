@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://8d4du44d8614"]
 
 [ext_resource type="Script" uid="uid://ys63gsi2me5u" path="res://bodies/npcs/NPC.gd" id="1_yief8"]
+[ext_resource type="Shader" uid="uid://bwlwtw04misxp" path="res://bodies/npcs/walk_distort.gdshader" id="2_d8j02"]
 [ext_resource type="Texture2D" uid="uid://21p4djv5h3vg" path="res://resources/images/portraits/cop.png" id="2_yief8"]
 [ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="3_jsqdi"]
 
@@ -9,6 +10,15 @@ radius = 241.40791
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ht8i"]
 size = Vector2(121, 216)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jsqdi"]
+shader = ExtResource("2_d8j02")
+shader_parameter/walk_speed = 3.3270001580325
+shader_parameter/bob_amount = 6.78800032243
+shader_parameter/sway_amount = 6.29600029906
+shader_parameter/squash_amount = 0.02800000133
+shader_parameter/tilt_amount = 0.0150000007125
+shader_parameter/is_walking = false
 
 [node name="test_npc" type="CharacterBody2D" unique_id=1761570622]
 scale = Vector2(1.5, 1.5)
@@ -25,6 +35,7 @@ position = Vector2(-3.5, -1)
 shape = SubResource("RectangleShape2D_7ht8i")
 
 [node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D" unique_id=187120093]
+material = SubResource("ShaderMaterial_jsqdi")
 position = Vector2(3.31355, 0.8686733)
 scale = Vector2(0.2160548, 0.19400841)
 texture = ExtResource("2_yief8")
@@ -37,6 +48,7 @@ metadata/_custom_type_script = "uid://dvhqleqa5i43d"
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1524213935]
 avoidance_enabled = true
 radius = 29.23
+debug_enabled = true
 
 [node name="SpeechBubble" type="PanelContainer" parent="." unique_id=793708288]
 visible = false

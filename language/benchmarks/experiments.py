@@ -203,29 +203,29 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
     # ================== Game Design Interactions ==================
 
     # "Growing Cast" - As the number of roles grows, the vocabulary needed grows.
-    # "interaction_growing_cast": [
-    #     replace(BASELINE, n_roles=n, n_actions=n, n_events=n, n_facts=max(n // 2, 1))
-    #     for n in [5, 10, 50, 100, 250, 500, 1000]
-    # ],
+    "interaction_growing_cast": [
+        replace(BASELINE, n_roles=n, n_actions=n, n_events=n, n_facts=max(n // 2, 1))
+        for n in [5, 10, 50, 100, 250, 500, 1000]
+    ],
 
-    # # "Full Game" - Scaling structural dimensions together. 
-    # # This triggers the quadratic assignment logic + linear playbook logic at the same time.
-    # "interaction_full_game": [
-    #     replace(BASELINE, n_roles=n, n_phases=n, n_playbooks=n, n_plans_per_playbook=n)
-    #     for n in [1, 2, 5, 10, 20, 50, 100]
-    # ],
+    # "Full Game" - Scaling structural dimensions together. 
+    # This triggers the quadratic assignment logic + linear playbook logic at the same time.
+    "interaction_full_game": [
+        replace(BASELINE, n_roles=n, n_phases=n, n_playbooks=n, n_plans_per_playbook=n)
+        for n in [1, 2, 5, 10, 20, 50, 100]
+    ],
 
-    # # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
-    # "interaction_subplot_scope": [
-    #     replace(BASELINE, n_subplot_depth=d, n_roles=r, n_subplot_breadth=2)
-    #     for d, r in [(1, 10), (2, 20), (3, 50), (4, 100), (5, 200)]
-    # ],
+    # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
+    "interaction_subplot_scope": [
+        replace(BASELINE, n_subplot_depth=d, n_roles=r, n_subplot_breadth=2)
+        for d, r in [(1, 10), (2, 20), (3, 50), (4, 100), (5, 200)]
+    ],
 
-    # # "Dense AI" - Focused on pure behavioral depth. Many playbooks, huge action sequences.
-    # "interaction_dense_ai": [
-    #     replace(BASELINE, n_playbooks=n, n_stmts_per_branch=n)
-    #     for n in [5, 10, 25, 50, 100, 250, 500]
-    # ],
+    # "Dense AI" - Focused on pure behavioral depth. Many playbooks, huge action sequences.
+    "interaction_dense_ai": _sweep_2d(
+        "n_playbooks", [2, 5, 10, 25, 50],
+        "n_stmts_per_branch", [2, 5, 10, 25, 50],
+    ),
 
     # ================== 2D Grid Sweeps ==================
 
@@ -239,5 +239,19 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
     "grid_playbook_logic": _sweep_2d(
         "n_playbooks", [2, 5, 10, 25, 50],
         "n_plans_per_playbook", [2, 5, 10, 25, 50],
+    ),
+    
+    # ================== Import Resolution ==================
+    "scale_import_nodes": [
+        replace(BASELINE, n_import_nodes=n, n_import_edges=2)
+        for n in [10, 50, 100, 250, 500, 1000]
+    ],
+    "scale_import_edges": [
+        replace(BASELINE, n_import_nodes=100, n_import_edges=n)
+        for n in [1, 2, 5, 10, 25, 50]
+    ],
+    "grid_imports": _sweep_2d(
+        "n_import_nodes", [10, 50, 100, 250],
+        "n_import_edges", [1, 5, 10, 25],
     ),
 }

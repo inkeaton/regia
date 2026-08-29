@@ -54,6 +54,10 @@ class GeneratorConfig:
     n_subplot_breadth: int = 0
     n_subplot_depth: int = 0
 
+    # Import Graph parameters
+    n_import_nodes: int = 0
+    n_import_edges: int = 0
+
     # ================== RUNNER ==================
     seed: int = 42
     n_reps: int = 5

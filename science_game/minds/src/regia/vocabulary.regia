@@ -33,15 +33,17 @@ EVENT ask_dog_donut.
 EVENT ask_cop_rudely.
 EVENT ask_cop_trade.
 EVENT attack_cop.
-EVENT denounce_cop.
+EVENT denounce_flower.
+EVENT denounce_bone.
+EVENT denounce_corpse.
 EVENT garden_door_opened.
 EVENT item_in_potion.
+EVENT finish_game.
+EVENT game_won.
+EVENT exit_dialogue.
 
 # Perception Events
 EVENT sighted_player.
-EVENT sighted_scientist.
-EVENT sighted_cop.
-EVENT sighted_dog.
 
 # Internal Narrative Signals
 EVENT player_got_donut.

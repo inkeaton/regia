@@ -1,12 +1,5 @@
-res://ui/dialogue_ui.gd
-res://ui/debug_ui.gd
-res://bodies/npcs/NPC.gd
-res://bodies/items/bone.tscn
-res://bodies/player/res/lineboil.tres
-res://bodies/items/ball.tscn
-res://libraries/vesnaManager.gd
-res://ui/game_over_ui.tscn
-res://ui/game_over_ui.gd
-res://test_scene.tscn
 res://bodies/npcs/npc.tscn
-res://bodies/player/player.tscn
+res://bodies/player/res/lineboil.tres
+res://bodies/npcs/walk_distort.gdshader
+res://bodies/npcs/NPC.gd
+res://test_scene.tscn

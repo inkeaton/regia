@@ -11,7 +11,11 @@
 
 @pb__ScientistFlowerPlaybook__sighted_player__0
 +sighted_player : playbook_active(scientistflowerplaybook, _) <-
-    vesna.via.utter("Ah, hello there!").
+    vesna.via.utter("Have you found my magical flower yet?").
+
+@pb__ScientistFlowerPlaybook__exit_dialogue__0
++exit_dialogue : playbook_active(scientistflowerplaybook, _) <-
+    vesna.via.utter("Don't dawdle! Science waits for no one!").
 
 @pb__ScientistFlowerPlaybook__reached_lab__0
 +reached_lab : playbook_active(scientistflowerplaybook, _) <-
@@ -22,7 +26,7 @@
     vesna.via.set_dialogue_text("I need a flower for my experiment!");
     vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_ask_reason", "Why do you need the flower?", "ask_flower_reason", "false");
-    vesna.via.add_dialogue_option("opt_give_flower", "Here is the flower.", "give_flower", "true");
+    vesna.via.add_dialogue_option("opt_give_flower", "Here is the flower.", "give_flower", "false");
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
 @pb__ScientistFlowerPlaybook__player_greet__1
@@ -40,5 +44,8 @@
 @pb__ScientistFlowerPlaybook__give_flower__0
 +give_flower : playbook_active(scientistflowerplaybook, _) <-
     vesna.via.remove_item("flower");
+    vesna.via.set_dialogue_text("Excellent. Now I require a sturdy bone.");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true");
     !signal_directors(scientistflowerplaybook, give_flower).
 

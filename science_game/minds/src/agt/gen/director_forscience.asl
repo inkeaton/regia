@@ -34,19 +34,20 @@ current_phase(flower).
 
 @dir__ForScience__give_flower__0
 +give_flower : current_phase(flower) & door_open <-
-    !send_to_role(cop, achieve, remove_playbook(copbaselineplaybook));
+    !send_to_role(cop, achieve, remove_playbook(copflowerplaybook));
     !send_to_role(dog, achieve, remove_playbook(dogmainplaybook));
     !start_subplot("missingdonut", missingdonut, [map(cop, cop), map(dog, dog)]);
     !switch_phase(bone).
 
 @dir__ForScience__give_flower__1
 +give_flower : current_phase(flower) & not (door_open) <-
+    !send_to_role(cop, achieve, add_playbook(copboneplaybook));
     !switch_phase(bone).
 
 @dir__ForScience__subplot_missingdonut_ended__0
 +!subplot_ended(missingdonut) : current_phase(bone) <-
     !send_to_role(scientist, achieve, believe(player_has_bone));
-    !send_to_role(cop, achieve, add_playbook(copbaselineplaybook));
+    !send_to_role(cop, achieve, add_playbook(copboneplaybook));
     !send_to_role(dog, achieve, add_playbook(dogmainplaybook)).
 
 @dir__ForScience__dog_signals_bone_acquired__0
@@ -71,9 +72,8 @@ current_phase(flower).
     !send_to_role(cop, achieve, trigger_game_over("Scientist Arrested"));
     !end_plot.
 
-@dir__ForScience__scientist_signals_give_corpse__0
-+give_corpse[source(Sender)] : current_phase(corpse) & role_agent(scientist, Sender) <-
-    !send_to_role(scientist, achieve, utter("Experiment Complete!"));
+@dir__ForScience__scientist_signals_game_won__0
++game_won[source(Sender)] : current_phase(corpse) & role_agent(scientist, Sender) <-
     !send_to_role(scientist, achieve, trigger_game_over("Victory"));
     !end_plot.
 
@@ -90,10 +90,11 @@ current_phase(flower).
     !on_enter(Target).
 
 +!on_exit(flower) <-
-    !send_to_role(scientist, achieve, remove_playbook(scientistflowerplaybook)).
+    !send_to_role(scientist, achieve, remove_playbook(scientistflowerplaybook));
+    !send_to_role(cop, achieve, remove_playbook(copflowerplaybook)).
 +!on_enter(flower) <-
     !send_to_role(scientist, achieve, add_playbook(scientistflowerplaybook));
-    !send_to_role(cop, achieve, add_playbook(copbaselineplaybook));
+    !send_to_role(cop, achieve, add_playbook(copflowerplaybook));
     !send_to_role(dog, achieve, add_playbook(dogmainplaybook));
     !send_to_role(scientist, achieve, spawn_item("flower", "garden"));
     !send_to_role(dog, achieve, believe(has_bone));
@@ -101,7 +102,7 @@ current_phase(flower).
     !send_to_role(scientist, achieve, move_to("lab")).
 +!on_exit(bone) <-
     !send_to_role(scientist, achieve, remove_playbook(scientistboneplaybook));
-    !send_to_role(cop, achieve, remove_playbook(copbaselineplaybook));
+    !send_to_role(cop, achieve, remove_playbook(copboneplaybook));
     !send_to_role(dog, achieve, remove_playbook(dogmainplaybook)).
 +!on_enter(bone) <-
     !send_to_role(scientist, achieve, add_playbook(scientistboneplaybook)).

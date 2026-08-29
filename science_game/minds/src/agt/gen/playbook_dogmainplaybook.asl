@@ -5,6 +5,10 @@
 // Plans are gated by playbook_active(dogmainplaybook, _).
 // Included by role templates that use this playbook.
 
+@pb__DogMainPlaybook__sighted_player__0
++sighted_player : playbook_active(dogmainplaybook, _) <-
+    vesna.via.utter("*Woof!*").
+
 @pb__DogMainPlaybook__player_greet__0
 +player_greet : playbook_active(dogmainplaybook, _) & has_bone <-
     vesna.via.set_dialogue_text("*Woof*");

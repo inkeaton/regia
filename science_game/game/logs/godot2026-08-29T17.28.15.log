@@ -27,16 +27,16 @@ GameManager: Spawned flower at garden
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "target": "lab"
-    },
-    "type": "move_to"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
         "radius": 800.0
     },
     "type": "start_wandering"
 }
-dog starting to wander with radius: 800.0 around (-1176.0, 54.0)
-dog picked random wander coordinate: (-1120.963, -383.0737)
+dog starting to wander with radius: 800.0 around (-569.0, -31.0)
+dog picked random wander coordinate: (60.46948, 66.90668)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "target": "lab"
+    },
+    "type": "move_to"
+}

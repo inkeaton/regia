@@ -38,8 +38,38 @@ GameManager: Spawned flower at garden
     },
     "type": "start_wandering"
 }
-dog starting to wander with radius: 800.0 around (-1176.0, 54.0)
-dog picked random wander coordinate: (-1144.621, 84.05788)
+dog starting to wander with radius: 800.0 around (-569.0, -31.0)
+dog picked random wander coordinate: (-579.2109, -29.60332)
+dog reached wander target! Starting timer...
+dog picked random wander coordinate: (-559.3991, -330.9621)
+dog reached wander target! Starting timer...
+dog picked random wander coordinate: (-176.3463, -100.5242)
+dog reached wander target! Starting timer...
+sci reached directed waypoint: lab
+[JSON] - from Sent Data:
+{
+    "data": {
+        "status": "reached",
+        "waypoint": "lab"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "navigation"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Ah, finally some peace and quiet."
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Ah, finally some peace and quiet.' (Queue size: 1)
+sci is saying: 'Ah, finally some peace and quiet.' (3s timer started)
+sci finished speaking.
+dog picked random wander coordinate: (-455.9211, -398.9107)
+dog reached wander target! Starting timer...
+dog picked random wander coordinate: (-1162.944, 427.8557)
+dog reached wander target! Starting timer...
 sci spotted Player, emitting: sighted_player
 [JSON] - from Sent Data:
 {
@@ -53,22 +83,90 @@ sci spotted Player, emitting: sighted_player
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "text": "Ah, hello there!"
+        "text": "Have you found my magical flower yet?"
     },
     "type": "utter"
 }
-sci queued utterance: 'Ah, hello there!' (Queue size: 1)
-sci is saying: 'Ah, hello there!' (3s timer started)
-dog spotted Player, emitting: sighted_player
+sci queued utterance: 'Have you found my magical flower yet?' (Queue size: 1)
+sci is saying: 'Have you found my magical flower yet?' (3s timer started)
+dog picked random wander coordinate: (-665.3449, 354.2121)
+dog reached wander target! Starting timer...
+sci finished speaking.
+Raycast hit: Area2D
+Target does not have an interact() method.
+Raycast hit: sci
 [JSON] - from Sent Data:
 {
     "data": {
-        "type": "sighted_player"
+        "type": "player_greet"
     },
     "receiver": "vesna",
     "sender": "body",
     "type": "regia_event"
 }
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "I need a flower for my experiment!"
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: I need a flower for my experiment!
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "ask_flower_reason",
+                "id": "opt_ask_reason",
+                "text": "Why do you need the flower?"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+dog picked random wander coordinate: (-395.9855, -47.09471)
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "exit_dialogue"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Don't dawdle! Science waits for no one!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Don't dawdle! Science waits for no one!' (Queue size: 1)
+sci is saying: 'Don't dawdle! Science waits for no one!' (3s timer started)
 sci finished speaking.
 cop spotted Player, emitting: sighted_player
 [JSON] - from Sent Data:
@@ -80,6 +178,159 @@ cop spotted Player, emitting: sighted_player
     "sender": "body",
     "type": "regia_event"
 }
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Nothing to report."
+    },
+    "type": "utter"
+}
+cop queued utterance: 'Nothing to report.' (Queue size: 1)
+cop is saying: 'Nothing to report.' (3s timer started)
+dog reached wander target! Starting timer...
+Raycast hit: cop
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "player_greet"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Move along, citizen. Nothing to see here."
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: Move along, citizen. Nothing to see here.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "denounce_flower",
+                "id": "opt_denounce",
+                "text": "The scientist is asking for a flower..."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 2
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "denounce_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "It's only a flower, stop wasting my time."
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: It's only a flower, stop wasting my time.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
+dog picked random wander coordinate: (-544.1564, -90.60204)
+dog reached wander target! Starting timer...
+cop finished speaking.
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "exit_dialogue"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+dog picked random wander coordinate: (-638.1274, -761.3026)
+Raycast hit: PickupItem
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+dog reached wander target! Starting timer...
 sci spotted Player, emitting: sighted_player
 [JSON] - from Sent Data:
 {
@@ -93,9 +344,635 @@ sci spotted Player, emitting: sighted_player
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "text": "Ah, hello there!"
+        "text": "Have you found my magical flower yet?"
     },
     "type": "utter"
 }
-sci queued utterance: 'Ah, hello there!' (Queue size: 1)
-sci is saying: 'Ah, hello there!' (3s timer started)
+sci queued utterance: 'Have you found my magical flower yet?' (Queue size: 1)
+sci is saying: 'Have you found my magical flower yet?' (3s timer started)
+Raycast hit: Area2D
+Target does not have an interact() method.
+Raycast hit: sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "player_greet"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "I need a flower for my experiment!"
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: I need a flower for my experiment!
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "ask_flower_reason",
+                "id": "opt_ask_reason",
+                "text": "Why do you need the flower?"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "give_flower",
+                "id": "opt_give_flower",
+                "text": "Here is the flower."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 3
+dog picked random wander coordinate: (-428.1962, -173.534)
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "give_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "item": "flower"
+    },
+    "type": "remove_item"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Excellent. Now I require a sturdy bone."
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: Excellent. Now I require a sturdy bone.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+sci finished speaking.
+dog reached wander target! Starting timer...
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "exit_dialogue"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Hurry back!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Hurry back!' (Queue size: 1)
+sci is saying: 'Hurry back!' (3s timer started)
+cop spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Just stay out of my way."
+    },
+    "type": "utter"
+}
+cop queued utterance: 'Just stay out of my way.' (Queue size: 1)
+cop is saying: 'Just stay out of my way.' (3s timer started)
+sci finished speaking.
+Raycast hit: cop
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "player_greet"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Move along, citizen. Nothing to see here."
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: Move along, citizen. Nothing to see here.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "denounce_bone",
+                "id": "opt_denounce",
+                "text": "Now they want a bone!"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 2
+dog picked random wander coordinate: (-703.2678, -667.8868)
+dog reached wander target! Starting timer...
+cop finished speaking.
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "denounce_bone"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Stop making up stories!"
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: Stop making up stories!
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "exit_dialogue"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+dog picked random wander coordinate: (-924.5871, -507.436)
+dog reached wander target! Starting timer...
+dog spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "*Woof!*"
+    },
+    "type": "utter"
+}
+dog queued utterance: '*Woof!*' (Queue size: 1)
+dog is saying: '*Woof!*' (3s timer started)
+Raycast hit: dog
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "player_greet"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "*Woof*"
+    },
+    "type": "set_dialogue_text"
+}
+dog received new dialogue text: *Woof*
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+dog cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "ask_dog_bone",
+                "id": "opt_ask_bone",
+                "text": "Give me the bone."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+dog added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+dog added options. Total options: 2
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "ask_dog_bone"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "*Woof!* (Drops bone)"
+    },
+    "type": "utter"
+}
+dog queued utterance: '*Woof!* (Drops bone)' (Queue size: 1)
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "id": "opt_ask_bone"
+    },
+    "type": "remove_dialogue_option"
+}
+dog removed dialogue option: opt_ask_bone
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "item": "bone"
+    },
+    "type": "add_item"
+}
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "exit_dialogue"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+dog finished speaking.
+dog is saying: '*Woof!* (Drops bone)' (3s timer started)
+Raycast did not hit anything.
+dog finished speaking.
+sci spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Chop chop! I need that sturdy bone!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Chop chop! I need that sturdy bone!' (Queue size: 1)
+sci is saying: 'Chop chop! I need that sturdy bone!' (3s timer started)
+Raycast hit: sci
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "player_greet"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Excellent. Now I require a sturdy bone."
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: Excellent. Now I require a sturdy bone.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "give_bone",
+                "id": "opt_give_bone",
+                "text": "Here is the bone."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 2
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "give_bone"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "item": "bone"
+    },
+    "type": "remove_item"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Finally... bring me a fresh corpse."
+    },
+    "type": "set_dialogue_text"
+}
+sci received new dialogue text: Finally... bring me a fresh corpse.
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+sci cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+sci added options. Total options: 1
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "exit_dialogue"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Don't come back empty handed!"
+    },
+    "type": "utter"
+}
+sci queued utterance: 'Don't come back empty handed!' (Queue size: 1)
+sci finished speaking.
+sci is saying: 'Don't come back empty handed!' (3s timer started)
+cop spotted Player, emitting: sighted_player
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "sighted_player"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "Something feels... off today."
+    },
+    "type": "utter"
+}
+cop queued utterance: 'Something feels... off today.' (Queue size: 1)
+cop is saying: 'Something feels... off today.' (3s timer started)
+sci finished speaking.
+Raycast hit: cop
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "player_greet"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {},
+    "type": "clear_dialogue_options"
+}
+cop cleared dialogue options.
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": false,
+                "event": "denounce_corpse",
+                "id": "opt_denounce",
+                "text": "They want a fresh corpse!"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 1
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "attack_cop",
+                "id": "opt_attack",
+                "text": "Die, copper!"
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 2
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "options": [
+            {
+                "close_on_select": true,
+                "event": "exit_dialogue",
+                "id": "opt_exit",
+                "text": "Goodbye."
+            }
+        ]
+    },
+    "type": "add_dialogue_options"
+}
+cop added options. Total options: 3
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "attack_cop"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "text": "I saw you reaching! You are under arrest!"
+    },
+    "type": "set_dialogue_text"
+}
+cop received new dialogue text: I saw you reaching! You are under arrest!
+[JSON] - from Received Raw Message:
+{
+    "data": {
+        "reason": "Arrested by Cop"
+    },
+    "type": "trigger_game_over"
+}
+=========================================
+GAME OVER! Reason: Arrested by Cop
+=========================================

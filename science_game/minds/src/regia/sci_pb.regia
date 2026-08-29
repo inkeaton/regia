@@ -1,0 +1,90 @@
+IMPORT "vocabulary.regia".
+
+# --- SCIENTIST PLAYBOOKS ---
+PLAYBOOK ScientistFlowerPlaybook:
+    WHEN picked_up_flower:
+        DO BELIEVE(player_has_flower).
+
+    WHEN sighted_player:
+        DO utter("Have you found my magical flower yet?").
+
+    WHEN exit_dialogue:
+        DO utter("Don't dawdle! Science waits for no one!").
+
+    WHEN reached_lab:
+        DO utter("Ah, finally some peace and quiet.").
+
+    WHEN player_greet:
+        DO set_dialogue_text("I need a flower for my experiment!").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_ask_reason", "Why do you need the flower?", "ask_flower_reason", "false").
+        IF player_has_flower:
+            DO add_dialogue_option("opt_give_flower", "Here is the flower.", "give_flower", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN ask_flower_reason:
+        DO set_dialogue_text("Because it has magical properties, of course!").
+        DO remove_dialogue_option("opt_ask_reason").
+
+    WHEN give_flower:
+        DO remove_item("flower").
+        DO set_dialogue_text("Excellent. Now I require a sturdy bone.").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        SIGNAL give_flower.
+
+PLAYBOOK ScientistBonePlaybook:
+    WHEN picked_up_bone:
+        DO BELIEVE(player_has_bone).
+
+    WHEN sighted_player:
+        DO utter("Chop chop! I need that sturdy bone!").
+
+    WHEN exit_dialogue:
+        DO utter("Hurry back!").
+
+    WHEN player_greet:
+        DO set_dialogue_text("Excellent. Now I require a sturdy bone.").
+        DO clear_dialogue_options.
+        IF player_has_bone:
+            DO add_dialogue_option("opt_give_bone", "Here is the bone.", "give_bone", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN give_bone:
+        DO remove_item("bone").
+        DO set_dialogue_text("Finally... bring me a fresh corpse.").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        SIGNAL give_bone.
+
+PLAYBOOK ScientistCorpsePlaybook:
+    WHEN picked_up_corpse:
+        DO BELIEVE(player_has_corpse).
+
+    WHEN sighted_player:
+        DO utter("The experiment is almost complete... I just need the fresh corpse!").
+
+    WHEN exit_dialogue:
+        DO utter("Don't come back empty handed!").
+
+    WHEN player_greet:
+        DO set_dialogue_text("Finally... bring me a fresh corpse.").
+        DO clear_dialogue_options.
+        IF player_has_corpse:
+            DO add_dialogue_option("opt_give_corpse", "Here is the corpse.", "give_corpse", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN give_corpse:
+        DO remove_item("corpse").
+        DO set_dialogue_text("Experiment Complete! Mwahaha!").
+        DO clear_dialogue_options.
+        DO add_dialogue_option("opt_exit", "Goodbye.", "finish_game", "true").
+
+    WHEN finish_game:
+        SIGNAL game_won.

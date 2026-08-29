@@ -9,11 +9,19 @@
 +picked_up_corpse : playbook_active(scientistcorpseplaybook, _) <-
     +player_has_corpse.
 
+@pb__ScientistCorpsePlaybook__sighted_player__0
++sighted_player : playbook_active(scientistcorpseplaybook, _) <-
+    vesna.via.utter("The experiment is almost complete... I just need the fresh corpse!").
+
+@pb__ScientistCorpsePlaybook__exit_dialogue__0
++exit_dialogue : playbook_active(scientistcorpseplaybook, _) <-
+    vesna.via.utter("Don't come back empty handed!").
+
 @pb__ScientistCorpsePlaybook__player_greet__0
 +player_greet : playbook_active(scientistcorpseplaybook, _) & player_has_corpse <-
     vesna.via.set_dialogue_text("Finally... bring me a fresh corpse.");
     vesna.via.clear_dialogue_options;
-    vesna.via.add_dialogue_option("opt_give_corpse", "Here is the corpse.", "give_corpse", "true");
+    vesna.via.add_dialogue_option("opt_give_corpse", "Here is the corpse.", "give_corpse", "false");
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
 @pb__ScientistCorpsePlaybook__player_greet__1
@@ -25,5 +33,11 @@
 @pb__ScientistCorpsePlaybook__give_corpse__0
 +give_corpse : playbook_active(scientistcorpseplaybook, _) <-
     vesna.via.remove_item("corpse");
-    !signal_directors(scientistcorpseplaybook, give_corpse).
+    vesna.via.set_dialogue_text("Experiment Complete! Mwahaha!");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "finish_game", "true").
+
+@pb__ScientistCorpsePlaybook__finish_game__0
++finish_game : playbook_active(scientistcorpseplaybook, _) <-
+    !signal_directors(scientistcorpseplaybook, game_won).
 

@@ -5,11 +5,16 @@
 // Plans are gated by playbook_active(copsubplotplaybook, _).
 // Included by role templates that use this playbook.
 
+@pb__CopSubplotPlaybook__sighted_player__0
++sighted_player : playbook_active(copsubplotplaybook, _) <-
+    vesna.via.utter("Where did that donut go...").
+
 @pb__CopSubplotPlaybook__player_greet__0
 +player_greet : playbook_active(copsubplotplaybook, _) & has_donut <-
     vesna.via.set_dialogue_text("I heard there's a donut around here...");
     vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_rude", "Give me that bone!", "ask_cop_rudely", "false");
+    vesna.via.add_dialogue_option("opt_denounce", "Now they want a bone!", "denounce_bone", "false");
     vesna.via.add_dialogue_option("opt_trade", "I have a donut. Trade for the bone?", "ask_cop_trade", "false");
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
@@ -18,18 +23,24 @@
     vesna.via.set_dialogue_text("I heard there's a donut around here...");
     vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_rude", "Give me that bone!", "ask_cop_rudely", "false");
+    vesna.via.add_dialogue_option("opt_denounce", "Now they want a bone!", "denounce_bone", "false");
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
 @pb__CopSubplotPlaybook__ask_cop_rudely__0
-+ask_cop_rudely : playbook_active(copsubplotplaybook, _) & cop_very_annoyed <-
-    vesna.via.utter("You crossed the line! You are under arrest!");
-    !signal_directors(copsubplotplaybook, player_arrested).
++ask_cop_rudely : playbook_active(copsubplotplaybook, _) & cop_annoyed <-
+    vesna.via.set_dialogue_text("That's it, I'm extremely annoyed now! Take the bone and get out.");
+    +cop_very_annoyed;
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true");
+    vesna.via.add_item("bone");
+    !signal_directors(copsubplotplaybook, bone_acquired).
 
 @pb__CopSubplotPlaybook__ask_cop_rudely__1
-+ask_cop_rudely : playbook_active(copsubplotplaybook, _) & not (cop_very_annoyed) <-
-    vesna.via.utter("Watch your tone! Fine, take this stupid bone.");
-    +cop_very_annoyed;
-    vesna.via.remove_dialogue_option("opt_rude");
++ask_cop_rudely : playbook_active(copsubplotplaybook, _) & not (cop_annoyed) <-
+    vesna.via.set_dialogue_text("Watch your tone! Fine, take this stupid bone.");
+    +cop_annoyed;
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true");
     vesna.via.add_item("bone");
     !signal_directors(copsubplotplaybook, bone_acquired).
 
@@ -39,6 +50,28 @@
     vesna.via.remove_item("donut");
     vesna.via.remove_dialogue_option("opt_trade");
     vesna.via.remove_dialogue_option("opt_rude");
+    vesna.via.remove_dialogue_option("opt_denounce");
     vesna.via.add_item("bone");
     !signal_directors(copsubplotplaybook, bone_acquired).
+
+@pb__CopSubplotPlaybook__denounce_bone__0
++denounce_bone : playbook_active(copsubplotplaybook, _) & cop_very_annoyed <-
+    vesna.via.set_dialogue_text("Stop bothering me!");
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+@pb__CopSubplotPlaybook__denounce_bone__1
++denounce_bone : playbook_active(copsubplotplaybook, _) & cop_annoyed <-
+    vesna.via.set_dialogue_text("Stop making up stories!");
+    -cop_annoyed;
+    +cop_very_annoyed;
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+@pb__CopSubplotPlaybook__denounce_bone__2
++denounce_bone : playbook_active(copsubplotplaybook, _) & not (cop_very_annoyed) & not (cop_annoyed) <-
+    vesna.via.set_dialogue_text("It's probably for a dog. Go away.");
+    +cop_annoyed;
+    vesna.via.clear_dialogue_options;
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 

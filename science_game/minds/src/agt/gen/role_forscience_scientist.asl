@@ -54,9 +54,6 @@
 @role__forscience__scientist__trigger_game_over__Victory__
 +!trigger_game_over("Victory") <- vesna.via.trigger_game_over("Victory").
 
-@role__forscience__scientist__utter__Experiment_Complete___
-+!utter("Experiment Complete!") <- vesna.via.utter("Experiment Complete!").
-
 @role__forscience__scientist__utter__The_potion_violently_explodes___
 +!utter("The potion violently explodes!") <- vesna.via.utter("The potion violently explodes!").
 
