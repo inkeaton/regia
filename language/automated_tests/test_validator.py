@@ -245,6 +245,19 @@ class TestUndeclaredReferences:
         action_errors = [e for e in errors if "Undeclared action" in e]
         assert len(action_errors) == 0
 
+    def test_special_actions_enforce_arity(self) -> None:
+        """Special actions must still enforce correct argument counts."""
+        result = _compile("""
+            EVENT e.
+            PLAYBOOK P:
+                WHEN e:
+                    DO TELL(target_only).
+                    DO BROADCAST.
+        """)
+        errors = _error_messages(result)
+        assert any("Special action 'TELL' expects 2 argument(s), but 1 were provided." in e for e in errors)
+        assert any("Special action 'BROADCAST' expects 1 argument(s), but 0 were provided." in e for e in errors)
+
     def test_undeclared_event_in_signal(self) -> None:
         """SIGNAL with an undeclared event should error."""
         result = _compile("""

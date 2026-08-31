@@ -684,7 +684,27 @@ class Validator:
             loc:        Source location of the reference.
         """
         if is_special:
-            return  # Built-in, always valid
+            # Enforce known arities for special actions to prevent malformed AgentSpeak
+            expected_arity = -1
+            if name == "TELL":
+                expected_arity = 2
+            elif name in ("BROADCAST", "ACHIEVE", "BELIEVE", "FORGET"):
+                expected_arity = 1
+            # PRINT and WAIT take a variable number of arguments (at least 1)
+            elif name in ("PRINT", "WAIT"):
+                if len(args) < 1:
+                    self._error(
+                        loc,
+                        f"Special action '{name}' expects at least 1 argument, but 0 were provided."
+                    )
+                return
+            
+            if expected_arity != -1 and len(args) != expected_arity:
+                self._error(
+                    loc,
+                    f"Special action '{name}' expects {expected_arity} argument(s), but {len(args)} were provided."
+                )
+            return
 
         if name not in self._symbols.actions:
             self._error(

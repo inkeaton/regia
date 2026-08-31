@@ -7,8 +7,6 @@ mas science_game {
         port:       9001
     }
 
-
-
     agent cop:cop.asl {
         ag-class:   vesna.VesnaAgent
         address:    localhost
@@ -25,9 +23,6 @@ mas science_game {
         ag-class:   vesna.VesnaAgent
         address:    localhost
         port:       9004
-        beliefs: role_agent(scientist, scientist),
-                 role_agent(cop, cop),
-                 role_agent(dog, dog)
-        goals: boot
+        goals: start_plot([map(scientist, [scientist]), map(cop, [cop]), map(dog, [dog])])
     }
 }
