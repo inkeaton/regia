@@ -138,6 +138,7 @@ def _plot_line(df, experiment_name, x_col, x_label, csv_path):
     if (grouped["time_mean"] + grouped["io_mean"]).max() / max((grouped["time_mean"] + grouped["io_mean"]).min(), 1e-6) > 50:
         ax1.set_yscale("log")
         ax1.set_xscale("log")
+        ax1.set_title("Compilation & I/O Time (Log Scale)")
         ax1.yaxis.set_major_formatter(ticker.ScalarFormatter())
         ax1.xaxis.set_major_formatter(ticker.ScalarFormatter())
 
@@ -154,6 +155,7 @@ def _plot_line(df, experiment_name, x_col, x_label, csv_path):
     if grouped["ram_mean"].max() / max(grouped["ram_mean"].min(), 1e-6) > 50:
         ax2.set_yscale("log")
         ax2.set_xscale("log")
+        ax2.set_title("Peak RAM Usage (Log Scale)")
         ax2.yaxis.set_major_formatter(ticker.ScalarFormatter())
         ax2.xaxis.set_major_formatter(ticker.ScalarFormatter())
 
@@ -169,6 +171,7 @@ def _plot_line(df, experiment_name, x_col, x_label, csv_path):
     
     if grouped["loc_mean"].max() / max(grouped["loc_mean"].min(), 1e-6) > 50:
         ax3.set_xscale("log")
+        ax3.set_title("Code Expansion (Output / Input LoC) (Log X-Scale)")
         ax3.xaxis.set_major_formatter(ticker.ScalarFormatter())
 
     # Plot 4: Generated File Count
@@ -181,6 +184,7 @@ def _plot_line(df, experiment_name, x_col, x_label, csv_path):
     if grouped["files_mean"].max() / max(grouped["files_mean"].min(), 1e-6) > 50:
         ax4.set_yscale("log")
         ax4.set_xscale("log")
+        ax4.set_title("Generated File Count (Log Scale)")
         ax4.yaxis.set_major_formatter(ticker.ScalarFormatter())
         ax4.xaxis.set_major_formatter(ticker.ScalarFormatter())
 
@@ -224,9 +228,11 @@ def _plot_heatmap(df, experiment_name, x_col, y_col, csv_path):
         # Determine if we should use log scale for axes visually
         if max(matrix.columns) / max(min(matrix.columns), 1e-6) > 50:
             ax.set_xscale('log')
+            ax.set_title(ax.get_title() + " (Log X)")
             ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
         if max(matrix.index) / max(min(matrix.index), 1e-6) > 50:
             ax.set_yscale('log')
+            ax.set_title(ax.get_title() + " (Log Y)")
             ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
 
     draw_heatmap(ax1, time_matrix, "Compilation Time (s)", "Blues")

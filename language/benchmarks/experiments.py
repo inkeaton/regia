@@ -143,33 +143,6 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
         base=replace(BASELINE, n_subplot_breadth=2),
     ),
 
-    # ================== Vocabulary Experiments ==================
-
-    # How does the number of ACTION declarations affect compilation?
-    # Expected: linear growth in validator pass (registration); validator
-    # also checks unused symbols, so cost includes checking all declarations.
-    "scale_actions": _sweep(
-        "n_actions", [1, 5, 10, 50, 100, 500, 1000, 2500]
-    ),
-
-    # How does EVENT count affect compilation?
-    "scale_events": _sweep(
-        "n_events", [1, 5, 10, 50, 100, 500, 1000, 2500]
-    ),
-
-    # How does FACT count affect compilation?
-    # Facts of 0 is special: disables IF branching even if n_branches_per_plan>0.
-    "scale_facts": _sweep(
-        "n_facts", [0, 1, 5, 10, 50, 100, 500, 1000]
-    ),
-
-    # Combined vocabulary scaling: grow all three simultaneously.
-    # Allows measuring aggregate vocabulary overhead vs. individual element cost.
-    "scale_vocabulary_combined": [
-        replace(BASELINE, n_actions=n, n_events=n, n_facts=max(n // 2, 1))
-        for n in [5, 10, 50, 100, 500, 1000, 2000]
-    ],
-
     # ================== Multi-Dimensional Interactions ==================
 
     # Multiplicative expansion in director.asl: (Roles * Playbooks) assignments per phase.
