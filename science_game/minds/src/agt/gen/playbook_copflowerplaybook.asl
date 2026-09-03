@@ -18,10 +18,16 @@
     vesna.via.utter("Nothing to report.").
 
 @pb__CopFlowerPlaybook__player_greet__0
-+player_greet : playbook_active(copflowerplaybook, _) <-
++player_greet : playbook_active(copflowerplaybook, _) & flower_requested <-
     vesna.via.set_dialogue_text("Move along, citizen. Nothing to see here.");
     vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_denounce", "The scientist is asking for a flower...", "denounce_flower", "false");
+    vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+@pb__CopFlowerPlaybook__player_greet__1
++player_greet : playbook_active(copflowerplaybook, _) & not (flower_requested) <-
+    vesna.via.set_dialogue_text("Move along, citizen. Nothing to see here.");
+    vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
 @pb__CopFlowerPlaybook__denounce_flower__0

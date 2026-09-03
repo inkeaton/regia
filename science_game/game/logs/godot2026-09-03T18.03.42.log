@@ -32,76 +32,49 @@ GameManager: Spawned flower at garden
     "type": "start_wandering"
 }
 dog starting to wander with radius: 800.0 around (-569.0, -31.0)
-dog picked random wander coordinate: (-287.6181, -758.4697)
-Raycast hit: cop
-[JSON] - from Sent Data:
-{
-    "data": {
-        "type": "player_greet"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "regia_event"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "Move along, citizen. Nothing to see here."
-    },
-    "type": "set_dialogue_text"
-}
-cop received new dialogue text: Move along, citizen. Nothing to see here.
-[JSON] - from Received Raw Message:
-{
-    "data": {},
-    "type": "clear_dialogue_options"
-}
-cop cleared dialogue options.
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "options": [
-            {
-                "close_on_select": true,
-                "event": "exit_dialogue",
-                "id": "opt_exit",
-                "text": "Goodbye."
-            }
-        ]
-    },
-    "type": "add_dialogue_options"
-}
-cop added options. Total options: 1
+dog picked random wander coordinate: (-656.9065, -164.1295)
 dog reached wander target! Starting timer...
+dog picked random wander coordinate: (-455.2613, 131.7689)
+dog reached wander target! Starting timer...
+Raycast hit: PickupItem
 [JSON] - from Sent Data:
 {
     "data": {
-        "type": "exit_dialogue"
+        "type": "picked_up_flower"
     },
     "receiver": "vesna",
     "sender": "body",
     "type": "regia_event"
 }
-dog picked random wander coordinate: (-443.5144, 485.9406)
-dog spotted Player, emitting: sighted_player
 [JSON] - from Sent Data:
 {
     "data": {
-        "type": "sighted_player"
+        "type": "picked_up_flower"
     },
     "receiver": "vesna",
     "sender": "body",
     "type": "regia_event"
 }
-[JSON] - from Received Raw Message:
+[JSON] - from Sent Data:
 {
     "data": {
-        "text": "*Woof!*"
+        "type": "picked_up_flower"
     },
-    "type": "utter"
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
 }
-dog queued utterance: '*Woof!*' (Queue size: 1)
-dog is saying: '*Woof!*' (3s timer started)
+[JSON] - from Sent Data:
+{
+    "data": {
+        "type": "picked_up_flower"
+    },
+    "receiver": "vesna",
+    "sender": "body",
+    "type": "regia_event"
+}
+dog picked random wander coordinate: (-605.1858, 119.4639)
+dog reached wander target! Starting timer...
 Raycast hit: dog
 [JSON] - from Sent Data:
 {
@@ -141,7 +114,6 @@ dog cleared dialogue options.
     "type": "add_dialogue_options"
 }
 dog added options. Total options: 1
-dog finished speaking.
 [JSON] - from Sent Data:
 {
     "data": {
@@ -151,9 +123,8 @@ dog finished speaking.
     "sender": "body",
     "type": "regia_event"
 }
-dog picked random wander coordinate: (-578.6023, -25.24656)
+dog picked random wander coordinate: (-1083.591, -370.1307)
 dog reached wander target! Starting timer...
-dog picked random wander coordinate: (-11.39246, -426.3388)
 sci spotted Player, emitting: sighted_player
 [JSON] - from Sent Data:
 {
@@ -173,7 +144,6 @@ sci spotted Player, emitting: sighted_player
 }
 sci queued utterance: 'I have a proposal for you...' (Queue size: 1)
 sci is saying: 'I have a proposal for you...' (3s timer started)
-dog reached wander target! Starting timer...
 Raycast hit: sci
 [JSON] - from Sent Data:
 {
@@ -213,7 +183,6 @@ sci cleared dialogue options.
     "type": "add_dialogue_options"
 }
 sci added options. Total options: 1
-sci finished speaking.
 [JSON] - from Sent Data:
 {
     "data": {
@@ -230,10 +199,10 @@ sci finished speaking.
     },
     "type": "move_to"
 }
-dog picked random wander coordinate: (-757.3014, -697.579)
+sci finished speaking.
+dog picked random wander coordinate: (-525.9896, 108.1837)
 dog reached wander target! Starting timer...
-dog picked random wander coordinate: (-549.6763, 345.6829)
-sci spotted Player, emitting: sighted_player
+cop spotted Player, emitting: sighted_player
 [JSON] - from Sent Data:
 {
     "data": {
@@ -246,32 +215,13 @@ sci spotted Player, emitting: sighted_player
 [JSON] - from Received Raw Message:
 {
     "data": {
-        "text": "Follow me to the lab!"
+        "text": "Nothing to report."
     },
     "type": "utter"
 }
-sci queued utterance: 'Follow me to the lab!' (Queue size: 1)
-sci is saying: 'Follow me to the lab!' (3s timer started)
-sci reached directed waypoint: lab
-[JSON] - from Sent Data:
-{
-    "data": {
-        "status": "reached",
-        "waypoint": "lab"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "navigation"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "Ah, finally some peace and quiet."
-    },
-    "type": "utter"
-}
-sci queued utterance: 'Ah, finally some peace and quiet.' (Queue size: 1)
-Raycast hit: sci
+cop queued utterance: 'Nothing to report.' (Queue size: 1)
+cop is saying: 'Nothing to report.' (3s timer started)
+Raycast hit: cop
 [JSON] - from Sent Data:
 {
     "data": {
@@ -281,96 +231,3 @@ Raycast hit: sci
     "sender": "body",
     "type": "regia_event"
 }
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "I need a flower for my experiment!"
-    },
-    "type": "set_dialogue_text"
-}
-sci received new dialogue text: I need a flower for my experiment!
-[JSON] - from Received Raw Message:
-{
-    "data": {},
-    "type": "clear_dialogue_options"
-}
-sci cleared dialogue options.
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "options": [
-            {
-                "close_on_select": false,
-                "event": "ask_flower_reason",
-                "id": "opt_ask_reason",
-                "text": "Why do you need the flower?"
-            }
-        ]
-    },
-    "type": "add_dialogue_options"
-}
-sci added options. Total options: 1
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "options": [
-            {
-                "close_on_select": true,
-                "event": "exit_dialogue",
-                "id": "opt_exit",
-                "text": "Goodbye."
-            }
-        ]
-    },
-    "type": "add_dialogue_options"
-}
-sci added options. Total options: 2
-sci finished speaking.
-sci is saying: 'Ah, finally some peace and quiet.' (3s timer started)
-[JSON] - from Sent Data:
-{
-    "data": {
-        "type": "ask_flower_reason"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "regia_event"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "Because it has magical properties, of course!"
-    },
-    "type": "set_dialogue_text"
-}
-sci received new dialogue text: Because it has magical properties, of course!
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "id": "opt_ask_reason"
-    },
-    "type": "remove_dialogue_option"
-}
-sci removed dialogue option: opt_ask_reason
-dog reached wander target! Starting timer...
-sci finished speaking.
-[JSON] - from Sent Data:
-{
-    "data": {
-        "type": "exit_dialogue"
-    },
-    "receiver": "vesna",
-    "sender": "body",
-    "type": "regia_event"
-}
-[JSON] - from Received Raw Message:
-{
-    "data": {
-        "text": "Don't dawdle! Science waits for no one!"
-    },
-    "type": "utter"
-}
-sci queued utterance: 'Don't dawdle! Science waits for no one!' (Queue size: 1)
-sci is saying: 'Don't dawdle! Science waits for no one!' (3s timer started)
-dog picked random wander coordinate: (-371.8112, 40.49309)
-dog reached wander target! Starting timer...

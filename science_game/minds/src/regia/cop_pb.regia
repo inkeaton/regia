@@ -10,10 +10,15 @@ PLAYBOOK CopFlowerPlaybook:
         ELSE:
             DO utter("Nothing to report.").
     WHEN player_greet:
-        DO set_dialogue_text("Move along, citizen. Nothing to see here.").
-        DO clear_dialogue_options.
-        DO add_dialogue_option("opt_denounce", "The scientist is asking for a flower...", "denounce_flower", "false").
-        DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        IF flower_requested:
+            DO set_dialogue_text("Move along, citizen. Nothing to see here.").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_denounce", "The scientist is asking for a flower...", "denounce_flower", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("Move along, citizen. Nothing to see here.").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
 
     WHEN denounce_flower:
         IF cop_annoyed:

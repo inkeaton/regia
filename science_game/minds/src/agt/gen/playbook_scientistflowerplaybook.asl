@@ -17,12 +17,9 @@
 +exit_dialogue : playbook_active(scientistflowerplaybook, _) <-
     vesna.via.utter("Don't dawdle! Science waits for no one!").
 
-@pb__ScientistFlowerPlaybook__reached_lab__0
-+reached_lab : playbook_active(scientistflowerplaybook, _) <-
-    vesna.via.utter("Ah, finally some peace and quiet.").
-
 @pb__ScientistFlowerPlaybook__player_greet__0
 +player_greet : playbook_active(scientistflowerplaybook, _) & player_has_flower <-
+    !signal_directors(scientistflowerplaybook, scientist_asked_flower);
     vesna.via.set_dialogue_text("I need a flower for my experiment!");
     vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_ask_reason", "Why do you need the flower?", "ask_flower_reason", "false");
@@ -31,6 +28,7 @@
 
 @pb__ScientistFlowerPlaybook__player_greet__1
 +player_greet : playbook_active(scientistflowerplaybook, _) & not (player_has_flower) <-
+    !signal_directors(scientistflowerplaybook, scientist_asked_flower);
     vesna.via.set_dialogue_text("I need a flower for my experiment!");
     vesna.via.clear_dialogue_options;
     vesna.via.add_dialogue_option("opt_ask_reason", "Why do you need the flower?", "ask_flower_reason", "false");

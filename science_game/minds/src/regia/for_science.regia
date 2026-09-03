@@ -16,6 +16,9 @@ PLOT ForScience.
 
     # Global Handlers
     DURING PLOT:
+        WHEN ROLE Scientist SIGNALS scientist_asked_flower:
+            Cop DO BELIEVE(flower_requested).
+
         WHEN garden_door_opened:
             WORLD DO BELIEVE(door_open).
 
@@ -27,13 +30,18 @@ PLOT ForScience.
     # Phase 1: Flower
     DURING flower:
         ON ENTER:
-            ASSIGN ScientistFlowerPlaybook TO Scientist.
+            ASSIGN ScientistIntroPlaybook TO Scientist.
             ASSIGN CopFlowerPlaybook TO Cop.
             ASSIGN DogMainPlaybook TO Dog.
             Scientist DO spawn_item("flower", "garden").
-            Dog DO BELIEVE(has_bone).
             Dog DO start_wandering(800).
+
+        WHEN ROLE Scientist SIGNALS start_moving_to_lab:
             Scientist DO move_to("lab").
+
+        WHEN ROLE Scientist SIGNALS reached_lab:
+            UNASSIGN ScientistIntroPlaybook FROM Scientist.
+            ASSIGN ScientistFlowerPlaybook TO Scientist.
 
         WHEN give_flower:
             IF door_open:
@@ -43,6 +51,7 @@ PLOT ForScience.
                 TRANSITION TO bone.
             ELSE:
                 ASSIGN CopBonePlaybook TO Cop.
+                Dog DO BELIEVE(has_bone).
                 TRANSITION TO bone.
 
         ON EXIT:

@@ -37,6 +37,9 @@
 // ============================================
 // == Director Commands ==
 // ============================================
+@role__forscience__cop__believe_flower_requested_
++!believe(flower_requested) <- +flower_requested.
+
 @role__forscience__cop__trigger_game_over__Arrested_by_Cop__
 +!trigger_game_over("Arrested by Cop") <- vesna.via.trigger_game_over("Arrested by Cop").
 

@@ -9,6 +9,7 @@
 { include("playbook_scientistboneplaybook.asl") }
 { include("playbook_scientistcorpseplaybook.asl") }
 { include("playbook_scientistflowerplaybook.asl") }
+{ include("playbook_scientistintroplaybook.asl") }
 
 // ============================================
 // == Playbook Management ==

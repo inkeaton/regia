@@ -41,6 +41,9 @@ EVENT item_in_potion.
 EVENT finish_game.
 EVENT game_won.
 EVENT exit_dialogue.
+EVENT accept_intro.
+EVENT start_moving_to_lab.
+EVENT scientist_asked_flower.
 
 # Perception Events
 EVENT sighted_player.
@@ -61,3 +64,5 @@ FACT player_has_bone.
 FACT player_has_corpse.
 FACT cop_annoyed.
 FACT cop_very_annoyed.
+FACT moving_to_lab.
+FACT flower_requested.

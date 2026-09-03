@@ -55,6 +55,9 @@ const SIGHT_COOLDOWN_MSEC: int = 10000
 func _ready() -> void:
 	if sprite and sprite.material:
 		sprite.material = sprite.material.duplicate()
+	
+	if sprite and not portrait:
+		portrait = sprite.texture
 		
 	if vesna_manager:
 		vesna_manager.command_received.connect(_on_command_received)

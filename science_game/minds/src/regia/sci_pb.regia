@@ -1,6 +1,34 @@
 IMPORT "vocabulary.regia".
 
 # --- SCIENTIST PLAYBOOKS ---
+PLAYBOOK ScientistIntroPlaybook:
+    WHEN picked_up_flower:
+        DO BELIEVE(player_has_flower).
+
+    WHEN sighted_player:
+        IF moving_to_lab:
+            DO utter("Follow me to the lab!").
+        ELSE:
+            DO utter("I have a proposal for you...").
+
+    WHEN player_greet:
+        IF moving_to_lab:
+            DO set_dialogue_text("Wait until we are in the lab to speak!").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("I have a proposal for you, but we must discuss it in my lab.").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "I'll follow you.", "accept_intro", "true").
+
+    WHEN accept_intro:
+        DO BELIEVE(moving_to_lab).
+        SIGNAL start_moving_to_lab.
+
+    WHEN reached_lab:
+        DO utter("Ah, finally some peace and quiet.").
+        SIGNAL reached_lab.
+
 PLAYBOOK ScientistFlowerPlaybook:
     WHEN picked_up_flower:
         DO BELIEVE(player_has_flower).
@@ -11,10 +39,8 @@ PLAYBOOK ScientistFlowerPlaybook:
     WHEN exit_dialogue:
         DO utter("Don't dawdle! Science waits for no one!").
 
-    WHEN reached_lab:
-        DO utter("Ah, finally some peace and quiet.").
-
     WHEN player_greet:
+        SIGNAL scientist_asked_flower.
         DO set_dialogue_text("I need a flower for my experiment!").
         DO clear_dialogue_options.
         DO add_dialogue_option("opt_ask_reason", "Why do you need the flower?", "ask_flower_reason", "false").

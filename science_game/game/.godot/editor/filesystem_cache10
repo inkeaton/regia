@@ -1,5 +1,5 @@
 78098b89c88a74ebe8c20117b8754620
-::res://::1788083825
+::res://::1788447985
 main.tscn::PackedScene::836668578005727603::1785173082::0::1::::<><><>0<>0<><>::
 test_scene.tscn::PackedScene::4470478084163357056::1788017253::0::1::::<><><>0<>0<><>::uid://d2bes6s2x63nn::::res://bodies/player/player.tscn<>uid://8d4du44d8614::::res://bodies/npcs/npc.tscn<>uid://6b0y547wk35g::::res://ui/dialogue_ui.tscn<>uid://dvyid5qdscqk::::res://ui/hud.tscn<>uid://dw8pwvatrylkw::::res://resources/images/portraits/dog.png<>uid://4km6j8a1y43v::::res://resources/images/portraits/sci.png<>uid://bwc76awhthmvs::::res://ui/debug_ui.gd
 ::res://addons/::1785173082
@@ -36,12 +36,12 @@ GameManager.gd::GDScript::1432074208324871383::1785173082::0::1::::<>Node<><>0<>
 messages.gd::GDScript::8029241825920638968::1785173082::0::1::::Messages<>RefCounted<><>0<>0<><>::
 vesnaManager.gd::GDScript::8648669762224329167::1787924526::0::1::::VesnaManager<>Node<><>0<>0<><>::
 warnings.gd::GDScript::8723485671966841870::1785173082::0::1::::Warnings<>RefCounted<><>0<>0<><>::
-::res://logs/::1788017829
-godot2026-08-29T17.28.15.log::TextFile::-1::1788017295::0::1::::<><><>0<>0<><>::
-godot2026-08-29T17.32.39.log::TextFile::-1::1788017559::0::1::::<><><>0<>0<><>::
-godot2026-08-29T17.35.22.log::TextFile::-1::1788017722::0::1::::<><><>0<>0<><>::
-godot2026-08-29T17.37.09.log::TextFile::-1::1788017829::0::1::::<><><>0<>0<><>::
-godot.log::TextFile::-1::1788017915::0::1::::<><><>0<>0<><>::
+::res://logs/::1788188571
+godot2026-08-31T16.50.53.log::TextFile::-1::1788187853::0::1::::<><><>0<>0<><>::
+godot2026-08-31T16.51.54.log::TextFile::-1::1788187914::0::1::::<><><>0<>0<><>::
+godot2026-08-31T16.58.00.log::TextFile::-1::1788188280::0::1::::<><><>0<>0<><>::
+godot2026-08-31T17.02.51.log::TextFile::-1::1788188571::0::1::::<><><>0<>0<><>::
+godot.log::TextFile::-1::1788188627::0::1::::<><><>0<>0<><>::
 ::res://resources/::1785173082
 ::res://resources/dialogue/::1787586636
 ::res://resources/images/::1787907983
