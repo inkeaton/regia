@@ -239,3 +239,67 @@ def plot_cmd(experiment: str | None, plot_all: bool, output: str) -> None:
             click.echo(f"\nError: {e}", err=True)
             sys.exit(1)
 
+
+# ======================================================
+# profile command
+# ======================================================
+
+@main.command("profile")
+@click.argument("filepath", type=click.Path(exists=True, dir_okay=False))
+def profile_cmd(filepath: str) -> None:
+    """Benchmark the compilation of a specific external .regia file."""
+    import time
+    import tempfile
+    
+    from regia.compiler import compile_file
+    from .metrics import measure_time_and_ram, count_loc, count_output_loc
+    from .runner import warmup
+    
+    path = Path(filepath)
+    click.echo(f"\nProfiling file: {path.name} ({path.stat().st_size} bytes)")
+    
+    # Read input for loc count
+    with open(path, "r", encoding="utf-8") as f:
+        source = f.read()
+    input_loc = count_loc(source)
+    
+    # Warm up Lark
+    warmup()
+    
+    def _compile() -> object:
+        return compile_file(str(path))
+        
+    result, wall_time, peak_mb = measure_time_and_ram(_compile)
+    
+    if not result.success:
+        click.echo(f"  Result: FAIL ({result.error_count} errors)", err=True)
+        for msg in result.messages:
+            click.echo(f"    [{msg.severity.name}] {msg.message}", err=True)
+        sys.exit(1)
+        
+    output_files = len(result.outputs)
+    output_loc_total, _ = count_output_loc(result.outputs)
+    loc_ratio = output_loc_total / max(input_loc, 1)
+    
+    # Measure IO time
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+        t_start = time.perf_counter()
+        for fname, fcontent in result.outputs.items():
+            (tmp_path / fname).write_text(fcontent, encoding="utf-8")
+        io_time_s = time.perf_counter() - t_start
+        
+    total_time = wall_time + io_time_s
+    
+    sep = "-" * 50
+    click.echo(sep)
+    click.echo(f"  CPU Time:  {wall_time:.4f}s")
+    click.echo(f"  I/O Time:  {io_time_s:.4f}s")
+    click.echo(f"  Total:     {total_time:.4f}s")
+    click.echo(f"  Peak RAM:  {peak_mb:.2f} MB")
+    click.echo(f"  In LoC:    {input_loc}")
+    click.echo(f"  Out LoC:   {output_loc_total} (Ratio: {loc_ratio:.2f}x)")
+    click.echo(f"  Files:     {output_files}")
+    click.echo(sep)
+    click.echo("Done.\n")
+

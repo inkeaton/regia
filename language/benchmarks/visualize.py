@@ -225,6 +225,29 @@ def _plot_heatmap(df, experiment_name, x_col, y_col, csv_path):
         ax.set_xticks(matrix.columns)
         ax.set_yticks(matrix.index)
         
+        # Add text annotations for each cell
+        # We only want to add annotations if the grid isn't too large
+        if len(matrix.columns) * len(matrix.index) <= 100:
+            for i, y_val in enumerate(matrix.index):
+                for j, x_val in enumerate(matrix.columns):
+                    val = matrix.values[i, j]
+                    # Calculate luminance to decide text color (white or black)
+                    # For a simple heuristic without passing the norm/cmap,
+                    # we can use the value relative to max. Let's just use black/white
+                    # based on the cell's normalized value in the matrix.
+                    norm_val = (val - np.nanmin(matrix.values)) / (np.nanmax(matrix.values) - np.nanmin(matrix.values) + 1e-10)
+                    text_color = 'white' if norm_val > 0.5 else 'black'
+                    
+                    # Format number nicely
+                    if isinstance(val, int) or val == int(val):
+                        text = f"{int(val)}"
+                    elif val < 0.1:
+                        text = f"{val:.3f}"
+                    else:
+                        text = f"{val:.2f}"
+                        
+                    ax.text(x_val, y_val, text, ha="center", va="center", color=text_color, fontsize=8)
+
         # Determine if we should use log scale for axes visually
         if max(matrix.columns) / max(min(matrix.columns), 1e-6) > 50:
             ax.set_xscale('log')

@@ -81,6 +81,9 @@ def _sweep_2d(
 
 EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
 
+    # ================== Baseline ==================
+    "baseline": [BASELINE],
+
     # ================== Structural Experiments ==================
 
     # How does the number of Roles affect the director and role files?
@@ -90,21 +93,21 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
         "n_roles", [1, 2, 5, 10, 50, 100, 250, 500, 1000]
     ),
 
-    # How does the number of Phases affect the director file?
-    # Expected: linear growth; each phase adds DURING / ON ENTER / ON EXIT plans.
+    # # How does the number of Phases affect the director file?
+    # # Expected: linear growth; each phase adds DURING / ON ENTER / ON EXIT plans.
     "scale_phases": _sweep(
         "n_phases", [1, 2, 5, 10, 25, 50, 100, 200]
     ),
 
-    # How does the number of Playbooks affect role file includes and
-    # transitive closure computation?
-    # Expected: roughly linear (each playbook adds one .asl file and one include).
+    # # How does the number of Playbooks affect role file includes and
+    # # transitive closure computation?
+    # # Expected: roughly linear (each playbook adds one .asl file and one include).
     "scale_playbooks": _sweep(
         "n_playbooks", [0, 1, 2, 5, 10, 50, 100, 250]
     ),
 
-    # How does the number of WHEN blocks per Playbook affect the playbook .asl size?
-    # Expected: linear in playbook file size; branching adds multiple plans per WHEN.
+    # # How does the number of WHEN blocks per Playbook affect the playbook .asl size?
+    # # Expected: linear in playbook file size; branching adds multiple plans per WHEN.
     "scale_plans": _sweep(
         "n_plans_per_playbook", [1, 2, 5, 10, 25, 50, 100, 200]
     ),
@@ -121,12 +124,18 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
         "n_stmts_per_branch", [1, 2, 5, 10, 25, 50, 100, 500]
     ),
 
-    # ================== Subplot Experiments ==================
+    # "Growing Vocabulary" - As the number of actions, events and facts grows, the vocabulary needed grows.
+    "scale_vocabulary": [
+        replace(BASELINE, n_actions=n, n_events=n, n_facts=n)
+        for n in [5, 10, 50, 100, 250, 500, 1000]
+    ],
 
-    # How does the number of parallel subplots (breadth) scale?
-    # Uses depth=1 so that breadth=0 produces no subplots at all.
-    # Expected: linear growth in number of output files; possible super-linear
-    # growth in transitive closure computation.
+    # # ================== Subplot Experiments ==================
+
+    # # How does the number of parallel subplots (breadth) scale?
+    # # Uses depth=1 so that breadth=0 produces no subplots at all.
+    # # Expected: linear growth in number of output files; possible super-linear
+    # # growth in transitive closure computation.
     "scale_subplot_breadth": _sweep(
         "n_subplot_breadth",
         [0, 1, 2, 5, 10, 20, 50],
@@ -147,17 +156,17 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
 
     # Multiplicative expansion in director.asl: (Roles * Playbooks) assignments per phase.
     # $O(R \times P)$ statements generated in the ON ENTER / ON EXIT blocks.
-    "interaction_roles_playbooks": [
-        replace(BASELINE, n_roles=n, n_playbooks=n)
-        for n in [1, 2, 5, 10, 20, 50, 100]
-    ],
+    "grid_roles_playbooks": _sweep_2d(
+        "n_playbooks", [1, 2, 5, 10, 20, 50, 100],
+        "n_roles", [1, 2, 5, 10, 20, 50, 100],
+    ),
 
     # Multiplicative expansion in director.asl: (Phases * Roles) assignments.
     # Each phase adds ON ENTER / ON EXIT blocks which iterate over all roles.
-    "interaction_phases_roles": [
-        replace(BASELINE, n_phases=n, n_roles=n)
-        for n in [1, 2, 5, 10, 20, 50, 100]
-    ],
+    "grid_phases_roles": _sweep_2d(
+        "n_phases", [1, 2, 5, 10, 20, 50, 100, 200],
+        "n_roles", [1, 2, 5, 10, 20, 50, 100, 200],
+    ),
 
     # Internal playbook complexity: Playbooks * Plans * Branches.
     # Total AgentSpeak plans generated = $P_b \times P_l \times B$.
@@ -188,6 +197,23 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
         for n in [1, 2, 5, 10, 20, 50, 100]
     ],
 
+    # "Realistic Profile" - Structural architecture (roles, phases) stays bounded,
+    # but behavioral logic (playbooks, plans, statements) and vocabulary balloons.
+    "interaction_realistic_profile": [
+        replace(
+            BASELINE,
+            n_roles=5,
+            n_phases=3,
+            n_playbooks=n,
+            n_plans_per_playbook=n,
+            n_branches_per_plan=2,
+            n_stmts_per_branch=n * 2,
+            n_actions=n * 5,
+            n_events=n * 5,
+        )
+        for n in [1, 2, 5, 10, 20, 50, 100]
+    ],
+
     # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
     "interaction_subplot_scope": [
         replace(BASELINE, n_subplot_depth=d, n_roles=r, n_subplot_breadth=2)
@@ -202,17 +228,44 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
 
     # ================== 2D Grid Sweeps ==================
 
-    # 2D Grid: Phases vs Roles. Tests the $O(P \times R)$ assignment explosion in full Cartesian space.
-    "grid_phases_roles": _sweep_2d(
-        "n_phases", [2, 10, 25, 50],
-        "n_roles", [2, 10, 25, 50],
-    ),
-
     # 2D Grid: Playbook Logic. Playbooks vs Plans per playbook.
     "grid_playbook_logic": _sweep_2d(
         "n_playbooks", [2, 5, 10, 25, 50],
         "n_plans_per_playbook", [2, 5, 10, 25, 50],
     ),
+
+    # 1. Exponential tree growth
+    "grid_subplot_breadth_depth": _sweep_2d(
+        "n_subplot_breadth", [1, 2, 3, 4, 5, 6],
+        "n_subplot_depth", [1, 2, 3, 4, 5, 6],
+    ),
+    
+    # 2. Behavioral density
+    # "grid_plans_branches": _sweep_2d(
+    #     "n_plans_per_playbook", [2, 5, 10, 25],
+    #     "n_branches_per_plan", [1, 2, 5, 10],
+    # ),
+    
+    # # 3. Structural amplification
+    # "grid_roles_subplot_breadth": _sweep_2d(
+    #     "n_roles", [2, 10, 25, 50],
+    #     "n_subplot_breadth", [0, 2, 5, 10],
+    #     base=replace(BASELINE, n_subplot_depth=1),
+    # ),
+    
+    # 4. Lifecycle chain length
+    "grid_phases_subplot_depth": _sweep_2d(
+        "n_phases", [1, 2, 5, 10, 20, 50, 100, 200],
+        "n_subplot_depth", [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        base=replace(BASELINE, n_subplot_breadth=2),
+    ),
+    
+    # 5. Validator pressure
+    # "grid_roles_actions": _sweep_2d(
+    #     "n_roles", [2, 10, 50, 100],
+    #     "n_actions", [10, 50, 100, 500],
+    # ),
+
     
     # ================== Import Resolution ==================
     "scale_import_nodes": [
