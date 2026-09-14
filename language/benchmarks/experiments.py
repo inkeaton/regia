@@ -37,7 +37,19 @@ BASELINE: GeneratorConfig = GeneratorConfig(
     n_reps=5,
 )
 
-
+CASE_STUDY_PROFILE: GeneratorConfig = replace(
+    BASELINE,
+    n_actions=14,
+    n_events=31,
+    n_facts=10,
+    n_playbooks=10,
+    n_plans_per_playbook=4,
+    n_branches_per_plan=1,
+    n_roles=3,
+    n_phases=3,
+    n_subplot_breadth=1,
+    n_subplot_depth=1,
+)
 # ======================================================
 # Sweep Helper
 # ======================================================
@@ -211,7 +223,7 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
             n_actions=n * 5,
             n_events=n * 5,
         )
-        for n in [1, 2, 5, 10, 20, 50, 100]
+        for n in [1, 2, 5, 10, 20, 50]
     ],
 
     # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
@@ -280,4 +292,88 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
         "n_import_nodes", [10, 50, 100, 250],
         "n_import_edges", [1, 5, 10, 25],
     ),
+
+    # ======================================================
+    # Scenario 1: Full Game (anchored to the case-study profile)
+    # ======================================================
+    
+    # Scales the five "core" structural dimensions (Roles, Phases, Playbooks,
+    # Plans per Playbook) together, in the same proportion the case-study game
+    # actually exhibits, at 1x (the game itself), 2x, 5x, and 10x that profile.
+    # Vocabulary, branch density, and subplot shape are held fixed at the
+    # case-study's own values, since this scenario asks whether a project's
+    # *narrative and cast* scaling up compiles proportionally -- not whether
+    # its subplot hierarchy or per-plan branching does; those are covered by
+    # Scenario 2 and by the isolated sweeps in Section~\ref{sec:benchmark-results}.
+    "interaction_full_game_case_study": [
+        replace(
+            CASE_STUDY_PROFILE,
+            n_roles=max(1, round(CASE_STUDY_PROFILE.n_roles * m)),
+            n_phases=max(1, round(CASE_STUDY_PROFILE.n_phases * m)),
+            n_playbooks=max(1, round(CASE_STUDY_PROFILE.n_playbooks * m)),
+            n_plans_per_playbook=max(1, round(CASE_STUDY_PROFILE.n_plans_per_playbook * m)),
+        )
+        for m in [1, 2, 5, 10, 20]
+    ],
+    
+    
+    # ======================================================
+    # Scenario 2: Worst-Case Multiplier Stack
+    # ======================================================
+    
+    # Roles, Subplot Breadth, and Subplot Depth were, individually, the three
+    # steepest expansion-ratio curves in Section~\ref{sec:benchmark-results}.
+    # This suite grows all three together, to test whether their combined cost
+    # stays additive or compounds into something super-linear. Depth is kept
+    # modest (<=4) since breadth^depth already grows the subplot count sharply
+    # on its own; Roles grows independently, since nothing in generator.py ties
+    # root-Plot Role count to subplot count.
+    "interaction_worst_case_multipliers": [
+        replace(BASELINE, n_roles=r, n_subplot_breadth=b, n_subplot_depth=d)
+        for r, b, d in [
+            (2, 1, 1),
+            (5, 2, 2),
+            (10, 3, 2),
+            (25, 3, 3),
+            (50, 4, 3),
+            (100, 4, 4),
+        ]
+    ],
+    
+    
+    # ======================================================
+    # Scenario 3: Fixed Total, Different Shape
+    # ======================================================
+    
+    # Two curves, plotted as separate series against the same budget n, rather
+    # than a single suite: one grows reactive logic (Playbooks, Plans,
+    # Branches) while keeping the narrative skeleton minimal; the other grows
+    # the narrative skeleton (Roles, Phases) while keeping reactive logic
+    # minimal. Neither config can force equal output size directly, so the
+    # analysis step should compare the two curves at matched output_loc values
+    # after compiling both, rather than at matched n.
+    "interaction_shape_reactive_heavy": [
+        replace(
+            BASELINE,
+            n_roles=2,
+            n_phases=2,
+            n_playbooks=n,
+            n_plans_per_playbook=n,
+            n_branches_per_plan=2,
+        )
+        for n in [1, 2, 5, 10, 20, 50]
+    ],
+    
+    "interaction_shape_narrative_heavy": [
+        replace(
+            BASELINE,
+            n_playbooks=2,
+            n_plans_per_playbook=2,
+            n_branches_per_plan=1,
+            n_roles=n,
+            n_phases=n,
+        )
+        for n in [1, 2, 5, 10, 20, 50]
+    ],
+
 }

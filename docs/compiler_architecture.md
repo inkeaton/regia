@@ -72,11 +72,11 @@ The compiler is invoked via the command-line interface defined in `cli.py`, buil
 
 | Command | Description |
 |---|---|
-| `regia compile <file.regia> -o <dir>` | Full pipeline: parse → validate → emit → write files |
+| `regia compile <file.regia> [-o <dir>]` | Full pipeline: parse → validate → emit → write files. Output defaults to the current working directory. |
 | `regia check <file.regia>` | Parse and validate only, no file output |
-| `regia parse <file.regia>` | Parse and pretty-print the AST (development aid) |
+| `regia dump-ast <file.regia>` | *(hidden)* Validate and pretty-print the AST (development aid) |
 
-All commands accept `--quiet` (suppress warnings) and `--verbose` (extra stage output) flags, stored in a `CliState` dataclass on the Click context.
+All commands accept a `--quiet` flag (suppress non-error output), stored in a `CliState` dataclass on the Click context.
 
 ### Output Formatting
 

@@ -18,10 +18,6 @@
 //
 // The round-trip guarantee: because the Python server is the source of truth
 // for both parsing and emission, the resulting code will always be valid.
-//
-// NOTE: This file is intentionally empty for now. The architecture is already
-// in place: the Transport interface in services/transport.ts has a stub for
-// the emitRegia() method. Implement this module when tackling Phase 5.
 
 import type { Node, Edge } from "reactflow";
 import type { PlotDef } from "../types/ast";

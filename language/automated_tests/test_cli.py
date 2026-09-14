@@ -65,13 +65,13 @@ def test_check_command_fails_on_error(tmp_path: Path) -> None:
     assert "undeclared_action" in result.output
 
 
-def test_parse_command(tmp_path: Path) -> None:
-    """Test the parse command prints the AST."""
+def test_dump_ast_command(tmp_path: Path) -> None:
+    """Test the dump-ast command prints the AST."""
     source_file = tmp_path / "simple.regia"
     source_file.write_text("ACTION jump.")
 
     runner = CliRunner()
-    result = runner.invoke(main, ["parse", str(source_file)])
+    result = runner.invoke(main, ["dump-ast", str(source_file)])
     
     assert result.exit_code == 0
     # Check that pprint of the AST includes 'Program' and 'ActionDecl'

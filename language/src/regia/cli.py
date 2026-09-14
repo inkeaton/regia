@@ -1,10 +1,12 @@
 """
 Command-line interface for the Regia compiler.
 
-Exposes three commands:
+Exposes two public commands:
     regia compile <file.regia> [-o <output_dir>] [--dry-run]
     regia check   <file.regia>
-    regia parse   <file.regia>   (hidden, for internal debugging)
+
+Hidden debug command:
+    regia dump-ast <file.regia>  (pretty-prints the validated AST)
 """
 
 import sys
@@ -26,23 +28,20 @@ class CliState:
     """Shared state passed between CLI commands via the Click context.
 
     Attributes:
-        quiet:   Suppress all output except errors.
-        verbose: Print detailed pipeline stage progression.
+        quiet: Suppress all output except errors.
     """
-    quiet:   bool = False
-    verbose: bool = False
+    quiet: bool = False
 
 
 # == CLI entry point ===========================================================
 
 @click.group()
 @click.version_option(version=__version__)
-@click.option("--quiet",   is_flag=True, help="Only print errors, suppress normal output.")
-@click.option("--verbose", is_flag=True, help="Print detailed stage progression.")
+@click.option("--quiet", is_flag=True, help="Only print errors, suppress normal output.")
 @click.pass_context
-def main(ctx: click.Context, quiet: bool, verbose: bool) -> None:
+def main(ctx: click.Context, quiet: bool) -> None:
     """Regia Compiler CLI."""
-    ctx.obj = CliState(quiet=quiet, verbose=verbose)
+    ctx.obj = CliState(quiet=quiet)
 
 
 # == Output helpers ============================================================
@@ -97,7 +96,7 @@ def _print_summary(result, quiet: bool, action_name: str = "Compilation") -> Non
     "--output-dir",
     type=click.Path(file_okay=False, writable=True, path_type=Path),
     default=".",
-    help="Directory to place the generated AgentSpeak files.",
+    help="Directory to place the generated AgentSpeak files (defaults to CWD).",
 )
 
 @click.option(
@@ -110,12 +109,9 @@ def _print_summary(result, quiet: bool, action_name: str = "Compilation") -> Non
 def compile(ctx: click.Context, source_file: Path, output_dir: Path, dry_run: bool) -> None:
     """Compile a Regia source file into AgentSpeak."""
     state: CliState = ctx.obj
-    
+
     if not state.quiet:
         click.echo(f"Compiling {source_file.name}...")
-
-    if state.verbose:
-        click.echo("Running compilation pipeline...")
 
     result = compile_file(source_file)
 
@@ -128,18 +124,24 @@ def compile(ctx: click.Context, source_file: Path, output_dir: Path, dry_run: bo
             click.echo("No output files generated (source was empty or had no plots).")
         return
 
-    if not state.quiet:
+    # In dry-run mode, always show the file listing so the user gets feedback
+    # even when --quiet is active.
+    show_files = dry_run or not state.quiet
+
+    if show_files:
         if dry_run:
             click.echo(f"\nWould write AgentSpeak files to {output_dir.resolve()}/ (dry-run)")
         else:
             click.echo(f"\nWriting AgentSpeak files to {output_dir.resolve()}/")
-            output_dir.mkdir(parents=True, exist_ok=True)
+
+    if not dry_run:
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     for filename, content in result.outputs.items():
         if not dry_run:
             out_path = output_dir / filename
             out_path.write_text(content, encoding="utf-8")
-        if not state.quiet:
+        if show_files:
             click.echo(f"  - {filename}")
 
 
@@ -156,32 +158,25 @@ def check(ctx: click.Context, source_file: Path) -> None:
     if not state.quiet:
         click.echo(f"Checking {source_file.name}...")
 
-    if state.verbose:
-        click.echo("Running validation pipeline...")
-
     result = compile_file(source_file, emit=False)
 
     _print_diagnostics(result, state.quiet)
     _print_summary(result, state.quiet, action_name="Check")
 
 
-@main.command(hidden=True)
+@main.command(name="dump-ast", hidden=True)
 @click.argument(
     "source_file", required=True,
     type=click.Path(exists=True, path_type=Path),
 )
 @click.pass_context
-def parse(ctx: click.Context, source_file: Path) -> None:
-    """Parse a source file and pretty-print the generated AST.
+def dump_ast(ctx: click.Context, source_file: Path) -> None:
+    """Run the full pipeline (without emission) and pretty-print the AST.
 
     This command is intended for internal compiler debugging only.
-    IMPORT statements are fully resolved before the AST is dumped.
+    IMPORT statements are fully resolved and validation is run
+    before the AST is dumped.
     """
-    state: CliState = ctx.obj
-
-    if state.verbose:
-        click.echo(f"Parsing {source_file.name}...")
-
     # Run Stages 0-4 (with import resolution) but skip emission
     result = compile_file(source_file, emit=False)
 
@@ -189,7 +184,10 @@ def parse(ctx: click.Context, source_file: Path) -> None:
         pprint(result.ast)
 
     if not result.success:
-        click.secho(f"\nParsing failed with {result.error_count} error(s).", fg="red", bold=True)
+        click.secho(
+            f"\nAST dump failed with {result.error_count} error(s).",
+            fg="red", bold=True,
+        )
         sys.exit(1)
 
 

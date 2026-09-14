@@ -81,32 +81,31 @@ function findBlockEnd(code: string, startLine: number): number {
  */
 export function addPhase(code: string, ast: Program, rawName: string): string {
     const plot = ast.items?.find((item) => item.type === "PlotDef") as PlotDef | undefined;
-    if (!plot) return code; // Should not happen if graph is rendered
+    if (!plot) return code;
 
     const name = toSnakeCase(rawName);
 
     let newCode = code;
+    let linesShifted = 0;                          // <-- new
 
     // 1. Insert PhaseDecl
-    // Find the last phase declaration
     const lastPhase = plot.phases.length > 0 ? plot.phases[plot.phases.length - 1] : null;
-    let phaseInsertLine = plot.loc.line + 1; // Fallback to right after PLOT definition
+    let phaseInsertLine = plot.loc.line + 1;
     if (lastPhase) {
-        phaseInsertLine = lastPhase.loc.line + 1; // Insert after the last phase
+        phaseInsertLine = lastPhase.loc.line + 1;
     }
 
     newCode = insertLines(newCode, phaseInsertLine, [`    PHASE ${name}.`]);
+    linesShifted += 1;                             // <-- new: one line was just inserted
 
     // 2. Insert DuringBlock
     let duringInsertLine = newCode.split("\n").length + 1; // Fallback to EOF
-    
+
     if (plot.during_blocks.length > 0) {
         const lastDuring = plot.during_blocks[plot.during_blocks.length - 1];
-        // Find block end in original code, then shift +1 because we inserted a PhaseDecl above it
         const originalEndLine = findBlockEnd(code, lastDuring.loc.line);
-        duringInsertLine = originalEndLine + 1;
+        duringInsertLine = originalEndLine + linesShifted;  // <-- was: originalEndLine + 1
     } else {
-        // No during blocks yet, insert right after the phase we just added
         duringInsertLine = phaseInsertLine + 1;
     }
 
