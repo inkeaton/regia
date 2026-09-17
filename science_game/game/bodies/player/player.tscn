@@ -47,7 +47,7 @@ _data = {
 
 [node name="Player" type="CharacterBody2D" unique_id=1424175727 groups=["player"]]
 script = ExtResource("2_atwkx")
-DEFAULT_SPEED = 300.0
+DEFAULT_SPEED = 500.0
 DEFAULT_WEIGHT = 50.0
 
 [node name="Hand" type="Area2D" parent="." unique_id=35048869]
