@@ -1,0 +1,174 @@
+# Vocabulary Declarations
+
+# Actions used by Playbooks
+ACTION toast(target).
+ACTION eat_food.
+ACTION complain.
+ACTION greet(target).
+ACTION talk_to(target).
+ACTION checkout(target).
+ACTION ask_for_food.
+ACTION look_for_food.
+ACTION deliver_food_to_princess.
+ACTION start_dancing.
+ACTION start_chatting.
+
+# Actions used by the Director (WORLD DO and Role DO)
+ACTION call_guards.
+ACTION lock_doors.
+ACTION play_music.
+ACTION serve_wine.
+ACTION stop_music.
+
+# Events triggering Playbook and Plot WHEN blocks
+EVENT food_served.
+EVENT insult_heard.
+EVENT digestion_check.
+EVENT assassin_spotted.
+EVENT insult_thrown.
+EVENT duel_resolved.
+EVENT asked_for_food.
+EVENT got_good_food.
+
+# Facts used in Playbook IF conditions
+FACT is_hungry.
+FACT is_drunk.
+FACT hates(person).
+FACT enamoured_with(person).
+FACT friend_with(person).
+FACT likes(food).
+FACT dancing(person).
+FACT princess_asked_for_food.
+FACT received(food).
+
+# Playbooks
+
+PLAYBOOK NobleSocializing:
+  WHEN insult_heard PRIORITY 5 TEMPER sympathy(-0.5) EFFECTS aggressiveness(0.2):
+    IF NOT is_drunk AND hates(host):
+      DO complain.
+      SIGNAL insult_thrown.
+    ELSE:
+      DO toast(host).
+
+  WHEN digestion_check:
+    IF is_hungry:
+      DO eat_food.
+      DO FORGET(is_hungry).
+      DO PRINT("A guest finishes their meal").
+
+  WHEN food_served:
+    DO PRINT("A guest notices food arriving").
+    IF (is_hungry OR is_drunk) AND NOT hates(host):
+      DO eat_food.
+    ELSE:
+      DO complain.
+
+
+PLAYBOOK PrincessGreeting:
+  WHEN true:
+    DO greet(guest).  # guest adds enamoured_with(Princess)
+
+
+PLAYBOOK PretenderSocializing:
+  WHEN true:
+    DO talk_to(guest).  # guest adds friend_with(guest)
+
+
+PLAYBOOK SeekingFood:
+  WHEN food_served and princess_asked_for_food:
+    DO look_for_food.
+    DO deliver_food_to_princess.  # princess adds received(food)
+
+
+PLAYBOOK PrincessEating:
+  WHEN food_served AND is_hungry:
+    DO checkout(food).  # generates likes(food) or not
+    IF likes(food):
+      DO eat_food.
+      DO FORGET(is_hungry).
+    ELSE:
+      DO ask_for_food.
+      SIGNAL asked_for_food.
+
+  WHEN received(food) and is_hungry:
+    IF likes(food):
+      DO eat_food.
+      DO FORGET(is_hungry).
+      SIGNAL got_good_food.
+    ELSE:
+      DO ask_for_food.
+      SIGNAL asked_for_food.
+
+  WHEN NOT is_hungry:
+    SIGNAL asked_for_dance.
+
+
+PLAYBOOK NobleDuringBall:
+  WHEN dancing(Princess) AND dancing(Pretender):
+    IF enamoured_with(Princess) AND NOT friendly_with(Pretender):
+      DO complain.
+      SIGNAL insult_thrown.
+    ELSE:
+      DO cheer_couple.
+    ELSE IF NOT enamoured_with(Princess) AND friendly_with(Pretender):
+      DO cheer_couple.
+
+
+PLAYBOOK DancerDancing:
+  WHEN true:
+    DO start_dancing.
+    SIGNAL started_dancing.
+    DO start_chatting.
+
+
+# Plots
+
+PLOT RoyalBanquet.
+
+    PHASE reception INITIAL.
+    PHASE feast.
+    PHASE ball.
+    PHASE duel_interruption.
+
+    ROLE Host.
+    ROLE Guest.
+    ROLE Pretender.
+    ROLE Princess.
+
+    DURING PLOT:
+      WHEN assassin_spotted PRIORITY 9:
+        WORLD DO  lock_doors.
+        Host DO call_guards.
+        END PLOT.
+
+      DURING reception:
+        ON ENTER:
+          WORLD DO play_music.
+          ASSIGN NobleSocializing TO Guest.
+          ASSIGN NobleSocializing TO Pretender.
+          ASSIGN PrincessGreeting TO Princess.
+
+        WHEN food_served:
+          TRANSITION TO feast.
+
+        ON EXIT:
+          UNASSIGN PrincessGreeting FROM Princess.
+
+      DURING feast:
+        ON ENTER:
+          ASSIGN PrincessEating TO Princess.
+          ASSIGN PretenderSocializing TO Pretender.
+          WORLD DO serve_wine.
+
+        WHEN ROLE Princess SIGNALS asked_for_food:
+          START SUBPLOT FoodRequest MAPPING Pretender to Seeker, Princess to Receiver.
+          TRANSITION TO looking_for_food.
+
+        WHEN ROLE Guest SIGNALS insult_thrown:
+          WORLD DO stop_music.
+          START SUBPLOT HonorDuel MAPPING Guest to Challenger.
+          TRANSITION TO duel_interruption.
+
+        WHEN ROLE Princess SIGNALS asked_for_dance:
+      

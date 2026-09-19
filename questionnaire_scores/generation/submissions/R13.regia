@@ -1,0 +1,7 @@
+Playbook PrincessBehaviour:
+    when food_served: IF likes_food DO eat_food ELSE SIGNAL ask_pretender_food.
+    when ball_startd: SIGNAL ask_pretender_dance.
+Playbook PretenderBallBehavior:
+    WHEN ALWAYS: DO talk_to(Princess).
+when PRINCESS  ask_pretender_food: 
+        start SUBPLOT SearchFood MAPPING Self TO Searcher.

@@ -1,0 +1,85 @@
+ACTION princess_greet_guests
+ACTION talk(guest)
+
+FACT likes(food)
+FACT enamored
+FACT friendly
+
+EVENT talked_to
+
+PLAYBOOK princess_pb:
+WHEN food_served:
+    IF likes(food):
+       DO eat_food
+    ELSE
+      SIGNAL noFoodPrincess
+
+PLAYBOOK NobleSocializing:
+   WHEN insult_heard PRIORITY 5 TEMPER sympathy(-0.5) EFFECTS aggressiveness(0.2):
+      IF NOT is_drunk AND hates(host):
+         DO complain.
+         SIGNAL insult_thrown.
+      ELSE:
+         DO toast(host).
+
+   WHEN digestion_check:
+      IF is_hungry:
+         DO eat_food.
+         DO FORGET(is_hungry).
+         DO PRINT("A guest finishes their meal.").
+
+  WHEN food_served:
+      DO PRINT("A guest notices food arriving.").
+      IF (is_hungry OR is_drunk) AND NOT hates(host):
+         DO eat_food.
+      ELSE:
+        DO complain.
+  WHEN princess_greet_guest:
+      #I'd make this random but don't know how
+      DO BELIEVE(enamored)
+
+  WHEN talked_to:
+    DO FORGET(enamored)
+    DO BELIEVE(friendly)
+
+PLAYBOOK pretender_pb:
+
+WHEN insult_heard PRIORITY 5 TEMPER sympathy(-0.5) EFFECTS aggressiveness(0.2):
+IF NOT is_drunk AND hates(host):
+    DO complain.
+    SIGNAL insult_thrown.
+ELSE:
+    DO toast(host).
+
+WHEN digestion_check:
+   IF is_hungry:
+      DO eat_food.
+      DO FORGET(is_hungry).
+      DO PRINT("A guest finishes their meal.").
+
+WHEN food_served:
+   DO PRINT("A guest notices food arriving.").
+   IF (is_hungry OR is_drunk) AND NOT hates(host):
+      DO eat_food.
+   ELSE:
+      DO complain.
+   DO talk(guest)
+PLOT RoyalBanquet:
+#Same unless specified again
+PHASE Ball
+
+ROLE Princess
+ROLE Pretender
+
+DURING reception:
+   ON ENTER:
+         WORLD DO play_music.
+         ASSIGN NobleSocializing TO Guest.
+         ASSIGN pretender_pb TO Pretender
+         ASSIGN princess_pb TO Princess
+         WORLD DO princess_greet_guests
+
+DURING Ball:
+   ON Enter
+
+#Sorry, too long and programming here is terrible.

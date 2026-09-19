@@ -1,0 +1,16 @@
+,item_text
+L01,All concepts and scenarios of the domain can be expressed in Regia (completeness).
+L02,Regia is appropriate for the specific applications of the domain (e.g. to express an interaction between two agents) (appropriateness).
+L03,The required amount of effort for understanding Regia is small (comprehensibility).
+L04,Regia's concepts and symbols are easy to learn and remember (learnability).
+L05,Regia has capability to help users achieving their tasks in a minimum number of steps.
+L06,"Regia is appropriate for the needs of agent developers (likeability, user perception)."
+L07,Regia protects users against making errors.
+L08,Regia prevents the construction of wrong relations between language elements (correctness).
+L09,It is easy to reflect the design of a complex scenario involving many agents into an agent program with Regia.
+L10,Regia provides one and only one good way to express every concept chraracterizing a complex scenario involving many agents (unique).
+L11,Each Regia construct is used to represent exactly one distinct concept in the scenario domain (orthogonal).
+L12,Regia's constructs correspond only to necessary agent domain concepts.
+L13,Regia does not contain any conflicting elements.
+L14,Using Regia to develop agent models fits in the general development process of agent systems involving many agents. The language can be used as part of an Agent Oriented Engineering Methodology me...
+L15,"Regia is powerful enough to implement the general structure of a complex agent system, including the construction of agent plans, agent internals, communication between agents and agent interactio..."
