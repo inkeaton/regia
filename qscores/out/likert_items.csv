@@ -1,0 +1,16 @@
+measure,label,characteristic,n_valid,n_dont_know,n_strongly_disagree,n_disagree,n_neutral,n_agree,n_strongly_agree,pct_agree,pct_disagree,net_agreement,median
+1,Completeness,Functional Suitability,24,2,0,0,3,15,6,0.875,0.0,0.875,4.0
+2,Appropriateness,Functional Suitability,25,1,0,0,1,13,11,0.96,0.0,0.96,4.0
+3,Comprehensibility,Usability,26,0,1,3,3,14,5,0.7307692307692307,0.15384615384615385,0.5769230769230769,4.0
+4,Learnability,Usability,26,0,1,3,2,9,11,0.7692307692307693,0.15384615384615385,0.6153846153846154,4.0
+5,Minimum steps,Usability,24,2,1,0,5,10,8,0.75,0.041666666666666664,0.7083333333333334,4.0
+6,Likeability,Usability,25,1,0,1,4,13,7,0.8,0.04,0.76,4.0
+10,Error protection,Reliability,25,1,2,6,12,3,2,0.2,0.32,-0.12,3.0
+11,Correctness,Reliability,23,3,0,3,8,9,3,0.5217391304347826,0.13043478260869565,0.391304347826087,4.0
+12,Design reflection,Expressiveness,24,2,0,2,8,11,3,0.5833333333333334,0.08333333333333333,0.5,4.0
+13,Uniqueness,Expressiveness,21,5,2,5,5,5,4,0.42857142857142855,0.3333333333333333,0.09523809523809523,3.0
+14,Orthogonality,Expressiveness,25,1,0,2,2,13,8,0.84,0.08,0.76,4.0
+15,Necessity,Expressiveness,20,6,0,1,5,9,5,0.7,0.05,0.65,4.0
+16,No conflicts,Expressiveness,19,7,0,2,4,9,4,0.6842105263157895,0.10526315789473684,0.5789473684210527,4.0
+18,Process fit,Compatibility,23,3,0,1,1,14,7,0.9130434782608695,0.043478260869565216,0.8695652173913043,4.0
+23,Power,MAS Development,25,1,1,0,3,13,8,0.84,0.04,0.8,4.0

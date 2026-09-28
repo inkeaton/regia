@@ -1,0 +1,7 @@
+characteristic,measures,n_valid,n_dont_know,net_agreement
+Functional Suitability,"1, 2",49,3,0.9183673469387755
+Usability,"3, 4, 5, 6",101,3,0.6633663366336634
+Reliability,"10, 11",48,4,0.125
+Expressiveness,"12, 13, 14, 15, 16",109,21,0.5229357798165137
+Compatibility,18,23,3,0.8695652173913043
+MAS Development,23,25,1,0.8

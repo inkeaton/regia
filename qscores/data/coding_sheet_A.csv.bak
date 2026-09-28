@@ -1,0 +1,645 @@
+rater,respondent,item,unit,code,unit_desc,misconceptions,flag,response
+A,1,O1,U1,2.0,triggered by the digestion_check event,,,"when the event digestion_check is triggered the agent with the NobleSocializing Playbook that is hungry will start eating, remove its is_hungry status and print out the string ""A guest finishes their meal."""
+A,1,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,1,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,1,O1,U4,1.0,eat_food executes when the guard holds,,,
+A,1,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,1,O1,U6,2.0,PRINT emits the message,,,
+A,1,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,2,O1,U1,2.0,triggered by the digestion_check event,,,"When the ""digestion_check"" event is triggered, if a specific agent participating in the playbook is hungry, it eats and updates its internal state to reflect that it is satiated. Additionally, the completion of the meal is logged."
+A,2,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,2,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,2,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,2,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,2,O1,U6,2.0,PRINT emits the message,,,
+A,2,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,3,O1,U1,2.0,triggered by the digestion_check event,,,"When the digestion_check Event occurs, an agent assigned the NobleSocializing Playbook checks if the is_hungry Fact is true. If it is, the agent executes the eat_food Action, removes the is_hungry Fact from its beliefs using DO FORGET, and outputs a text message confirming the meal is finished via DO PRINT."
+A,3,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,3,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,3,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,3,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,3,O1,U6,2.0,PRINT emits the message,,,
+A,3,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,4,O1,U1,1.0,triggered by the digestion_check event,,,"When the agent checks its satiety, checks its facts to see if it is hungry, and if true it eats, then remove that fact and print a message"
+A,4,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,4,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,4,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,4,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,4,O1,U6,2.0,PRINT emits the message,,,
+A,4,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,5,O1,U1,1.0,triggered by the digestion_check event,,,"A guest role in the NobleSocializing Playbook: When checking his hunger, he checks to see if he is hungry. If he is, he eats, and his hunger subsides. Finally, a log entry is created noting that a guest has finished his meal."
+A,5,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,5,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,5,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,5,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,5,O1,U6,2.0,PRINT emits the message,,,
+A,5,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,6,O1,U1,2.0,triggered by the digestion_check event,,,"When a ""digestion_check"" happens, whoever has this plan assigned to them will check if they're hungry. If so, they'll eat, change their state and will print somewhere ""A guest finishes their meal""."
+A,6,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,6,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,6,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,6,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,6,O1,U6,2.0,PRINT emits the message,,,
+A,6,O1,U7,2.0,nothing happens when the guard is false (no else branch),,,
+A,7,O1,U1,2.0,triggered by the digestion_check event,,,"When an agent that has a role associated with NobleSocializing Playbook does a digestion check, if the fact that it's hungry evaluates as true it performs three actions: eats, removes the fact is_hungry, prints a message."
+A,7,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,7,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,7,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,7,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,7,O1,U6,2.0,PRINT emits the message,,,
+A,7,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,8,O1,U1,2.0,triggered by the digestion_check event,,,"If the event ""digestion_check"" is triggered, the agent/npc/player that has knowledge of this event, checks if the condition ""is_hungry"" is valid. If it is then eats the food present and forgets that is hungry. It then triggers a DO PRINT to acknowledge that a guest has finished is meal."
+A,8,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,8,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,8,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,8,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,8,O1,U6,2.0,PRINT emits the message,,,
+A,8,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,9,O1,U1,1.0,triggered by the digestion_check event,,,"Once digestion_check is satisfied, it checks whether is_hungry is true. In the is_hungry scenario, the agent takes the eat_food action, then clears is_hungry and prints the message."
+A,9,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,9,O1,U3,1.0,body guarded by the is_hungry fact,,,
+A,9,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,9,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,9,O1,U6,2.0,PRINT emits the message,,,
+A,9,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,10,O1,U1,2.0,triggered by the digestion_check event,,,"When the event digestion_check is triggered, if this is during a plot in which some role has been assigned the NobleSocializing playbook, then all agents with such a role will do the following: if the agent believes in the is_hungry Fact, then they will first perform the eat_food action, then stop believing in the is_hungry fact, then the text ""A guest finishes their meal."" will be printed."
+A,10,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,10,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,10,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,10,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,10,O1,U6,2.0,PRINT emits the message,,,
+A,10,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,11,O1,U1,2.0,triggered by the digestion_check event,,,"When a character receives the EVENT digestion_check, if he is hungry, he will eat, forget to be hungry, and print a message."
+A,11,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,11,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,11,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,11,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,11,O1,U6,2.0,PRINT emits the message,,,
+A,11,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,12,O1,U1,0.0,triggered by the digestion_check event,,,"It does a check of the digestion's state: if the agent is hungry, it makes him eat food, deletes the hungriness and returns ""A guest finishes their meal""."
+A,12,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,12,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,12,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,12,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,12,O1,U6,2.0,PRINT emits the message,,,
+A,12,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,13,O1,U1,2.0,triggered by the digestion_check event,,,"When the digestion_check event is triggered, the agent evaluates whether it is_hungry: if true, it eats food (DO eat_food), removes the hunger from its knowledge base (DO FORGET(is_hungry))"
+A,13,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,13,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,13,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,13,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,13,O1,U6,0.0,PRINT emits the message,,,
+A,13,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,14,O1,U1,2.0,triggered by the digestion_check event,,,"when the digestion_check event is fired, agents playing a role in NobleSocializing check whether they are flagged as being hungry by the presence of the is_hungry fact. if so, they trigger the eat_food action, then update their fact list to reflect that they are not hungry anymore and explicit the end of the plan execution by printing a line in the console."
+A,14,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,14,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,14,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,14,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,14,O1,U6,2.0,PRINT emits the message,,,
+A,14,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,15,O1,U1,2.0,triggered by the digestion_check event,,,"When the digestion_check event is triggered, if the fact is_hungry is true for the NobleSocializing agent, then the same agent triggers the action eat_food and the fact is_hungry is no longer true for him."
+A,15,O1,U2,1.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,15,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,15,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,15,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,15,O1,U6,2.0,PRINT emits the message,,,
+A,15,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,16,O1,U1,2.0,triggered by the digestion_check event,,,"The Regia fragment above describes the reaction to the event ""digestion_check"". When the event occurs, the body is executed. The body consists of an IF branch. If the fact ""is_hungry"" is true, the action ""eat_food"" will be executed by the agent, the information ""is_hungry"" will be removed, and the text ""a guest finishes their meal"" will be printed. If the fact ""is_hungry"" is not true, nothing happens."
+A,16,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,16,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,16,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,16,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,16,O1,U6,2.0,PRINT emits the message,,,
+A,16,O1,U7,2.0,nothing happens when the guard is false (no else branch),,,
+A,17,O1,U1,2.0,triggered by the digestion_check event,,,"When the digestion_check event occurs, if the agent is hungry, it executes the action eat_food, it removes the fact is_hungry at the plot level for the agent and the Regia ""narrative layer"" prints ""A guest finishes their meal"""
+A,17,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,17,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,17,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,17,O1,U5,0.0,FORGET retracts the is_hungry belief,,,
+A,17,O1,U6,1.0,PRINT emits the message,,,
+A,17,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,18,O1,U1,2.0,triggered by the digestion_check event,,,"When the digestion_check event happens, a role with NobleSocializing Playbook assigned, if hungry, does the action called eat_food, then forgets the fact that they were hungry, finally they print the string ""A guest finishes their meal.""."
+A,18,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,18,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,18,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,18,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,18,O1,U6,2.0,PRINT emits the message,,,
+A,18,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,19,O1,U1,1.0,triggered by the digestion_check event,,,"When the digestion is checked, if an agent is hungry, it eats food, sets it is no more hungry, and informs that it has finished the meal (""their"" is not clear is a single agent is involved)."
+A,19,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,19,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,19,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,19,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,19,O1,U6,1.0,PRINT emits the message,,,
+A,19,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,20,O1,U1,1.0,triggered by the digestion_check event,,,"When the digestion_check event is thrown as a signal, every agent that were assigned the NobleSocializing playbook, checks if they have the is_hungry fact, if they do they eat_food, forget the is_hungry fact so that they cannot eat again until they're hungry again and then a message is printed letting us know that a guest finished their meal."
+A,20,O1,U2,2.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,20,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,20,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,20,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,20,O1,U6,2.0,PRINT emits the message,,,
+A,20,O1,U7,1.0,nothing happens when the guard is false (no else branch),,,
+A,21,O1,U1,1.0,triggered by the digestion_check event,,,"This code runs when a digestion check occurs. If the guest is hungry, they eat the food, forget that they are hungry, and then print that they have finished their meal. If they are not hungry, nothing happens."
+A,21,O1,U2,0.0,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,
+A,21,O1,U3,2.0,body guarded by the is_hungry fact,,,
+A,21,O1,U4,2.0,eat_food executes when the guard holds,,,
+A,21,O1,U5,2.0,FORGET retracts the is_hungry belief,,,
+A,21,O1,U6,2.0,PRINT emits the message,,,
+A,21,O1,U7,2.0,nothing happens when the guard is false (no else branch),,,
+A,1,O2,U1,2.0,triggered by the food_served event,,,"When the food_served event is triggered the agent with NobleSocializing Playbook will print the string ""A guest notices food arriving. He will eat food if he doesn't hate the host and he is hungry or drunk. Otherwise he will complain."
+A,1,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,1,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,1,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,1,O2,U5,2.0,eat_food on true,,,
+A,1,O2,U6,2.0,complain on the else branch,,,
+A,2,O2,U1,2.0,triggered by the food_served event,,,"When the ""food_served"" event is triggered, a specific ""Guest"" agent participating in the playbook notices that food has been served; if the guest is hungry or drunk and does not hate the host, they eat—otherwise, they complain."
+A,2,O2,U2,1.0,"PRINT executes unconditionally, before the test",,,
+A,2,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,2,O2,U4,1.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,2,O2,U5,2.0,eat_food on true,,,
+A,2,O2,U6,2.0,complain on the else branch,,,
+A,3,O2,U1,2.0,triggered by the food_served event,,,"When the food_served Event occurs, an agent assigned the NobleSocializing Playbook immediately outputs a text message using DO PRINT. It then evaluates a compound condition based on its Facts: if the agent is either is_hungry OR is_drunk, AND it does NOT possess the hates(host) Fact, it executes the eat_food Action. If this condition is false, the agent falls back to the ELSE branch and executes the complain Action."
+A,3,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,3,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,3,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,3,O2,U5,2.0,eat_food on true,,,
+A,3,O2,U6,2.0,complain on the else branch,,,
+A,4,O2,U1,1.0,triggered by the food_served event,,,"When the food is served, print a message, then if the agent is hungry or drunk and doesn't hate the host, it eats food, in any other case it complains"
+A,4,O2,U2,1.0,"PRINT executes unconditionally, before the test",,,
+A,4,O2,U3,1.0,condition includes (is_hungry OR is_drunk),,,
+A,4,O2,U4,1.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,4,O2,U5,1.0,eat_food on true,,,
+A,4,O2,U6,1.0,complain on the else branch,,,
+A,5,O2,U1,2.0,triggered by the food_served event,,,"When food is served, the agent assigned the “guest” role during the NobleSocializing Playbook behaves as follows: if the agent is hungry and does not dislike the host, the agent eats the food; otherwise, the agent complains."
+A,5,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,5,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,5,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,5,O2,U5,2.0,eat_food on true,,,
+A,5,O2,U6,2.0,complain on the else branch,,,
+A,6,O2,U1,2.0,triggered by the food_served event,,,"When food is served, noble will print ""A guest notices food arriving"" then check wheter they should complain or eat, depending if they're hungry or drunk and they like (not hate) the host."
+A,6,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,6,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,6,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,6,O2,U5,2.0,eat_food on true,,,
+A,6,O2,U6,1.0,complain on the else branch,,,
+A,7,O2,U1,1.0,triggered by the food_served event,,,"When an agent that has a role associated with NobleSocializing Playbook witnesses food being served, it prints a message and then it either eats the food if it's hungry or drunk but doesn't hate the host, otherwise it performs the complain action."
+A,7,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,7,O2,U3,1.0,condition includes (is_hungry OR is_drunk),,,
+A,7,O2,U4,1.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,7,O2,U5,2.0,eat_food on true,,,
+A,7,O2,U6,2.0,complain on the else branch,,,
+A,8,O2,U1,2.0,triggered by the food_served event,,,"If the event ""food_served"" is triggered, the agent/npc/player that has knowledge of this event checks if the condition ""is_hungry"" or ""is_drunk"" are valid, and at the same time is checked if the host is not being hated by the specific agent/npc/player. If the condition is met (IF (cond_1 or cond_2) and (not cond_3)) then the guest eats the foot, otherwise complains."
+A,8,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,8,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,8,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,8,O2,U5,2.0,eat_food on true,,,
+A,8,O2,U6,2.0,complain on the else branch,,,
+A,9,O2,U1,1.0,triggered by the food_served event,,,"Once food_served is satisfied, the agent prints the message. It then checks whether either is_hungry or is_drunk is true and whether hates(host) is false. If the condition is satisfied, the agent takes the eat_food action; otherwise, it takes the complain action."
+A,9,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,9,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,9,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,9,O2,U5,2.0,eat_food on true,,,
+A,9,O2,U6,2.0,complain on the else branch,,,
+A,10,O2,U1,2.0,triggered by the food_served event,,,"When the event food_served is triggered, if this is during a plot in which some role has been assigned the NobleSocializing playbook, then all agents with such a role will do the following: first the text ""A guest notices food arriving."" will be printed, and then if the agent believes in either the is_hungry or is_drunk facts and does not believe in the hates(host) fact, they will perform the eat_food action. Otherwise, they will perform the complain action."
+A,10,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,10,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,10,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,10,O2,U5,2.0,eat_food on true,,,
+A,10,O2,U6,2.0,complain on the else branch,,,
+A,11,O2,U1,2.0,triggered by the food_served event,,,"When a character receives the EVENT food_served, print a message. Then, if he is hungry or he is drunk and does not hate the host, he will eat; otherwise, he will complain"
+A,11,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,11,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,11,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,11,O2,U5,2.0,eat_food on true,,,
+A,11,O2,U6,2.0,complain on the else branch,,,
+A,12,O2,U1,2.0,triggered by the food_served event,,,"When the food is served, it prints ""A guest notices food arriving."". If the agent is hungry or drunk and it doesn't hate the host, it eats food. Otherwise, it complains."
+A,12,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,12,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,12,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,12,O2,U5,2.0,eat_food on true,,,
+A,12,O2,U6,2.0,complain on the else branch,,,
+A,13,O2,U1,2.0,triggered by the food_served event,,,"when food_served event occurs, the agent immediately outputs the message ""A guest notices food arriving."" and then evaluates its condition: if the agent is hungry or drunk, and doesnot hate the host, it executes the eat_food action"
+A,13,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,13,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,13,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,13,O2,U5,2.0,eat_food on true,,,
+A,13,O2,U6,2.0,complain on the else branch,,,
+A,14,O2,U1,2.0,triggered by the food_served event,,,"when the food_served event is fired, agents playing a role in NobleSocializing react printing a line in the console saying that they noticed food coming. Then, depending on the combination of the is_hungry, is_drunk and hates(P) facts, they go on executing either the eat_food or the complain action. Specifically, eat_food is executed when an agent is is hungry, drunk (or both) and does not hat the host. complain is instead executed when the agent is neither hungry or drunk and does hate the host."
+A,14,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,14,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,14,O2,U4,1.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,14,O2,U5,2.0,eat_food on true,,,
+A,14,O2,U6,2.0,complain on the else branch,,,
+A,15,O2,U1,0.0,triggered by the food_served event,,,"The reasoning is very similar to question 4. Here, we print a string and consider an if-else structure and the guard of the IF lock includes logical connectives. In particular, the fact hates refers to a parameter ""host"". (I am noticing that a role ""Host"" is defined in the plot RoyalBanquet, but the capitalization is different: Host instead of host)"
+A,15,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,15,O2,U3,1.0,condition includes (is_hungry OR is_drunk),,,
+A,15,O2,U4,1.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,15,O2,U5,1.0,eat_food on true,,,
+A,15,O2,U6,1.0,complain on the else branch,,,
+A,16,O2,U1,2.0,triggered by the food_served event,,,"The Regia fragment above describes the reaction to the event food_served. When the event occurs, the body is executed. The body consists of first printing a message, then executing an IF-ELSE block. If the agent is hungry or is drunk and it does not hate the host, it will perform the action eat food; otherwise, it will perform the action complain."
+A,16,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,16,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,16,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,16,O2,U5,2.0,eat_food on true,,,
+A,16,O2,U6,2.0,complain on the else branch,,,
+A,17,O2,U1,2.0,triggered by the food_served event,,,"When the food_served event occurs, ""A guest notices food arriving"" is printed. Afterwards, if the agent is hungry or drunk and it does not hate the host, then it executes the action eat_food, otherwise it executes the action complain"
+A,17,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,17,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,17,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,17,O2,U5,2.0,eat_food on true,,,
+A,17,O2,U6,2.0,complain on the else branch,,,
+A,18,O2,U1,2.0,triggered by the food_served event,,,"When the food_served event happens, a role with NobleSocializing Playbook assigned prints the string ""A guest notices food arriving."". Then if either they are drunk or hungry or both and they also do not hate the host, they eat, otherwise they complain."
+A,18,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,18,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,18,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,18,O2,U5,2.0,eat_food on true,,,
+A,18,O2,U6,2.0,complain on the else branch,,,
+A,19,O2,U1,1.0,triggered by the food_served event,,,"When the food is served at the banquet, the system informs that a guest has noticed the food; if the agent is hungry or drunk, and does not hates the host, it eats the arrived food, otherwise it complains."
+A,19,O2,U2,1.0,"PRINT executes unconditionally, before the test",,,
+A,19,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,19,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,19,O2,U5,2.0,eat_food on true,,,
+A,19,O2,U6,2.0,complain on the else branch,,,
+A,20,O2,U1,2.0,triggered by the food_served event,,,"When the food_served event is thrown as a signal, every agent that were assigned the NobleSocializing playbook, prints a message letting us know that a guest noticed food arrivind, then checks if they contain the is_hungry or is_drunk facts and not the hates(host) fact, if that's the case they eat_food otherwise they complain."
+A,20,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,20,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,20,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,20,O2,U5,2.0,eat_food on true,,,
+A,20,O2,U6,2.0,complain on the else branch,,,
+A,21,O2,U1,2.0,triggered by the food_served event,,,"When food is served, the guest first notices it and a message is printed. If the guest is hungry or drunk, and does not hate the host, they eat the food. Otherwise, they complain."
+A,21,O2,U2,2.0,"PRINT executes unconditionally, before the test",,,
+A,21,O2,U3,2.0,condition includes (is_hungry OR is_drunk),,,
+A,21,O2,U4,2.0,"AND NOT hates(host) - both conjuncts, correct precedence",,,
+A,21,O2,U5,2.0,eat_food on true,,,
+A,21,O2,U6,2.0,complain on the else branch,,,
+A,1,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"it describes the plot phase reception. When that phase begin the world will execute the play_music action and the playbook NobleSocializing will be assigned to the agent connected with the Guest role. During this phase when the ""food_served"" event is triggered the Plot will transition to another phase ( ""feast"" )."
+A,1,O3,U2,1.0,"ON ENTER fires once, at phase entry",,,
+A,1,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,1,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,1,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,1,O3,U6,2.0,"the trigger is live throughout the phase, not only at entry",,,
+A,2,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"In the first phase of the plot, event play_music is triggered. Assign the NobleSocializing playbook to the Guest. When the food_served event is triggered, proceed to the second phase."
+A,2,O3,U2,0.0,"ON ENTER fires once, at phase entry",,,
+A,2,O3,U3,1.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,2,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,2,O3,U5,1.0,WHEN food_served causes TRANSITION TO feast,,,
+A,2,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,3,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"During the reception Phase, exactly when the phase begins (ON ENTER), the Director globally executes the play_music Action via WORLD DO and assigns the NobleSocializing Playbook to the Guest Role. Later, when the food_served Event occurs, the Plot triggers a TRANSITION TO, advancing the global narrative from the current phase into the feast Phase."
+A,3,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,3,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,3,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,3,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,3,O3,U6,2.0,"the trigger is live throughout the phase, not only at entry",,,
+A,4,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"While the plot is in the reception phase, a music plays and the noblesocializing playbook is assigned to the guest role. When the food is served, the phase changes to feast"
+A,4,O3,U2,1.0,"ON ENTER fires once, at phase entry",,,
+A,4,O3,U3,1.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,4,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,4,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,4,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,5,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"We are in the first phase of the RoyalBanquet Plot: Reception. The first thing that happens when entering this phase is assigning the NobleSocializing playbook to agents with the Guest role, while the world’s soundtrack changes. Once the food is served, we will leave the reception phase and move on to the “feat” phase of the RoyalBanquet Plot."
+A,5,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,5,O3,U3,1.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,5,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,5,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,5,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,6,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"When the phase reception we saw declared before is entered, the the environment will start playing music, supposedly for the guests to hear, and will assign to the ROLE guest the playbook noble socializing. At any point during the phase reception, when the food is served the phase will change into feast"
+A,6,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,6,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,6,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,6,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,6,O3,U6,2.0,"the trigger is live throughout the phase, not only at entry",,,
+A,7,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"When the plot enters phase reception, world plays some music and the Playbook NobleSocializing is assigned to role Guest. Whenever food is served during the reception, there is a transition to the phase called feast."
+A,7,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,7,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,7,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,7,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,7,O3,U6,2.0,"the trigger is live throughout the phase, not only at entry",,,
+A,8,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"Once the reception phase starts, the world/environment start playing music, and assign to the agents/npcs the playbook NobleSocializing to those who are Guests. When the food_server is triggered than the playbook transitions to feast"
+A,8,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,8,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,8,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,8,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,8,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,9,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"During the reception phase, when entering the phase, play_music action will be taken, and then the NobleSocializing Playbook will be assigned to agents with the Guest role. Once food_served occurs, the phase will be changed to feast."
+A,9,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,9,O3,U3,1.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,9,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,9,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,9,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,10,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"In some plot, if we transition to (or are initially in) the reception phase, then when entering this phase the director performs the action play_music at a global level, and any agents with the role Guest are assigned the NobleSocializing playbook, and will follow the reactive plans therein. If the food_served event is triggered during this phase, then we exit the reception phase and enter the feast phase."
+A,10,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,10,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,10,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,10,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,10,O3,U6,2.0,"the trigger is live throughout the phase, not only at entry",,,
+A,11,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"During the PHASE reception, when it starts, the environment will play music and assign a Playbook NobleSocializing to agents with the role Guest. When the food is served, this PHASE ends, and the execution will change to PHASE feast."
+A,11,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,11,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,11,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,11,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,11,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,12,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"During the phase ""reception"", when entering it, the world activates the phase play_music. Then, it assigns the playbook NobleSocializing to the agent playing the Guest. When food is served, we transition to the phase ""feast""."
+A,12,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,12,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,12,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,12,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,12,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,13,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"Upon entering reception , the environment plays music (WORLD DO play_music) and assigns the NobleSocializing to agents in the Guest role; later, when the food_served event occurs, the plot transitions to the feast phase ""TRANSITION TO feast"""
+A,13,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,13,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,13,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,13,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,13,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,14,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"when the RoyalBanquet plot execution reaches the reception phase, at its very beginning the world/environment manager starts playing music and assigns the NobleSocializing playbook to all agents roling as Guest. Then, whenever the food_served event fires, the plot moves to the feast phase."
+A,14,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,14,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,14,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,14,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,14,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,15,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"This fragment describes what happens in a specific phase, called reception, of a PLOT. When entering the phase, the special action ""play_music"" is performed by the plot (this is the meaning of the statement WORLD DO). Somewhere else, we defined a Role Guest and a playbook NobleSocializing. When entering the reception phase, we are assigning the role to the playbook. In the main body of the phase description, we also specify that when the food is served, another phase starts: the feast one. There is not specific stuff that must be done when exiting this phase."
+A,15,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,15,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,15,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,15,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,15,O3,U6,2.0,"the trigger is live throughout the phase, not only at entry",,,
+A,16,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"In the Regia fragment above, during the reception phase, the environment will perform the action of playing music, and it will assign the NobleSocializing playbook to the guest role upon entering the phase. When the food is served during the reception phase, there is a transition to the feast phase."
+A,16,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,16,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,16,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,16,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,16,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,17,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"During the reception phase, first things first the environment performs the play_music action, then the playbook NobleSocializing is assigned to the Guest role. Subsequently, anytime during this phase, when the food_served event occurs, the phase reception transitions to the feast one."
+A,17,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,17,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,17,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,17,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,17,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,18,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"During the reception phase of the plot, something needs to be done: in particular when the phase starts, the world executes the action play_music and the Guest role is assegned the NobleSocializing playbook; when the food_served event occurs, there is a transition that switches the current phase from reception to feast."
+A,18,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,18,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,18,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,18,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,18,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,19,O3,U1,2.0,the block scopes behaviour to one phase of a plot,,,"During the reception phase, when an agent enter (the environment) the system plays music and assigns the playbook NobleSocializing to the agent playing the role of Guest. As soon as the food is served, the phase transits to feast."
+A,19,O3,U2,0.0,"ON ENTER fires once, at phase entry",,,
+A,19,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,19,O3,U4,0.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,19,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,19,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,20,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"When we first enter in the reception phase the world stats to play music (play_music) and all the guests get assigned the NobleSocializing playbook, when the food_served event is thrown as a signal we transition from reception to feast."
+A,20,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,20,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,20,O3,U4,2.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,20,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,20,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,21,O3,U1,1.0,the block scopes behaviour to one phase of a plot,,,"When the reception phase begins, the world starts playing music, and the NobleSocializing Playbook is assigned to the Guest role. Later, when the event food_served occurs, the scenario transitions from the reception phase to the feast phase."
+A,21,O3,U2,2.0,"ON ENTER fires once, at phase entry",,,
+A,21,O3,U3,2.0,"WORLD DO is an environment/director-level action, not an agent's",,,
+A,21,O3,U4,1.0,"ASSIGN targets the Guest ROLE, hence all its occupants",,,
+A,21,O3,U5,2.0,WHEN food_served causes TRANSITION TO feast,,,
+A,21,O3,U6,1.0,"the trigger is live throughout the phase, not only at entry",,,
+A,1,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"Entering the plot phase feast the action ""serve_wine"" will be executed. During this phase if an agent with the guest role launches the insult_thrown message the music will stop and a subplot ""HonorDuel"" will be launched with the guest agent in the role of the challenger of the duel. The plot will move to the duel_interruption phase. Exiting the phase ""feast"" the NobleSocializing playbook will be removed from the guest agent."
+A,1,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,1,O4,U3,2.0,stop_music executes,,,
+A,1,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,1,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,1,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,1,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,2,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"As soon as this phase is entered, the `serve_wine` event is triggered. When a Guest agent signals `insult_thrown`, the `HonorDuel` subplot begins, and the targeted Guest becomes a challenger. Upon completion of the subplot, the phase shifts to `duel_interruption`, and the `NobleSocializing` playbook is removed from the Guest."
+A,2,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,2,O4,U3,0.0,stop_music executes,,,
+A,2,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,2,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,2,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,2,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,3,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"During the feast Phase, exactly when the phase begins (ON ENTER), the Director executes the serve_wine Action via WORLD DO. During the phase, if the Director receives a SIGNAL of insult_thrown from an agent playing the Guest Role, it triggers a sequence of global events: it executes the stop_music Action, initiates the HonorDuel Subplot (mapping the Guest Role of the main plot to the Challenger Role of the subplot), and triggers a TRANSITION TO the duel_interruption Phase. Consequently, right as the feast Phase ends, the ON EXIT block is triggered, and the NobleSocializing Playbook is unassigned from the Guest Role."
+A,3,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,3,O4,U3,2.0,stop_music executes,,,
+A,3,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,3,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,3,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,3,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,4,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"At the start of the feast pase, wine is served. When the guest insults someone, the music stops, and duel subplot starts, in which the guest role is assigned the challenger playbook. When the feast plot finishes, noble socializing is removed form the guest playbooks'"
+A,4,O4,U2,1.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,4,O4,U3,2.0,stop_music executes,,,
+A,4,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,4,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,4,O4,U6,0.0,TRANSITION TO duel_interruption,,,
+A,4,O4,U7,0.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,5,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"Once the RoyalBanquet Plot feast phase begins, the director performs the action of serving wine. During the RoyalBanquet Plot feast phase, if an Agent in the role of “guest” notifies the system that an “insult has been hurled,” the music stops, the “HonorDuel” subplot begins, and the Agent who was in the role of “guest” and who reported the insult in the RoyalBanquet becomes the “challenger” in the “HonorDuel” plot. When this happens, the RoyalBanquet plot moves to the “duel_interruption” phase. Once the RoyalBanquet plot ends, the NobleSocializing playbook is removed from all agents with the Guest role."
+A,5,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,5,O4,U3,2.0,stop_music executes,,,
+A,5,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,5,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,5,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,5,O4,U7,0.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,6,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"When the phase changes to feast, the environment will serve wine. At any time during this phase, when a guest insults the host, the music will stop and a new subplot will start. The subplot HonorDuel will change the guest that trown the insult and only that one to a new ROLE called Challenger. The main POLT phase will then change to duel interruption. When the phase feast finished, whether because a guest insulted the host or not, all guest will lose the NobleSocializing Guest."
+A,6,O4,U2,1.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,6,O4,U3,2.0,stop_music executes,,,
+A,6,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,6,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,6,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,6,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,7,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"When the plot enters phase feast, the world system performs an action serve wine. During the feast, whenever an agent with the assigned Role of Guest lets the plot know that an insult was thrown, the world stops the music and a subplot HonorDuel is started, in which the Guest who signaled the insult takes the Role of Challenger. This is followed by a change of phase, which becomes duel_interruption. Since the transition triggers an exit from phase feast, the Playbook NobleSocializing is removed from the agent with Guest Role."
+A,7,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,7,O4,U3,2.0,stop_music executes,,,
+A,7,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,7,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,7,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,7,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,8,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"Once the transitions to feast starts, the world serves to the guests wine. IF a guest hears an insult then broadcasts it to the entirety of the involved agents/npc and as a consequence the world stops the music. A subplot is now triggered ""HonorDuel"" Mapping the Guest to the Challenger Role. Then the playbook will transition to the duel_interruption phase. After the plot has ended the on exit clause is triggered, which unassigns the NobleSocializing playbook from the Guest role."
+A,8,O4,U2,1.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,8,O4,U3,2.0,stop_music executes,,,
+A,8,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,8,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,8,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,8,O4,U7,0.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,9,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"During the feast phase, when entering the phase, the serve_wine action will be taken. Once an agent with the Guest role signals insult_thrown, the stop_music action will be taken, the HonorDuel subplot will be started, and the Guest role will be mapped to the Challenger role. The phase will then be changed to duel_interruption. When exiting the feast phase, the NobleSocializing Playbook will be unassigned from the Guest role."
+A,9,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,9,O4,U3,1.0,stop_music executes,,,
+A,9,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,9,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,9,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,9,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,10,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"In some plot, if we transition to (or are initially in) the feast phase, then when entering this phase the director performs the action serve_wine at a global level. If some agent with the role Guest follows some plan (according to their playbook) in which the event insult_thrown is signalled up to the director of the current plot, then the director first performs the stop_music action, then concurrently: 1. begins an inner plot HonorDuel in which the agent who signalled the action insult_thrown is assigned the role Challenger (* n.b. I guess this because of the scenario, but just syntactically I would assume this maps all agents with guest role to challenger role) 2. Moves the phase duel_interruption in the current plot, ending the feast phase. As the current phase is exited, any agents with the Guest role are unassigned the playbook NobleSocializing, so will no longer follow the plans therein."
+A,10,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,10,O4,U3,2.0,stop_music executes,,,
+A,10,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,10,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,10,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,10,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,11,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"During the PHASE feast, when it starts, the environment will serve wine. When an agent with role Guest raises an insult, the environment stops the music, a subplot starts (HonorDuel), and the Guest changes its role to challenger. Then the PHASE ends, and the execution changes to duel_interruption. When this PHASE naturally ends, the playbook NobleSocializing is disassociated from the agents with role Guest."
+A,11,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,11,O4,U3,2.0,stop_music executes,,,
+A,11,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,11,O4,U5,0.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,11,O4,U6,1.0,TRANSITION TO duel_interruption,,,
+A,11,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,12,O4,U1,,ON ENTER -> serve_wine at world level,,,"During the feast, when entering, the world serves wine. When the agent with role ""Guest"" throws an insult, the world stops the music. Then, the subplot HonorDuel starts. The agent with the role Guest becomes Challenger and the phase transitions to ""duel_interruption"". When exiting ""feast"", we remove the playbook NobleSocializing from the Guest."
+A,12,O4,U2,,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,12,O4,U3,,stop_music executes,,,
+A,12,O4,U4,,START SUBPLOT HonorDuel,,,
+A,12,O4,U5,,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,12,O4,U6,,TRANSITION TO duel_interruption,,,
+A,12,O4,U7,,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,13,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"When the feast begins 'ON ENTER', wine is served to everyone ""DO serve_wine"". If any guest throws an insult""insult_thrown is true"", the music stops , an honor duel subplot starts with that guest as the challenger, and the main story shifts to the duel interruption phase. and, whenever this phase ends, the guests lose their socializing behaviours."
+A,13,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,13,O4,U3,2.0,stop_music executes,,,
+A,13,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,13,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,13,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,13,O4,U7,1.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,14,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"when the RoyalBanquet plot execution reaches the feast phase, at its very beginning the world/environment manager executes the serve_wine action. then, whenever some agent roling as Guest signaled the narrative layer that an insult to the host was thrown, the world/environment manager stops the playing music and starts the execution of the HonorDuel sub-plot. In this sub-plot, the signaling actor playing the Guest role assumes the Challenger role. The whole plot transites to the duel_interruption phase, that idles until the HonorDuel sub-plot ends. When it does happen, the feast phase is closed by removing the NobleSocializing playbook from all agents playing as Guests."
+A,14,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,14,O4,U3,2.0,stop_music executes,,,
+A,14,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,14,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,14,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,14,O4,U7,0.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,15,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"The first part is similar to the 8th question: we are describing a phase, called feast, and there is a block specifying what happens when transitioning to this phase: wine is served. When an insult_thrown signal is triggered (see the NobleSocializing playbook), then music stops in the whole plot and a subplot starts. In particular, the role ""Guest"" will be renamed ""Challenger"" in that subplot. We don't know if the Challenger will be assigned a new playbook. When the subplot ends, we transition to the duel_interruption phase. In this case, since we are exiting the feast phase, the ON EXIT block is executed first and the Guest will no longer follow the NobleSocializing notebook."
+A,15,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,15,O4,U3,1.0,stop_music executes,,,
+A,15,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,15,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,15,O4,U6,0.0,TRANSITION TO duel_interruption,,,
+A,15,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,16,O4,U1,1.0,ON ENTER -> serve_wine at world level,,,"In the Regia fragment above, during the feast phase, the environment will perform the action of serving wine. If the role guest broadcasts the insult_thrown event, the environment will stop the music and start the suplot HonorDuel, which assigns the guest who has thrown the insult to the role of challenger and transitions to the duel_interruption phase. On exiting the feast phase, the NobleSocializing playbook is unassigned from the agent with role guest."
+A,16,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,16,O4,U3,2.0,stop_music executes,,,
+A,16,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,16,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,16,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,16,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,17,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"During the feast phase, the first thing the environment does is performing the serve_wine event. Anytime during this phase, when any agent with the ROLE Guest signals the insult_thrown belief-change event, the environment performs the stop_music action, it start the HonorDuel plot giving a new role (challenger) to the agent that fired the signal, and finally transitions from phase feast to phase duel_interruption. Once the feast phase is exited, the playbook NobleSocializing is removed from the Guest role"
+A,17,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,17,O4,U3,2.0,stop_music executes,,,
+A,17,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,17,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,17,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,17,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,18,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"At the beginning of the feast phase of the plot the world executes the serve_wine action. Then whenever any Guest role signals insult_throws, the world executes the stop_music action, the HonorDuel subplot begins and in this subplot the Guest role becomes the Challanger role, afterwards the phase becomes duel_interruption. Before leaving the feast phase, the NobleSocializing playbook is unassigned from the Guest role."
+A,18,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,18,O4,U3,2.0,stop_music executes,,,
+A,18,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,18,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,18,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,18,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,19,O4,U1,0.0,ON ENTER -> serve_wine at world level,,,"During the feast phase, when an agent enters (the environment), the system provides it with wine. When an agent playing the Guest role informs that an insult was thrown, the system stops the music and a subplot is started. The subplot is a duel between the Guest and the Challenger. The duel seems to be interrupted. When an agent exits (the environment) the role of Guest is unassigned."
+A,19,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,19,O4,U3,2.0,stop_music executes,,,
+A,19,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,19,O4,U5,0.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,19,O4,U6,0.0,TRANSITION TO duel_interruption,,,
+A,19,O4,U7,0.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,20,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"When we first enter in the feast phase the world serves the wine (serve_wine), when an agent with the guest role sends an insult_thrown signal the world stops the music (stop_music), then the HonorDuel plot is started as a subplot of RoyalBanquet mapping the guest role to challenger (I don't undertand if ""MAPPING Guest TO Challenger"" is refering to all agents with the guest role or just the guest that sent the insult_thrown signal, I think the former is the correct one), then we transition to the duel_interruption phase which triggers the ON EXIT instruction which removes the NobleSocializing playbook from the from the guests."
+A,20,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,20,O4,U3,2.0,stop_music executes,,,
+A,20,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,20,O4,U5,1.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,20,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,20,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,21,O4,U1,2.0,ON ENTER -> serve_wine at world level,,,"When the feast phase starts, the world serves wine. If the Guest role sends the signal insult_thrown , the world stops the music, starts the HonorDuel subplot with the Guest mapped to the Challenger role, and then transitions to the duel_interruption phase. When leaving the feast phase, the NobleSocializing Playbook is unassigned from the Guest."
+A,21,O4,U2,2.0,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,
+A,21,O4,U3,2.0,stop_music executes,,,
+A,21,O4,U4,2.0,START SUBPLOT HonorDuel,,,
+A,21,O4,U5,2.0,MAPPING Guest TO Challenger is a role mapping into the subplot,,,
+A,21,O4,U6,2.0,TRANSITION TO duel_interruption,,,
+A,21,O4,U7,2.0,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,
+A,22,O1,U1,,triggered by the digestion_check event,,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O1,U2,,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O1,U3,,body guarded by the is_hungry fact,,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O1,U4,,eat_food executes when the guard holds,,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O1,U5,,FORGET retracts the is_hungry belief,,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O1,U6,,PRINT emits the message,,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O1,U7,,nothing happens when the guard is false (no else branch),,,"When an agent with the NobleSocializing Playbook gets to the point in which it can check if it has digested the meal, there is a check for hunger and in that case the agent eats food, stops to be hungry and the ""world"" knows the guest finished their meal. "
+A,22,O2,U1,,triggered by the food_served event,,,"When some food is served the agent notices that and it can eat the food if it is hungry or drunk and it doesn't hate the host. In that case it eats, elsewise it complains"
+A,22,O2,U2,,"PRINT executes unconditionally, before the test",,,"When some food is served the agent notices that and it can eat the food if it is hungry or drunk and it doesn't hate the host. In that case it eats, elsewise it complains"
+A,22,O2,U3,,condition includes (is_hungry OR is_drunk),,,"When some food is served the agent notices that and it can eat the food if it is hungry or drunk and it doesn't hate the host. In that case it eats, elsewise it complains"
+A,22,O2,U4,,"AND NOT hates(host) - both conjuncts, correct precedence",,,"When some food is served the agent notices that and it can eat the food if it is hungry or drunk and it doesn't hate the host. In that case it eats, elsewise it complains"
+A,22,O2,U5,,eat_food on true,,,"When some food is served the agent notices that and it can eat the food if it is hungry or drunk and it doesn't hate the host. In that case it eats, elsewise it complains"
+A,22,O2,U6,,complain on the else branch,,,"When some food is served the agent notices that and it can eat the food if it is hungry or drunk and it doesn't hate the host. In that case it eats, elsewise it complains"
+A,22,O3,U1,,the block scopes behaviour to one phase of a plot,,,"During the plot ""reception"", when an agent enters the environment plays ambience music and it assigns the playbook ""NobleSocializing"" to the agent. 
+Then, when the food is served a new plot named ""feast"" starts"
+A,22,O3,U2,,"ON ENTER fires once, at phase entry",,,"During the plot ""reception"", when an agent enters the environment plays ambience music and it assigns the playbook ""NobleSocializing"" to the agent. 
+Then, when the food is served a new plot named ""feast"" starts"
+A,22,O3,U3,,"WORLD DO is an environment/director-level action, not an agent's",,,"During the plot ""reception"", when an agent enters the environment plays ambience music and it assigns the playbook ""NobleSocializing"" to the agent. 
+Then, when the food is served a new plot named ""feast"" starts"
+A,22,O3,U4,,"ASSIGN targets the Guest ROLE, hence all its occupants",,,"During the plot ""reception"", when an agent enters the environment plays ambience music and it assigns the playbook ""NobleSocializing"" to the agent. 
+Then, when the food is served a new plot named ""feast"" starts"
+A,22,O3,U5,,WHEN food_served causes TRANSITION TO feast,,,"During the plot ""reception"", when an agent enters the environment plays ambience music and it assigns the playbook ""NobleSocializing"" to the agent. 
+Then, when the food is served a new plot named ""feast"" starts"
+A,22,O3,U6,,"the trigger is live throughout the phase, not only at entry",,,"During the plot ""reception"", when an agent enters the environment plays ambience music and it assigns the playbook ""NobleSocializing"" to the agent. 
+Then, when the food is served a new plot named ""feast"" starts"
+A,22,O4,U1,,ON ENTER -> serve_wine at world level,,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,22,O4,U2,,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,22,O4,U3,,stop_music executes,,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,22,O4,U4,,START SUBPLOT HonorDuel,,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,22,O4,U5,,MAPPING Guest TO Challenger is a role mapping into the subplot,,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,22,O4,U6,,TRANSITION TO duel_interruption,,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,22,O4,U7,,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,"During the plot ""feast"", when an agent enters the plot it recieves wine from the environment.
+When an agent gets notified with an insult the environment stops playing music and a sub-sequence of events starts (the ""HonorDuel"" plot) which involves two agents, the guest who recieved the insult and the one who spoke that. Then, when the subplot is finished a new plot which represents the end of a duel (""duel_interruption"") starts.
+When the agent leaves the main plot ""feast"" it gets its playbook NobleSocializing revoked by the environment "
+A,23,O1,U1,,triggered by the digestion_check event,,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O1,U2,,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O1,U3,,body guarded by the is_hungry fact,,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O1,U4,,eat_food executes when the guard holds,,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O1,U5,,FORGET retracts the is_hungry belief,,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O1,U6,,PRINT emits the message,,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O1,U7,,nothing happens when the guard is false (no else branch),,,"During the WHEN event digestion_check, if the agent meets the condition is_hungry, the program executes the action eat_food, then the agent is made to forget that they are hungry (to avoid a loop and restart the WHEN event) and the program prints the given text."
+A,23,O2,U1,,triggered by the food_served event,,,"When the WHEN event food_served is executed, the program prints the given text. Then, if the agent meets the conditions for is_hungry or is_drunk, or both, the program executes eat_food (the agent eats_food); if those conditions aren't met, the program has the agent complain."
+A,23,O2,U2,,"PRINT executes unconditionally, before the test",,,"When the WHEN event food_served is executed, the program prints the given text. Then, if the agent meets the conditions for is_hungry or is_drunk, or both, the program executes eat_food (the agent eats_food); if those conditions aren't met, the program has the agent complain."
+A,23,O2,U3,,condition includes (is_hungry OR is_drunk),,,"When the WHEN event food_served is executed, the program prints the given text. Then, if the agent meets the conditions for is_hungry or is_drunk, or both, the program executes eat_food (the agent eats_food); if those conditions aren't met, the program has the agent complain."
+A,23,O2,U4,,"AND NOT hates(host) - both conjuncts, correct precedence",,,"When the WHEN event food_served is executed, the program prints the given text. Then, if the agent meets the conditions for is_hungry or is_drunk, or both, the program executes eat_food (the agent eats_food); if those conditions aren't met, the program has the agent complain."
+A,23,O2,U5,,eat_food on true,,,"When the WHEN event food_served is executed, the program prints the given text. Then, if the agent meets the conditions for is_hungry or is_drunk, or both, the program executes eat_food (the agent eats_food); if those conditions aren't met, the program has the agent complain."
+A,23,O2,U6,,complain on the else branch,,,"When the WHEN event food_served is executed, the program prints the given text. Then, if the agent meets the conditions for is_hungry or is_drunk, or both, the program executes eat_food (the agent eats_food); if those conditions aren't met, the program has the agent complain."
+A,23,O3,U1,,the block scopes behaviour to one phase of a plot,,,"During the Plot reception, when entering the phase, the Plot executes the action play_music and assigns the Playbook NobleSocializing to the ROLE Guest. When the WHEN block is executed (food_served), the Plot advances to the phase feast."
+A,23,O3,U2,,"ON ENTER fires once, at phase entry",,,"During the Plot reception, when entering the phase, the Plot executes the action play_music and assigns the Playbook NobleSocializing to the ROLE Guest. When the WHEN block is executed (food_served), the Plot advances to the phase feast."
+A,23,O3,U3,,"WORLD DO is an environment/director-level action, not an agent's",,,"During the Plot reception, when entering the phase, the Plot executes the action play_music and assigns the Playbook NobleSocializing to the ROLE Guest. When the WHEN block is executed (food_served), the Plot advances to the phase feast."
+A,23,O3,U4,,"ASSIGN targets the Guest ROLE, hence all its occupants",,,"During the Plot reception, when entering the phase, the Plot executes the action play_music and assigns the Playbook NobleSocializing to the ROLE Guest. When the WHEN block is executed (food_served), the Plot advances to the phase feast."
+A,23,O3,U5,,WHEN food_served causes TRANSITION TO feast,,,"During the Plot reception, when entering the phase, the Plot executes the action play_music and assigns the Playbook NobleSocializing to the ROLE Guest. When the WHEN block is executed (food_served), the Plot advances to the phase feast."
+A,23,O3,U6,,"the trigger is live throughout the phase, not only at entry",,,"During the Plot reception, when entering the phase, the Plot executes the action play_music and assigns the Playbook NobleSocializing to the ROLE Guest. When the WHEN block is executed (food_served), the Plot advances to the phase feast."
+A,23,O4,U1,,ON ENTER -> serve_wine at world level,,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,23,O4,U2,,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,23,O4,U3,,stop_music executes,,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,23,O4,U4,,START SUBPLOT HonorDuel,,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,23,O4,U5,,MAPPING Guest TO Challenger is a role mapping into the subplot,,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,23,O4,U6,,TRANSITION TO duel_interruption,,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,23,O4,U7,,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,"During the PLOT feast, when entering the phase, the PLOT executes the action serve_wine. A WHEN block is executed, and dit has the agent to whom the role guest is assigned performs the action insult_thrown. Then the SUBPLOT block HonorDuel starts involving the Guest and Challenger. The PLOT the transitions to the phase duel_interruption. When the ON EXIT block is executed the two agents aren't involved in an action anymore."
+A,24,O1,U1,,triggered by the digestion_check event,,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O1,U2,,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O1,U3,,body guarded by the is_hungry fact,,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O1,U4,,eat_food executes when the guard holds,,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O1,U5,,FORGET retracts the is_hungry belief,,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O1,U6,,PRINT emits the message,,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O1,U7,,nothing happens when the guard is false (no else branch),,,"When a signal for checking digestion is received, if the variable ""is_hungry"" is true, then execute eat_food, decrease or reset the ""is_hungry"" variable through a dedicated function and print a message."
+A,24,O2,U1,,triggered by the food_served event,,,"When a signal for food being served is received, print a message and check if the entity is hungry or drunk and does not hate host: if so, eat food, otherwhise complain."
+A,24,O2,U2,,"PRINT executes unconditionally, before the test",,,"When a signal for food being served is received, print a message and check if the entity is hungry or drunk and does not hate host: if so, eat food, otherwhise complain."
+A,24,O2,U3,,condition includes (is_hungry OR is_drunk),,,"When a signal for food being served is received, print a message and check if the entity is hungry or drunk and does not hate host: if so, eat food, otherwhise complain."
+A,24,O2,U4,,"AND NOT hates(host) - both conjuncts, correct precedence",,,"When a signal for food being served is received, print a message and check if the entity is hungry or drunk and does not hate host: if so, eat food, otherwhise complain."
+A,24,O2,U5,,eat_food on true,,,"When a signal for food being served is received, print a message and check if the entity is hungry or drunk and does not hate host: if so, eat food, otherwhise complain."
+A,24,O2,U6,,complain on the else branch,,,"When a signal for food being served is received, print a message and check if the entity is hungry or drunk and does not hate host: if so, eat food, otherwhise complain."
+A,24,O3,U1,,the block scopes behaviour to one phase of a plot,,,"During the reception phase, when the ""enter"" signal is received, ""world"" will execute the play_music command and the NobleSocializing playbook will be assigned to the role Guest. After the ""ON ENTER"" block, still under the ""DURING reception"" block, when it is asserted that the food is served, a transition to the ""feast"" phase will happen."
+A,24,O3,U2,,"ON ENTER fires once, at phase entry",,,"During the reception phase, when the ""enter"" signal is received, ""world"" will execute the play_music command and the NobleSocializing playbook will be assigned to the role Guest. After the ""ON ENTER"" block, still under the ""DURING reception"" block, when it is asserted that the food is served, a transition to the ""feast"" phase will happen."
+A,24,O3,U3,,"WORLD DO is an environment/director-level action, not an agent's",,,"During the reception phase, when the ""enter"" signal is received, ""world"" will execute the play_music command and the NobleSocializing playbook will be assigned to the role Guest. After the ""ON ENTER"" block, still under the ""DURING reception"" block, when it is asserted that the food is served, a transition to the ""feast"" phase will happen."
+A,24,O3,U4,,"ASSIGN targets the Guest ROLE, hence all its occupants",,,"During the reception phase, when the ""enter"" signal is received, ""world"" will execute the play_music command and the NobleSocializing playbook will be assigned to the role Guest. After the ""ON ENTER"" block, still under the ""DURING reception"" block, when it is asserted that the food is served, a transition to the ""feast"" phase will happen."
+A,24,O3,U5,,WHEN food_served causes TRANSITION TO feast,,,"During the reception phase, when the ""enter"" signal is received, ""world"" will execute the play_music command and the NobleSocializing playbook will be assigned to the role Guest. After the ""ON ENTER"" block, still under the ""DURING reception"" block, when it is asserted that the food is served, a transition to the ""feast"" phase will happen."
+A,24,O3,U6,,"the trigger is live throughout the phase, not only at entry",,,"During the reception phase, when the ""enter"" signal is received, ""world"" will execute the play_music command and the NobleSocializing playbook will be assigned to the role Guest. After the ""ON ENTER"" block, still under the ""DURING reception"" block, when it is asserted that the food is served, a transition to the ""feast"" phase will happen."
+A,24,O4,U1,,ON ENTER -> serve_wine at world level,,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."
+A,24,O4,U2,,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."
+A,24,O4,U3,,stop_music executes,,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."
+A,24,O4,U4,,START SUBPLOT HonorDuel,,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."
+A,24,O4,U5,,MAPPING Guest TO Challenger is a role mapping into the subplot,,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."
+A,24,O4,U6,,TRANSITION TO duel_interruption,,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."
+A,24,O4,U7,,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",,,"During the feast phase, multiple checks happen. When ""enter"" is received as a signal, ""world"" executes the serve_wine action; when the Guest role sends the insult_thrown signal, ""world"" executes stop_music, a subplot HonorDuel happens and changes the Guest role to Challenger, and the phase transitions to duel_interruption; when ""exit"" is received, the NobleSocializing playbook is unassigned from Guest."

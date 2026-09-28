@@ -1,9 +1,0 @@
-code,meaning
-M1,role treated as a single agent instance
-M2,WORLD read as a named agent
-M3,signal direction reversed (plot->agent)
-M4,"MAPPING read as permanent role change, not subplot mapping"
-M5,boolean precedence error
-M6,ON ENTER/EXIT read as an agent entering/leaving
-M7,action conflated with event
-M8,invented semantics not present in the fragment

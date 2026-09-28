@@ -168,109 +168,109 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
 
     # Multiplicative expansion in director.asl: (Roles * Playbooks) assignments per phase.
     # $O(R \times P)$ statements generated in the ON ENTER / ON EXIT blocks.
-    "grid_roles_playbooks": _sweep_2d(
-        "n_playbooks", [1, 2, 5, 10, 20, 50, 100],
-        "n_roles", [1, 2, 5, 10, 20, 50, 100],
-    ),
+    # "grid_roles_playbooks": _sweep_2d(
+    #     "n_playbooks", [1, 2, 5, 10, 20, 50, 100],
+    #     "n_roles", [1, 2, 5, 10, 20, 50, 100],
+    # ),
 
-    # Multiplicative expansion in director.asl: (Phases * Roles) assignments.
-    # Each phase adds ON ENTER / ON EXIT blocks which iterate over all roles.
-    "grid_phases_roles": _sweep_2d(
-        "n_phases", [1, 2, 5, 10, 20, 50, 100, 200],
-        "n_roles", [1, 2, 5, 10, 20, 50, 100, 200],
-    ),
+    # # Multiplicative expansion in director.asl: (Phases * Roles) assignments.
+    # # Each phase adds ON ENTER / ON EXIT blocks which iterate over all roles.
+    # "grid_phases_roles": _sweep_2d(
+    #     "n_phases", [1, 2, 5, 10, 20, 50, 100, 200],
+    #     "n_roles", [1, 2, 5, 10, 20, 50, 100, 200],
+    # ),
 
-    # Internal playbook complexity: Playbooks * Plans * Branches.
-    # Total AgentSpeak plans generated = $P_b \times P_l \times B$.
-    "interaction_playbook_complexity": [
-        replace(BASELINE, n_playbooks=n, n_plans_per_playbook=n, n_branches_per_plan=n)
-        for n in [1, 2, 5, 10, 15, 20]
-    ],
+    # # Internal playbook complexity: Playbooks * Plans * Branches.
+    # # Total AgentSpeak plans generated = $P_b \times P_l \times B$.
+    # "interaction_playbook_complexity": [
+    #     replace(BASELINE, n_playbooks=n, n_plans_per_playbook=n, n_branches_per_plan=n)
+    #     for n in [1, 2, 5, 10, 15, 20]
+    # ],
 
-    # Exponential subplot growth * linear phase growth inside each subplot.
-    # Output grows by $O(\text{Phases} \times \text{Breadth}^{\text{Depth}})$.
-    "interaction_subplots_phases": [
-        replace(BASELINE, n_subplot_depth=d, n_phases=p, n_subplot_breadth=2)
-        for d, p in [(1, 2), (2, 5), (3, 10), (4, 20), (5, 50)]
-    ],
+    # # Exponential subplot growth * linear phase growth inside each subplot.
+    # # Output grows by $O(\text{Phases} \times \text{Breadth}^{\text{Depth}})$.
+    # "interaction_subplots_phases": [
+    #     replace(BASELINE, n_subplot_depth=d, n_phases=p, n_subplot_breadth=2)
+    #     for d, p in [(1, 2), (2, 5), (3, 10), (4, 20), (5, 50)]
+    # ],
 
-    # ================== Game Design Interactions ==================
+    # # ================== Game Design Interactions ==================
 
-    # "Growing Cast" - As the number of roles grows, the vocabulary needed grows.
-    "interaction_growing_cast": [
-        replace(BASELINE, n_roles=n, n_actions=n, n_events=n, n_facts=max(n // 2, 1))
-        for n in [5, 10, 50, 100, 250, 500, 1000]
-    ],
+    # # "Growing Cast" - As the number of roles grows, the vocabulary needed grows.
+    # "interaction_growing_cast": [
+    #     replace(BASELINE, n_roles=n, n_actions=n, n_events=n, n_facts=max(n // 2, 1))
+    #     for n in [5, 10, 50, 100, 250, 500, 1000]
+    # ],
 
-    # "Full Game" - Scaling structural dimensions together. 
-    # This triggers the quadratic assignment logic + linear playbook logic at the same time.
-    "interaction_full_game": [
-        replace(BASELINE, n_roles=n, n_phases=n, n_playbooks=n, n_plans_per_playbook=n)
-        for n in [1, 2, 5, 10, 20, 50, 100]
-    ],
+    # # "Full Game" - Scaling structural dimensions together. 
+    # # This triggers the quadratic assignment logic + linear playbook logic at the same time.
+    # "interaction_full_game": [
+    #     replace(BASELINE, n_roles=n, n_phases=n, n_playbooks=n, n_plans_per_playbook=n)
+    #     for n in [1, 2, 5, 10, 20, 50, 100]
+    # ],
 
-    # "Realistic Profile" - Structural architecture (roles, phases) stays bounded,
-    # but behavioral logic (playbooks, plans, statements) and vocabulary balloons.
-    "interaction_realistic_profile": [
-        replace(
-            BASELINE,
-            n_roles=5,
-            n_phases=3,
-            n_playbooks=n,
-            n_plans_per_playbook=n,
-            n_branches_per_plan=2,
-            n_stmts_per_branch=n * 2,
-            n_actions=n * 5,
-            n_events=n * 5,
-        )
-        for n in [1, 2, 5, 10, 20, 50]
-    ],
+    # # "Realistic Profile" - Structural architecture (roles, phases) stays bounded,
+    # # but behavioral logic (playbooks, plans, statements) and vocabulary balloons.
+    # "interaction_realistic_profile": [
+    #     replace(
+    #         BASELINE,
+    #         n_roles=5,
+    #         n_phases=3,
+    #         n_playbooks=n,
+    #         n_plans_per_playbook=n,
+    #         n_branches_per_plan=2,
+    #         n_stmts_per_branch=n * 2,
+    #         n_actions=n * 5,
+    #         n_events=n * 5,
+    #     )
+    #     for n in [1, 2, 5, 10, 20, 50]
+    # ],
 
-    # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
-    "interaction_subplot_scope": [
-        replace(BASELINE, n_subplot_depth=d, n_roles=r, n_subplot_breadth=2)
-        for d, r in [(1, 10), (2, 20), (3, 50), (4, 100), (5, 200)]
-    ],
+    # # "Subplot Scope" - Nested subplots usually come with their own sets of new roles.
+    # "interaction_subplot_scope": [
+    #     replace(BASELINE, n_subplot_depth=d, n_roles=r, n_subplot_breadth=2)
+    #     for d, r in [(1, 10), (2, 20), (3, 50), (4, 100), (5, 200)]
+    # ],
 
-    # "Dense AI" - Focused on pure behavioral depth. Many playbooks, huge action sequences.
-    "interaction_dense_ai": _sweep_2d(
-        "n_playbooks", [2, 5, 10, 25, 50],
-        "n_stmts_per_branch", [2, 5, 10, 25, 50],
-    ),
+    # # "Dense AI" - Focused on pure behavioral depth. Many playbooks, huge action sequences.
+    # "interaction_dense_ai": _sweep_2d(
+    #     "n_playbooks", [2, 5, 10, 25, 50],
+    #     "n_stmts_per_branch", [2, 5, 10, 25, 50],
+    # ),
 
-    # ================== 2D Grid Sweeps ==================
+    # # ================== 2D Grid Sweeps ==================
 
-    # 2D Grid: Playbook Logic. Playbooks vs Plans per playbook.
-    "grid_playbook_logic": _sweep_2d(
-        "n_playbooks", [2, 5, 10, 25, 50],
-        "n_plans_per_playbook", [2, 5, 10, 25, 50],
-    ),
+    # # 2D Grid: Playbook Logic. Playbooks vs Plans per playbook.
+    # "grid_playbook_logic": _sweep_2d(
+    #     "n_playbooks", [2, 5, 10, 25, 50],
+    #     "n_plans_per_playbook", [2, 5, 10, 25, 50],
+    # ),
 
-    # 1. Exponential tree growth
-    "grid_subplot_breadth_depth": _sweep_2d(
-        "n_subplot_breadth", [1, 2, 3, 4, 5, 6],
-        "n_subplot_depth", [1, 2, 3, 4, 5, 6],
-    ),
-    
-    # 2. Behavioral density
-    # "grid_plans_branches": _sweep_2d(
-    #     "n_plans_per_playbook", [2, 5, 10, 25],
-    #     "n_branches_per_plan", [1, 2, 5, 10],
+    # # 1. Exponential tree growth
+    # "grid_subplot_breadth_depth": _sweep_2d(
+    #     "n_subplot_breadth", [1, 2, 3, 4, 5, 6],
+    #     "n_subplot_depth", [1, 2, 3, 4, 5, 6],
     # ),
     
-    # # 3. Structural amplification
-    # "grid_roles_subplot_breadth": _sweep_2d(
-    #     "n_roles", [2, 10, 25, 50],
-    #     "n_subplot_breadth", [0, 2, 5, 10],
-    #     base=replace(BASELINE, n_subplot_depth=1),
-    # ),
+    # # 2. Behavioral density
+    # # "grid_plans_branches": _sweep_2d(
+    # #     "n_plans_per_playbook", [2, 5, 10, 25],
+    # #     "n_branches_per_plan", [1, 2, 5, 10],
+    # # ),
     
-    # 4. Lifecycle chain length
-    "grid_phases_subplot_depth": _sweep_2d(
-        "n_phases", [1, 2, 5, 10, 20, 50, 100, 200],
-        "n_subplot_depth", [0, 1, 2, 3, 4, 5, 6, 7, 8],
-        base=replace(BASELINE, n_subplot_breadth=2),
-    ),
+    # # # 3. Structural amplification
+    # # "grid_roles_subplot_breadth": _sweep_2d(
+    # #     "n_roles", [2, 10, 25, 50],
+    # #     "n_subplot_breadth", [0, 2, 5, 10],
+    # #     base=replace(BASELINE, n_subplot_depth=1),
+    # # ),
+    
+    # # 4. Lifecycle chain length
+    # "grid_phases_subplot_depth": _sweep_2d(
+    #     "n_phases", [1, 2, 5, 10, 20, 50, 100, 200],
+    #     "n_subplot_depth", [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    #     base=replace(BASELINE, n_subplot_breadth=2),
+    # ),
     
     # 5. Validator pressure
     # "grid_roles_actions": _sweep_2d(
@@ -279,19 +279,19 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
     # ),
 
     
-    # ================== Import Resolution ==================
-    "scale_import_nodes": [
-        replace(BASELINE, n_import_nodes=n, n_import_edges=2)
-        for n in [10, 50, 100, 250, 500, 1000]
-    ],
-    "scale_import_edges": [
-        replace(BASELINE, n_import_nodes=100, n_import_edges=n)
-        for n in [1, 2, 5, 10, 25, 50]
-    ],
-    "grid_imports": _sweep_2d(
-        "n_import_nodes", [10, 50, 100, 250],
-        "n_import_edges", [1, 5, 10, 25],
-    ),
+    # # ================== Import Resolution ==================
+    # "scale_import_nodes": [
+    #     replace(BASELINE, n_import_nodes=n, n_import_edges=2)
+    #     for n in [10, 50, 100, 250, 500, 1000]
+    # ],
+    # "scale_import_edges": [
+    #     replace(BASELINE, n_import_nodes=100, n_import_edges=n)
+    #     for n in [1, 2, 5, 10, 25, 50]
+    # ],
+    # "grid_imports": _sweep_2d(
+    #     "n_import_nodes", [10, 50, 100, 250],
+    #     "n_import_edges", [1, 5, 10, 25],
+    # ),
 
     # ======================================================
     # Scenario 1: Full Game (anchored to the case-study profile)
@@ -328,17 +328,17 @@ EXPERIMENTS: Dict[str, List[GeneratorConfig]] = {
     # modest (<=4) since breadth^depth already grows the subplot count sharply
     # on its own; Roles grows independently, since nothing in generator.py ties
     # root-Plot Role count to subplot count.
-    "interaction_worst_case_multipliers": [
-        replace(BASELINE, n_roles=r, n_subplot_breadth=b, n_subplot_depth=d)
-        for r, b, d in [
-            (2, 1, 1),
-            (5, 2, 2),
-            (10, 3, 2),
-            (25, 3, 3),
-            (50, 4, 3),
-            (100, 4, 4),
-        ]
-    ],
+    # "interaction_worst_case_multipliers": [
+    #     replace(BASELINE, n_roles=r, n_subplot_breadth=b, n_subplot_depth=d)
+    #     for r, b, d in [
+    #         (2, 1, 1),
+    #         (5, 2, 2),
+    #         (10, 3, 2),
+    #         (25, 3, 3),
+    #         (50, 4, 3),
+    #         (100, 4, 4),
+    #     ]
+    # ],
     
     
     # ======================================================

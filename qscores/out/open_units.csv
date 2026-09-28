@@ -1,0 +1,27 @@
+item,unit,unit_desc,mean_code,n,n2,n1,n0,mean_proportion
+O1,U1,triggered by the digestion_check event,1.6153846153846154,26,17,8,1,0.8076923076923077
+O1,U2,"applies to agents assigned NobleSocializing (role/playbook scope, not one guest)",0.9615384615384616,26,8,9,9,0.4807692307692308
+O1,U3,body guarded by the is_hungry fact,1.9615384615384615,26,25,1,0,0.9807692307692307
+O1,U4,eat_food executes when the guard holds,1.9615384615384615,26,25,1,0,0.9807692307692307
+O1,U5,FORGET retracts the is_hungry belief,1.8461538461538463,26,23,2,1,0.9230769230769231
+O1,U6,PRINT emits the message,1.7692307692307692,26,22,2,2,0.8846153846153846
+O1,U7,nothing happens when the guard is false (no else branch),1.1538461538461537,26,4,22,0,0.5769230769230769
+O2,U1,triggered by the food_served event,1.7307692307692308,26,20,5,1,0.8653846153846154
+O2,U2,"PRINT executes unconditionally, before the test",1.7692307692307692,26,21,4,1,0.8846153846153846
+O2,U3,condition includes (is_hungry OR is_drunk),1.8846153846153846,26,23,3,0,0.9423076923076923
+O2,U4,"AND NOT hates(host) - both conjuncts, correct precedence",1.7307692307692308,26,20,5,1,0.8653846153846154
+O2,U5,eat_food on true,1.9230769230769231,26,24,2,0,0.9615384615384616
+O2,U6,complain on the else branch,1.8846153846153846,26,23,3,0,0.9423076923076923
+O3,U1,the block scopes behaviour to one phase of a plot,1.4615384615384615,26,13,12,1,0.7307692307692307
+O3,U2,"ON ENTER fires once, at phase entry",1.6923076923076923,26,21,2,3,0.8461538461538461
+O3,U3,"WORLD DO is an environment/director-level action, not an agent's",1.8076923076923077,26,21,5,0,0.9038461538461539
+O3,U4,"ASSIGN targets the Guest ROLE, hence all its occupants",1.6153846153846154,26,17,8,1,0.8076923076923077
+O3,U5,WHEN food_served causes TRANSITION TO feast,1.8846153846153846,26,24,1,1,0.9423076923076923
+O3,U6,"the trigger is live throughout the phase, not only at entry",1.2307692307692308,26,7,18,1,0.6153846153846154
+O4,U1,ON ENTER -> serve_wine at world level,1.5,26,15,9,2,0.75
+O4,U2,trigger is a SIGNAL raised BY an agent playing Guest (bottom-up),1.6538461538461537,26,18,7,1,0.8269230769230769
+O4,U3,stop_music executes,1.7692307692307692,26,22,2,2,0.8846153846153846
+O4,U4,START SUBPLOT HonorDuel,1.9615384615384615,26,25,1,0,0.9807692307692307
+O4,U5,MAPPING Guest TO Challenger is a role mapping into the subplot,1.3846153846153846,26,12,12,2,0.6923076923076923
+O4,U6,TRANSITION TO duel_interruption,1.6923076923076923,26,21,2,3,0.8461538461538461
+O4,U7,"ON EXIT fires on leaving the phase, so UNASSIGN happens then",1.2692307692307692,26,15,3,8,0.6346153846153846

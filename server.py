@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
-# Import your compiler pipeline
+# Import the compiler pipeline
 from language.src.regia.compiler import compile_source
 from language.src.regia.ast_nodes import Program
 
@@ -39,7 +39,7 @@ class ASTEncoder(json.JSONEncoder):
         if dataclasses.is_dataclass(obj):
             # FIX: We use __dict__.copy() instead of asdict(). 
             # This only converts the current level to a dict, forcing 
-            # json.dumps to recursively call this method for child dataclasses!
+            # json.dumps to recursively call this method for child dataclasses
             d = obj.__dict__.copy()
             d["type"] = obj.__class__.__name__ 
             return d

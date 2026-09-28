@@ -103,28 +103,17 @@ def count_output_loc(outputs: Dict[str, str]) -> Tuple[int, Dict[str, int]]:
 
 def measure_time_and_ram(fn: Callable[[], T]) -> Tuple[T, float, float]:
     """
-    Execute a callable and measure its wall-clock time and peak heap allocation.
-
-    Uses tracemalloc to capture the peak memory allocated *during* the call.
-    This isolates the compiler's own heap pressure from total process RSS,
-    making results comparable across different system states.
-
-    Args:
-        fn: A zero-argument callable to execute and measure.
-
-    Returns:
-        A tuple of (result, wall_time_seconds, peak_ram_mb).
+    Run fn twice: once timed without memory tracing, once under tracemalloc
+    to record peak heap. Tracing slows allocation-heavy code, so timing and
+    memory are measured in separate runs.
     """
-    tracemalloc.start()
     t_start = time.perf_counter()
-
     result = fn()
+    wall_time = time.perf_counter() - t_start
 
-    t_end = time.perf_counter()
+    tracemalloc.start()
+    fn()
     _, peak_bytes = tracemalloc.get_traced_memory()
     tracemalloc.stop()
 
-    wall_time: float = t_end - t_start
-    peak_mb: float = peak_bytes / (1024.0 * 1024.0)
-
-    return result, wall_time, peak_mb
+    return result, wall_time, peak_bytes / (1024.0 * 1024.0)
