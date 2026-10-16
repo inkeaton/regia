@@ -1,0 +1,6 @@
+category,label,total,share,respondents_affected,max_by_one,median_per_respondent
+E1,"pure syntax (missing dots, DO omitted, identifier case, block structure)",89,0.5329341317365269,10,24,5.0
+E2,"invented or malformed construct (WHEN true, SUBPLOT, SIGNAL, ...)",24,0.1437125748502994,6,9,1.0
+E3,vocabulary used without being declared,46,0.2754491017964072,9,13,1.0
+E4,plot-level construct inside a playbook (or vice versa),2,0.011976047904191617,1,2,0.0
+E5,"vocabulary category confused (event used as action, FORGET on a non-fact)",6,0.03592814371257485,4,2,0.0
