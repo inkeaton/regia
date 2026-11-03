@@ -29,7 +29,7 @@ A **Value** is fixed when the Plan is written:
 | Value | Example |
 |---|---|
 | Name | `host`, `red_wine` |
-| Number | `3` (number formats: see *Numbers and arithmetic*) |
+| Number | `3`, `-0.5` (see chapter 04, `04-numbers-and-expressions.md`) |
 | String | `"A guest finishes their meal."` |
 
 Whether a Role name can be a Value (`toast(Host)`) is decided in *Roles inside Playbooks*.
@@ -44,15 +44,15 @@ WHEN insult_heard(?speaker):       # filled with whoever insulted
 
 A Placeholder is **not** a programming variable:
 
-- It is **filled by matching**, never assigned. Regia has no assignment statement.
+- It is **filled by matching**, or **named once** in the Body (`?dmg = RANDOM(1, 6).`, see chapter 04). It is never reassigned.
 - It is filled **once per Plan run**, and keeps that value until the run ends.
 - It is gone when the run ends. Anything an Agent must remember, or that changes over time, is a Fact: `FORGET counter(3)`, `BELIEVE counter(4)`.
 
 ## Where Placeholders are filled and used
 
-- **Filled** in the Trigger and the Context of a Plan.
+- **Filled** in the Trigger and the Context of a Plan by matching, or in the Body by naming (chapter 04).
 - **Used** in the Body, in any argument slot.
-- Using a Placeholder in the Body that was never filled is an error.
+- Using a Placeholder in the Body that was never filled, or before the Statement that names it, is an error.
 - The rules are the same for Plans in Playbooks and Plans in Plots.
 
 Whether an `IF` inside a Body can also fill Placeholders is decided in *Context vs control flow*.
@@ -105,6 +105,5 @@ When several matches satisfy the Context, the Agent uses **one**, and **the lang
 
 ## Not decided here
 
-- Number formats and arithmetic: *Numbers and arithmetic*.
-- Parameters of Goals and the Trigger kinds: *Goals and Trigger kinds*.
+- Parameters of Goals and the Trigger kinds: chapter 05 (`05-goals-and-triggers.md`).
 - Facts as arguments, such as `TELL(Guest, hates(host))`: *Messaging between Agents*.

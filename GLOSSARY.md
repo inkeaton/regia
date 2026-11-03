@@ -51,16 +51,16 @@ Something an Agent (or a Director) knows about the state of the world.
 _Avoid_: Belief, knowledge, percept
 
 **Goal**:
-An objective an Agent has decided, or been told, to pursue.
+An objective an Agent has decided, or been told, to pursue. It is reached when a Plan for it finishes.
 _Avoid_: Desire, intention, achievement
 
 **Event**:
-Something that triggers a Plan. It is usually how an Agent finds out that something changed in the world.
-_Avoid_: Triggering event, percept, message
+Something that happens in the world and is over once noticed. It triggers Plans but leaves nothing behind, so a Context can't test it afterwards. To remember it, a Plan records a Fact.
+_Avoid_: Triggering event, percept, message, happening
 
 **Signal**:
-A message an Agent sends to the Director of the Plot that gave it a Playbook. It works like an Event, but it is not called one.
-_Avoid_: Event, notification
+An Event an Agent sends to the Director of the Plot that gave it a Playbook. The Director reacts to it like any other Event, and can tell which Role sent it.
+_Avoid_: Notification, message
 
 **Group**:
 A named set of Vocabulary items that are declared to belong together, for example so that one can be picked at random.
@@ -79,18 +79,34 @@ A fixed name, number or string written in a slot, such as `host` in `hates(host)
 _Avoid_: Constant, atom, bound parameter, literal
 
 **Placeholder**:
-A blank in a slot, written `?name`, that the Agent fills by matching in a Plan's Trigger or Context and that the Body then uses. It is filled once per Plan run and never reassigned.
+A blank in a slot, written `?name`, that the Agent fills by matching in a Plan's Trigger or Context, or that the Body names with `?name = …`. It is filled once per Plan run and never reassigned.
 _Avoid_: Variable, unbound parameter, logic variable, wildcard
+
+**Number**:
+A Value that is a number, whole or decimal, such as `80` or `-0.5`. There is only one kind of Number.
+_Avoid_: Integer, float, numeric literal
+
+**Expression**:
+Something that works out to a Value: a Value, a filled Placeholder, a random roll, or these combined with arithmetic.
+_Avoid_: Formula, computation, term
 
 ## Plans and statements
 
 **Plan**:
-A reaction to an Event, or a recipe for reaching a Goal. It is made of a Trigger, a Context and a Body.
+A reaction to something that happened, or a recipe for reaching a Goal. It is made of a Trigger, a Context and a Body.
 _Avoid_: Rule, reaction, behaviour
 
 **Trigger**:
-The part of a Plan that names the Event or Goal starting it.
+The part of a Plan that names what starts it: an Event, a Fact learned or forgotten, or a Goal pursued or dropped.
 _Avoid_: Condition, head
+
+**Trigger kind**:
+Which sort of thing starts a Plan, such as an Event happening or a Fact being learned. Written as a word after the item (`LEARNED`, `FORGOTTEN`, `DROPPED`), or as `TO` for a Goal recipe.
+_Avoid_: Event type, triggering event
+
+**Sender**:
+The Agent or Director that sent what a Trigger reacts to, such as a Signal or a Goal. A Trigger can restrict or name it with `FROM`.
+_Avoid_: Source
 
 **Context**:
 The condition on Facts that must hold for a Plan to be chosen.
