@@ -1,0 +1,124 @@
+\chapter{Related Work}
+\label{ch:related_work}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter evaluates existing tools and methodologies against the combination of capabilities the problem of this thesis requires, to identify the gap that remains.
+ 
+We organise the evaluation around three capabilities introduced in Chapter~\ref{ch:background}: \textbf{accessibility}, whether someone without a software engineering background can author with a tool; \textbf{deliberative reasoning}, whether a tool represents an agent's competing desires, and its commitment to one of them, as first-class elements rather than only reactive control flow; and \textbf{engine embodiment}, whether it connects an agent's logic to a live, real-time simulation. A further concern, narrative orchestration, the coordination of several agents into one story described in Section~\ref{sec:drama-management}, cuts across all three, and we note it wherever a tool addresses it.
+ 
+Section~\ref{sec:game-authoring-tools} examines tools that prioritise accessibility, such as visual scripting systems and narrative design tools, and asks how far they reach deliberative reasoning. Section~\ref{sec:bdi-tools} examines BDI modelling languages, which prioritise deliberative reasoning, and asks the same of accessibility. Section~\ref{sec:agent-engine-integration} examines middleware that prioritises engine embodiment, and asks whether any of it addresses how an agent's logic is authored. Section~\ref{sec:related-work-summary} maps the coverage across all three capabilities and states which combination remains unaddressed.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Model-Driven Game Development and Authoring Tools}
+\label{sec:game-authoring-tools}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+The game industry increasingly relies on high-level authoring tools to improve productivity. Furtado and Santos argue that game development benefits from visual modelling and code generation~\cite{Furtado2006}. This approach, Model-Driven Game Development (MDGD), shifts the focus from writing code to defining domain-specific models~\cite{Zhu2019}. MDGD addresses accessibility: a domain expert defines a model directly, rather than translating it into code by hand. We examine three kinds of MDGD tool: visual scripting for reactive game logic, textual and visual tools for narrative content, and an authoring tool for narrative orchestration built around a director agent.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{Visual Scripting and Reactive Logic}
+\label{sec:visual-scripting}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+Visual scripting systems apply MDGD in commercial engines, and Unreal Engine's Blueprint system is a prominent example~\cite{Yannakakis2025}. A designer builds behaviour by connecting nodes on a canvas, which rules out syntax errors by construction and shows execution flow on screen.
+ 
+PlayMaker, a third-party tool for Unity, applies the same paradigm more narrowly: its visual editor is built around the finite state machine model of Section~\ref{sec:fsm}, with states, actions, and events, rather than a general node graph~\cite{PlayMaker}. Shipped titles using it range from \textit{Hearthstone} (2014) to \textit{Hollow Knight} (2017).
+ 
+Both tools author the reactive paradigms of Section~\ref{sec:game-ai-models}: Blueprints in the event-driven scripting tradition, PlayMaker in the finite state machine tradition.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{Narrative Domain-Specific Languages}
+\label{sec:narrative-dsls}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+Narrative content is the target of a mature line of accessible authoring tools, both textual and visual. Inkle's Ink is a text-based language for interactive narrative~\cite{Inkle}. A script is organised into named knots and stitches connected by diverts, with a lightweight syntax for inline branching choices, and variables tracked as the narrative progresses. Titles using it include \textit{80 Days} (2014)  and \textit{Heaven's Vault} (2019).
+ 
+Yarn Spinner takes a more minimal approach~\cite{YarnSpinner}. It originated in the production of \textit{Night in the Woods} (2017), where a small team needed a dialogue system usable by a writer who was not primarily a programmer. Its scope is deliberately narrow: a script can only deliver a line of dialogue, present a set of options, or issue a command for the host game to interpret, and code written around it handles everything else. It has since been adopted in other games, such as \textit{A Short Hike} (2019) and \textit{Dredge} (2023).
+ 
+articy:draft approaches the same problem visually~\cite{ArticyDraft}. Storylines, characters, and variables are composed in a node-based ``Flow'' view, which serves a writing team as a shared content database, with export pipelines into Unity and Unreal. Titles produced with it include \textit{Disco Elysium} (2019) and \textit{Hogwarts Legacy} (2023).
+ 
+The three tools share one underlying model. Whether written as Ink knots, Yarn Spinner nodes, or an articy:draft flow, a script represents branching text, conditions, and state variables: what is said, and when. How a character behaves is left to a separately authored engine layer. Together with visual scripting, these tools achieve accessibility twice: for reactive game logic, and for narrative content.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{Interactive Drama Authoring: Scribe}
+\label{sec:scribe}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+A third kind of accessible tool addresses neither reactive logic nor dialogue, but the narrative orchestration a two-tier drama management architecture requires. Medler and Magerko's Scribe is built for this purpose~\cite{Medler2006}. It was developed alongside a training system in which a director agent manages a story world, responding to authored content and to a trainee's actions in a 3D environment. Its motivation is accessibility: subject matter experts, typically without programming experience, need to author the director's story content without a programmer encoding it. An author works in three modes: placing the objects, points, and zones a story references on a map; composing plot points from preconditions, events, and actions that the director consults at runtime; and querying the director to see how it would respond to a given story state, before running the story.
+ 
+Scribe's authors state what the tool does not do. It assumes NPCs are already goal-based and directable, and, in their words, ``has the ability to work with NPC behaviors but does not create them'', leaving that task to separate systems such as ABL~\cite{Mateas2002}, the language used in \textit{Fa\c{c}ade}. Scribe is therefore the one system surveyed here that combines accessibility with narrative orchestration by design, while drawing its boundary at deliberative reasoning.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Methodologies and Modelling Languages for BDI Development}
+\label{sec:bdi-tools}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+The multi-agent systems community recognises that authoring raw BDI logic is complex, as the tools of Section~\ref{sec:game-authoring-tools} recognise for game logic. Researchers have responded with graphical methodologies and model-driven tools, which let an author manipulate diagrams or generate code rather than write agent logic line by line. By design, these tools do not change the vocabulary an author works in: the concepts remain beliefs, goals, plans, and the other agent-theoretic terms of Section~\ref{sec:bdi}.
+ 
+Padgham and Winikoff's Prometheus is a software engineering methodology for designing intelligent agents~\cite{Padgham2002}. It provides a top-down process expressed through graphical artifacts, from an overview of the system's goals and capabilities, through diagrams of agent types and their interactions, to a detailed internal design. A system architect uses Prometheus to plan a multi-agent system before implementing it. Its diagrams, however, show goals, beliefs, and capabilities: the vocabulary of a raw BDI implementation, arranged more legibly but not translated into other terms.
+ 
+Kardas, Tezel, and Challenger's DSML4BDI takes a different route~\cite{Kardas2018}. An author builds a visual model of an agent, connecting nodes that represent beliefs, goals, and plans, and the tool generates AgentSpeak code for Jason from it. The authors report that this can reduce the time needed to develop a BDI agent system by up to two thirds. The simplification is procedural, since the author no longer writes Jason syntax, but not terminological: the nodes are still labelled belief, goal, and plan.
+ 
+Prometheus and DSML4BDI belong to a larger family of approaches developed independently since the early 2000s. Some structure the design process, others generate code from a model. Among the methodologies are Gaia, which organises a system around roles and their interactions~\cite{Wooldridge2000}, and Tropos, which grounds agent design in early requirements analysis~\cite{Bresciani2004}. A recent survey by Abdalla and Mishra finds that the number of such approaches, and the interest in applying them, continues to grow~\cite{Abdalla2021}.
+ 
+This proliferation became a problem in its own right. Beydoun, Low, Henderson-Sellers, and colleagues address it with FAML, a generic metamodel that reconciles the concepts of competing methodologies into one common foundation~\cite{Beydoun2009}. FAML was built by comparing and unifying the concepts of seven methodologies, Gaia and Tropos among them, and is intended for methodology designers rather than for the implementation of individual systems. That so many independently developed approaches needed reconciling indicates how large and mature this tradition is. Chapter~\ref{ch:evaluation} uses FAML as the reference for evaluating Regia.
+ 
+Across these methods and tools, the simplification is real: a diagram is easier to construct correctly than hand-written AgentSpeak, and a shared metamodel reduces duplicated effort. That usability, however, is assessed for a developer already fluent in beliefs, goals, and plans, not for a domain expert who works in a different vocabulary. Accessibility outside the BDI vocabulary, and narrative orchestration across several agents, remain unaddressed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Agent-Engine Integration Middleware}
+\label{sec:agent-engine-integration}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+Sections~\ref{sec:game-authoring-tools} and~\ref{sec:bdi-tools} showed that accessible authoring tools do not reach deliberative reasoning, and that BDI modelling tools do not reach authors outside the BDI vocabulary. Once an agent's reasoning is written, it must also run inside a real-time game engine. Section~\ref{sec:godot-mismatch} described the conflict this raises between an asynchronous reasoning cycle and a synchronous rendering loop, which Mariani and Omicini identify as an open research challenge~\cite{Mariani2016}. Several frameworks have since addressed it, each with a different strategy.
+ 
+Angilica, Ianni, and Pacenza's ThinkEngine keeps reasoning external to Unity and moves its computational load outside the main game loop~\cite{Angilica2022}. A ThinkEngine ``Brain'', an Answer Set Programming (ASP) module, a declarative paradigm in which a problem is described by logic rules and its solutions are computed as the answer sets of the program~\cite{Brewka2011}. A Brain can be attached to any non-player character. Configuring one means choosing the sensors that feed it, the events that trigger its reasoning, the ASP program that encodes its decision strategy, and the actuators that carry out its conclusions. The result is a hybrid architecture: declarative reasoning decides at a strategic level, while Unity's engine loop handles moment-to-moment execution.
+ 
+VEsNA, described in Section~\ref{sec:vesna-architecture}, follows a related strategy for BDI reasoning~\cite{Gatti2026}: an agent's mind runs in Jason, outside the engine, and connects to it asynchronously over a WebSocket bridge. In its current implementation, the engine is Godot rather than Unity.
+ 
+Poli takes a different approach, avoiding the network boundary both frameworks rely on~\cite{Poli2018}. The work proposes a new BDI language, based on Prolog and inspired by Jason, executed by a Prolog interpreter running inside Unity. An Artifact abstraction models the scene's environment, and a communication layer connects agents and artifacts, both following the vocabulary of CArtAgO. This removes the boundary rather than bridging it, at the cost of building and maintaining a new reasoning language.
+ 
+Pascucci's Synapsis generalises the external bridge into a dedicated middleware component, instead of a point-to-point connection between the two runtimes~\cite{Pascucci2019}. Each entity is split into a mind, a JaCaMo agent reasoning over a CArtAgO artifact, and a body, the corresponding Unity GameObject. The middleware mirrors this split with the actor model of the Play framework~\cite{PlayFramework}: each mind and body opens its own WebSocket connection, which Play wraps in a dedicated actor. Every message therefore carries the identity of its sender and recipient, and no separate dispatcher is needed. The strategy is close to that of VEsNA, but generalised to connect any multi-agent system to any game engine, at the cost of the bookkeeping the mirrored actors require.
+ 
+The four frameworks show that the mismatch between reasoning and rendering can be solved through different strategies: external declarative reasoning bridged to a game loop, an external BDI mind bridged over a network, a BDI interpreter embedded in the engine, and a middleware independent of any reasoning language. Engine embodiment is therefore the best covered of the three capabilities. None of the four frameworks, however, addresses how the logic they embody is authored: a developer still writes ASP, Prolog, or AgentSpeak in a text editor, with the limits on accessibility found in Section~\ref{sec:bdi-tools}.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Summary}
+\label{sec:related-work-summary}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Each capability on its own is served by at least one mature line of work. Visual scripting achieves accessibility for reactive game logic, and textual and visual tools achieve it for narrative content. A large and growing tradition of BDI methodologies and modelling languages serves deliberative reasoning. At least four frameworks solve engine embodiment, through different strategies. No surveyed tool, however, combines accessibility with deliberative reasoning.
+ 
+Every framework that embodies BDI reasoning in a real-time engine still requires its author to write that reasoning in ASP, Prolog, or AgentSpeak, with the fluency this demands. Every tool that lets a non-programmer author content, whether game logic or branching narrative, offers no way to describe how an agent deliberates. Scribe comes closest, combining accessibility with narrative orchestration, but its authors explicitly leave the behaviour of each character to other systems. No surveyed system, in other words, treats a scenario involving several independently reasoning agents as its own authorial unit, accessible to someone without a programming background, down to how each agent deliberates. Chapter~\ref{ch:requirements} takes up this combination.
+ 

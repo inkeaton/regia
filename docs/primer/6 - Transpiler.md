@@ -8,4 +8,8 @@ Afterwards, the program is parsed through Lark, creating a Concrete-Syntax-Tree 
 
 Having created the AST, it is then annotated with the previously removed comments, and then it is validated, checking for semantic errors. Lastly, it is emitted into the target language. #changes here we need to allow for multiple target languages. Moreover, we may insert another phase, instancing, in which, based on compilation comments, the transpiler may also produce some runtime files, such as .jcm files for instancing ASL agents.
 
+Regarding error management, we have two main concerns. First, the error messages reported to the users must be as clean and understandable as possible, and if possible provide a hint on how to fix the error. All problems should be reported at once, to avoid a fix-compile-error cycle. The error format should be the same for each phase of the transpiler, and carry all needed information, position and similar. Such an error message should also be compatible with Monaco's error format.
+
 We wanna have a clean structure. The CST and AST in particular should be as modular as possible, since the language may still vary, and it would be nice to be able to change only a section of the transpiler, instead of it all.
+
+We will have lot's of automated tests, built alongside the transpiler.  Moreover, once the language and transpiler are mature enough, we will build a synthetic code generator, to create tunable regia code, and benchmark the performance, and see if we can find specific error cases

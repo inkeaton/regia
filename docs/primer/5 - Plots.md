@@ -35,7 +35,7 @@ DURING PLOT:
 Inside of the plans, the director can do actions, just like roles in playbooks, by prefacing them with `WORLD`. #discuss we may change this keyword. They can also ask a Role to do something, by prefacing the Role name before the action. Moreover, there a set of actions unique to the director:
 + `ASSIGN ... TO ...` assigns a Playbook to a Role. `UNASSIGN ... FROM ...` does the opposite
 + `TRANSITION TO ...` transitions the plot to another phase. Should be the last statement in its branch
-+ `START SUBPLOT ... MAPPING .. TO ...` starts another plot as a children of this one.
++ `START SUBPLOT ... MAPPING .. TO ...` starts another plot as a children of this one. #changes we should be able to specify how many instances of a role get mapped to the new plots, either by number or fraction
 + `END PLOT` ends the plot. Should be the last statement in its branch. It should alert parent and children plots.
 
 Plots should remain in communication between children and mother. In particular, parents should be able to react to children ending, as follows:
@@ -47,7 +47,7 @@ DURING duel_interruption:
             END PLOT.
 ```
 
-#discuss let's reason on how should they cooperate
+#discuss let's reason on how parents and children should they cooperate
 
 #changes as roles are mapped into subplots, we may need to add role mapping into playbooks.
 

@@ -1,0 +1,167 @@
+\chapter{Requirements and Analysis}
+\label{ch:requirements}
+
+Chapter~\ref{ch:intro} described the origin of this project and the interest of Untold Games in the Belief-Desire-Intention model. In this chapter we describe how that interest became a set of requirements for a new language: who Regia serves, what that audience needs from its syntax and vocabulary, and how our collaboration with Untold Games reshaped what a Regia program describes. The current implementation does not meet every requirement in full. Where it falls short, we say so, and Chapter~\ref{ch:discussion} returns to it.
+
+Section~\ref{sec:stakeholders} describes the audience of Regia and how we gathered its requirements. The following five sections derive one requirement each: an accessible syntax and vocabulary (Section~\ref{sec:syntax-accessibility}); a narrative-centred model (Section~\ref{sec:agents-to-narratives}); dynamically assigned behaviour (Section~\ref{sec:dynamic-behavior}); a visual representation of the narrative (Section~\ref{sec:visualization}); and modularity and reuse (Section~\ref{sec:modularity-reuse}).
+
+\section{Stakeholders and Methodology}
+\label{sec:stakeholders}
+
+Regia is designed for game designers, not programmers, and this choice shapes nearly every requirement in this chapter. Chapter~\ref{ch:intro} described the friction between the two roles. Here we focus on one asymmetry it produces. A designer's description of a narrative is expressive but informal, leaving implementation details for the programmer to infer or to ask about. The implementation that results is precise, but often illegible to the designer who wrote that description, so they cannot check for themselves whether their intent survived the translation. Regia is positioned between the two: formal enough to be executed, and readable enough for a designer to write and check without a programmer's help. It eases this friction without removing either role from the process.
+
+% specify that we met mostly with fabio and matteo
+We gathered requirements informally, over a series of meetings with our co-supervisor there, Fabio Casale. The meetings fell into two loosely sequential phases. In the earlier meetings, before any working language existed, we compared our emerging conception of the language with what the designers expected such a tool to let them express. In the later meetings, we walked Fabio through example scripts of specific constructs and collected their reactions. These reactions often showed that a construct had not been understood as intended. We then renamed the element with a term closer to the designers' vocabulary, or restructured part of the language, as the following sections describe. We accepted feedback where it improved usability for designers, but kept the underlying model aligned with the agent-centric view of the system, since this alignment keeps the language translatable into AgentSpeak. Where a request would have broken that translation, we addressed its underlying concern in a different way.
+
+\section{Syntax and Accessibility}
+\label{sec:syntax-accessibility}
+
+The audience described in Section~\ref{sec:stakeholders} sets the first requirement, R1: a designer with no programming background must be able to read a Regia script, and ideally write simple ones, without first learning a dedicated notation or unfamiliar technical terms. Chapter~\ref{ch:related_work} showed that accessibility of this kind exists for reactive game logic and narrative content (Section~\ref{sec:game-authoring-tools}), but not for BDI authoring (Section~\ref{sec:bdi-tools}). R1 resolved into two kinds of choice: how a construct is written, its notation, and what a construct is called, its vocabulary.
+
+\subsection{Notation}
+The notational requirement resolved into three choices: capitalised keywords in place of symbolic operators, little punctuation, and no variables.
+
+Placing a Regia plan next to the AgentSpeak it compiles to shows the effect of these choices. Listing  \ref{lst:regia-digestion-check} shows the \lstinline|digestion_check| plan of the running example introduced in Chapter~\ref{ch:design}, and Listing \ref{lst:asl-digestion-check} an equivalent AgentSpeak plan.
+
+\begin{codeblock}[]{Regia}
+WHEN digestion_check:
+    IF is_hungry:
+        DO eat_food.
+        DO FORGET(is_hungry).
+        DO PRINT("A guest finishes their meal.").
+\end{codeblock}
+\label{lst:regia-digestion-check}
+\codecaption{The \lstinline|digestion_check| plan of the running example, in Regia.}{lst:regia-digestion-check}
+
+\begin{codeblock}[]{AgentSpeak}
++digestion_check : is_hungry <-
+    eat_food;
+    -is_hungry;
+    .print("A guest finishes their meal.").
+\end{codeblock}
+\codecaption{An equivalent plan in AgentSpeak.}{lst:asl-digestion-check}
+
+Regia has no equivalent of the AgentSpeak symbols introduced in Chapter~\ref{ch:background}: \lstinline|+| and \lstinline|-| for belief addition and removal, \lstinline|:| and \lstinline|<-| separating a plan's trigger, context, and body, and \lstinline|;| separating statements. It states the same structure with capitalised English words, \lstinline|WHEN|, \lstinline|IF|, \lstinline|DO|, and \lstinline|FORGET|, each mapped onto one of these symbols. A reader can therefore follow a plan without first learning what each symbol means. Capitalisation sets a keyword apart from the Facts, Actions, and Events around it, without further punctuation.
+
+The comparison above does not illustrate the third choice, since neither plan uses a variable. AgentSpeak, following Prolog, unifies variables inside a plan's context: a context such as \lstinline|enemy(X) & health(X, H) & H < 10| binds \lstinline|X| and \lstinline|H| to whatever values satisfy the belief base when the plan is considered. Regia has no equivalent. A Fact reference such as \lstinline|hates(host)|, described in Section~\ref{sec:vocabulary}, always takes a concrete, named argument. Avoiding variables entirely was itself a stated requirement, since unification has no counterpart in the natural-language descriptions designers already write, and requires a logic-programming background to build an intuition for.
+
+\subsection{Vocabulary}
+A simple concept can still be hidden behind an unfamiliar word, leaving a designer to learn new terminology for something they already understand. This reasoning guided several of Regia's vocabulary choices, and \lstinline|FACT| is the clearest instance of it.
+ 
+The standard term in the BDI literature, introduced in Chapter~\ref{ch:background}, is \emph{belief}. The word carries doxastic connotations from the theory BDI is built on, which mean nothing to a designer and add jargon to a simple concept: a statement an agent holds to be true about the game world. A designer already uses \emph{fact} informally for such a statement, without needing the technical, agent-theoretic sense of ``belief''. The underlying concept is unchanged from AgentSpeak; only its label differs.
+
+\section{From Agents to Narratives}
+\label{sec:agents-to-narratives}
+The most significant change in Regia's design concerned its point of view: what a program is about. The change took three steps, each moving the centre of a description further from the individual agent and towards the scenario it takes part in.
+ 
+The starting point is AgentSpeak, introduced in Chapter~\ref{ch:background}. There, the unit of description is a single agent: a program is that agent's set of plans, and no construct describes a shared scenario. A story spanning several agents exists only in the programmer's head. Early in the collaboration, this proved a poor fit for how the designers of Untold Games worked: they did not describe agents in isolation, but scenarios, with several participants and a flow of their own. The first prototypes of Regia were syntactic simplifications of AgentSpeak, and shared this limitation. A second version therefore introduced a construct for a scenario, \lstinline|STORY|, which wrapped the participating agents and divided the scenario into \lstinline|PHASES|, in which each agent could behave differently.
+ 
+Having a scenario construct, however, did not make the scenario the \emph{subject} of a description. In this second version, the agents were still described individually inside the construct, each carrying its own reactions. The scenario was a container, not the thing being described. The final version, presented in Chapter~\ref{ch:design}, makes the scenario itself the subject: an agent's behaviour becomes something a narrative draws on, rather than something written into it.
+ 
+\subsection{Snippets}
+The gap became clear when we compared the designers' documents with what the second version asked an author to write. Figure~\ref{fig:bring-me-item-snippet} shows one such document, which the designers called a \emph{snippet}: a self-contained scenario in which a Citizen asks the Player to fetch an item, laid out as a branching flow of dialogue, conditions, timers, and consequences.
+ 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/bring_me_item.png}
+    \caption{A ``Bring Me Item'' snippet, one of the design documents shared by Untold Games during early requirements gathering.}
+    \label{fig:bring-me-item-snippet}
+\end{figure}
+ 
+Listing~\ref{lst:old-regia-asking} shows one phase of the same quest in the second version of Regia. Its syntax differs from the final language; what matters is how the description is organised.
+ 
+\begin{codeblock}[]{Regia}
+DURING asking:
+ 
+    TRANSITION TO searching WHEN player_accepts IF citizen_is_known.
+    TRANSITION TO failed    WHEN player_rejects.
+ 
+    AGENT Citizen:
+        WHEN player_accepts IF citizen_is_known:
+            DO acknowledge.
+        WHEN player_rejects:
+            DO find_someone_else.
+ 
+    AGENT Player:
+        WHEN player_accepts IF NOT is_busy:
+            DO acknowledge.
+        WHEN player_rejects:
+            DO explore.
+\end{codeblock}
+\codecaption{One phase of the ``Bring Me Item'' quest in the second version of Regia.}{lst:old-regia-asking}
+ 
+The scenario construct divides the quest into phases, but within each phase every participant's reactions are written separately, one block per agent. This has two consequences. First, following the scenario's flow, what happens when the Player accepts and what happens next, requires reading several per-agent blocks and reassembling them mentally, since no single place describes the flow. Second, behaviour relevant in more than one phase is written again in each: in the full source of this excerpt, the Citizen's reaction to being abandoned appears in three separate phases, three copies of one participant reacting to one thing.
+ 
+The snippet and the code are therefore organised in opposite ways. The snippet follows the scenario: a favour is asked, accepted or refused, and an item delivered in time or not. The Citizen and the Player are participants in that flow, not its subject. The code follows the agents, and leaves the flow implicit, to be reconstructed from every agent's fragments across every phase. Although a construct for the scenario already existed, the language still asked an author to take a situation apart into per-agent pieces in order to write it down.
+ 
+\subsection{Making the Narrative Central}
+ 
+These observations set the second requirement, R2: a Regia program must describe a scenario as a whole, with each participant's behaviour defined once and attached to the part that participant plays. Meeting it meant inverting what the language put at its centre. The scenario construct became the primary one, now called a Plot. The part a participant plays within it is called a Role, and the behaviour attached to a Role, defined once and reusable across phases, is bundled into a Playbook. Chapter~\ref{ch:design} describes all three. Together, they let an author write a situation down as a situation, without decomposing it into per-agent, per-phase fragments.
+ 
+This split closely mirrors the two-tier architecture of the interactive narrative literature, described in Section~\ref{sec:two-tier-bottleneck}, in which a drama manager sequences story beats while character agents handle moment-to-moment behaviour, as in Mateas and Stern's Fa\c{c}ade~\cite{Mateas2005}. We did not set out to reproduce that architecture: we noticed the resemblance only once the split between Plot and Playbook was in place.
+ 
+Treating a scenario as a self-contained unit has one further consequence. A larger story, and ultimately a game, can be built by composing such units: one scenario giving way to another, or opening a smaller one nested inside itself, so that the whole forms a hierarchy of scenarios rather than one flat script. Regia realises this hierarchy through Subplots, also described in Chapter~\ref{ch:design}.
+
+
+
+\section{Dynamic Behaviour}
+\label{sec:dynamic-behavior}
+ 
+A Playbook's attachment to a Role is not fixed for the whole run of a narrative: what a participant can react to often needs to change as the situation develops. This is a different requirement from ordinary branching. A reactive rule that chooses between two outcomes on a condition already works within one fixed set of behaviours. What designers asked for was a change in \emph{which} behaviours are available to be considered at all.
+ 
+A hypothetical guard illustrates the distinction. On routine patrol, the guard reacts to a handful of mundane situations, such as noticing an open door or greeting a passer-by. Once the guard suspects an intruder, a different set of reactions becomes relevant: calling for backup, pursuing, searching a room. None of these is meaningful, or perhaps safe to leave active, while the guard is on its rounds. Branching alone could encode this, with conditions gating every reaction, but every reaction would remain permanently present and reasoned about together. The designers asked instead for a way to state that a whole bundle of reactions becomes available, or stops being available, as the narrative moves a participant from one situation to another. This is the third requirement, R3.
+ 
+Jason already provides the mechanism: an agent can add and remove plans from its own plan library at runtime, through the \lstinline|.add_plan| and \lstinline|.remove_plan| internal actions~\cite{Bordini2007}. Using it as the primary way to organise behaviour is, however, uncommon. The idiomatic pattern is the opposite: an agent holds its full repertoire of plans from the start, and each plan's context decides whether it fires, matching against the agent's current beliefs. The plan set itself does not change.
+ 
+Our collaborators at Untold Games requested this pattern repeatedly, and Regia makes it explicit and central through the Playbook: a named, reusable bundle of reactive behaviour that a narrative attaches to a Role at one point and detaches at another (Sections~\ref{sec:playbooks} and~\ref{sec:plots}). In the compiled AgentSpeak, Regia in fact follows the idiomatic pattern, including every Playbook an agent may receive and gating its plans with a belief (Section~\ref{sec:emission}). The author, however, sees behaviour attached and detached, which matches how the designers describe it. In the guard example, patrol and alert behaviour become two Playbooks, and the narrative, not the guard, decides which one the guard has. A Playbook can also be attached to more than one Role, or reused across narratives; Section~\ref{sec:modularity-reuse} returns to this second dimension, reuse rather than dynamism.
+
+
+\section{Visualisation}
+\label{sec:visualization}
+A further requirement concerns how a narrative is seen while it is being written. The snippet of Figure~\ref{fig:bring-me-item-snippet} is not prose. It is a diagram: branches, conditions, and named outcome states connected by arrows, close in spirit to a state machine. Before we proposed any visual representation, the designers had already chosen a diagram to lay out the kind of structure Regia's Plots describe.
+ 
+This observation bears on R1. Section~\ref{sec:syntax-accessibility} grounded accessibility in a notation that a reader without programming experience can follow. A textual notation, however readable, remains text, and designers who already think and communicate in diagrams are not fully served by it. A visual representation of the narrative is therefore an extension of R1 rather than an optional addition, and forms the fourth requirement, R4.
+ 
+Pairing an executable notation with a visual representation of the same logic has precedent in game development. Behaviour trees (Section~\ref{sec:behaviour-trees})~\cite{Iovino2022} and Unreal Engine's Blueprints (Section~\ref{sec:visual-scripting})~\cite{Yannakakis2025} both let a designer work with a system's logic visually, rather than only through its textual form.
+ 
+The Visual Editor built in response, described in Section~\ref{sec:editor}, draws a narrative's structure: its Phases and the transitions between them, consistent with the narrative-centred model of R2. It gives no visual form to the reactive logic inside a Playbook. R4 asked for a way to see a narrative as our collaborators already sketched one, and the editor addresses that part of the language.
+  
+\section{Modularity and Reuse}
+\label{sec:modularity-reuse}
+The fifth requirement, R5, differs in character from the others. R1 to R4 bear on the language's semantics or on the experience of writing a script, while a designer writing a single scenario would rarely notice the absence of modularity and reuse. They matter because they shape the language's underlying structure, which is harder to change later than a surface feature. We therefore made several of the decisions below early, alongside the shift of Section~\ref{sec:agents-to-narratives}, although we discuss them last.
+ 
+\subsection{Practical Hygiene}
+The most direct form of R5 is practical. As Plots and Playbooks accumulate, a single file becomes hard to navigate. \lstinline|IMPORT|, described in Section~\ref{sec:program-definition}, lets an author split a project across files while still referencing declarations made elsewhere. Documentation comments, described in the same section, let an author leave a short note on a Plot or a Playbook for a later reader, programmer or designer, without leaving the language.
+ 
+\subsection{Composability}
+A behaviour tree is built from smaller, independently authored subtrees, which can be developed, tested, and reused on their own before being combined (Section~\ref{sec:behaviour-trees}). Reuse across projects, and not only organisation within one, depends on this property.
+ 
+Regia's Roles, Playbooks, and Subplots were shaped with the same goal. A Role separates the parts a narrative defines from the concrete agents that fill them at runtime, so that a Plot can be reused with a different cast, or in a different game, without changes. A Playbook is a self-contained bundle of behaviour, so that it can be attached to several Roles and carried between projects. Subplots apply the same principle to Plots: an author builds a Plot from smaller, independently authored Plots, as a behaviour tree is built from subtrees. A game's narrative can then be represented as a tree of Plots and Subplots.
+ 
+Composability has a cost. Once Playbooks and Plots can be freely combined, two independently authored pieces of behaviour, each reasonable on its own, may be active on the same agent or narrative at once and disagree. \lstinline|PRIORITY|, described in Section~\ref{sec:priority-temper}, was conceived for this case: an automatic arbitration between concurrently active Playbooks, or between concurrently running Plots and Subplots, so that an author can reuse a piece of behaviour without anticipating every other piece it may be combined with. As that section explains, the target platform does not yet enforce it.
+ 
+\section{Summary}
+\label{sec:requirements-summary}
+Table~\ref{tab:requirements} lists the five requirements derived in this chapter and the parts of Regia that address them. Chapter~\ref{ch:design} presents the resulting language in full.
+ 
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|l|p{6.2cm}|l|p{4.3cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} & \textbf{Section} & \textbf{Addressed by} \\
+\hline
+R1 & A designer can read Regia, and write simple scripts, without learning a symbolic notation or technical terms & \ref{sec:syntax-accessibility} & Keywords in place of symbols; no variables; \lstinline|FACT| \\
+\hline
+R2 & A program describes a scenario as a whole, with each participant's behaviour defined once and attached to its part & \ref{sec:agents-to-narratives} & Plots, Roles, Playbooks, Subplots \\
+\hline
+R3 & Bundles of behaviour become available and unavailable as the narrative progresses & \ref{sec:dynamic-behavior} & \lstinline|ASSIGN|, \lstinline|UNASSIGN| \\
+\hline
+R4 & A visual representation of a narrative's structure & \ref{sec:visualization} & The Visual Editor \\
+\hline
+R5 & Projects split across files; behaviour and narratives composed and reused & \ref{sec:modularity-reuse} & \lstinline|IMPORT|, doc comments, Roles, Playbooks, Subplots, \lstinline|PRIORITY| \\
+\hline
+\end{tabular}
+\caption{The requirements derived from the collaboration with Untold Games, and the parts of Regia that address them.}
+\label{tab:requirements}
+\end{table}

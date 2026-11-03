@@ -1,0 +1,5 @@
+Now, this file just contains notes of some new features still early in the design phase. Some have already been cited in the text itself, other not.
+
+We need to implemnet compilation comments, or compilation files. These constructs allow to specify some details on the transpilation of the language which are not already specified in Regia (for example, how many agents are actually playing a role?). This information level should be separate form core Regia, since it is at a different abstraction layer. still, having it allows us to implement better target emissions, allowing also to write some instanciation file which the writer would have to do manually instead.
+
+We may think to introduce a new core construct, which represents a dialogue tree. While games have different dialogue systems, we believe that such a construct would be abstract enough top be widely usable, and also very useful. Still, we must reason on its shape, and how can it be readable enough.

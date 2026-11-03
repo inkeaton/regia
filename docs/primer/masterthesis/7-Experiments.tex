@@ -1,0 +1,472 @@
+\chapter{Experiments}
+\label{ch:experiments}
+
+
+This chapter puts Regia to practical use in two ways. Section~\ref{sec:for-science} describes \emph{Everything For Science!}, a complete game built with Regia, and what its development revealed about using the language. Section~\ref{sec:benchmarks} measures how the transpiler's compilation time and output size scale as a project grows.
+
+\section{``Everything For Science!'' Test Case}
+\label{sec:for-science}
+
+
+This section shows Regia used as a whole, to build a working game. \emph{Everything For Science!} is a short game running in Godot through VEsNA, in which a Player must retrieve a set of items while interacting with a small cast of agents. It exercises several constructs at once: three Roles with independent Playbooks, a main Plot that branches on the Player's choices, and a Subplot that starts, runs, and ends within the main narrative. It therefore shows that Regia can represent a complete, branching narrative, beyond the individual examples of Chapter~\ref{ch:design}.
+
+Section~\ref{sec:test-infrastructure} describes how a compiled Regia program is deployed and connected to Godot through VEsNA. Section~\ref{sec:test-plot} describes the game's plot, as a narrative and through the Regia constructs that realise it. Section~\ref{sec:test-results} reports the compilation metrics and the observations that came from authoring the game, several of which return in Chapter~\ref{ch:discussion}.
+
+\subsection{Infrastructure}
+\label{sec:test-infrastructure}
+
+This subsection describes how \emph{Everything For Science!} uses VEsNA (Section~\ref{sec:vesna-architecture}): how a compiled Regia program is deployed, how a running agent communicates with the engine, and what a developer must still build by hand. The game's Regia source, internal actions, and engine-side handling are available in \lstinline|science_game/| of the repository~\cite{RegiaRepo}.
+
+\subsubsection{Deployment}
+\label{sec:test-deployment}
+
+A running Regia program is deployed as a JaCaMo multi-agent system, configured through a \lstinline|.jcm| file. \emph{Everything For Science!} declares four agents: one for each of the three Roles, \lstinline|scientist|, \lstinline|cop|, and \lstinline|dog|, and one for the Director of the main Plot. Each agent is an instance of \lstinline|vesna.VesnaAgent|, connected over its own WebSocket to a distinct port of the same Godot process. The Director has a port as well, although it has no visible body, since it may still relay environment information or perform internal actions. Its entry also carries a startup goal, \lstinline|start_plot|, which binds the Plot's Roles to the three running agents and begins execution; this binding is supplied at deployment, and appears nowhere in the compiled Regia output. Subplot Directors are not declared: when a \lstinline|START SUBPLOT| statement executes, the parent Director creates the Subplot's Director at runtime through Jason's \lstinline|.create_agent| internal action, and sends it its Role bindings.
+
+\subsubsection{Message Protocol}
+\label{sec:test-protocol}
+
+Once connected, an agent and its body in Godot exchange JSON messages in both directions. Table~\ref{tab:test-message-protocol} lists every message type used in \emph{Everything For Science!}. Messages from Godot to the mind arrive through \lstinline|VesnaAgent|'s message handler and are converted into Jason percepts; messages from the mind to Godot are sent by internal actions, one per declared Regia Action, discussed next.
+
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|l|l|p{6.5cm}|}
+\hline
+\textbf{Direction} & \textbf{Message Type} & \textbf{Effect} \\
+\hline
+Godot $\to$ Mind & \lstinline|regia_event| & Becomes a flat, parameterless percept; this is the channel a Regia \lstinline|EVENT| arrives through. \\
+\hline
+Godot $\to$ Mind & \lstinline|signal| & Becomes a percept of the form \lstinline|signal_TYPE(status, reason)|, carrying more detail than a plain event. \\
+\hline
+Godot $\to$ Mind & \lstinline|navigation| & Becomes the percept \lstinline|reached_WAYPOINT| once a movement action completes. \\
+\hline
+Mind $\to$ Godot & (any Action) & Carries a JSON payload specific to the Action performed; handled on the Godot side by \lstinline|VesnaManager|. \\
+\hline
+\end{tabular}
+\caption{Message types exchanged between a Jason agent and its Godot body, and their effect on the receiving side.}
+\label{tab:test-message-protocol}
+\end{table}
+
+\subsubsection{Internal Actions}
+\label{sec:test-actions}
+
+Every Action declared in a Regia program must correspond to a Java internal action, implemented once, that packages its arguments as JSON and sends them to the body. Table~\ref{tab:test-actions} lists the fourteen Actions available to agents in \emph{Everything For Science!}, grouped by what they affect in the game. Their narrative use is described where each first appears, in Section~\ref{sec:test-plot}.
+
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|p{3cm}|p{3.2cm}|p{6.3cm}|}
+\hline
+\textbf{Category} & \textbf{Action} & \textbf{Effect} \\
+\hline
+\multirow{4}{3cm}{Presence and Movement} & \lstinline|set_visible(visible)| & Toggles whether an agent is visible and interactable. \\
+\cline{2-3}
+ & \lstinline|move_to(target)| & Moves an agent to a specified location. \\
+\cline{2-3}
+ & \lstinline|start_wandering(radius)| & Begins erratic movement within a radius, simulating idle behaviour. \\
+\cline{2-3}
+ & \lstinline|stop_wandering()| & Ends wandering movement. \\
+\hline
+\multirow{4}{3cm}{Environment and Inventory} & \lstinline|spawn_item(item, waypoint)| & Makes an item appear at a location. \\
+\cline{2-3}
+ & \lstinline|despawn_item(item)| & Removes an item from the environment. \\
+\cline{2-3}
+ & \lstinline|add_item(item)| & Adds an item to the Player's inventory. \\
+\cline{2-3}
+ & \lstinline|remove_item(item)| & Removes an item from the Player's inventory. \\
+\hline
+\multirow{5}{3cm}{Dialogue} & \lstinline|utter(text)| & Shows a transient text bubble over an agent, without opening a dialogue. \\
+\cline{2-3}
+ & \lstinline|set_dialogue _text(text)| & Sets the text shown in the main dialogue box. \\
+\cline{2-3}
+ & \lstinline|add_dialogue _option(id, text, event, close_ui)| & Adds a choice the Player can select, optionally triggering an event and closing the dialogue. \\
+\cline{2-3}
+ & \lstinline|remove_dialogue _option(id)| & Removes a single dialogue choice. \\
+\cline{2-3}
+ & \lstinline|clear_dialogue _options()| & Removes every dialogue choice at once. \\
+\hline
+Control & \lstinline|trigger_game _over(reason)| & Ends the game for the given reason. \\
+\hline
+\end{tabular}
+\caption{Internal actions available to agents in \emph{Everything For Science!}, grouped by what they affect in the game.}
+\label{tab:test-actions}
+\end{table}
+
+Listing~\ref{lst:add-dialogue-option} shows one such internal action in full, \lstinline|add_dialogue_option|. It reads its four arguments, builds the corresponding JSON payload, and sends it to the body through \lstinline|perform|; every other internal action in \emph{Everything For Science!} follows the same pattern.
+
+\begin{codeblock}[]{Java}
+public class add_dialogue_option extends DefaultInternalAction {
+
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        if (args.length != 4) {
+            throw new JasonException("vesna.via.add_dialogue_option requires exactly 4 arguments (id, text, event, close_ui).");
+        }
+
+        VesnaAgent agent = (VesnaAgent) ts.getAg();
+
+        String id = args[0].toString().replace("\"", "");
+        String text = args[1].toString().replace("\"", "");
+        String event = args[2].toString().replace("\"", "");
+        boolean closeUi = args[3].toString().replace("\"", "").equals("true");
+
+        JSONObject opt = new JSONObject();
+        opt.put("id", id);
+        opt.put("text", text);
+        opt.put("event", event);
+        opt.put("close_on_select", closeUi);
+
+        JSONArray optionsArray = new JSONArray();
+        optionsArray.put(opt);
+
+        JSONObject data = new JSONObject();
+        data.put("options", optionsArray);
+
+        JSONObject message = new JSONObject();
+        message.put("type", "add_dialogue_options");
+        message.put("data", data);
+
+        agent.perform(message.toString());
+        return true;
+    }
+}
+\end{codeblock}
+\codecaption{The \lstinline|add_dialogue_option| internal action.}{lst:add-dialogue-option}
+
+Regia and its transpiler are responsible for none of this infrastructure. The compiler produces \lstinline|.asl| files and stops there; the \lstinline|.jcm| configuration, the internal actions of Table~\ref{tab:test-actions}, and the Godot-side message handling were written by hand, once, for this game.
+
+\subsection{Game Plot}
+\label{sec:test-plot}
+
+
+A Scientist approaches the Player with a proposal. They ask to speak somewhere more private, and the Player follows them to their lab. There, the Scientist begins asking for items: first a flower, then a bone, then a corpse. Each request is framed as necessary for an unspecified experiment. A Cop patrols the area throughout. The Player can meet the Cop at any point and denounce the Scientist's request; doing so affects the Cop's mood, which we discuss at the end of this subsection. A Dog also wanders nearby. It plays little part in the story until the Player needs its help. At any point, the Player may instead drop something into the Scientist's cauldron, which explodes and ends the game early. Figure~\ref{fig:for-science-flow} maps the Phases, branches, and endings described below.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/game_flow.png}
+    \caption{Phase and branch structure of \emph{Everything For Science!}, from the Flower Phase to its four possible endings, tinted red.}
+    \label{fig:for-science-flow}
+\end{figure}
+
+\subsubsection{Flower}
+\label{sec:test-plot-flower}
+
+The game begins in the Flower Phase, the Plot's initial Phase. On entering it, the Scientist, Cop, and Dog each receive their starting Playbook. The Scientist spawns a flower in the garden, using the \lstinline|spawn_item| Action (Table~\ref{tab:test-actions}). The Scientist first asks the Player to follow them to the lab. Only once the Scientist signals that they have arrived does the Director swap their Playbook, from an introductory one to one that asks for the flower. The Player can meet the Cop at any point and denounce the Scientist's request. The Dog only greets the Player in this Phase.
+
+Retrieving the flower requires the Player to open a garden door. The game tracks whether the door was left open as a persistent Fact, \lstinline|door_open|. A Plot-wide handler sets this Fact, rather than a Phase-local one, so the game remembers the door's state no matter when it was opened. Handing the flower to the Scientist branches the story for the first time, on this Fact:
+
+\begin{codeblock}[]{Regia}
+WHEN give_flower:
+    IF door_open:
+        UNASSIGN CopFlowerPlaybook FROM Cop.
+        UNASSIGN DogMainPlaybook FROM Dog.
+        START SUBPLOT MissingDonut MAPPING Cop TO Cop, Dog TO Dog.
+        TRANSITION TO bone.
+    ELSE:
+        ASSIGN CopBonePlaybook TO Cop.
+        Dog DO BELIEVE(has_bone).
+        TRANSITION TO bone.
+\end{codeblock}
+\codecaption{Branching on the garden door in the Flower Phase.}{lst:flower-branch}
+
+Leaving the door closed sends the Plot directly into the Bone Phase. The Dog already holds the bone the Scientist will ask for next. Leaving the door open instead starts a Subplot, described below.
+
+\subsubsection{Bone}
+\label{sec:test-plot-bone}
+
+If the door was left closed, the Bone Phase proceeds directly. The Dog, still holding the bone from the previous Phase, gives it up as soon as the Player asks.
+
+If the door was left open, the Cop and Dog instead spend the Bone Phase inside \lstinline|MissingDonut|, a Subplot. It maps both agents to new Roles for its duration. Its premise follows directly from the Player's earlier choice: the Dog used the open door to steal a donut from the Cop, and left the bone behind. The Cop refuses to hand over the bone without persuasion. The Player has two options: press the Cop directly, or first get the donut from the Dog and trade it for the bone.
+
+%\begin{codeblock}[title=The MissingDonut Subplot's own ending condition]{Regia}
+%WHEN ROLE Cop SIGNALS bone_acquired:
+%    Cop DO utter("The bone has been secured.").
+%    END PLOT.
+%\end{codeblock}
+%\label{lst:subplot-end}
+
+Once the Subplot ends, by either path, control returns to the main Plot. The main Plot reacts to the Subplot's conclusion as a whole, rather than to any specific action taken inside it:
+
+\begin{codeblock}[]{Regia}
+WHEN SUBPLOT MissingDonut ENDS:
+    Scientist DO BELIEVE(player_has_bone).
+    ASSIGN CopBonePlaybook TO Cop.
+    ASSIGN DogMainPlaybook TO Dog.
+\end{codeblock}
+\codecaption{The main Plot resuming after the Subplot ends.}{lst:subplot-resume}
+
+Whichever path the Player took, the Bone Phase ends the same way as the Flower Phase before it. The Scientist accepts the bone, thanks the Player, and asks for a fresh corpse.
+
+\subsubsection{Corpse}
+\label{sec:test-plot-corpse}
+
+The Corpse Phase offers the Player two ways to satisfy the Scientist's last request. This is also where the Cop's mood finally matters, a mood tracked since the Flower Phase as the Facts \lstinline|cop_annoyed| and \lstinline|cop_very_annoyed|. The Player can denounce the Scientist to the Cop one last time, or attack the Cop directly. Both outcomes depend on whether the Cop has reached its most annoyed state.
+
+\begin{codeblock}[]{Regia}
+WHEN attack_cop:
+    IF cop_very_annoyed:
+        DO set_dialogue_text("I saw you reaching! You are under arrest!").
+        SIGNAL player_arrested.
+    ELSE:
+        DO utter("What are you doing?! *Dies*").
+        DO set_visible("false").
+        DO add_item("corpse").
+        SIGNAL cop_killed.
+\end{codeblock}
+\codecaption{The Cop's mood deciding the outcome of an attack.}{lst:cop-attack}
+
+As Listing~\ref{lst:cop-attack} shows, a very annoyed Cop notices the attack coming and arrests the Player, ending the game. A less annoyed Cop is caught off guard instead. The Player gets the corpse, and a way to finish the experiment.
+
+Denouncing the Scientist one last time follows the same logic, in reverse. A very annoyed Cop no longer believes the Player, and arrests them for the accusation itself. A less annoyed Cop believes them, and arrests the Scientist instead. Both endings use \lstinline|trigger_game_over| (Table~\ref{tab:test-actions}). Handing over the corpse, however it was obtained, completes the experiment and satisfies the Scientist. The game therefore has four endings: the experiment completed, the cauldron exploding, the Scientist arrested, and the Player arrested, the last reached by either attacking or denouncing a very annoyed Cop.
+
+\bigskip
+
+Two mechanisms appear in all three Phases. The first is the Cop's mood, which is never reset between Phases. Each denouncement or hostile choice moves it one step further, from unannoyed, to \lstinline|cop_annoyed|, to \lstinline|cop_very_annoyed|. The Corpse Phase's endings read back a state the Player may have started building three Phases earlier. The second is the cauldron explosion. It must be reachable from any Phase, so it is declared once, in \lstinline|DURING PLOT|, rather than being repeated inside Flower, Bone, and Corpse individually.
+
+\subsection{Results}
+\label{sec:test-results}
+
+
+\subsubsection{Compilation}
+\label{sec:test-compilation}
+
+Table~\ref{tab:test-compilation} reports the metrics of compiling \emph{Everything For Science!}, all six source files, with the procedure and machine of the benchmarks (Section~\ref{sec:benchmark-environment}).
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+Files generated & 17 \\
+Input LoC & 526 \\
+Output LoC & 1075 \\
+Compilation time & 16.6\,ms \\
+Write time & 0.3\,ms \\
+Total time & 16.8\,ms \\
+Peak RAM & 0.59\,MB \\
+\hline
+\end{tabular}
+\caption{Metrics recorded compiling \emph{Everything For Science!} in full.}
+\label{tab:test-compilation}
+\end{table}
+
+\subsubsection{Observations}
+\label{sec:test-observations}
+
+Authoring the game also produced several observations about using Regia in practice.
+
+The game's vocabulary leans heavily towards Events: 31 Events, against 14 Actions and 10 Facts. Part of this imbalance comes from a limitation: unlike Actions, Events take no parameters. Three groups of Events differ only in the item they concern: \lstinline|picked_up_flower|, \lstinline|picked_up_bone|, and \lstinline|picked_up_corpse|; \lstinline|give_flower|, \lstinline|give_bone|, and \lstinline|give_corpse|; and \lstinline|denounce_flower|, \lstinline|denounce_bone|, and \lstinline|denounce_corpse|. With parametric Events, these nine declarations could have been three, \lstinline|picked_up(item)|, \lstinline|give(item)|, and \lstinline|denounce(item)|, with no loss of expressiveness.
+
+Handling the Subplot also required the main Plot to step out of its way. By design, a Subplot's Playbooks can carry plans with the same triggers as the main Plot's, and \lstinline|PRIORITY| lets the Subplot's version take precedence while both are assigned. A Plot would then describe only its own default behaviour, without knowing that a Subplot exists. Because \lstinline|PRIORITY| is not enforced (Section~\ref{sec:priority-temper}), this layering is not safe: nothing guarantees which of two co-assigned plans with the same trigger fires. Listing~\ref{lst:flower-branch} shows the workaround: before starting the Subplot, the main Plot unassigns \lstinline|CopFlowerPlaybook| and \lstinline|DogMainPlaybook|, clearing its own plans out of the way.
+
+Redundancy also appeared within individual plans. \lstinline|IF| and \lstinline|ELSE| branches compile to independent AgentSpeak plans, one per branch (Section~\ref{subsec:conditional-branches}). Regia lets an author write statements shared by every branch before them, but not after them: logic meant to run whichever branch fires must be repeated at the end of every branch. In the game, the \lstinline|denounce_bone| handler closes all three of its branches with the same two statements, clearing the dialogue and offering only the exit option.
+
+Two aspects of the language worked as intended. Isolating the donut theft as a Subplot kept its cost contained: the addition touched the main Plot in two places, the five-line branch of Listing~\ref{lst:flower-branch} and the handler of Listing~\ref{lst:subplot-resume}, and left every Playbook outside the Subplot unmodified. The Subplot's two new Roles needed no new agents to play them. The Cop and Dog agents are reassigned new Playbooks for the Subplot's duration; the only agent added is the Subplot's Director, which the main Director creates at runtime (Section~\ref{sec:test-deployment}).
+
+\section{Transpiler Benchmarks}
+\label{sec:benchmarks}
+ 
+The AgentSpeak a Regia program compiles to is not written by hand, and its size and shape depend on the transpiler's translation choices. This section studies how compilation scales, and how each construct shapes the resulting AgentSpeak. The measurements support one claim: the cost of compiling a Regia program follows the size of the program an author writes, not the size or shape of the AgentSpeak it expands into. Section~\ref{sec:benchmark-tool} describes the benchmark generator; Section~\ref{sec:benchmark-results} scales each construct alone; and Section~\ref{sec:benchmark-interactions} scales several together, as a project would grow over time.
+
+\subsection{The Benchmark Tool}
+\label{sec:benchmark-tool}
+
+To automate testing, we built a benchmark generator, separate from the transpiler, that produces synthetic Regia programs. It takes a configuration specifying how many instances of each construct to generate, among them Roles, Phases, Playbooks, Plans, branches, statements, and Subplots, and assembles a valid Regia program matching it. The program then passes through the ordinary transpiler pipeline, and the benchmark records a fixed set of metrics during the run. The generator, the measurement scripts, and the data of this section are available in \lstinline|language/benchmarks/| of the repository~\cite{RegiaRepo}, so that every sweep can be reproduced.
+
+Table~\ref{tab:benchmark-dimensions} lists every dimension the generator can scale, what it adds to the Regia source and to the emitted AgentSpeak, and the average number of AgentSpeak lines one instance adds. Phases have no such figure. A Phase produces output only through what is written inside it, and the generator fills each Phase by assigning a Playbook to every Role on entry. The cost the generator attributes to a Phase is therefore proportional to the number of Roles in the Plot: a property of the generator's convention rather than of Regia, under which the measurements for Phases below should be read.
+
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|p{2.0cm}|p{4.0cm}|p{4.4cm}|p{3.0cm}|}
+\hline
+\textbf{Dimension} & \textbf{Regia Effect} & \textbf{AgentSpeak Effect} & \textbf{AgentSpeak Lines per Instance} \\
+\hline
+Actions, Events, Facts & Added to the shared vocabulary, then referenced throughout the generated Playbooks. & Declarations themselves produce no output; only usage populates plan triggers, guards, and bodies. & 0 \\
+\hline
+Roles & Declared in the Plot header; may be assigned a Playbook via \lstinline|ASSIGN| in any Phase. & One \lstinline|.asl| file per Role. & 29 + 1 for each included Playbook \\
+\hline
+Phases & Declared sequentially in the Plot header; may contain \lstinline|ON ENTER|/\lstinline|ON EXIT| blocks and \lstinline|WHEN| handlers. & \lstinline|on_enter|/\lstinline|on_exit| plans in the Director file, sized by what an author writes inside them. & depends on how many \lstinline|ASSIGN|/\lstinline|UNASSIGN| statements are written (see below) \\
+\hline
+Playbooks & Declared as standalone bundles, assignable to any Role. & One \lstinline|.asl| file per Playbook: a fixed header, plus its Plans. & 8 (header only; Plans below add their own cost) \\
+\hline
+Plans (per Playbook) & \lstinline|WHEN| blocks added to a Playbook. & Base reactive plans inside the Playbook's file. & 2 + 1 per statement \\
+\hline
+Branches (per Plan) & \lstinline|IF|/\lstinline|ELSE| blocks added to a \lstinline|WHEN| body. & Each branch compiles to a separate AgentSpeak plan, as in Section~\ref{subsec:conditional-branches}. & 2 + 1 per statement \\
+\hline
+Statements (per Branch) & Sequential \lstinline|DO| statements added to a branch body. & Directly extends the corresponding plan body. & 1, exact \\
+\hline
+Subplot Breadth & Controls the number of Subplots spawned in each Plot & One Director and Role file pair per sibling. & One full file pair per branch (linear in Breadth) \\
+\hline
+Subplot Depth & Additional nesting levels; each level's siblings themselves spawn Breadth-many children. & Each level multiplies the subplot count by the branching factor. & node count grows as $\text{breadth}^{\text{depth}}$ (exponential) \\
+\hline
+\end{tabular}
+\caption{Benchmark dimensions and their intrinsic cost, that is, the cost following from Regia's compilation rules alone, independent of any particular benchmark configuration. Phases carry no flat figure, since their cost depends on how many assignment statements an author writes inside them.}
+\label{tab:benchmark-dimensions}
+\end{table}
+
+\subsubsection{Monitored Metrics}
+\label{sec:benchmark-metrics}
+
+Four metrics are recorded for every run: compilation time, with the time to write the output to disk recorded separately; peak memory during compilation; the \emph{expansion ratio}, the number of generated AgentSpeak lines per line of Regia; and the number of AgentSpeak files emitted. Time and memory are measured in two separate compilations of the same program, since tracing memory allocations slows compilation down. Every configuration is run five times, and every figure in this section is the mean of the five runs.
+
+To measure how cost scales, we fit a straight line by ordinary least squares to the logarithm of compilation time against the logarithm of source size, one point per configuration. Its slope $k$ is the exponent of a power law, time $\propto$ size$^{k}$: $k = 1$ indicates linear growth, and $k > 1$ growth faster than linear. We report a 95\% interval for $k$, derived from its standard error, and the coefficient of determination $R^2$, computed on the logarithmic scale, which measures how closely the points follow such a law. A fixed startup cost weighs most on the smallest configurations, so $k$ slightly understates how fast the cost of larger programs grows.
+
+\subsubsection{Test Environment}
+\label{sec:benchmark-environment}
+
+Table~\ref{tab:benchmark-machine} lists the specifications of the machine every benchmark in this section was run on, reported for reproducibility.
+
+\begin{table}[htpb]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Component} & \textbf{Specification} \\
+\hline
+Processor & AMD Ryzen 9 7900X (12 cores, 24 threads) \\
+Memory & 30.44\,GB RAM \\
+Storage Type & NVMe SSD \\
+OS & Arch Linux 7.2.3-arch1-2, x86\_64 \\
+Runtime & Python 3.14.7 \\
+\hline
+\end{tabular}
+\caption{Specifications of the machine used to run every benchmark reported in this section.}
+\label{tab:benchmark-machine}
+\end{table}
+
+\subsubsection{Default Configuration}
+\label{sec:benchmark-default}
+
+Every sweep varies one or more dimensions against a fixed default configuration: 10 Actions, 10 Events, 5 Facts, 2 Roles, 2 Phases, and 2 Playbooks with 2 Plans each, 1 branch per Plan, and 2 statements per branch, with no Subplots. This baseline is close to the scale of \lstinline|RoyalBanquet|, the running example of Chapter~\ref{ch:design}, with 2 Roles, 3 Phases, and 1 Playbook: an ordinary small program, not a stress case. Appendix~\ref{app:default-config} lists it in full, and Table~\ref{tab:benchmark-default-result} shows its metrics.
+
+\begin{table}[htpb]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+Files generated & 5 (1 Director, 2 Role files, 2 Playbook files) \\
+Input LoC & 117 \\
+Output LoC & 269 \\
+Expansion ratio & 2.30$\times$ \\
+Compilation time & 1.6\,ms \\
+Peak RAM & 0.13\,MB \\
+\hline
+\end{tabular}
+\caption{Metrics recorded for the default benchmark configuration.}
+\label{tab:benchmark-default-result}
+\end{table}
+
+\subsection{Scaling Results}
+\label{sec:benchmark-results}
+ 
+This section measures what the cost of each construct amounts to in practice, scaling one dimension at a time against the default configuration. Each dimension was swept across a range suited to its cost, with cheap constructs, such as statements per branch, carried further than expensive ones, such as Subplot Depth. Table~\ref{tab:benchmark-single-dimension} reports each range, with the input size, output size, and compilation time at its two ends. Actions, Events, and Facts are left out of this analysis, since an unreferenced declaration produces no output.
+
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Dimension} & \textbf{Range} & \textbf{Input LoC} & \textbf{Output LoC} & \textbf{Compile time} \\
+\hline
+Roles                 & 1 $\to$ 1000 & 110 $\to$ 7{,}103 & 229 $\to$ 40{,}189 & 1.9 $\to$ 133.5\,ms \\
+Phases                & 1 $\to$ 200  & 102 $\to$ 3{,}087 & 257 $\to$ 2{,}645  & 1.7 $\to$ 45.1\,ms \\
+Playbooks             & 0 $\to$ 250  & 64 $\to$ 3{,}589  & 191 $\to$ 6{,}717  & 1.0 $\to$ 57.6\,ms \\
+Plans per Playbook    & 1 $\to$ 200  & 105 $\to$ 2{,}493 & 251 $\to$ 3{,}833  & 1.7 $\to$ 42.9\,ms \\
+Branches per Plan     & 0 $\to$ 50   & 105 $\to$ 705     & 253 $\to$ 1{,}249  & 1.6 $\to$ 13.2\,ms \\
+Statements per Branch & 1 $\to$ 500  & 113 $\to$ 2{,}109 & 265 $\to$ 2{,}261  & 1.8 $\to$ 38.1\,ms \\
+Subplot Breadth       & 0 $\to$ 50   & 117 $\to$ 1{,}028 & 269 $\to$ 8{,}421  & 1.9 $\to$ 12.8\,ms \\
+Subplot Depth         & 0 $\to$ 6    & 117 $\to$ 2{,}768 & 269 $\to$ 20{,}933 & 1.9 $\to$ 34.1\,ms \\
+\hline
+\end{tabular}
+\caption{Each benchmark dimension scaled alone against the default configuration: the range swept, and the input size, output size, and compilation time measured at each end of that range. Every figure is the mean of five runs.}
+\label{tab:benchmark-single-dimension}
+\end{table}
+ 
+Compilation time grew close to linearly with the source size produced by every dimension, with exponents between 0.93 and 1.17, and peak memory followed it. Four dimensions grow slightly faster than linearly: Roles, Plans per Playbook, Branches per Plan, and Statements per Branch. Subplot Depth is the one dimension whose cost grows exponentially in its own parameter, from 1.9\,ms at depth 0 to 34.1\,ms at depth 6. The cause is the source, not the output: the generator writes every Subplot as a Plot of its own, and each nesting level multiplies the number of Plots by the branching factor, so the source grows exponentially with depth. Relative to that source, the two Subplot dimensions are the cheapest to compile, at about 12\,ms per thousand lines, although they expand the most, since each Subplot compiles to a Director file and a Role file of its own (Section~\ref{sec:playbook-reachability}). At depth 6, the transpiler turns 2{,}768 lines of Regia into 20{,}933 lines of AgentSpeak across 257 files, in 34\,ms.
+
+Comparing the dimensions shows what controls the cost. Pooling every point of the eight sweeps, the regression of compilation time against Regia source size gives an exponent of 1.03, with a 95\% interval of 1.005 to 1.062, and a close fit ($R^2 = 0.99$): Figure~\ref{fig:benchmark-compile-scaling} shows the eight dimensions falling together on one line. Against generated AgentSpeak size, the same regression fits far more loosely ($R^2 = 0.79$), since a line of Regia expands into different amounts of AgentSpeak depending on its construct, while costing about the same to compile. Per thousand lines of Regia, the eight dimensions span 12.3 to 18.8\,ms at the top of their ranges.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/sweeps_vs_input.png}
+    \caption{Compilation time against Regia source size, on logarithmic axes, for all eight benchmarked dimensions. The dimensions fall together on one line, with a pooled exponent of 1.03.}
+    \label{fig:benchmark-compile-scaling}
+\end{figure}
+
+ 
+The compiler's work is therefore controlled by the program an author writes, not by the program it emits. This follows from the pipeline of Chapter~\ref{ch:implementation}: five of its six phases read, build, and check the input, and only the last writes output. A construct that expands into much AgentSpeak costs no more to compile than one that expands into little.
+
+The expansion ratio makes the same point from the other side. It depends on the constructs a program is made of, not on the language: scaling Roles reaches 5.66$\times$ and Subplot Breadth 8.19$\times$, since each produces whole files of largely fixed content, while scaling Statements falls to 1.07$\times$ and Phases to 0.86$\times$, fewer lines of AgentSpeak than of Regia. The 2.30$\times$ of the default configuration is one point in this range, not a general figure for the language.
+
+\subsection{Scaling Interactions}
+\label{sec:benchmark-interactions}
+ 
+The dimensions of Section~\ref{sec:benchmark-results} were scaled in isolation. Two further scenarios test whether costs compound when several dimensions grow together, reflecting two ways a Regia project could grow.
+
+\subsubsection{A Realistic Project, Scaled}
+\label{sec:full-game-scaling}
+ 
+The first scenario reproduces the profile of the case-study game of Section~\ref{sec:for-science}, with 3 Roles, 3 Phases, 10 Playbooks, and 4 Plans per Playbook, and scales these four components proportionally, since they would grow most over a game's development. We measure projects two, five, ten, and twenty times the size of the case study; Table~\ref{tab:full-game-scaling-points} reports the five points. The 1$\times$ point compiles faster than the game itself, in 7.1\,ms against 16.6\,ms (Table~\ref{tab:test-compilation}): it reproduces only the game's size profile, not its content, and is a single generated source with no imports to read and resolve.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Scale} & \textbf{Source LoC} & \textbf{Output LoC} & \textbf{Compile time} \\
+\hline
+1$\times$ (profile reconstruction) & 433 & 877 & 7.1\,ms \\
+2$\times$ & 1{,}284 & 2{,}238 & 20.9\,ms \\
+5$\times$ & 7{,}041 & 10{,}965 & 125.5\,ms \\
+10$\times$ & 27{,}316 & 40{,}990 & 568.0\,ms \\
+20$\times$ & 107{,}916 & 159{,}090 & 3.00\,s \\
+\hline
+\end{tabular}
+\caption{Source size, output size, and compilation time at each tested scale of the realistic-project scenario, reconstructed from \emph{Everything For Science!}'s profile.}
+\label{tab:full-game-scaling-points}
+\end{table}
+ 
+Figure~\ref{fig:full-game-growth} plots compilation time against source size on logarithmic axes, with a dashed reference line extending the linear rate of the 1$\times$ point. The regression across the five points gives an exponent of 1.09, with a 95\% interval of 1.02 to 1.16. Scaling the four constructs together therefore grows slightly faster than linearly, although the interval overlaps that of the pooled single-dimension sweeps. Cost per source line rises from 16.5\,ms per thousand lines at the case-study profile to 27.8\,ms at twenty times that size, a factor of 1.7 over a 250-fold increase in source size, while peak memory grows from 0.7\,MB to 209\,MB.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/realistic_project.png}
+    \caption{Compilation time against Regia source size, on logarithmic axes, for the realistic-project scenario, against a dashed reference line extending the 1$\times$ point's own linear rate. The measured curve pulls slightly above the reference as the project grows, a growth exponent of 1.09.}
+    \label{fig:full-game-growth}
+\end{figure}
+ 
+The largest configuration is far beyond a realistic project: 107{,}916 lines of Regia, compiling to 159{,}090 lines of AgentSpeak across 263 files, in 3.0\,s.
+
+\subsubsection{Construct Mix at Matched Size}
+\label{sec:shape-comparison}
+ 
+The second scenario compares two compositions at equal size. The \emph{narrative-heavy} configuration scales Roles and Phases together, with Playbook content fixed at the default, describing a plot-driven system. The \emph{reactive-heavy} configuration scales Playbooks and Plans together, with Roles and Phases fixed, growing local behaviour. Since their input parameters cannot be matched, we compare the two curves at matched source size, interpolating between measured points where needed. Table~\ref{tab:construct-mix-comparison} and Figure~\ref{fig:benchmark-shape-comparison} report compilation cost per thousand lines of Regia.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Source size (LoC)} & \textbf{Reactive-heavy (ms/1k lines)} & \textbf{Narrative-heavy (ms/1k lines)} \\
+\hline
+$\sim$300 & 16.3 & 15.9 \\
+$\sim$1{,}000 & 17.3 & 17.8 \\
+$\sim$4{,}000 & 18.5 & 18.9 \\
+\hline
+\end{tabular}
+\caption{Normalised compilation cost for the reactive-heavy and narrative-heavy construct mixes, at three matched source sizes, interpolated from the measured sweep points.}
+\label{tab:construct-mix-comparison}
+\end{table}
+ 
+Across the source sizes both sweeps cover, from 100 to about 8{,}000 lines, the two curves stay between 0.8\% and 10.9\% apart, and cross at about 350 lines, so neither composition is consistently the cheaper. Normalised cost rises by a factor of 1.24 for narrative-heavy and 1.19 for reactive-heavy. The two compositions behave almost identically: which constructs a program is built from does not determine what compiling it costs.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/construct_mix.png}
+    \caption{Normalised compilation cost against Regia source size, for the reactive-heavy and narrative-heavy construct mixes. The two curves cross at about 350 lines, and stay within 11\% of each other across the range measured.}
+    \label{fig:benchmark-shape-comparison}
+\end{figure}
+ 
+\medskip
+ 
+Both scenarios grew close to linearly in the size of the program an author writes. Scaling four constructs together gave an exponent of 1.09, slightly above linear, and the two construct mixes stayed within 11\% of each other at matched source size. The largest configuration, twenty times the size of a complete game, compiled in 3.0\,s within 209\,MB. Section~\ref{sec:discussion} returns to these results.

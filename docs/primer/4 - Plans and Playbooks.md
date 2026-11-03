@@ -48,7 +48,7 @@ Statements are actions. These can be custom actions, or basic ones, already impl
 + `BROADCAST()`: Send a message to all other agent instances
 + `TELL()`: send a message to a specific instance/role
 + `SIGNAL()`: Send a message to the Director agent which assigned this playbook
-These are the ones which can be used inside of a playbook definition. Before using them , one should use `DO` #change we may remove the need of DO for basic actions (SIGNAL already does not need it) and only keep it for custom ones. #change we may add an action to remove a goal. Also, we may change the word from achieve to pursue, and the removal one may be something similar to discard
+These are the ones which can be used inside of a playbook definition. Before using them , one should use `DO` #changes we may remove the need of DO for basic actions (SIGNAL already does not need it) and only keep it for custom ones. #changes we may add an action to remove a goal. Also, we may change the word from achieve to pursue, and the removal one may be something similar to discard
 
 Playbooks group plans simply by inserting them in their block
 ```regia

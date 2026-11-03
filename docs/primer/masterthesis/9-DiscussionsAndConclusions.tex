@@ -1,0 +1,103 @@
+\chapter{Discussion and Conclusions}
+\label{ch:discussion}
+
+Chapter~\ref{ch:experiments} put Regia to use, and Chapter~\ref{ch:evaluation} measured it through an evaluation framework. Neither answers on its own whether the language does what it was built to do. This chapter does. Section~\ref{sec:discussion} first returns to the requirements of Chapter~\ref{ch:requirements}, then weighs the evidence of both chapters against the three concerns Chapter~\ref{ch:related_work} found no existing system to address at once: accessibility to an author who does not program, deliberative reasoning, and embodiment in a game engine. The limits set out in Section~\ref{sec:threats} apply throughout. Section~\ref{sec:limitations} states what the language and its tools do not yet do, and the work that follows, and Section~\ref{sec:conclusions} concludes.
+
+\section{Discussion}
+\label{sec:discussion}
+ 
+\subsection{Requirements Revisited}
+\label{sec:requirements-revisited}
+ 
+Chapter~\ref{ch:requirements} derived five requirements from our collaboration with Untold Games (Table~\ref{tab:requirements}). Table~\ref{tab:requirements-status} gives the status of each and where the evidence for that judgement lies. Two are met in full. The three met in part fall short for different reasons, which the rest of this section takes up.
+ 
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|p{3.9cm}|p{1.6cm}|c|p{6.0cm}|}
+\hline
+\textbf{Requirement} & \textbf{Stated in} & \textbf{Status} & \textbf{Evidence} \\
+\hline
+R1: Accessible syntax and vocabulary
+ & Section~\ref{sec:syntax-accessibility} & Partial
+ & Syntax designed to it (Chapter~\ref{ch:design}); read and written well by programmers new to Regia (Section~\ref{sec:q-results}); not tested with designers (Section~\ref{sec:threats}) \\
+\hline
+R2: A narrative-centred model
+ & Section~\ref{sec:agents-to-narratives} & Met
+ & Plots, Roles, and Playbooks (Chapter~\ref{ch:design}); a complete game (Section~\ref{sec:for-science}); Role and Organization matched in full (Section~\ref{sec:faml-comparison}) \\
+\hline
+R3: Dynamically assigned behaviour
+ & Section~\ref{sec:dynamic-behavior} & Partial
+ & \lstinline|ASSIGN| and \lstinline|UNASSIGN| (Chapter~\ref{ch:design}); \lstinline|PRIORITY| not enforced by the platform, forcing manual withdrawal (Section~\ref{sec:test-observations}) \\
+\hline
+R4: A visual representation of the narrative
+ & Section~\ref{sec:visualization} & Partial
+ & The Visual Editor (Section~\ref{sec:editor}); one Plot rendered, two edit operations (Section~\ref{sec:editor-limitations}); not part of the questionnaire (Section~\ref{sec:q-instrument}) \\
+\hline
+R5: Modularity and reuse
+ & Section~\ref{sec:modularity-reuse} & Met
+ & Imports, Subplots, and Role mappings (Chapter~\ref{ch:design}); a Subplot added while touching the main Plot in two places (Section~\ref{sec:test-observations}) \\
+\hline
+\end{tabular}
+\caption{The requirements of Chapter~\ref{ch:requirements}, whether each was met, and where the evidence for that judgement lies.}
+\label{tab:requirements-status}
+\end{table}
+ 
+\subsection{Accessibility}
+\label{sec:discussion-accessibility}
+ 
+Programmers who had not seen Regia before read it well and wrote it mostly correctly (Section~\ref{sec:q-results}). Whether designers without programming experience can do the same is not established, since the sample consists mostly of programmers (Section~\ref{sec:threats}). Within this audience, individual statements and the overall structure of the language were well understood, but two concepts were misread more often than the rest: the Role abstraction, and how long a \lstinline|WHEN| block stays active. The second is exactly the structure the Visual Editor draws, which the questionnaire did not test (Sections~\ref{sec:editor} and~\ref{sec:q-instrument}).
+
+The Role is at once one of the language's most effective constructs and the one readers misread most often. It is the one element that connects the global and local levels of the narrative. In \emph{Everything For Science!}, it let the Cop and Dog agents move from the main Plot into a Subplot without new agents or changes to their Playbooks (Section~\ref{sec:test-observations}). In the evaluation, however, a sizeable minority of respondents read a Role as naming a single agent (Section~\ref{sec:q-results}). The notation offers one possible explanation, since \lstinline|ROLE Host.| has the form of a declaration of a single entity. The misreading may equally arise from how the explanatory document introduced Roles, or from programming habits in which a declaration introduces one object, and the questionnaire cannot distinguish between these. In each case, the remedy lies in how a Role is introduced, in the language or in its documentation, and Section~\ref{sec:limitations} returns to it.
+
+Error protection was the quality measure respondents rated lowest (Section~\ref{sec:q-results}). Yet most of the errors in the generation task concern syntax, or vocabulary used without being declared (Table~\ref{tab:q-errors}), and the transpiler reports both, with a location and a correction hint (Section~\ref{sec:error-reporting}). The weakness respondents perceived may therefore be partly one the tooling already addresses. The data cannot confirm this: no respondent used the transpiler, and whether its diagnostics help authors correct their programs has not been tested.
+
+Section~\ref{sec:stakeholders} asked that a designer be able to check that their intent survived the translation into code, which presupposes that a reader can tell whether they have understood. The evidence on this point is inconclusive. Respondents who judged Regia easy to understand scored higher than those who did not, but the correlation between self-rated and measured comprehension is weak, and this sample cannot establish its direction (Section~\ref{sec:q-results}).
+
+\subsection{Deliberation and Expressiveness}
+\label{sec:discussion-expressiveness}
+ 
+At run time, Regia exposes the primitives of the BDI model in full. FAML's Belief, Event, Plan, Action, and Agent Goal concepts are all matched completely, the last through the \lstinline|ACHIEVE| special action, which posts a goal for an agent to pursue (Tables~\ref{tab:faml-design-mapping} and~\ref{tab:faml-runtime-mapping}). What Regia lacks is the declarative side of the model. FAML's System Goal, Mental State Specification, and Mental State concepts have no counterpart: a plan can post a goal, but an author cannot declare a state that an agent, or the system as a whole, is meant to reach. Concepts of different nature take their place. A Plot's Phases and the transitions between them determine where a narrative is heading, so the direction of the system is written as a sequence of story stages rather than as goals to achieve. This follows the decision of Section~\ref{sec:agents-to-narratives} to place the narrative at the centre of a program, and it has a cost: what an agent pursues is left to Jason's reasoning cycle, through what plans their Playbooks make available to them, while the author decides only when an agent's behaviour changes.
+ 
+One of the means an author has for making that decision does not fully reach the running program. \lstinline|PRIORITY| ranks plans that respond to the same Event, but Jason's default plan selection does not consume the annotation, as Section~\ref{sec:priority-temper} notes. Respondents read its intended meaning correctly (Section~\ref{sec:q-results}), and building the case study showed the consequence of its absence. A Subplot was meant to override the main Plot's plans through \lstinline|PRIORITY| while both remained assigned; instead, the main Plot had to withdraw its own Playbooks explicitly, and so had to know that the Subplot existed (Section~\ref{sec:test-observations}). Where this happens, what an author writes and what the program does diverge. The limitation lies in the platform rather than in the language, and Section~\ref{sec:limitations} considers how it could be addressed.
+ 
+Regia's expressive gaps are of two kinds. Some follow from its scope, as Section~\ref{sec:faml-comparison-interpretation} shows for FAML's design-time concepts. Others were not intended, and surfaced independently. Building the game showed that, since Events take no parameters, nine of its 31 Events could have been three; and that, since \lstinline|IF| and \lstinline|ELSE| branches share no continuation, logic common to every branch must be repeated in each (Section~\ref{sec:test-observations}). In the generation task, a share of the errors used constructs Regia does not provide in the form written (Table~\ref{tab:q-errors}), recording what respondents expected to be able to write: forms Regia provides only in a narrower shape, or not at all. Widening them would remove some of the repetition the case study found, at the cost of the simplicity the language was designed for; Section~\ref{sec:limitations} weighs that trade.
+
+\subsection{Embodiment and Practicality}
+\label{sec:discussion-embodiment}
+
+A complete game written in Regia runs inside the Godot engine (Section~\ref{sec:for-science}). Regia reaches it through VEsNA rather than addressing embodiment itself, so what it contributes on this axis is a higher-level way to author what VEsNA already embodies. The toolchain needed to build a complete game does not appear to limit how large a Regia project can grow. Compilation cost follows the size of the source an author writes, close to linearly for every construct measured, and a project twenty times the size of the case study, 107{,}916 lines of Regia, compiles in 3.00\,s within 209\,MB (Sections~\ref{sec:benchmark-results} and~\ref{sec:benchmark-interactions}). 
+
+What grows with a project is the work outside Regia. The transpiler stops at agent source (Section~\ref{sec:emission}): each declared Action must be backed by a hand-written internal action, each agent must be declared in the deployment configuration, and each message must be handled in the engine. The 14 Actions of the case study each required a file of their own (Section~\ref{sec:test-infrastructure}). This cost is paid once per Action, so a project that grows by adding Plots, Playbooks, or Roles over an existing vocabulary adds none of it.
+
+\subsection{Regia Against Related Work}
+\label{sec:discussion-related-work}
+ 
+Chapter~\ref{ch:related_work} found that no system it surveyed treats a scenario involving several independently reasoning agents as its own authorial unit, accessible to someone without a programming background, down to how each agent deliberates (Section~\ref{sec:related-work-summary}). Regia addresses all three parts of that combination, with the qualifications established in the preceding subsections.
+ 
+Scribe, the system Chapter~\ref{ch:related_work} found closest to this combination, joins accessibility with narrative orchestration but draws its boundary explicitly at the behaviour of each character, which it leaves to separate systems. Regia places both on the same side of that boundary: a Plot orchestrates the narrative and a Playbook defines how each agent within it behaves, in one language that compiles to BDI agents.
+
+ 
+\subsection{Applicability Beyond Games}
+\label{sec:beyond-games}
+ 
+Regia was designed for games, but its model is not specific to them, and three common multi-agent scenarios show where it fits. For a single autonomous agent, such as a cleaning robot, Regia adds structure without benefit: with one participant and no scenario to coordinate, Plots and Roles have nothing to organise, and plain AgentSpeak describes the agent more directly. A market scenario, such as an auction, falls outside what Regia can express. Bidding requires an agent to compute and compare values, and Regia has no variables or arithmetic (Section~\ref{sec:syntax-accessibility}); that reasoning would have to be delegated to Actions implemented outside the language. A coordinated search, such as a team of rescue drones looking for a missing person, matches Regia's model closely. The mission divides into phases, from sweeping an area to converging on a sighting. Drones take Roles, such as scout and relay, and each Role receives the Playbook its phase requires, while handling a sighting can become a Subplot. The Director that sequences a narrative would sequence the mission in the same way. Since Regia compiles to standard Jason agents, such a system would run in any Jason environment, not only in Godot. We have not built these systems, so this assessment rests on the language's design rather than on experience.
+
+\section{Limitations and Future Work}
+\label{sec:limitations}
+ 
+Several of the language's gaps have direct solutions. First, we plan to remove the full stops that terminate statements, and to delimit blocks by indentation instead, closer to Python; this removes the most common class of syntax error in the generation task (Table~\ref{tab:q-errors}). Events will be given parameters, in line with Facts and Actions. \lstinline|IF| and \lstinline|ELSE| blocks will be brought closer to their counterparts in general-purpose languages, which is what respondents appeared to expect. The \lstinline|MAPPING| clause will state how many members of a Role are mapped into a Subplot, making explicit what readers most often misread (Section~\ref{sec:discussion-accessibility}). \lstinline|PRIORITY| will be enforced, either through a custom plan selection function in Jason, analogous to the one VEsNA uses for \lstinline|TEMPER|, or in the interpreter described below. New features are planned as well: a structure for dialogue, which every narrative language of Section~\ref{sec:narrative-dsls} provides, the scheduling of actions, and a more direct expression of deliberation (Section~\ref{sec:discussion-expressiveness}).
+
+Among the tools, the visual editor has the most room for improvement, and we plan to change the transpiler to integrate with it more closely. In particular, we plan to rewrite the transpiler in Rust. Python served it well while the language was changing quickly, which is no longer the case. A Rust transpiler could run alongside the editor in the browser, removing the dependency on an external interpreter. The rewrite would also build into the pipeline decisions reached during development, such as the optional emission of concrete syntax trees. This would let edits made on the canvas be written back through the compiler rather than by manipulating text (Section~\ref{sec:graph-to-source}). The transpiler will also generate default agent configuration files, reducing the work left outside Regia (Section~\ref{sec:discussion-embodiment}).
+
+Other extensions are being developed within our department. A C++ AgentSpeak interpreter is the subject of Francesco Matano's master's thesis~\cite{Matano2026}. It would remove the dependency on the Java runtime, adapt more easily to Regia's needs, and integrate more closely with game engines; a Godot plugin, letting the system communicate with the game through native signals, is being developed as part of the same work. Another project aims to translate natural-language descriptions of narratives into Regia code, further reducing the authoring burden.
+
+A larger study is also needed, of the shape Section~\ref{sec:threats} implies: more participants, designers rather than programmers, working in the editor rather than only through text. Our collaboration with Untold Games will continue as the language develops, which makes such a study possible, and we plan to involve other studios, to increase the generality of our results.
+
+\section{Conclusions}
+\label{sec:conclusions}
+ 
+Game designers describe characters by what they know, want, and have decided to do. The systems that bring those characters to life, however, are written by programmers, in terms designers cannot read. This thesis presented Regia, a domain-specific language in which designers author Belief-Desire-Intention agents at the level of the narrative. Plots describe scenarios, Roles the parts within them, and Playbooks the behaviour an agent receives while playing a part. Regia compiles to AgentSpeak for the Jason interpreter, comes with a visual editor for the structure of a narrative, and runs in the Godot engine through VEsNA.
+ 
+The evidence supports the approach within clear limits. A complete, branching game was written in Regia, and compilation cost grows almost linearly with source size, regardless of contents: a project twenty times the size of that game compiles in about three seconds. Regia covers the runtime concepts of a metamodel of agent-oriented methodologies well and its design-time concepts less, a consequence of centring the narrative rather than the agent. Respondents new to the language, mostly programmers, read and wrote it largely correctly, although many misread what a Role denotes. Of the five requirements, two are met in full and three in part. Above all, the language now needs a study with the designers it was built for. Regia shows that the narrative, rather than the individual agent, can be the unit a designer writes, while each character still deliberates on its own.
+

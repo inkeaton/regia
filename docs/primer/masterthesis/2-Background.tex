@@ -1,0 +1,280 @@
+\chapter{Background}
+\label{ch:background}
+ 
+In this chapter we introduce the concepts this thesis builds on. Section~\ref{sec:game-ai-models} presents the methods the videogame industry uses to build intelligent agents. Section~\ref{sec:bdi} contrasts them with the Belief-Desire-Intention model, and Section~\ref{sec:agentspeak} presents its implementation through AgentSpeak and Jason. Section~\ref{sec:drama-management} discusses drama management in the game design literature, Section~\ref{sec:dsl} domain-specific languages, and Section~\ref{sec:integration-architecture} the VEsNA project.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Game AI: Standard Behaviour Models}
+\label{sec:game-ai-models}
+ 
+Game designers implement agent behaviour with an established set of methods, from finite state machines to planning-based techniques. This section introduces each paradigm, its authoring model, and its known limitations, which Section~\ref{sec:bdi} contrasts with the deliberative reasoning of the BDI model.
+ 
+\subsection{Finite State Machines}
+\label{sec:fsm}
+ 
+A finite state machine (FSM) represents an agent's behaviour as a set of discrete states, together with transitions between them~\cite{Millington2019}. For example, an agent implementing a guard may possess states such as \lstinline|Patrol|, \lstinline|Chase|, or \lstinline|Attack|. At any point in time exactly one state is active, and the agent executes only the logic associated with it. Transitions fire when a specified condition or event occurs, moving the agent from one state to another. Figure~\ref{fig:fsm_example} illustrates a simple FSM graph.
+ 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/fsm_example.png}
+    \caption{A simple finite state machine diagram demonstrating discrete states and explicit event-driven transitions.}
+    \label{fig:fsm_example}
+\end{figure}
+ 
+FSMs offer two properties that make them attractive to designers. First, their behaviour is easy to predict, since an agent in a given state can only perform the actions associated with it. Second, the model maps onto a visual notation that most designers can read and edit without programming experience.
+ 
+The model does not scale well: as states are added, the number of transitions grows quadratically, since every state may need a transition to every other relevant state~\cite{Millington2019}. This effect, commonly called \textit{state explosion}, forces designers to revisit existing transitions whenever they add a state, risking regressions in behaviour that previously worked. A large FSM also becomes hard to visualise, since its states and transitions are too many to inspect as a whole.
+ 
+\subsection{Behaviour Trees}
+\label{sec:behaviour-trees}
+ 
+Behaviour trees address the maintainability problems of finite state machines by organising behaviour hierarchically rather than as a flat graph of states~\cite{Iovino2022}. A behaviour tree consists of composite nodes, decorator nodes, and leaf nodes, as shown in Figure~\ref{fig:bt_example}. Composite nodes control how their children execute: a sequence node runs its children in order and fails as soon as one child fails, while a selector node tries its children in order and succeeds as soon as one child succeeds. Decorator nodes wrap a single child and modify its behaviour or return value, for example by inverting a success into a failure or by imposing a cooldown between executions. Leaf nodes represent atomic actions or condition checks and return one of three statuses: success, failure, or running. The tree evaluates once per simulation step, starting from the root and propagating status values back up through the hierarchy~\cite{Iovino2022}, a process game developers call a \textit{tick}.
+ 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/bt_example.png}
+    \caption{A behaviour tree structure detailing the hierarchical arrangement of composite, decorator, and leaf nodes.}
+    \label{fig:bt_example}
+\end{figure}
+ 
+Behaviour trees sit at a lower level of abstraction than FSMs, and may appear less accessible. They offer, however, two advantages that matter in larger productions. Because subtrees are self-contained, designers can reuse and recombine them without altering unrelated parts of the tree, which mitigates the state explosion of Section~\ref{sec:fsm}. The tree structure is also at least as easy to visualise as a state graph. Since their popularisation in \textit{Halo 2} (2004) ~\cite{Isla2023}, behaviour trees have become a standard authoring model for game AI, and mainstream engines such as Unreal Engine provide visual, node-based editors for them~\cite{Yannakakis2025}.
+ 
+\subsection{Goal-Oriented Action Planning}
+\label{sec:goap}
+ 
+Goal-Oriented Action Planning (GOAP), introduced for the game \textit{F.E.A.R.} (2005), shifts the authoring burden from explicit control flow to a declarative description of available actions~\cite{Orkin2006}. Rather than authoring transitions directly, the designer defines a set of atomic actions, annotating each one with preconditions and effects expressed over the current state of the game world, and defines one or more goals describing a desired world state.
+ 
+At runtime, a planner searches the space of available actions for a sequence that transforms the current world state into the goal state, constructing this plan dynamically rather than following a path authored in advance. Consequently, GOAP-driven agents can produce behaviour that the designer did not explicitly anticipate, while still respecting the constraints encoded in the preconditions and effects of each action~\cite{Orkin2006}. 
+ 
+GOAP thus moves the designer's effort from specifying control flow to specifying actions and goals. The same flexibility reduces authorial control: a designer cannot easily steer an agent towards a preferred behaviour, and the planner may produce behaviour that is valid but uninteresting.
+ 
+\subsection{Hierarchical Task Networks}
+\label{sec:htn}
+ 
+Hierarchical Task Network (HTN) planning offers an alternative to the bottom-up search used by GOAP. Instead of searching directly over primitive actions, an HTN planner decomposes a compound task into subtasks through designer-defined decomposition methods~\cite{Erol1994}, recursing until only primitive, directly executable tasks remain.
+ 
+Behaviour trees and HTNs are both hierarchical, but their execution models differ. A behaviour tree ticks reactively, adapting to the world state at every step. An HTN planner plans ahead~\cite{Kedalo2023}, producing a complete sequence of primitive actions before execution begins. If the world changes significantly during execution, the HTN must discard its plan and replan. Top-down decomposition resembles how designers describe complex behaviour, from a broad objective to its steps, but trades the reactivity of behaviour trees for deeper planning.
+ 
+\subsection{Reinforcement Learning}
+\label{sec:rl}
+ 
+Reinforcement Learning (RL) departs from the explicit authoring models above. Rather than authoring states, trees, or actions, the designer defines a reward function, and the agent learns a policy through trial and error that maximises its cumulative reward~\cite{Yannakakis2025}. Engines increasingly support this paradigm, for example through Unity ML-Agents~\cite{Juliani2018}. RL conflicts, however, with the authorial control game design requires~\cite{Yannakakis2025}. The learned behaviour is typically encoded in the weights of a neural network, a black box: if an agent acts undesirably during a narrative beat, the designer cannot inspect or adjust its logic, only change the reward function or the training environment and retrain, with no guarantee that the fix preserves other learned behaviour. RL excels in continuous control and locomotion, but is poorly suited to orchestrating precise, narrative-driven character interactions.
+ 
+\subsection{Shared Assumptions and the Authoring Gap}
+\label{sec:game-ai-summary}
+ 
+The paradigms of this section show a trade-off between authorability and deliberative depth. Reactive models such as behaviour trees give designers direct control but do not plan ahead. Planning models such as GOAP and HTN look ahead, but pursue one goal or task at a time, chosen by designer-defined relevance rather than weighed against competing motivations. Reinforcement Learning adapts to its environment, but hides its logic from the designer.
+ 
+The paradigms also share an assumption: they model an agent as a controller that selects actions, not as a character with motives. In games with a narrative, many agents are characters, and, as Chapter~\ref{ch:intro} noted, designers describe them in terms of what they know, what they want, and what they have decided to do. None of the paradigms above represents these notions explicitly. Section~\ref{sec:bdi} introduces the Belief-Desire-Intention model, which represents them as distinct mental attitudes, while keeping the agent's logic explicit.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Agent-Oriented Programming and the Belief-Desire-Intention Model}
+\label{sec:bdi}
+ 
+The Belief-Desire-Intention (BDI) model represents an agent's information, motivations, and commitments as distinct mental attitudes, while keeping the agent's logic explicit and authorable. This section introduces the philosophical origin of the model, its three mental attitudes, the reasoning cycle that connects them, and the wider paradigm of agent-oriented programming it belongs to.
+ 
+\subsection{Practical Reasoning and Intentions}
+\label{sec:bdi-origins}
+ 
+The BDI model originates in Michael Bratman's account of practical reasoning, reasoning directed at deciding what to do rather than what to believe~\cite{Bratman1987}. Bratman argues that intentions are a distinct mental attitude that cannot be reduced to desires. A desire expresses something an agent would like to achieve, without commitment; an intention expresses a desire the agent has committed to pursuing. Once adopted, an intention constrains further deliberation: the agent does not normally reconsider it unless new information calls it into question.
+ 
+This distinction between desiring and committing matches how designers describe characters (Section~\ref{sec:game-ai-summary}), and is absent from the paradigms of Section~\ref{sec:game-ai-models}. A behaviour tree, for example, re-evaluates its hierarchy at every tick and reacts only to the current state. It has no explicit representation of what the agent is committed to, beyond whichever leaf last returned a running status.
+ 
+\subsection{The BDI Architecture}
+\label{sec:bdi-architecture}
+ 
+Georgeff, Pell, Pollack, Tambe, and Wooldridge formalised Bratman's distinctions into a computational architecture built around three data structures~\cite{Georgeff1999}.
+ 
+\paragraph{Beliefs.} Beliefs represent the agent's information about itself and its environment. A belief does not need to be objectively true: it represents what the agent currently takes to be the case, and the agent revises it as new perceptions arrive.
+ 
+\paragraph{Desires.} Desires represent the states of the world the agent would like to bring about. An agent may hold several desires at once, and they may conflict, since nothing in the model requires them to be jointly achievable.
+ 
+\paragraph{Intentions.} Intentions represent the desires the agent has selected to pursue. Adopting intentions narrows the agent's desires down to those it is committed to acting upon. This provides the stability practical reasoning requires: an agent that reconsidered every intention at every step would spend its effort on deliberation rather than action.
+ 
+A control loop, the BDI reasoning cycle, connects the three structures. At each iteration, the agent perceives its environment and updates its beliefs. It then generates new desires, or options, consistent with its beliefs. Through deliberation, it selects among competing desires and commits to some of them as intentions. Through means-end reasoning, it selects and executes actions that work towards its intentions, and the cycle repeats. Figure~\ref{fig:bdi-cycle} illustrates the cycle.
+ 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/bdi_cycle.png}
+    \caption{The Belief-Desire-Intention reasoning cycle. Perception updates beliefs, deliberation selects intentions from competing desires, and means-end reasoning selects actions consistent with current intentions.}
+    \label{fig:bdi-cycle}
+\end{figure}
+ 
+Intentions persist across cycles until they are fulfilled, become impossible, or are dropped. This persistence lets a BDI agent pursue a long-term commitment while still reacting to new events: a new belief can generate a new desire, or revise an existing intention, without discarding the intentions already in progress.
+ 
+\subsection{Agent-Oriented Programming}
+\label{sec:aop}
+ 
+The BDI architecture belongs to a broader paradigm, agent-oriented programming, in which developers decompose software into autonomous agents rather than objects or procedures~\cite{Jennings2000}. An agent is a computational entity that perceives its environment, maintains an internal state, and decides autonomously which actions to take towards its objectives, running continuously without an external controller invoking it at each step. Jennings identifies autonomy, social interaction, and reactivity to a changing environment as the properties that distinguish agent-oriented software from conventional software components~\cite{Jennings2000}.
+ 
+Several computational realisations of the BDI architecture exist, differing mainly in how they represent and manipulate beliefs, desires, and intentions. Section~\ref{sec:agentspeak} presents AgentSpeak, the BDI language this thesis targets and the compilation target of the transpiler described in Chapter~\ref{ch:implementation}.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{AgentSpeak and Jason}
+\label{sec:agentspeak}
+ 
+Section~\ref{sec:bdi} described the BDI model as a conceptual architecture, without a concrete syntax. AgentSpeak provides this syntax~\cite{Rao1996}. We describe it as implemented by Jason, the interpreter developed by Bordini, H\"ubner, and Wooldridge~\cite{Bordini2007}, rather than as Rao's original specification. Jason is the compilation target of the transpiler of Chapter~\ref{ch:implementation}, and provides several extensions this thesis relies on. 
+
+Jason is also one of the three technologies of JaCaMo, a platform for multi-agent programming~\cite{Boissier2013}. JaCaMo combines Jason, which programs the agents, with CArtAgO, which models the shared environment as a set of \emph{artifacts}, objects exposing observable properties that agents perceive and operations that agents invoke, and with Moise, which specifies how agents are organised into groups and missions. A JaCaMo system is configured through a \lstinline|.jcm| file, which declares its agents, their source files, and the environment they share.
+
+This section presents the core constructs of AgentSpeak in BNF, from beliefs to complete plans, and then the features Jason adds.
+ 
+\subsection{Beliefs}
+\label{sec:agentspeak-beliefs}
+ 
+An AgentSpeak agent represents its beliefs as first-order logical atoms. The following production rules define the structure of a belief literal and its constituent terms:
+ 
+\begin{codeblock}[]{BNF}
+    <literal> ::= <atom> | <atom> "(" <term-list> ")" 
+    <term> ::= <atom> | <variable> | <number> | <string>
+\end{codeblock}
+ 
+A literal consists of a predicate name and an optional list of arguments. Variables begin with an uppercase letter and stand for values the agent determines during reasoning. Atoms begin with a lowercase letter and represent fixed symbols. The literal \lstinline|position(player, 10, 5)| represents a specific belief about the player's location, while \lstinline|hostile(Agent)| uses the variable \lstinline|Agent| to refer to an unspecified entity.
+ 
+The belief literals an agent holds form its belief base. Unlike the world states of the planning models of Section~\ref{sec:goap}, a belief base need not model the environment accurately: it reflects only what the agent takes to be true.
+ 
+\subsection{Goals and Events}
+\label{sec:agentspeak-events}
+ 
+AgentSpeak distinguishes two kinds of goal, both built on belief literals:
+ 
+\begin{codeblock}[]{BNF}
+    <goal> ::= "!" <literal> | "?" <literal>
+\end{codeblock}
+ 
+An achievement goal, prefixed by \lstinline|!|, asks the agent to bring about a state of affairs. A test goal, prefixed by \lstinline|?|, asks the agent to check whether a literal follows from its belief base. Agents do not pursue goals directly: posting a goal generates a triggering event, as does modifying the belief base. The language recognises six triggers:
+ 
+\begin{codeblock}[]{BNF}
+    <trigger> ::= "+" <literal> | "-" <literal> | "+!" <literal> | "-!" <literal> | "+?" <literal> | "-?" <literal>
+\end{codeblock}
+ 
+The \lstinline|+| and \lstinline|-| symbols denote the addition and deletion of a belief or goal. Every event is placed on an event queue, which the agent processes in order.
+ 
+\subsection{Plans and Execution}
+\label{sec:agentspeak-plans}
+ 
+A plan is the unit of reactive behaviour in AgentSpeak. It links a trigger to a body, guarded by a context:
+ 
+\begin{codeblock}[]{BNF}
+    <plan> ::= <trigger> ":" <context> "<-" <body> "."
+    <context> ::= "true" | <literal> | "not" <context> | <context> "&" <context>
+                | <context> "|" <context> | "(" <context> ")"
+    <body> ::= "true" | <formula> | <formula> ";" <body>
+\end{codeblock}
+ 
+The context is a logical condition over the agent's belief base, and the interpreter considers a plan only if its context holds when the triggering event occurs. The body is a sequence of actions, goals, and belief updates, separated by semicolons. The following two plans respond to the same event, a thief becoming visible:
+ 
+\begin{codeblock}[]{AgentSpeak}
++visible(Thief) : health(low) <- 
+    !flee.
+ 
++visible(Thief) : health(high) <- 
+    !attack(Thief).
+\end{codeblock}
+\codecaption{Two AgentSpeak plans responding to the same triggering event.}{lst:thief-plans}
+ 
+The contexts \lstinline|health(low)| and \lstinline|health(high)| are mutually exclusive given the agent's beliefs, so only one plan applies at a time. Context-based selection lets one event produce different behaviour depending on the agent's internal state, without a separate state for every combination, as a finite state machine would need (Section~\ref{sec:fsm}).
+ 
+\subsection{Plan Selection and Intentions}
+\label{sec:agentspeak-selection}
+ 
+When an event reaches the front of the queue, the interpreter collects every plan whose trigger matches it, the relevant plans. It then evaluates their contexts against the belief base, leaving the applicable plans. If several remain, a selection function chooses one. The interpreter places the chosen plan on the agent's intention stack, which represents the agent's commitment to executing its body. If the body posts further goals, the plans they trigger are stacked on top of the current intention: the outer plan is suspended, and resumes when the inner plan completes. This stack-based execution lets an agent pursue nested goals while preserving the commitment that motivated them.
+ 
+\subsection{Jason as a Concrete Interpreter}
+\label{sec:jason-overview}
+ 
+Rao's specification left several points open, among them the strategy the selection function should use to choose between applicable plans~\cite{Rao1996}. Jason, a Java-based interpreter, resolves them~\cite{Bordini2007}: its default selection function chooses the first applicable plan, in the order plans appear in the plan library. Jason also extends the language with strong negation, which lets an agent represent that a literal is false rather than unknown; plan-failure handling, which lets an agent react when an adopted plan cannot complete; and communication between agents through speech acts. A further extension, plan labels and annotations, is described next.
+ 
+\subsection{Plan Labels and Annotations}
+\label{sec:jason-annotations}
+ 
+The plan grammar of Section~\ref{sec:agentspeak-plans} attaches no metadata to a plan beyond its trigger, context, and body. Jason extends it with an optional label in front of the trigger, carrying an optional list of annotations~\cite{Bordini2007}:
+ 
+\begin{codeblock}[]{BNF}
+    <plan> ::= ("@" <label> ("[" <annotation> ("," <annotation>)* "]")?)? <plan-body>
+    <annotation> ::= <atom> | <atom> "(" <term> ")"
+\end{codeblock}
+ 
+Jason generates a label when none is given; an author supplies one mainly to attach annotations. Annotations are a general, extensible mechanism. Their main purpose is to let a programmer write a custom selection function that consults them when choosing among applicable plans, and an author may define application-specific annotations for this. Jason also reserves four annotations with an interpreter-level meaning~\cite{Bordini2007}, two of which matter to this thesis. \lstinline|atomic| guarantees that once a plan carrying it starts, no other intention is interleaved until it finishes; Chapter~\ref{ch:implementation} uses it to make phase transitions uninterruptible. \lstinline|priority| is meant to let the default selection function order applicable plans by an integer, higher values first. Bordini, H\"ubner, and Wooldridge, however, describe it as ``as yet unavailable, but a reserved plan annotation''~\cite{Bordini2007}: it belongs to the vocabulary of the specification, but the interpreter ignores it. Sections~\ref{sec:priority-temper} and~\ref{sec:modularity-reuse} return to this limitation.
+ 
+\subsection{The Environment Interface}
+\label{sec:jason-environment}
+ 
+AgentSpeak defines how an agent reasons over its beliefs and executes actions, but not where beliefs come from or what effect an action produces. Jason answers this through the environment interface, a component outside the reasoning cycle that delivers perceptions to the agent and executes its actions~\cite{Bordini2007}.
+ 
+At the start of each reasoning cycle, Jason queries the environment for the current observable literals and compares them with the beliefs the agent holds. A newly exposed literal is added to the belief base and generates a belief addition event; a literal no longer exposed is removed and generates a belief deletion event. An external system can therefore drive an agent's beliefs by exposing literals, without knowledge of the agent's logic.
+ 
+Action execution works in the opposite direction. When a plan body executes an action, Jason does not interpret its meaning, but forwards the action name and arguments to the environment interface, which produces the effect in the external system. This division lets the same agent logic run in different environments.
+ 
+\subsection{Internal Actions}
+\label{sec:jason-internal-actions}
+ 
+Agents also need computations that are not actions in the environment, such as arithmetic or list manipulation. Jason provides internal actions for these~\cite{Bordini2007}. An internal action is written with a namespaced identifier, such as \lstinline|math.sqrt(X, R)|, or, for Jason's standard library, with a leading period, such as \lstinline|.print|. Jason executes an internal action itself, from its own libraries, instead of forwarding it to the environment. Developers can also register custom internal actions, implemented in Java and exposed under a chosen namespace, to extend an agent's capabilities without a round trip through the environment.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Interactive Narrative and Drama Management}
+\label{sec:drama-management}
+ 
+Sections~\ref{sec:bdi} and~\ref{sec:agentspeak} described how a single BDI agent perceives, deliberates, and acts. Populating a game with several such agents, however, does not produce a coherent narrative, since nothing in these mechanisms coordinates agents towards a shared story. This section introduces interactive narrative research, which studies this coordination problem, and the drama management architectures it proposes.
+ 
+\subsection{The Agency-Coherence Tension}
+\label{sec:agency-coherence}
+ 
+Interactive narrative research studies how a system can present a story while giving the player some agency over how events unfold~\cite{Riedl2013}. This introduces a tension absent from traditional storytelling. A linear story guarantees coherence and pacing, because its author controls every event in advance. An interactive story cannot, since the player's choices determine which events occur, and a system that reacts to each player action in isolation risks producing events with no overall narrative shape.
+ 
+Riedl and Bulitko frame this problem as a balance between coherence and player agency~\cite{Riedl2013}. A system that scripts every outcome keeps the story coherent but removes the player's ability to affect it. A system that relies entirely on emergent agent behaviour risks producing disconnected events rather than a comprehensible plot. The \textit{drama manager} is proposed as a resolution: a component that observes the state of an interactive story and intervenes to keep it within author-defined bounds, without removing the player's immediate agency.
+ 
+\subsection{Two-Tier Architectures and the Authoring Bottleneck}
+\label{sec:two-tier-bottleneck}
+ 
+A drama manager typically operates alongside a separate layer of local, reactive behaviour, forming a two-tier architecture. The first tier consists of individual agents, responsible for moment-to-moment reactions. The second is the drama manager, which does not control any agent directly, but observes the global state and intervenes at a higher level, for example by introducing an event or moving the story to a new phase.
+ 
+Mateas and Stern's \textit{Fa\c{c}ade} (2005) is the canonical example of this model~\cite{Mateas2005}: character agents handle immediate reactive behaviour, while a global drama manager sequences high-level story beats. The project showed that a two-tier architecture can produce responsive, narrative-driven agents. It also exposed the limitation of the approach, its authoring burden. Mateas and Stern report that authoring the narrative and behaviour logic of their system required multiple person-years of specialised programming effort~\cite{Mateas2005}. The architecture works conceptually, but expressing it requires programming expertise.
+ 
+This authoring bottleneck is the gap this thesis addresses. The two-tier architecture suits narrative games, but designers need an accessible tool to author it. Domain-specific languages, introduced next, are a general software engineering answer to this kind of authoring burden, and Section~\ref{sec:agents-to-narratives} returns to the two-tier architecture.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Domain-Specific Languages}
+\label{sec:dsl}
+ 
+General-purpose languages require domain experts to translate their conceptual models into low-level code, a translation often called the semantic gap. Mernik, Heering, and Sloane define a Domain-Specific Language (DSL) as a language tailored to an application domain to bridge this gap~\cite{Mernik2005}. Its abstractions and notations are drawn from the domain's vocabulary rather than from general-purpose programming constructs. A DSL program can therefore read more like a description of the problem than an implementation of it. This lets domain experts work more productively, and reduces the likelihood of implementation errors.
+ 
+Van Deursen, Klint, and Visser distinguish two implementation strategies~\cite{vanDeursen2000}. A standalone DSL has its own compiler or interpreter, and is free to adopt whatever notation fits the domain. An embedded DSL lives inside a general-purpose host language, reusing its parser and approximating domain notation through user-defined operators or functions. Mernik, Heering, and Sloane describe the same trade-off~\cite{Mernik2005}. An embedded DSL inherits the power and tooling of its host, but its syntax is only as flexible as the host allows. A standalone DSL can match the domain's notation and report errors in the domain's terms, but requires building and maintaining a full language implementation.
+ 
+A standalone DSL does not need to generate machine code. Mernik, Heering, and Sloane list source-to-source translation among the ways to implement a DSL: a program in the new language is translated into a program in an existing one, which then compiles or interprets it as usual~\cite{Mernik2005}. A language implemented this way, commonly through a transpiler, keeps the notational freedom of a standalone DSL, while inheriting a runtime, a toolchain, and an execution model it does not have to build.
+ 
+Visual programming extends the accessibility principle of DSLs by replacing textual syntax with a graphical representation. DeLozier and Shey show empirically that visual programming environments lower the barrier to entry for novice programmers, compared with text-based alternatives~\cite{DeLozier2023}. A visual tool rules out syntax errors by restricting interaction to valid graphical connections. It also shows control flow and program state on screen, rather than requiring a reader to reconstruct them from code. Game designers, the audience of this thesis, typically combine expertise in game flow and narrative pacing with little software engineering training (Chapter~\ref{ch:intro}). This is the gap that both a domain-specific notation and its visual representation aim to close.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Integration Architecture: VEsNA and Godot}
+\label{sec:integration-architecture}
+ 
+An agent's beliefs and actions must ultimately connect to a running game world, and this connection raises problems of its own, which no authoring language solves. This section introduces the architectural conflict between a real-time engine and a BDI agent, Godot Engine, the environment this thesis assumes, and VEsNA, the framework that resolves the conflict for it.
+ 
+\subsection{The Real-Time Engine Environment and the Impedance Mismatch}
+\label{sec:godot-mismatch}
+ 
+A real-time game engine, such as Unity or Unreal Engine, is built around a synchronous, fixed-frequency update loop: rendering, physics, and audio are recomputed on every tick, typically dozens of times per second. A BDI reasoning cycle (Section~\ref{sec:bdi-architecture}) follows no such schedule. Its duration varies with the agent's beliefs and plans, and Jason's implementation of it (Section~\ref{sec:jason-overview}) is asynchronous by design. Mariani and Omicini identify connecting a general-purpose multi-agent system to a real-time game engine as an open research challenge, because of this mismatch~\cite{Mariani2016}. Forcing reasoning to run within the engine's tick budget risks either cutting deliberation short or stalling the rendering loop while it waits. Running the two fully decoupled, with no synchronisation, risks missed perceptions and actions applied out of order. Some bridging mechanism is therefore needed, whichever engine and agent platform are involved.
+ 
+Godot Engine is the engine this thesis targets~\cite{GodotEngine}. It is open source, and VEsNA has adopted it. Godot organises a running game as a hierarchical scene tree, in which entities are nodes that communicate mainly through signals: when a notable event occurs, a node emits a signal, and nodes listening for it react. This keeps a Godot project modular and event-driven, and is the mechanism a bridge to an external reasoning system plugs into.
+ 
+\subsection{VEsNA: Goals and Architecture}
+\label{sec:vesna-architecture}
+ 
+VEsNA (Virtual Environments via Natural language Agents) is a framework for building embodied BDI agents, developed by Gatti, Mascardi, and colleagues as an extension of Jason~\cite{Gatti2026}. Its scope is broader than the impedance mismatch: a VEsNA agent has a situated body, reasons spatially about its surroundings, communicates with users and other agents in natural language, and behaves according to a simulated personality and mood~\cite{Gatti2026}. The first published version targeted factory automation, letting a user without a programming background populate and query a simulated factory through natural-language commands, on a stack combining Dialogflow, JaCaMo, and Unity~\cite{Gatti2023, Gatti2022}. VEsNA has since generalised beyond that domain, and its current implementation runs on Jason on the agent side and targets Godot on the environment side~\cite{Gatti2026, Ferrando2026}.
+ 
+The part of VEsNA relevant to this thesis is how it resolves the impedance mismatch. A VEsNA agent is split into a mind and a body. The mind runs the BDI reasoning cycle; the body executes the mind's directives in the game engine and reports events and action outcomes back to it. The two communicate asynchronously, through JSON messages over a WebSocket connection, rather than within the engine's tick~\cite{Gatti2026}. Through this channel, the environment adds beliefs to an agent's mind, triggering its plans, and the agent sends commands that act on the environment. Neither the reasoning cycle nor the rendering loop waits on the other: synchronisation happens explicitly, through messages, rather than implicitly, through a shared call stack.
+ 
+VEsNA embodies an existing BDI agent in a live simulation. It does not address how a non-programmer authors that agent's logic, the problem this thesis addresses.

@@ -1,0 +1,496 @@
+\section{FAML Metamodel Mapping}
+\label{app:faml-mapping}
+
+
+\begin{longtable}{|p{0.14\textwidth}|p{0.22\textwidth}|p{0.16\textwidth}|c|p{0.28\textwidth}|}
+\caption{Full mapping of the 26 FAML design-time concepts to Regia constructs, with FAML's canonical definitions (Table 9 of Beydoun et al.).}
+\label{tab:faml-design-mapping} \\
+\hline
+\textbf{FAML Concept} & \textbf{FAML Definition} & \textbf{Regia Mapping} & \textbf{Support} & \textbf{Reasoning} \\
+\hline
+\endfirsthead
+\multicolumn{5}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\hline
+\textbf{FAML Concept} & \textbf{FAML Definition} & \textbf{Regia Mapping} & \textbf{Support} & \textbf{Reasoning} \\
+\hline
+\endhead
+\hline \multicolumn{5}{r}{{Continued on next page}} \\
+\endfoot
+\hline
+\endlastfoot
+
+Action Specification &
+Specification of an action, including any preconditions and post-conditions. &
+\lstinline|ACTION| declaration &
+Partial &
+Names and typed parameter slots exist; no precondition or postcondition can be declared. \\
+\hline
+
+Agent Definition &
+Specification of the initial state of an agent just after it is created. &
+(none) &
+None &
+No per-agent initial-belief or initial-state declaration construct exists. \\
+\hline
+
+Environment Statement &
+A Boolean statement about the environment. &
+\lstinline|FACT| declaration / \lstinline|IF| condition &
+Partial &
+Regia Facts are agent-scoped beliefs; the concept is conflated with Belief rather than kept as a distinct environment statement. \\
+\hline
+
+Facet Action Specification &
+Specification of a facet action in terms of the facet definition it will change and the new value it will write to the facet. &
+\lstinline|WORLD DO BELIEVE(fact).| (Director self-belief write) &
+Partial &
+A Director-held belief write is structurally facet-like, since it produces state shared above any single Role-playing agent, but it is not a typed, declared facet write. \\
+\hline
+
+Facet Definition &
+Specification of the structure of a given facet, including its name, data type and access mode. &
+(none) &
+None &
+No declaration distinguishes a shared, environment-level fact from an ordinary agent \lstinline|FACT|, and no per-role sense or change permission exists. \\
+\hline
+
+Functional Requirement &
+Requirement that provides added value to the users of the system. &
+(none) &
+None &
+Regia has no requirements layer. \\
+\hline
+
+Interaction Protocol &
+Specification of patterns of communications that occur in the system. &
+(none) &
+None &
+\lstinline|TELL| and \lstinline|BROADCAST| exist as primitives, but no protocol or conversation structure can be declared. \\
+\hline
+
+Mental State Specification &
+Specification of the initial mental state in terms of specified beliefs and agent goals. &
+(none) &
+None &
+\lstinline|TEMPER| declares personality thresholds, not an initial belief or goal state. \\
+\hline
+
+Message Action Specification &
+Specification of a message action in terms of the message schema and parameters to use. &
+\lstinline|DO TELL(...).| / \lstinline|DO BROADCAST(...).| &
+Full &
+Direct match to the reserved \lstinline|TELL| and \lstinline|BROADCAST| primitives. \\
+\hline
+
+Message Schema &
+Specification of the structure and semantics of a given kind of messages that can occur within the system. &
+(none) &
+None &
+\lstinline|TELL| and \lstinline|BROADCAST| take untyped argument lists; no schema can be declared. \\
+\hline
+
+Non-Functional Requirement &
+Requirement about any limits, constraints or impositions on the system to be built. &
+(none) &
+None &
+Regia has no requirements layer. \\
+\hline
+
+Ontology &
+Structural model of a given domain. &
+(none) &
+None &
+The \lstinline|ACTION|, \lstinline|EVENT|, and \lstinline|FACT| vocabulary is flat and untyped; no domain ontology construct exists. \\
+\hline
+
+Organization Definition &
+Specification of a collection of roles and agents co-operating towards a system goal. &
+\lstinline|PLOT| header (\lstinline|PHASE| and \lstinline|ROLE| declarations) &
+Full &
+A Plot's declared \lstinline|ROLE| set is exactly a collection of agents co-operating toward the Plot. \\
+\hline
+
+Plan Resource Specification &
+Specification of resources that are used in the Plan Specification. &
+(none) &
+None &
+Regia has no resource concept. \\
+\hline
+
+Plan Specification &
+An organized collection of action specifications. &
+\lstinline|WHEN| block body (\lstinline|DO| statement sequence) &
+Full &
+A \lstinline|WHEN| body compiles to an ordered AgentSpeak plan body. \\
+\hline
+
+Policy &
+A rule that specifies an arrangement of events expected to occur in a given environment. &
+(none) &
+None &
+\lstinline|DURING| and \lstinline|TRANSITION| give structure to the Plot, but no first-class, declarative Policy object exists. \\
+\hline
+
+Requirement &
+Feature that a system must implement. &
+(none) &
+None &
+Regia has no requirements layer. \\
+\hline
+
+Resource Specification &
+A resource specification specifies something that has a name, may have reasonable representations and that can be acquired, shared or produced. &
+(none) &
+None &
+Regia has no resource concept. \\
+\hline
+
+Role &
+Specification of a behavioural pattern expected from some agents in a given system. &
+\lstinline|ROLE| declaration &
+Full &
+Direct match. \\
+\hline
+
+Role Compatibility &
+Role relationship in which the source role is incompatible with the destination role for a given purpose. &
+(none) &
+None &
+No inter-role relationship can be declared. \\
+\hline
+
+Role Dependency &
+Role relationship in which the source role depends on the destination role for a given purpose. &
+(none) &
+None &
+No inter-role relationship can be declared. \\
+\hline
+
+Role Relationship &
+Social relationship between two roles for a given purpose. &
+(none) &
+None &
+\lstinline|MAPPING| binds roles across a subplot call, but it does not declare a persistent relationship between them. \\
+\hline
+
+Service &
+A single, coherent block of activity in which an agent will engage. &
+\lstinline|PLAYBOOK| &
+Partial &
+Playbooks bundle coherent behaviour, but they are not advertised or discoverable as services. \\
+\hline
+
+System &
+Final product of an agent-oriented software development project. &
+\lstinline|PLOT| / whole \lstinline|.regia| program &
+Partial &
+Regia has no single System wrapper distinct from an individual Plot. \\
+\hline
+
+System Goal &
+A specification of the state of the environment that the system tries to achieve. &
+(none) &
+None &
+The \lstinline|IF| guard preceding a \lstinline|TRANSITION| weakly resembles a goal condition, but no first-class goal-of-the-system object exists. \\
+\hline
+
+Task &
+Specification of a piece of behaviour that the system can perform. &
+\lstinline|ACTION| declaration (conflated) &
+Partial &
+Regia draws no Task/Action distinction; both collapse into \lstinline|ACTION|. \\
+\hline
+
+\end{longtable}
+
+\begin{longtable}{|p{0.14\textwidth}|p{0.22\textwidth}|p{0.16\textwidth}|c|p{0.28\textwidth}|}
+\caption{Full mapping of the 21 FAML runtime concepts to Regia constructs, with FAML's canonical definitions (Table 10 of Beydoun et al.).}
+\label{tab:faml-runtime-mapping} \\
+\hline
+\textbf{FAML Concept} & \textbf{FAML Definition} & \textbf{Regia Mapping} & \textbf{Support} & \textbf{Reasoning} \\
+\hline
+\endfirsthead
+\multicolumn{5}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\hline
+\textbf{FAML Concept} & \textbf{FAML Definition} & \textbf{Regia Mapping} & \textbf{Support} & \textbf{Reasoning} \\
+\hline
+\endhead
+\hline \multicolumn{5}{r}{{Continued on next page}} \\
+\endfoot
+\hline
+\endlastfoot
+
+Action &
+Fundamental unit of agent behaviour. &
+\lstinline|DO action| (compiled AgentSpeak action call) &
+Full &
+Direct match. \\
+\hline
+
+Agent &
+A highly autonomous, situated, directed and rational entity. &
+Role-bound agent instance (compiled Role \lstinline|.asl| running agent) &
+Full &
+Direct match. \\
+\hline
+
+Agent Goal &
+An environment statement which represents a state pursued by an agent. &
+\lstinline|DO ACHIEVE(goal).| $\rightarrow$ \lstinline|!goal| &
+Full &
+Direct match. \\
+\hline
+
+Belief &
+An environment statement held by an agent and deemed as true in a certain timeframe. &
+\lstinline|FACT| instance / \lstinline|DO BELIEVE(fact).| &
+Full &
+Direct match. \\
+\hline
+
+Communication &
+Composition of more than one message. &
+(none) &
+None &
+No conversation or communication object exists; only individual \lstinline|TELL| and \lstinline|BROADCAST| calls exist. \\
+\hline
+
+Environment &
+The world in which an agent is situated. &
+\lstinline|WORLD| pseudo-actor &
+Partial &
+\lstinline|WORLD| is only an action-call target, not a modelled Environment entity. \\
+\hline
+
+Environment History &
+The sequence of events that have occurred between the environment start-up and any given instant. &
+(none) &
+None &
+No event log construct exists. \\
+\hline
+
+Environment Statement &
+A statement about the environment. &
+\lstinline|FACT| / condition &
+Partial &
+The same caveat as the design-time concept applies: Regia conflates this with agent Belief. \\
+\hline
+
+Event &
+Occurrence of something that changes the environment history. &
+\lstinline|EVENT| declaration &
+Full &
+Direct match. \\
+\hline
+
+Facet &
+Property of the environment with which agents can interact. &
+Director-held belief (via \lstinline|WORLD DO BELIEVE|) &
+Partial &
+The belief is structurally shared, above any single Role-playing agent, but no typed declaration and no per-role access control exist. \\
+\hline
+
+Facet Action &
+Action that results in the change of a given facet. &
+\lstinline|WORLD DO BELIEVE(fact).| / \lstinline|WORLD DO FORGET(fact).| &
+Partial &
+The statement functions as a shared-state write, but it is an untyped belief operation rather than a declared facet action. \\
+\hline
+
+Facet Event &
+Event that happens when the value of a facet changes. &
+(none) &
+None &
+The internal event AgentSpeak triggers on a belief addition stays inside the Director; it does not propagate to sensing Role agents. \\
+\hline
+
+Mental State &
+Agent goals and beliefs held by an agent at a certain timeframe. &
+(none) &
+None &
+\lstinline|TEMPER| and \lstinline|EFFECTS| model emotion and personality, not a queryable belief-and-goal state. \\
+\hline
+
+Message &
+Unit of communication between agents, which conforms to a specific message schema. &
+Arguments of \lstinline|TELL| / \lstinline|BROADCAST| &
+Partial &
+The payload exists ad hoc, with no backing schema. \\
+\hline
+
+Message Action &
+Action that results in a message being sent. &
+\lstinline|DO TELL(...).| / \lstinline|DO BROADCAST(...).| &
+Full &
+Direct match. \\
+\hline
+
+Message Event &
+Event that happens when a message is sent. &
+\lstinline|EVENT| (conflated with the generic Event concept) &
+Partial &
+No distinct Message-Event subtype exists apart from an ordinary \lstinline|EVENT|. \\
+\hline
+
+Organization &
+A collection of agents with specified roles co-operating towards a system goal. &
+Director's \lstinline|role_agent(Role,Agent)| registry / running Plot instance &
+Full &
+Direct match. \\
+\hline
+
+Plan &
+An organized collection of actions that can be executed to pursue a particular agent goal. &
+Compiled AgentSpeak plan (from a \lstinline|WHEN| block) &
+Full &
+Direct match. \\
+\hline
+
+Resource &
+Something that has a name, may have reasonable representations and that can be acquired, shared or produced. &
+(none) &
+None &
+Regia has no resource concept. \\
+\hline
+
+Role &
+Specification of a behavioural pattern expected from some agents in a given system. &
+\lstinline|ROLE| / \lstinline|role_agent| binding &
+Full &
+Direct match. \\
+\hline
+
+System &
+Final product of an agent-oriented software development project. &
+Running Plot (Director agent and bound Role agents) &
+Partial &
+No explicit System runtime wrapper exists beyond a single Plot instance. \\
+\hline
+
+\end{longtable}
+
+
+\section{Default Benchmark Program}
+\label{app:default-config}
+
+The following listing reproduces the Regia program the benchmark generator of Section~\ref{sec:benchmark-tool} produces for the default configuration of Section~\ref{sec:benchmark-default}: 10 Actions, 10 Events, 5 Facts, 2 Roles, 2 Phases, and 2 Playbooks with 2 Plans each, 1 branch per Plan, and 2 statements per branch.
+
+\begin{codeblock}[]{Regia}
+# =======================================================
+# Generated by Regia Benchmark Generator
+# n_actions=10  n_events=10  n_facts=5
+# n_playbooks=2  n_plans=2
+# n_branches=1  n_stmts=2
+# n_roles=2  n_phases=2
+# n_subplot_breadth=0  n_subplot_depth=0
+# seed=42
+# =======================================================
+
+# == Actions ==
+ACTION act_0.
+ACTION act_1.
+ACTION act_2.
+ACTION act_3.
+ACTION act_4.
+ACTION act_5.
+ACTION act_6.
+ACTION act_7.
+ACTION act_8.
+ACTION act_9.
+
+# == Events ==
+EVENT evt_0.
+EVENT evt_1.
+EVENT evt_2.
+EVENT evt_3.
+EVENT evt_4.
+EVENT evt_5.
+EVENT evt_6.
+EVENT evt_7.
+EVENT evt_8.
+EVENT evt_9.
+
+# == Facts ==
+FACT fct_0.
+FACT fct_1.
+FACT fct_2.
+FACT fct_3.
+FACT fct_4.
+
+# =======================================================
+# Playbooks
+# =======================================================
+
+PLAYBOOK Playbook0:
+    WHEN evt_0:
+        IF fct_0:
+            DO act_0.
+            DO act_1.
+        ELSE:
+            DO act_0.
+    WHEN evt_1:
+        IF fct_1:
+            DO act_2.
+            DO act_3.
+        ELSE:
+            DO act_1.
+
+PLAYBOOK Playbook1:
+    WHEN evt_2:
+        IF fct_2:
+            DO act_4.
+            DO act_5.
+        ELSE:
+            DO act_2.
+    WHEN evt_3:
+        IF fct_3:
+            DO act_6.
+            DO act_7.
+        ELSE:
+            DO act_3.
+
+# =======================================================
+# Main Plot
+# =======================================================
+
+PLOT MainPlot.
+
+    PHASE phase_0 INITIAL.
+    PHASE phase_1.
+
+    ROLE Role0.
+    ROLE Role1.
+
+    DURING PLOT:
+        WHEN evt_0:
+            END PLOT.
+
+    DURING phase_0:
+        ON ENTER:
+            ASSIGN Playbook0 TO Role0.
+            WORLD DO act_0.
+            ASSIGN Playbook1 TO Role1.
+            WORLD DO act_1.
+
+        ON EXIT:
+            UNASSIGN Playbook0 FROM Role0.
+            UNASSIGN Playbook1 FROM Role1.
+
+        WHEN evt_1:
+            TRANSITION TO phase_1.
+
+    DURING phase_1:
+        ON ENTER:
+            ASSIGN Playbook0 TO Role0.
+            WORLD DO act_0.
+            ASSIGN Playbook1 TO Role1.
+            WORLD DO act_1.
+
+        ON EXIT:
+            UNASSIGN Playbook0 FROM Role0.
+            UNASSIGN Playbook1 FROM Role1.
+
+        WHEN evt_2:
+            END PLOT.
+\end{codeblock}
+%\codecaption{The Regia program generated for the default benchmark configuration.}{lst:default-config}

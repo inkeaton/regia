@@ -1,0 +1,390 @@
+\chapter{Implementation}
+\label{ch:implementation}
+ 
+This chapter describes the two artifacts that realise Regia in practice: a Python transpiler that turns \lstinline|.regia| source into AgentSpeak, usable from the command line, and a browser-based visual editor that shows a narrative's structure as an interactive graph. We concentrate on how a Regia program becomes a set of AgentSpeak agents, and on the decisions in that translation that the language did not dictate. Chapter~\ref{ch:design} gives the mapping of each construct, which we restate only where necessary.
+ 
+The two artifacts are not independent implementations. The editor's backend imports the transpiler as a library and calls its \lstinline|compile_source()| entry point, so a program compiled in the browser passes through the same phases as one compiled from a terminal (Section~\ref{sec:editor-backend}). Both are available in a public repository~\cite{RegiaRepo}: the transpiler in \lstinline|language/src/regia/|, with one module per compilation phase, and the editor in \lstinline|editor/|, split between a Python backend and a React frontend. File names in this chapter refer to that layout.
+ 
+Section~\ref{sec:transpiler} follows the transpiler's pipeline, from source text to generated AgentSpeak, tracing one Playbook of the running example through it. Section~\ref{sec:editor} follows the editor's two data directions, from source to graph and from graph to source, and closes with its error handling and limitations.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Transpiler}
+\label{sec:transpiler}
+ 
+\subsection{Architecture and Pipeline}
+\label{sec:pipeline-overview}
+ 
+The transpiler turns a Regia program into one or more AgentSpeak agents. It is written in Python, using Lark~\cite{Lark} for parsing and Click~\cite{Click} for its command-line interface. We chose Python for its flexibility and the speed of prototyping it allows: the language changed repeatedly in response to our collaborators' feedback (Chapter~\ref{ch:requirements}), and each change had to reach the compiler quickly. It is a multi-pass transpiler: rather than translating source into target code in a single traversal, it applies a fixed sequence of independent transformations, each consuming the representation the previous one produced.
+ 
+Two properties follow. Each phase stays narrow in scope: the preprocessor never needs to know what a Playbook is, and the validator never needs to know what an AgentSpeak plan looks like. The pipeline is also a sequence of plain functions, which another program can call as a library. The Visual Editor does this, and compiles Regia through the transpiler rather than through logic of its own.
+ 
+The pipeline runs six phases, listed in Table \ref{tab:pipeline-phases} together with the module implementing each and the representation it produces.
+ 
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Phase} & \textbf{Module} & \textbf{Produces} \\
+\hline
+0. Preprocess & \lstinline|preprocessor.py| & \lstinline|SourceAnnotations| \\
+1. Parse      & \lstinline|parser.py|       & \lstinline|lark.Tree| \\
+2. Build AST  & \lstinline|ast_builder.py| & \lstinline|Program| \\
+3. Annotate   & \lstinline|compiler.py| (internal) & \lstinline|Program|, with doc comments attached \\
+4. Validate   & \lstinline|validator.py|    & \lstinline|Program|, validated, or failure \\
+5. Emit       & \lstinline|emitter.py|      & \lstinline|Dict[str, str]| \\
+\hline
+\end{tabular}
+\caption{The six transpiler phases, the module implementing each, and the representation it produces.}
+\label{tab:pipeline-phases}
+\end{table}
+ 
+Preprocessing scans the raw source for doc comments and import paths, which must be captured before anything else. Parsing hands the unmodified source to Lark, which produces a concrete syntax tree from the grammar. AST Construction rebuilds that tree as a set of typed, Regia-specific dataclasses. Comment Attachment reconnects the extracted doc comments to the AST nodes they precede. Semantic Validation checks the rules the grammar cannot express. Emission produces the AgentSpeak source.
+ 
+Four entry points expose these phases. \lstinline|compile_source| and \lstinline|compile_file| run the full sequence; \lstinline|parse_source| and \lstinline|parse_files| stop once the AST is built. The file-based variants first resolve the import graph, since one file may bring in several others, and merge the result into a single \lstinline|Program|. \lstinline|compile_source| receives a string rather than a path, and does not resolve imports. Each entry point returns a \lstinline|CompileResult| carrying the generated files, the diagnostics, and the AST. Passing \lstinline|emit=False| runs every phase except Emission, validating a program without generating AgentSpeak.
+ 
+A single \lstinline|ErrorReporter|, created at the entry point, runs alongside the phases rather than between them. Every phase up to Semantic Validation writes its diagnostics into it, and the pipeline stops after the first phase that reports an error. Emission runs only on a valid program, and reports nothing. Section~\ref{sec:error-reporting} describes what the reporter produces. The following sections follow the pipeline in order, using excerpts from Listing~\ref{lst:royalbanquet-full}.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{From Source to AST}
+\label{sec:source-to-ast}
+\label{sec:preprocessing}
+\label{sec:comment-attachment}
+ 
+The first four phases turn the source text into an AST, a structure closer to the language's semantics, on which validation and emission operate.
+ 
+Two things must be handled before the parser runs. The first is doc comments. The grammar discards any line beginning with \lstinline|#| during lexing, which is correct for an ordinary comment but not for a doc comment, whose \lstinline|#@key: value| form (Section~\ref{sec:comments}) carries metadata meant to be read. \lstinline|preprocess()| recovers that text before the lexer reaches it, scanning the file line by line and recording each annotation's key, value, and line, together with any \lstinline|#-| continuation lines. The \lstinline|NobleSocializing| Playbook carries one:
+ 
+\begin{codeblock}[]{Regia}
+#@desc: Reactive behaviour for guests mingling and eating at the banquet.
+PLAYBOOK NobleSocializing:
+\end{codeblock}
+ 
+No \lstinline|#-| line follows, so the annotation is closed when the \lstinline|PLAYBOOK| line is reached, and stored apart from the code it describes.
+ 
+The second is imports. An \lstinline|IMPORT "path".| statement matches a grammar rule and survives lexing, but the compiler must know which other files a compilation involves before parsing, to process them together. \lstinline|resolve_imports| walks the import graph from the entry file and returns the ordered list of files involved, entry file first. A file imported from two places is read once, so a diamond, two files importing a third, is accepted, while an import chain leading back to its start is reported as a cycle. Neither a cycle nor an unreadable file halts the walk, so an author with two broken imports sees both reported in one run. The running example declares no imports; had its vocabulary been moved into a separate file, as Section~\ref{sec:program-definition} suggests, resolution would return both files before either was parsed.
+ 
+The grammar is compiled once, at import time, into an LALR table that every later call reuses. An LALR parser reads its input once, left to right, and decides each step from a single token of lookahead. Its grammar therefore cannot contain rules that need a wider view of the program, and any ambiguity must be resolved by the shape of the rules themselves; Regia's condition rules rely on this (Section~\ref{sec:emission}). Lark is also configured to attach a line and column to every node it builds, not only to tokens. This is the only origin of source positions in the system, and every diagnostic of Section~\ref{sec:error-reporting} traces back to it. Malformed input is not recovered from: Lark raises an exception, which the entry point translates into a diagnostic an author can act on.
+ 
+AST Construction turns the parse tree into the typed structure every later phase reads. The parse tree mirrors the grammar rather than the language, with a node for every rule that fired, including infrastructural ones. Later phases need a tree whose nodes are Regia's constructs. The build runs bottom-up: a builder method is called on each node, from the leaves to the root, with children already transformed. Every node produced is a dataclass carrying its information and a source location derived from the parser's positions. Figure~\ref{fig:ast-hierarchy} shows the resulting hierarchy.
+ 
+\begin{figure}[htpb]
+\centering
+\begin{codeblock}[]{Text}
+Program
+├── ImportDecl                         (import declarations)
+├── ActionDecl / EventDecl / FactDecl  (base elements)
+├── PlaybookDef                        (behaviour sets)
+│   └── PbWhenBlock
+│       ├── DoStmt / SignalStmt
+│       ├── PbIfBranch
+│       └── PbElseBranch
+└── PlotDef                            (narrative scenarios)
+    ├── PhaseDecl / RoleDecl
+    └── DuringBlock
+        ├── OnEnter / OnExit
+        └── PlotWhenBlock / PlotWhenSubplotEndsBlock / PlotWhenRoleSignalsBlock
+            ├── AssignStmt / UnassignStmt
+            ├── WorldDoStmt / RoleDoStmt
+            ├── InlineTransitionStmt
+            ├── PlotIfBranch
+            └── PlotElseBranch
+\end{codeblock}
+\caption{The AST node hierarchy produced by AST Construction, and the structure every subsequent phase operates on.}
+\label{fig:ast-hierarchy}
+\end{figure}
+ 
+\lstinline|NobleSocializing| occupies the \lstinline|PlaybookDef| branch of this hierarchy. It builds one \lstinline|PlaybookDef| holding three \lstinline|PbWhenBlock| nodes, one per \lstinline|WHEN| block. The \lstinline|insult_heard| block splits into a \lstinline|PbIfBranch| and a \lstinline|PbElseBranch|, each holding \lstinline|DoStmt| nodes, and the \lstinline|SIGNAL| statement in the first becomes a \lstinline|SignalStmt|. The \lstinline|food_served| block adds a \lstinline|DoStmt| ahead of its two branches.
+ 
+Comment Attachment then merges the doc comments with the AST, now that every construct has a node with a position. It sorts the candidate declarations by line and attaches each annotation, in source order, to the first declaration after it. The \lstinline|desc| annotation of the running example therefore attaches to the \lstinline|PlaybookDef|. An annotation with no declaration after it is attached to the program as a whole, as a file-level description, rather than discarded.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{Semantic Validation}
+\label{sec:semantic-validation}
+ 
+The grammar guarantees that a program is well formed, not that it means anything: that a referenced Event is declared, that a Plot has a starting Phase, or that a \lstinline|TRANSITION TO| sits where it can execute. Chapter~\ref{ch:design} states rules of this kind as properties of the language; Semantic Validation checks them on a given program, reading the AST and writing diagnostics into the reporter.
+ 
+Two scopes govern every check. One flat table holds four global namespaces, for Actions, Events, Facts, and Playbooks, each visible from anywhere in the program. Each Plot has a scope of its own, holding its Roles and Phases. A Role name means something only in the Plot that declares it, so two Plots may each declare a Role called \lstinline|Guest| without conflict.
+ 
+Table \ref{tab:validation-rules} lists the rules enforced, the place in Chapter \ref{ch:design} where each is stated, and whether a violation is reported as an error or a warning.
+ 
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|p{2.2cm}|p{6.6cm}|p{3.1cm}|}
+\hline
+\textbf{Category} & \textbf{Rule} & \textbf{Stated in} \\
+\hline
+\multirow{2}{2.2cm}{Declarations}
+ & A name is declared once in its namespace & Section \ref{sec:vocabulary} \\
+\cline{2-3}
+ & A Plot declares exactly one \lstinline|INITIAL| Phase & Section \ref{sec:plot-header} \\
+\hline
+\multirow{4}{2.2cm}{Structure}
+ & A \lstinline|DURING| block names a Phase of its own Plot & Section \ref{sec:during-blocks} \\
+\cline{2-3}
+ & A \lstinline|DURING| block holds at most one \lstinline|ON ENTER| and one \lstinline|ON EXIT| & Section \ref{sec:during-blocks} \\
+\cline{2-3}
+ & \lstinline|TRANSITION TO| and \lstinline|END PLOT| do not appear inside \lstinline|ON ENTER| or \lstinline|ON EXIT| & Section \ref{sec:transitions} \\
+\cline{2-3}
+ & \lstinline|TRANSITION TO| does not appear inside \lstinline|DURING PLOT| & Section \ref{sec:transitions} \\
+\hline
+Position
+ & \lstinline|TRANSITION TO| and \lstinline|END PLOT| are last in their statement list & Section \ref{sec:transitions} \\
+\hline
+\multirow{5}{2.2cm}{References}
+ & An Event, Action, or Fact referenced is declared, with matching arity & Section \ref{sec:vocabulary} \\
+\cline{2-3}
+ & A Playbook named in \lstinline|ASSIGN| or \lstinline|UNASSIGN| is defined & Section \ref{sec:playbooks} \\
+\cline{2-3}
+ & A Role named anywhere is declared by the Plot naming it & Section \ref{sec:plot-header} \\
+\cline{2-3}
+ & A Phase targeted by \lstinline|TRANSITION TO| is declared by its Plot & Section \ref{sec:transitions} \\
+\cline{2-3}
+ & A Plot named by \lstinline|START SUBPLOT| or \lstinline|WHEN SUBPLOT ... ENDS| is defined, and every Role in a \lstinline|MAPPING| clause exists on the side that declares it & Section \ref{sec:subplots} \\
+\hline
+\multirow{2}{2.2cm}{Warnings}
+ & A \lstinline|START SUBPLOT| omits \lstinline|MAPPING| for a Plot that declares Roles & Section \ref{sec:subplots}  \\
+\cline{2-3}
+ & A declared name is never referenced & Section \ref{sec:vocabulary} \\
+\hline
+\end{tabular}
+\caption{The semantic rules the Validator enforces, the section of Chapter \ref{ch:design} stating each, and the severity reported on violation.}
+\label{tab:validation-rules}
+\end{table}
+ 
+The checks run in three steps. Every declaration is collected first, so that a reference resolves wherever the name appears; a Plot may start a Subplot defined below it. Each Playbook and Plot is then walked once, with structural and reference checks interleaved. Unused-name warnings run last, since a name cannot be judged unreferenced until every walk has finished.
+ 
+\lstinline|NobleSocializing| exercises the reference rules. Each of its \lstinline|WHEN| blocks names an Event that must be in the global Event namespace. Each \lstinline|IF| condition resolves its Facts there too, with matching arity: \lstinline|is_hungry| and \lstinline|is_drunk| take no argument, while \lstinline|hates(host)| supplies the one argument \lstinline|FACT hates(person).| declares. Each \lstinline|DO| resolves its Action the same way. \lstinline|DO PRINT("A guest finishes their meal.")| skips the existence check, since \lstinline|PRINT| is built into the language, but its number of arguments is still checked.
+ 
+The unused-name check accounts for Action aliases. For \lstinline|ACTION engine.security.summon_guards AS call_guards.|, the validator registers both names as counterparts, and a reference to \lstinline|call_guards| marks both as used. Otherwise, an author using the alias as intended, declaring the qualified name once and writing only the short form, would see the qualified name reported as unused on every compile.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{AgentSpeak Emission}
+\label{sec:emission}
+ 
+Emission, the final phase, translates the validated AST into AgentSpeak. \lstinline|Emitter.emit(program)| returns a \lstinline|Dict[str, str]| mapping output filenames to AgentSpeak source, and never touches the filesystem; the CLI writes the result to disk (Section~\ref{sec:orchestration}).
+ 
+\subsubsection{Generated Files}
+ 
+Emission produces three kinds of file, listed in Table~\ref{tab:emission-files}.
+ 
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Filename} & \textbf{One per} & \textbf{Contents} \\
+\hline
+\lstinline|playbook_<n>.asl| & Playbook & Gated \lstinline|WHEN| plans \\
+\lstinline|director_<plot>.asl| & Plot & Phase state machine, lifecycle infrastructure, Director \lstinline|WHEN| plans \\
+\lstinline|role_<plot>_<role>.asl| & Plot $\times$ Role & Playbook includes, activation handlers, one-off command handlers \\
+\hline
+\end{tabular}
+\caption{The three kinds of file Emission produces, and what each contains.}
+\label{tab:emission-files}
+\end{table}
+ 
+The running example produces six files: \lstinline|playbook_noblesocializing.asl|, one Director file for each of its two Plots, and one Role file for each pair of Plot and Role, \lstinline|role_royalbanquet_host.asl|, \lstinline|role_royalbanquet_guest.asl|, and \lstinline|role_honorduel_challenger.asl|. A Role file does not contain a Playbook's plans, but includes them through Jason's file-inclusion directive:
+ 
+\begin{codeblock}[]{AgentSpeak}
+{ include("playbook_noblesocializing.asl") }
+\end{codeblock}
+ 
+Each Playbook's compiled form therefore lives in one place, and a correction to \lstinline|NobleSocializing| reaches every Role file that includes it on the next compile. A Director file includes nothing, since everything it contains belongs to its own Plot.
+ 
+These files are agent source and nothing else. A running system also needs a multi-agent configuration binding each Plot's Roles to running agents, an implementation behind every declared Action, and the engine-side handling that gives each Action an effect in the game world. Section~\ref{sec:test-infrastructure} describes a system that provides them.
+ 
+\subsubsection{Which Playbooks a Role File Includes}
+\label{sec:playbook-reachability}
+ 
+An agent runs the program it was launched with, so every Playbook it may ever receive must be included in its Role file before it starts. A Director does not add plans at runtime; it only activates plans already present, through the \lstinline|playbook_active| guard of Section~\ref{sec:plans}.
+ 
+Subplots make this set larger than the Playbooks a Plot assigns to the Role. In the running example, \lstinline|RoyalBanquet| maps its \lstinline|Guest| Role onto the \lstinline|Challenger| Role of \lstinline|HonorDuel|. An agent playing \lstinline|Guest| may therefore also play \lstinline|Challenger| while the duel runs, and receive whatever \lstinline|HonorDuel| assigns to that Role. \lstinline|role_royalbanquet_guest.asl| must include those Playbooks alongside \lstinline|NobleSocializing|. \lstinline|role_honorduel_challenger.asl|, whose Role is mapped nowhere further, includes only what \lstinline|HonorDuel| assigns.
+ 
+In general, the emitter treats every \lstinline|MAPPING| clause as an edge from one pair of Plot and Role to another, and a Role file includes the Playbooks of every pair reachable from its own. The search follows chains of edges, so Subplots nested at any depth are handled like the single level of the running example.
+ 
+The same structure explains why Subplots expand more than any other construct. Each one emits a Director file and a Role file of its own, as much output as a second, minimal program; Section~\ref{sec:benchmark-results} measures the resulting expansion.
+ 
+\subsubsection{Writing Plans}
+ 
+Every plan is written by one shared routine, so that annotations, trigger, context, and body are formatted the same way throughout. A plan with default priority and no Temper carries no annotations, and a missing context or empty body is written as \lstinline|true|, so every generated plan is syntactically complete.
+ 
+Most statements translate through the mappings of Chapter~\ref{ch:design}: the special actions of Table~\ref{tab:special-action-mapping} and the Director statements of Table~\ref{tab:director-stmt-mapping}. Two need more than a substitution. \lstinline|START SUBPLOT| turns each of its mappings into a \lstinline|map(target_role, source_role)| entry. A one-off Role directive dispatches a goal named after its Action, and the dots of a qualified name such as \lstinline|engine.security.summon_guards| cannot appear in a goal name, so the emitter replaces them with underscores.
+ 
+\subsubsection{Conditions}
+ 
+The grammar gives \lstinline|NOT|, \lstinline|AND|, and \lstinline|OR| their precedence through the shape of its rules, with no precedence table: an \lstinline|AND| can contain an \lstinline|OR| only inside explicit parentheses, so the AST always records the grouping the author wrote (Section~\ref{sec:conditions}). Jason, however, like Prolog, binds \lstinline|&| tighter than \lstinline+|+, and writing the operators out in sequence would lose that grouping. The emitter therefore wraps a disjunction in parentheses whenever it is an operand of a conjunction, and always wraps the operand of a negation, which is safe since \lstinline|not| applies to the whole expression it encloses.
+ 
+The condition of the \lstinline|food_served| block shows both rules:
+ 
+\begin{codeblock}[]{Regia}
+IF (is_hungry OR is_drunk) AND NOT hates(host):
+\end{codeblock}
+ 
+\begin{codeblock}[]{AgentSpeak}
+(is_hungry | is_drunk) & not (hates(host))
+\end{codeblock}
+
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{Diagnostics}
+\label{sec:error-reporting}
+ 
+Every phase up to Semantic Validation writes into one \lstinline|ErrorReporter|, created in \lstinline|compile_source|. The reporter is not a phase: it consumes and produces no representation. It is the one component through which the compiler addresses the author.
+ 
+Its output matters more here than in a general-purpose compiler. Regia's audience does not write code (Section~\ref{sec:stakeholders}), and its syntax is grounded in what that audience can read without training (Section~\ref{sec:syntax-accessibility}). A compiler serving this audience must report failures on the same terms. A diagnostic that names the phase that detected a problem, or the grammar terminal that failed to match, would return the author to the position Regia exists to move them out of.
+ 
+Every diagnostic therefore takes one shape, whichever phase raised it:
+ 
+\begin{codeblock}[]{Py}
+@dataclass
+class CompilerMessage:
+    severity:    Severity
+    line:        int
+    column:      int
+    length:      int
+    message:     str
+    hint:        str = ""
+    source_line: str = ""
+    filename:    str = ""
+\end{codeblock}
+ 
+The fields hold what an author needs to act: where the problem is, what it is, how to correct it, and the offending line with a caret under the column. Because every diagnostic has this shape, \lstinline|CompileResult.messages| is one flat list, and two renderers, the terminal and the Visual Editor (Section~\ref{sec:editor-backend}), use the same record unchanged.
+ 
+Suppose the running example's \lstinline|ACTION lock_doors.| declaration were mistyped as \lstinline|ACTION lock_door.|. The \lstinline|assassin_spotted| handler still calls \lstinline|WORLD DO lock_doors.|, so the single typo produces two diagnostics, from two checks of Section~\ref{sec:semantic-validation}:
+ 
+\begin{verbatim}
+============================================================
+ WARNING  royal_banquet.regia:10, col 0
+ Declared action 'lock_door' is never used.
+    ACTION lock_door.
+    ^
+============================================================
+============================================================
+ ERROR  royal_banquet.regia:79, col 12
+ Undeclared action: 'lock_doors'.
+ Hint: Add 'ACTION lock_doors.' at the top of the file.
+                WORLD DO lock_doors.
+                ^
+============================================================
+\end{verbatim}
+ 
+The hint states the correction to make, not the rule that was broken. Messages are sorted by file and line, so an author reads them in source order rather than in the order the compiler found them.
+ 
+\subsubsection{Syntax Errors}
+ 
+Parsing is the one phase that does not report through \lstinline|ErrorReporter| directly. Lark raises its own exceptions, and one function translates them into the shape above. The accessibility requirement is hardest to meet here, since a parse failure carries no semantic information: the parser knows only which token it found and which terminals it expected.
+ 
+Terminal names are written for a parser, not a reader. A small table translates the ones an author is likely to meet: \lstinline|ID| is reported as a name, with examples, \lstinline|NUMBER| as an integer, and \lstinline|STRING| as a text string. The table also covers the keywords of Table~\ref{tab:special-action-mapping}. A terminal absent from the table is reported by its quoted name.
+ 
+Relabelling is not enough in every case. An \lstinline|IMPORT| written after the first item violates the ordering constraint of Section~\ref{sec:program-definition}. The generic path would report an unexpected token and a list of expected ones, which is accurate but unhelpful: the problem is where the statement is, not what it is. The translation function intercepts this case and reports that an \lstinline|IMPORT| was found in an unexpected place, stating the rule that imports belong at the top of a file.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\subsection{Invoking the Compiler}
+\label{sec:orchestration}
+ 
+\lstinline|cli.py| exposes the entry points of Section~\ref{sec:pipeline-overview} as Click commands. \lstinline|compile| runs the full pipeline, prints the diagnostics and a pass or fail summary, and writes the generated files to an output directory. \lstinline|check| runs the same pipeline with \lstinline|emit=False|. A \lstinline|--quiet| flag suppresses warnings and progress output, and a hidden \lstinline|dump-ast| command prints the AST, for debugging the compiler itself. The Visual Editor calls the same \lstinline|compile_source| function in place of a terminal.
+
+\subsection{Testing}
+\label{sec:testing}
+ 
+An automated suite of 217 tests, run with pytest~\cite{pytest}, covers the transpiler. The tests were written alongside it and updated as the language changed. Each test compiles a Regia source through the full pipeline and compares the result with an expected output. For a valid program, the content of every generated AgentSpeak file must match an expected string. For an invalid program, the diagnostics the compiler reports must match the expected errors, which also tests the reporting of Section~\ref{sec:error-reporting}. The suite shows that the transpiler produces the expected output for the programs tested, not that its translation is correct in general.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Visual Editor}
+\label{sec:editor}
+ 
+The second artifact is a visual editor for Regia, built on top of the transpiler. It answers R4 (Section~\ref{sec:visualization}) for a narrative's structure, its Phases and the transitions between them, which is the part of a Regia program the designers' own sketches described. The editor was added after the transpiler, in response to the designers' feedback, and is less complete; Section~\ref{sec:editor-limitations} sets out what it does not yet support.
+ 
+The tool is a single-page web application, split across two processes: a Python backend wrapping the transpiler, and a TypeScript frontend running in the browser. We chose a web application for its portability: it runs in any modern browser, on any operating system, and a designer can use it without installing a toolchain. Existing components also provided most of its interface, Monaco for code editing and React Flow for graphs, while the Python backend reuses the transpiler unchanged. Table~\ref{tab:editor-stack} lists the technology behind each part. The architecture is otherwise conventional, so we describe the tool through its two data directions: from source to graph (Section~\ref{sec:source-to-graph}) and from graph to source (Section~\ref{sec:graph-to-source}).
+ 
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Component} & \textbf{Technology} \\
+\hline
+Backend service & Python, FastAPI~\cite{FastAPI} \\
+Frontend application & TypeScript, React~\cite{React} \\
+Code panel & Monaco Editor~\cite{Monaco} \\
+Graph panel & React Flow~\cite{ReactFlow}, with Dagre~\cite{Dagre} for layout \\
+\hline
+\end{tabular}
+\caption{The technology behind each component of the Visual Editor. The transpiler it wraps is described in Section \ref{sec:transpiler}.}
+\label{tab:editor-stack}
+\end{table}
+ 
+\subsection{Overview and Use}
+\label{sec:editor-overview}
+\label{sec:editor-usage}
+ 
+The interface is split into two panels, shown in Figure~\ref{fig:editor-two-panel}. On the left is a code editor built on Monaco, the editor of Visual Studio Code, configured with a Regia language definition. On the right is a graph canvas built on React Flow, a React library for node-and-edge diagrams, with node positions computed by Dagre. Neither panel holds its own copy of the program: both read from one shared store, holding the current source text, the AST last compiled from it, and the resulting diagnostics. The two panels therefore stay in sync as the author types, with no manual refresh.
+ 
+% TODO: replace with a real screenshot of the two-panel editor.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/visual_editor.png}
+    \caption{The Visual Editor's two-panel layout: a Monaco code editor on the left, and a React Flow graph canvas on the right showing the Phases of a Plot and the transitions between them.}
+    \label{fig:editor-two-panel}
+\end{figure}
+ 
+Loading \lstinline|royal_banquet.regia| into the code panel populates the canvas. A node appears for each of the three Phases, with \lstinline|reception| marked as the \lstinline|INITIAL| Phase, and an edge connects each pair of Phases linked by a \lstinline|TRANSITION TO|, labelled with its trigger.
+ 
+The graph stays live as the source changes. Renaming \lstinline|duel_interruption| to \lstinline|duel_aftermath| updates the node a moment after the author stops typing. A mistake produces two signals: the offending line is highlighted in the code panel, and the canvas is dimmed to show that it may no longer match the source. Correcting the error clears both.
+ 
+The canvas also supports two edits. Adding a Phase prompts for a name, then adds a node to the graph and a \lstinline|PHASE| declaration to the source. Adding a transition is more involved. Suppose an author wants a Phase reached once the duel is over. They add a Phase named \lstinline|aftermath| and drag a connection from \lstinline|duel_interruption| to it. Before the edge is drawn, a prompt asks which Event triggers the transition. Typing \lstinline|guests_leave| completes the interaction: the edge appears, and the code panel gains an \lstinline|EVENT guests_leave.| declaration near the top of the file and a \lstinline|WHEN guests_leave: TRANSITION TO aftermath.| block inside \lstinline|DURING duel_interruption:|, where an author would have written it by hand. Section~\ref{sec:editor-limitations} explains why these are the only two edits supported.
+ 
+\subsection{Source to Graph}
+\label{sec:source-to-graph}
+\label{sec:editor-backend}
+ 
+Figure \ref{fig:editor-keystroke-flow} traces a single edit from keystroke to redrawn graph.
+ 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/editor_flow.png}
+    \caption{The path from a keystroke in the code panel to a redrawn graph, passing through the transpiler itself rather than through any parsing logic held by the editor.}
+    \label{fig:editor-keystroke-flow}
+\end{figure}
+ 
+The backend is a small FastAPI application with one endpoint, \lstinline|POST /parse|, which receives the source text and calls \lstinline|compile_source| with \lstinline|emit=False|, reusing the entry point of Section~\ref{sec:pipeline-overview} unmodified. Emission is skipped, since the editor needs a validated program to draw, not AgentSpeak. No parsing or validation logic is duplicated in the editor.
+ 
+The response carries the AST of Figure~\ref{fig:ast-hierarchy}, serialised to JSON. Every node carries the name of its class alongside its fields, so the frontend can dispatch on node kind rather than infer it from shape. The frontend never calls the network directly: every request goes through a small \lstinline|Transport| interface, currently backed by one HTTP implementation, so that other sources of compilation can be added as further implementations. A single function, \lstinline|convertAstToGraph|, turns the returned program into React Flow's nodes and edges. It maps only the first \lstinline|PlotDef| in the program.
+ 
+Every \lstinline|PhaseDecl| in that Plot becomes a node, recording the line the Phase is declared on, how many \lstinline|WHEN| blocks its \lstinline|DURING| block contains, whether that block has \lstinline|ON ENTER| or \lstinline|ON EXIT| hooks, and whether the Phase is terminal. A Phase is terminal when a statement reachable from any of its \lstinline|WHEN| blocks, in the prefix statements or in any branch, ends the Plot. In the running example, \lstinline|duel_interruption| is terminal, since its \lstinline|WHEN SUBPLOT HonorDuel ENDS| handler reaches \lstinline|END PLOT|. Terminal Phases are drawn distinctly, so an author sees which Phases end the narrative without reading their handlers.
+ 
+Edges come from every \lstinline|TRANSITION TO| statement in a phase-specific \lstinline|DURING| block; Plot-wide blocks have no single source Phase and are skipped. An edge's label depends on the form of the Director \lstinline|WHEN| that produced it (Section~\ref{sec:director-when}): the Event name for a plain trigger, the Role and signal for \lstinline|WHEN ROLE ... SIGNALS|, and the Subplot name for \lstinline|WHEN SUBPLOT ... ENDS|. The graph therefore uses the language's own vocabulary rather than a generic state-machine one. When two Phases are connected by more than one transition, the first edge is drawn straight and further edges curve to alternating sides, so that parallel transitions remain legible.
+ 
+Nodes and edges carry no positions: Dagre computes the layout in a separate pass, so the author never arranges the graph by hand and can focus on the logic it represents.
+ 
+\subsection{Graph to Source}
+\label{sec:graph-to-source}
+ 
+An edit on the canvas takes the opposite path, and does not reach the backend. The frontend writes the corresponding Regia text directly, treating the source as a list of lines and using positions from the current AST. Adding a transition inserts an \lstinline|EVENT| declaration before the first \lstinline|PLOT|, if the Event is not yet declared, and a \lstinline|WHEN| block at the end of the source Phase's \lstinline|DURING| block. Adding a Phase inserts a \lstinline|PHASE| declaration after the last one, and a matching \lstinline|DURING| block with a starter \lstinline|ON ENTER| hook. Each operation offsets its second insertion by the lines the first added, and normalises the typed name to \lstinline|snake_case|, matching the identifier conventions of the language.
+ 
+Writing source on the frontend is an interim measure. The \lstinline|Transport| interface anticipates a second method, sending a modified AST to the server and receiving regenerated source; the module that would build that AST from the canvas exists as a documented stub. Under that design, the server would remain the single source of truth for parsing and emission, and generated source would be valid by construction. The current approach offers no such guarantee, which is why the canvas supports two operations rather than an open-ended set.
+ 
+\subsection{Error Handling and Limitations}
+\label{sec:editor-limitations}
+ 
+\paragraph{Error handling.} The editor recompiles the source shortly after each edit, so an author sees problems while typing rather than on request. A program that fails to compile takes the error branch of Figure~\ref{fig:editor-keystroke-flow}: the backend returns diagnostics instead of an AST, and the code panel shows each one as an inline marker at its line and column, with its message and hint. These are the same \lstinline|CompilerMessage| records the CLI prints (Section~\ref{sec:error-reporting}), produced once and rendered by two independent front ends, so an author reads the same domain-level wording in both. The canvas dims rather than clearing: an author whose program does not currently compile still sees the last structure that did, and the dimming signals that it may no longer match the source. The next successful compile restores it.
+ 
+\paragraph{Limitations by design.} The canvas draws a narrative's structure and nothing else: its Phases, the transitions between them and their triggers, and which Phases start and end the Plot. Playbooks, the vocabulary, Director statements other than transitions, and the reactive logic inside a Playbook have no visual form, and an author edits them in the code panel. This boundary follows from R4, which asked for a way to see a narrative as our collaborators sketched one, not to visualise every construct (Section~\ref{sec:visualization}).
+ 
+\paragraph{Unfinished work.} Two further limitations are not intended. First, only the Plot declared first in a program is drawn: the others, and the Subplot hierarchy connecting them, can be inspected only in the code panel. Second, the canvas supports two edits, adding a Phase and adding a transition; renaming, deleting, or rewiring a Phase requires editing the source, since text written by the frontend is not guaranteed to form a valid program (Section~\ref{sec:graph-to-source}). The reverse path that would lift this restriction, sending a modified AST to the server and receiving regenerated source, is designed but not implemented. Section~\ref{sec:limitations} returns to both.
+ 
+

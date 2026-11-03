@@ -1,0 +1,51 @@
+\chapter*{Declaration on the Usage of AI Tools}
+\addcontentsline{toc}{chapter}{Declaration on the Usage of AI Tools}
+
+In accordance with the University's guidelines on the use of artificial intelligence, I declare the following uses of generative AI tools in this work.
+
+\textbf{Software.} During the development of the transpiler and the Visual Editor, I used GitHub Copilot, an AI coding assistant integrated in Visual Studio Code, for code completion, updating automated test cases, and for refactoring code I had written.
+
+\textbf{Text.} I used Claude (Opus 5.5), a large language model developed by Anthropic, to review the manuscript against the style guidelines of the department, to identify inconsistencies and errors, to shorten and restructure passages, and to propose rewordings.
+
+\textbf{Review and responsibility.} All output of these tools, code and text alike, was reviewed, verified, and where necessary corrected by me, and I take full responsibility for the content of this thesis. The research questions, the design of the language, the collection of the data, and the interpretation of the results are my own. No personal data nor confidential documents were provided to these tools.
+
+\chapter{Introduction and Motivation}
+\label{ch:intro}
+
+% cool citation to put here
+\setlength{\epigraphwidth}{0.55\textwidth}
+\epigraph{``Is it really true? \\
+That a bird like me could never think like you?''}{\textit{--- from ``BIRDBRAIN.'' \\Jamie Paige Featuring OK Glass and 重音テト.\\ Constant Companions. Sunrise 101.1, 2025.}}
+
+Stories have always been an essential part of human life. Myths helped explain the world around us. Fables taught the young and transmitted values. Novels entertained our ancestors as they still entertain us today.
+ 
+Ever since we began telling them, stories have been limited by two things: the imagination of their creator, and the quirks of the medium containing them. Novels and other written forms rely on the mastery of words, sentences, and descriptions. Movies and plays require a director to communicate a vision to actors, and those actors to portray the emotions of their characters convincingly. The videogame, a newer medium, sets further limits on authors through its complex and multi-faceted nature.
+ 
+The first of these limits is interactivity. Unlike other media, games expect their consumers, the players, to interact with the game world and to change its narrative, through decisions ranging from moment-to-moment choices to those that alter the outcome of the story entirely. The simple requirement that a game could be won or lost already creates a first branch in that narration. Authors must therefore decide how much autonomy to grant the player. A linear game, in which the player follows a predetermined narrative, is easier to construct, but it reduces the impact of the player's actions on the world they inhabit. A narrative that accounts for player input is far more complex to author, and much of what it contains may never be seen by any single player. Balancing the two calls for systems that carry part of that burden, by generating portions of the narrative at runtime.
+ 
+The second limit lies in how a game is made. A writer or designer may conceive of their game as a story, with characters and plot beats, but the product is ultimately software. In smaller development teams, writers and programmers are often the same people. In larger studios the two roles are held by different ones, with different backgrounds and different perspectives on what the game represents. A designer is responsible for defining the game, its mechanics, and its narrative, yet each decision must pass through the programmer who implements it~\cite{Medler2006}. The result is friction between the two. Designers may pose requests that are difficult to implement, while a programmer's design choices may limit the number of features a designer can express. The two rarely share a formal notation: designers typically describe their narratives in natural language, as prose, which leaves room for misinterpretation between two parties without a common vocabulary.
+ 
+One element that often suffers in this translation is the Non-Playable Character (NPC), the computer-controlled actor that participates in the story alongside the player. Many games present simple narratives, with few characters or none at all. Other genres, Role-Playing Games among them, build far more extensive stories around such characters, whether as enemies or as allies. The split between the world views of designers and programmers shows in how each side characterises them. Designers see NPCs in humanistic terms, and describe their behaviour through traits: what a character wants, and how it reasons about obtaining it. Programmers see the system they will implement, a reactive agent that responds to immediate events, without goals or memories.
+ 
+These concerns were already a topic of discussion among our collaborators at Untold Games \cite{UntoldGames}, a Genoa-based game studio. They had already experimented with written and graphical systems for formalising their designers' narratives. During a collaboration with our department, as part of the VEsNA project \cite{Gatti2026Pro}, the studio encountered the Belief-Desire-Intention model (BDI) and its anthropomorphic approach to modelling agents. That perspective sat closer to the designers' own conceptualisation of a character, and came with implementations capable of authoring multi-agent systems directly.
+ 
+Obstacles remained. Few integrations exist between game engines and BDI systems, a problem the VEsNA project addresses. The more pressing obstacle is accessibility. The languages implementing BDI, AgentSpeak among them, are declarative and logic-based, and their syntax and inner workings present a barrier to programmers unfamiliar with the paradigm, and a greater one to game designers. A simpler language was therefore needed, and building one is the goal of this thesis.
+ 
+We present Regia, a domain-specific language for modelling agent behaviour, addressed to game designers. Regia provides a bridge representation between designers and programmers. Its syntax and structure sit at a higher level than AgentSpeak's, and stay readable by someone who does not program, while remaining formal enough to translate directly into AgentSpeak under a single clear interpretation. We realise the language through a transpiler and a visual editor. Both, together with the benchmarks and the case study reported in Chapter~\ref{ch:experiments}, are publicly available~\cite{RegiaRepo}. The remainder of this thesis follows the development process, from the problem that motivates it to the evaluation of what was built.
+
+Chapter~\ref{ch:background} covers the two fields this work joins: how autonomous behaviour is built in games today, and the Belief-Desire-Intention model together with the languages and platforms that bring such agents into a game engine.
+
+Chapter~\ref{ch:related_work} surveys existing systems for authoring agent and narrative behaviour, considering accessibility and game engine integration.
+
+Chapter~\ref{ch:requirements} derives the language requirements detected during our collaboration with Untold Games, and states what falls outside its scope.
+
+Chapter~\ref{ch:design} presents the language construct by construct, giving the grammar of each alongside the AgentSpeak it compiles to, carried throughout by one running example.
+
+Chapter~\ref{ch:implementation} describes the two artifacts that realize it, the transpiler and the visual editor.
+
+Chapter~\ref{ch:experiments} builds a complete game with Regia, and measures how the transpiler behaves as a project grows.
+
+Chapter~\ref{ch:evaluation} evaluates the language against an established evaluation framework for agent-oriented languages, adapted to our needs.
+ 
+Chapter~\ref{ch:discussion} discusses these results together with those of the experiments, returns to the requirements of Chapter~\ref{ch:requirements}, and closes with the limitations left open, the work they suggest, and the conclusions of the thesis.
+

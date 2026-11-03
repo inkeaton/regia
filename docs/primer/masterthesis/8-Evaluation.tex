@@ -1,0 +1,298 @@
+\chapter{Language Evaluation}
+\label{ch:evaluation}
+
+This chapter evaluates Regia against two external reference points. The first is a reference metamodel for multi-agent systems, which measures how much of the agent domain the language is able to express. The second is the people the language is intended for, whose understanding of Regia code we assess through a questionnaire. Section~\ref{sec:evaluation-approach} describes the framework both draw on and how we depart from it, Section~\ref{sec:faml-comparison} reports the metamodel comparison, and Section~\ref{sec:questionnaire} the questionnaire. 
+
+\section{Evaluation Approach}
+\label{sec:evaluation-approach}
+ 
+Regia is, at its core, a domain-specific language for multi-agent systems. Alaca et al.~\cite{Alaca2021} observe that most languages of this kind are presented with examples of their use but never assessed, and propose AgentDSM-Eval to address this: a framework for evaluating a multi-agent system DSML along two independent dimensions. The first is a semi-automatic comparison of the language's abstract syntax against FAML~\cite{Beydoun2009}, a reference metamodel for Agent-Oriented Software Engineering methodologies, which yields a coverage figure comparable across languages. The second is a multi-case empirical study, in which developers build several multi-agent systems with the language, report the time each stage took, and answer a questionnaire of twenty-four quality measures grouped under six characteristics, themselves adapted from the FQAD framework for assessing domain-specific languages in general \cite{Kahraman2015}.
+ 
+We adopt AgentDSM-Eval as our reference but depart from the published procedure in four respects. First, we perform the metamodel comparison manually. The online tool that automated it is no longer in service, so each pairing was examined by hand.
+ 
+Second, we score that comparison on three levels rather than two. AgentDSM-Eval records a FAML concept as supported or unsupported; we distinguish a construct that realises a concept in full from one that realises part of it, and weight the latter accordingly. Section~\ref{sec:faml-comparison-method} gives the scoring. We discussed this choice with the authors of AgentDSM-Eval, who considered it an appropriate adaptation.\footnote{Private correspondence with the authors of AgentDSM-Eval, August 2026.} For fairness's sake, we report coverage both with and without partial matches.
+ 
+Third, our questionnaire adapts the procedure of the framework to our situation. AgentDSM-Eval considers trained users, people who have been taught the language and have already built systems with it. Neither we nor our collaborators at Untold Games had the time to carry out so thorough a procedure. Our respondents were instead given only a brief description of Regia in preparation for the task. Moreover, the questionnaire contains additional comprehension and code-writing tasks absent from the original. They also let us evaluate how quickly the language can be learnt, a crucial aspect for Regia, to which the original framework gives less prominence. Section~\ref{sec:questionnaire} describes the instrument and what this difference means for the results.
+ 
+Fourth, we do not carry out the framework's multi-case development-time and throughput study for analogous reasons. That dimension requires several teams of agent developers to implement the same systems twice, once with the language and once without, which was beyond the resources available. Chapter~\ref{ch:experiments} already addressed some of the related topics.
+
+\section{Comparison with the FAML Reference Metamodel}
+\label{sec:faml-comparison}
+ 
+\subsection{Method}
+\label{sec:faml-comparison-method}
+ 
+FAML separates its concepts into two categories, design-time and runtime, mirroring the distinction between a class and an instance of that class. Twenty-six concepts belong to the first and twenty-one to the second. We examined every construct of Regia detailed in Chapter~\ref{ch:design} against each of these forty-seven concepts, and scored each pairing.
+ 
+We classified each FAML concept against the closest Regia construct assigning three possible scores. A concept received Full support, scoring 1.0, when a Regia construct existed with matching semantics. It received Partial support, scoring 0.5, when a Regia construct realised part of the concept's semantics but omitted a defining property, for instance a typed declaration or an access-control rule. It received None, scoring 0.0, when Regia had no corresponding construct at all. We computed the coverage of each layer as the sum of scores divided by the number of concepts in that layer, and the overall coverage as the same ratio taken across all forty-seven concepts together. Tables~\ref{tab:faml-design-mapping} and~\ref{tab:faml-runtime-mapping} in the Appendix give the score and reasoning for every concept.
+ 
+\subsection{Results}
+\label{sec:faml-comparison-results}
+ 
+Table~\ref{tab:faml-coverage} reports Regia's coverage of the FAML metamodel, broken down by layer. Table~\ref{tab:faml-pdt-comparison} places these figures next to the coverage AgentDSM-Eval originally reported for the Prometheus Design Tool PDT~\cite{Alaca2021}.
+ 
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+\textbf{Layer} & \textbf{Concepts} & \textbf{Full} & \textbf{Partial} & \textbf{None} & \textbf{Coverage} & \textbf{Coverage} \\
+ & & & & & \textbf{(Full+Partial)} & \textbf{(Full Only)} \\
+\hline
+Design-Time & 26 & 4  & 6  & 16 & 26.9\% & 15.4\% \\
+Runtime     & 21 & 9  & 7  & 5  & 59.5\% & 42.9\% \\
+\hline
+Overall     & 47 & 13 & 13 & 21 & 41.5\% & 27.7\% \\
+\hline
+\end{tabular}
+\caption{Regia's coverage of the FAML reference metamodel, by layer, with the concept counts behind each score and coverage computed with and without partial matches.}
+\label{tab:faml-coverage}
+\end{table}
+ 
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Language} & \textbf{Design-Time} & \textbf{Runtime} & \textbf{Overall} \\
+\hline
+Regia (Full+Partial) & 26.9\% & 59.5\% & 43.2\% \\
+Regia (Full Only)    & 15.4\% & 42.9\% & 29.1\% \\
+PDT (Prometheus) & 52.0\% & 55.0\% & 53.5\% \\
+\hline
+\end{tabular}
+\caption{Metamodel coverage of Regia and PDT compared, by layer. Overall is the mean of the two layers, the basis on which Alaca et al.~\cite{Alaca2021} report PDT's figures.}
+\label{tab:faml-pdt-comparison}
+\end{table}
+ 
+Regia matched Full or Partial support for 19.5 of the 47 FAML concepts, an overall coverage of 41.5\%. Coverage is uneven across the two layers: 26.9\% at design time against 59.5\% at runtime, a gap of 32.6 percentage points. PDT shows the same direction of imbalance, but far less pronounced, 52.0\% against 55.0\%, a gap of 3 percentage points.
+ 
+\subsection{Interpretation}
+\label{sec:faml-comparison-interpretation}
+ 
+Averaged across the two layers, as Alaca et al. report PDT, Regia's coverage is 43.2\%, 10.3 percentage points lower than PDT's 53.5\%, and the gap lies at design time: counting partial matches, Regia's runtime coverage of 59.5\% exceeds PDT's 55.0\%. Counting full matches alone, Regia trails PDT in both layers, but by far more at design time, 15.4\% against 52.0\%, than at runtime, 42.9\% against 55.0\%.
+ 
+Two clusters of FAML concepts account for most of the concepts scoring None, and both belong to the design-time group. First, Regia has no Requirements, Ontology, or Resource Layer. These higher-level concepts have no correspondence in the language. Second, FAML treats the environment as a first-class entity with typed, per-role sensed or changed properties, called Facets, a distinction Regia does not draw. Both gaps follow from the setting Regia targets, game development, where the environment and the objects in it are realised through a game engine, so an author has less need to model them in the language. 
+ 
+The design-time gap more generally follows from our deliberate design scope: Regia omits loops, arithmetic, variables, and user-defined functions, and restricts itself to Actions, Events, Facts, Playbooks, and Plots. Prometheus, the methodology PDT implements, spans the full development lifecycle, from system specification through architectural design to detailed design, and therefore models requirements, scenarios, organisation structures, and interaction protocols. FAML's design-time layer is populated largely by concepts from that lifecycle stage, and Regia represents none of them, since it targets narrative behaviour authoring for an already partly-designed agent population, at a higher abstraction level.
+
+Regia's lower overall coverage therefore indicates a narrower scope, restricted to the narrative-orchestration and reactive-behaviour concerns Chapter~\ref{ch:design} sets out, at the cost of the requirements and architecture-oriented concepts a general-purpose methodology such as Prometheus provides. The runtime figure is the one that speaks to the language's own concerns, and there Regia reaches closer to PDT.
+
+\section{Questionnaire}
+\label{sec:questionnaire}
+
+The questionnaire tests the language with its users, rather than against a model. It adapts the qualitative instrument of AgentDSM-Eval, as Section~\ref{sec:evaluation-approach} describes, and measures three things: whether respondents can read Regia, whether they can write it, and how they perceive its quality. The rest of this section follows that division throughout.
+
+\subsection{Instrument}
+\label{sec:q-instrument}
+ 
+Respondents first read a document introducing Regia through the running example of Chapter~\ref{ch:design}, and then were asked to answer twelve questions. They did not use the transpiler or the Visual Editor: both are run through Python, and we chose not to ask respondents without programming experience to install and operate them. The first question asked them to declare that they completed the form without help from other people or from generative AI tools. This ensures the significance of the recorded results. The second optionally recorded their technical background. Table~\ref{tab:q-instrument} summarises the remaining ten.
+ 
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|l|l|p{3.0cm}|p{2.2cm}|p{4.6cm}|l|}
+\hline
+\textbf{Q} & \textbf{ID} & \textbf{Fragment} & \textbf{Format} & \textbf{Constructs tested} & \textbf{Measures} \\
+\hline
+Q3  & C1 & \lstinline|insult_heard| plan  & Multi-select & \lstinline|PRIORITY|, \lstinline|TEMPER|, \lstinline|EFFECTS|; branching; \lstinline|SIGNAL| & Reading \\
+Q4  & O1 & \lstinline|digestion_check| plan & Explanation & a guarded body; \lstinline|FORGET|; \lstinline|PRINT| & Reading \\
+Q5  & O2 & \lstinline|food_served| plan   & Explanation & a prefix statement; a compound condition & Reading \\
+Q6  & C2 & \lstinline|RoyalBanquet| header & Multi-select & \lstinline|PHASE ... INITIAL|; \lstinline|ROLE| & Reading \\
+Q7  & C3 & \lstinline|DURING PLOT| block  & Multi-select & plot-wide handlers; \lstinline|WORLD DO|; Role \lstinline|DO|; \lstinline|END PLOT| & Reading \\
+Q8  & O3 & \lstinline|DURING reception| block & Explanation & \lstinline|ON ENTER|; \lstinline|ASSIGN|; \lstinline|TRANSITION TO| & Reading \\
+Q9  & O4 & \lstinline|DURING feast| block & Explanation & \lstinline|WHEN ROLE ... SIGNALS|; \lstinline|START SUBPLOT|; \lstinline|ON EXIT| & Reading \\
+Q10 & -- & A written specification & Code writing, optional & fifteen specified behaviours & Writing \\
+Q11 & -- & -- & Likert scale & fifteen quality measures from AgentDSM-Eval & Perceiving \\
+Q12 & -- & -- & Free text & further comments & -- \\
+\hline
+\end{tabular}
+\caption{The ten substantive questions, the fragment of the running example each presents, and what each measures.}
+\label{tab:q-instrument}
+\end{table}
+ 
+The seven reading items each present a fragment of the running example, and asks a comprehension question. Three are multi-select: each lists five statements about the fragment, any number of which may be true. Four ask the respondent to explain in their own words what the fragment does, in as much detail as they can.
+ 
+The generation task extends the running example, through the following specification. A Princess and a Pretender attend the banquet. The Princess greets the Guests at the reception, and at the feast refuses any food she does not like. The Pretender initially behaves as any Guest, and may talk with the others. If no food pleases the Princess, she sends the Pretender to search for some, a quest the specification suggests realising as a Subplot. The Princess may also ask the Pretender to dance, starting a Ball during which the Pretender attends only to her. Guests greeted by the Princess become enamoured of her, and Guests spoken to by the Pretender become their friends; during the Ball, a friendly Guest cheers the couple and an enamoured Guest insults them, starting a duel. We decompose the specification into fifteen behaviours for scoring, listed in Figure~\ref{fig:q-generation}.
+ 
+The Likert grid retains fifteen of the twenty-four quality measures of AgentDSM-Eval, each rated on a five-point scale~\cite{Likert1932}, from complete disagreement to full agreement, with an additional ``I do not know'' option. The nine omitted measures either presuppose a development environment or tool which the participants were not given, or assume familiarity with specific agent platforms and architectures, knowledge most of our participants did not have. As such, our ratings are not directly comparable with the scores Alaca et al.~\cite{Alaca2021} report for PDT and the other languages they evaluate.
+
+ \subsection{Participants and Procedure}
+\label{sec:q-participants}
+ 
+The form was anonymous, distributed online to members of Untold Games and other volunteers. No time limit was imposed. Twenty-six people responded. Seventeen report a background in computer science alone, six combine it with game design or development, and three report a background in game design or development without computer science. The sample is therefore composed mostly of programmers.
+ 
+Of the twenty-six participants, ten attempted the optional generation task. Some of these answers were cut short because of the 4000 character limit in the form's textbox. We decided to still grade the available fragments. No response was excluded from the results.
+
+\subsection{Metrics}
+\label{sec:q-metrics}
+
+Throughout, we measure the relationship between two quantities with Spearman's rank correlation coefficient $\rho$~\cite{Spearman1904}, which depends only on the order of the values. It suits ordinal Likert ratings, and makes no assumption about the distribution of the scores, which cluster near the maximum. Where we give an interval for $\rho$, it is a 95\% percentile bootstrap interval~\cite{Efron1993}: the respondents are resampled with replacement 10{,}000 times, $\rho$ is recomputed on each resample, and the interval spans the 2.5th to the 97.5th percentile of the results. Resamples in which either variable is constant, and $\rho$ is therefore undefined, are skipped, and a fixed random seed makes the interval reproducible. These analyses are descriptive. The questionnaire was not designed around hypotheses fixed in advance, and its small, self-selected sample does not sufficiently represent the audience Regia is built for, so we run no hypothesis tests and report no $p$-values.
+ 
+\subsubsection{Reading}
+ 
+Each multi-select item presents five statements, any number of which may be true, and the respondent selects those they judge to be true; a statement left unselected is thereby judged false. No single scoring rule for items of this kind is agreed in the literature~\cite{Schmidt2022}. We score them with normalised plus/minus scoring, which awards credit for each correct selection and deducts it for each incorrect one, and which Betts et al.~\cite{Betts2022} find among the most suitable rules for items asking respondents to select all statements that apply.
+ 
+For one item, let $n_T$ and $n_F$ be its numbers of true and false statements, and, for one respondent, let $TP$ be the number of true statements they selected and $FP$ the number of false statements they selected. Each correct selection earns $1/n_T$, and each incorrect selection costs $1/n_F$:
+
+\begin{equation}
+S = \frac{TP}{n_T} - \frac{FP}{n_F}.
+\label{eq:plus-minus}
+\end{equation}
+
+$S$ ranges from $-1$ to $1$. A respondent who selects exactly the true statements scores $1$; one who selects every statement, or none, scores $0$. The score is defined for every item, since each contains at least one true and one false statement.
+ 
+Normalising each class by its own size matters because the three items have unbalanced keys, with three, two, and one true statements respectively. Under the unnormalised rule, one point per correct selection less one point per incorrect selection, a single wrong selection on Q7 cancels the points gained through its only true statement. Scoring each statement as right or wrong has the opposite flaw, rewarding inaction: selecting nothing on Q7 still judges four of its five statements correctly. Equation~\ref{eq:plus-minus} gives no credit to either strategy, whatever the balance of the key.
+ 
+The score coincides with Youden's $J$~\cite{Youden1950}, a standard method for computing accuracy. The first term of Equation~\ref{eq:plus-minus} is the sensitivity $Se$, the share of true statements selected, and the second is one minus the specificity $Sp$, the share of false statements left unselected, so that $S = Se + Sp - 1 = J$. $S$ can therefore equally be read as the rate of correct selections less the rate of incorrect ones, the form in which a score of $0$ marks performance no better than selecting at random.
+ 
+Each explanation item has a rubric of six or seven units, each describing one point a complete answer covers. A unit is coded $2$ if the answer covers it thoroughly, $1$ if it covers it in less detail, and $0$ if it is absent. With $U$ the number of units in the item and $c_u$ the code of unit $u$, the item's score is the sum of its codes over the maximum possible:
+
+\begin{equation}
+s = \frac{1}{2U} \sum_{u=1}^{U} c_u,
+\label{eq:rubric-score}
+\end{equation}
+
+so that items with more units do not weigh more in an average. A single rater coded every answer, so no measure of agreement between raters is available; Section~\ref{sec:threats} discusses the consequence.
+ 
+\subsubsection{Writing}
+ 
+The generation task is scored with two rubrics. The first codes each of the fifteen behaviours on the same $0$, $1$, $2$ scale, recording separately whether a behaviour scored $0$ was attempted incorrectly or not attempted at all. Three measures follow from it: coverage, the score of Equation~\ref{eq:rubric-score} taken over all fifteen behaviours; the number of behaviours attempted; and quality when attempted, the same score taken over the attempted behaviours alone.
+ 
+We take quality when attempted as the primary measure. Coverage is dominated by length: it correlates with the number of lines a respondent wrote at $\rho = 0.72$. The form's length limit truncated only three submissions, and these were the ones most complete. Coverage therefore records how much a respondent wrote as much as how well they wrote it.
+ 
+The second rubric counts errors, classified into the five categories of Table~\ref{tab:q-errors}. We report them both as totals and per hundred non-blank lines, since a longer submission offers more opportunity for error.
+ 
+\subsubsection{Perceiving}
+ 
+For each quality measure, we exclude ``I do not know'' from the denominator and report it separately, since it records unfamiliarity with the measure rather than an opinion about the language. With $n$ the number of remaining responses, and $n_{SA}$, $n_{A}$, $n_{D}$, and $n_{SD}$ the numbers who strongly agree, agree, disagree, and strongly disagree, net agreement is
+
+\begin{equation}
+NA = \frac{n_{SA} + n_{A} - n_{D} - n_{SD}}{n},
+\end{equation}
+
+which ranges from $-1$, unanimous disagreement, to $1$, unanimous agreement. We report medians rather than means, since the scale is ordinal.
+
+\subsection{Results}
+\label{sec:q-results}
+ 
+\subsubsection{Reading}
+ 
+Respondents read Regia well. The median comprehension score is 0.84, with an interquartile range of 0.74 to 0.89. The median plus/minus score on the multi-select items is 0.81, and the median rubric score on the explanation items is 0.85. Figure~\ref{fig:q-comprehension} shows each respondent's score on each item. Scores concentrate near the maximum on every item, and the Playbook-level and Plot-level items score alike, so neither level of the language is harder to read in general.
+ 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/comprehension_by_item.png}
+    \caption{Each respondent's score on the seven reading items, in questionnaire order, with the median of each item. Multi-select items report the normalised plus/minus score of Equation~\ref{eq:plus-minus}, for which $0$ is the score of selecting every statement or none; explanation items report the rubric score of Equation~\ref{eq:rubric-score}, for which $0$ is an answer covering nothing.}
+    \label{fig:q-comprehension}
+\end{figure}
+ 
+The errors that do occur are not scattered. Table~\ref{tab:q-misreadings} gathers the lowest-scoring statements and rubric units, which fall under two themes, each supported by both formats.
+ 
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|l|p{7.0cm}|c|l|}
+\hline
+\textbf{Theme} & \textbf{Evidence} & \textbf{Item} & \textbf{Result} \\
+\hline
+\multirow{5}{*}{What a Role denotes}
+ & False: ``Host is one specific agent'' & Q7 & selected by 35\% \\
+ & False: ``Exactly two agents exist, Host and Guest'' & Q6 & selected by 35\% \\
+ & A Playbook applies to every agent holding it & Q4 & 0.96 of 2 \\
+ & \lstinline|ASSIGN| acts on every agent playing the Role & Q8 & 1.62 of 2 \\
+ & \lstinline|MAPPING| maps one Role onto another & Q9 & 1.38 of 2 \\
+\hline
+\multirow{4}{*}{When a block is active}
+ & False: ``PLOT is a phase'' & Q7 & selected by 31\% \\
+ & A \lstinline|WHEN| handler stays live throughout its phase & Q8 & 1.23 of 2 \\
+ & A \lstinline|DURING| block scopes behaviour to one phase & Q8 & 1.46 of 2 \\
+ & \lstinline|ON EXIT| fires on leaving the phase & Q9 & 1.27 of 2 \\
+\hline
+\end{tabular}
+\caption{The statements most often misjudged and the rubric units scored lowest, grouped by the aspect of the language each concerns. Multi-select results give the share selecting a false statement; explanation results give the mean code of the unit.}
+\label{tab:q-misreadings}
+\end{table}
+ 
+The first theme is what a Role denotes. More than a third of respondents read \lstinline|ROLE Host.| as naming a single agent, and as many read two Role declarations as two agents. The explanation answers show the same reading independently. The lowest-scoring rubric unit in the questionnaire concerns whether a Playbook applies to every agent holding it, and the units on \lstinline|ASSIGN| and \lstinline|MAPPING|, both of which act on Roles, also score low. The second theme is when a block is active. Of the respondents, 31\% read \lstinline|DURING PLOT| as a phase named PLOT, and the units on whether a \lstinline|WHEN| handler stays live throughout its phase, and on when \lstinline|ON EXIT| fires, are among the lowest scored.
+ 
+Individual statements, by contrast, read well. Every rubric unit concerning an action, a condition, \lstinline|FORGET|, \lstinline|PRINT|, or \lstinline|START SUBPLOT| has a mean of 1.7 or above. This includes the compound condition of Q5, read with the correct precedence by nearly every respondent. The difficulty lies in Regia's structural abstractions rather than in its statements.
+ 
+\subsubsection{Writing}
+ 
+Ten respondents wrote an extension of the running example. Figure~\ref{fig:q-generation} shows how many implemented each behaviour.
+ 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/generation_behaviours.png}
+    \caption{Coverage of each of the fifteen specified behaviours across the ten respondents who attempted the generation task, in the order the specification lists them.}
+    \label{fig:q-generation}
+\end{figure}
+ 
+What respondents wrote was mostly correct. Quality when attempted has a median of 0.69, and every respondent falls between 0.60 and 0.91. How much they wrote varied far more: from four behaviours to all fifteen, and from 7 to 138 lines. Coverage falls steadily down the specification, which lists its simpler behaviours first. Nearly every respondent declared the two new Roles and implemented their behaviour at the reception and the feast, while the Ball and the Guests' reactions to it were mostly not attempted. The form's length limit cut short three submissions, all three of which had reached the final behaviours.
+ 
+Table~\ref{tab:q-errors} classifies the 166 errors found across the ten submissions.
+ 
+\begin{table}[htpb]
+\centering
+\small
+\begin{tabular}{|p{8.2cm}|c|c|}
+\hline
+\textbf{Error category} & \textbf{Share} & \textbf{Submissions} \\
+\hline
+Pure syntax: missing full stops, omitted \lstinline|DO|, identifier case, block structure & 53.6\% & 10 of 10 \\
+Vocabulary used without being declared & 27.1\% & 8 of 10 \\
+Invented or malformed construct & 14.5\% & 6 of 10 \\
+Vocabulary category confused, such as an Event used as an Action & 3.6\% & 4 of 10 \\
+Plot-level construct inside a Playbook, or the reverse & 1.2\% & 1 of 10 \\
+\hline
+\end{tabular}
+\caption{Errors in the generation task by category, as a share of all 166 errors, and the number of submissions containing at least one.}
+\label{tab:q-errors}
+\end{table}
+ 
+Four-fifths of the errors concern syntax or undeclared vocabulary, and both are errors the transpiler reports: undeclared vocabulary is the case Section~\ref{sec:error-reporting} uses as its example diagnostic. Errors placing a construct at the wrong level of the language occurred twice, in a single submission, and errors confusing Events, Actions, and Facts six times. Respondents writing Regia kept local behaviour and global narration apart, and kept the three vocabulary categories distinct. The invented or malformed constructs record something different: constructs respondents reached for that Regia does not provide in the form they used, such as a \lstinline|WHEN| handler with a constant condition. Errors are also concentrated: a single submission contributed 24 of the 89 syntax errors.
+ 
+Self-selection into the task appears small. Respondents who attempted it and those who did not have the same median comprehension score, 0.84.
+ 
+\subsubsection{Perceived Quality}
+ 
+Figure~\ref{fig:q-likert} shows the distribution of responses on the fifteen quality measures.
+ 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/likert_diverging.png}
+    \caption{Responses to the fifteen quality measures adapted from AgentDSM-Eval, centred on the neutral response. ``I do not know'' is excluded from each bar and counted at the right.}
+    \label{fig:q-likert}
+\end{figure}
+ 
+Respondents rated Regia positively on fourteen of the fifteen measures. Grouped by the characteristics of AgentDSM-Eval, net agreement is $+0.92$ for Functional Suitability, $+0.87$ for Compatibility, $+0.80$ for MAS Development, $+0.66$ for Usability, $+0.52$ for Expressiveness, and $+0.13$ for Reliability. Comprehensibility and Learnability score $+0.58$ and $+0.62$, below the two functional measures: respondents were more confident that Regia suits its domain than that it is easy to learn.
+ 
+Comprehensibility is also the one perception measure that can be checked against performance. The nineteen respondents who agreed that understanding Regia requires little effort demonstrate a median comprehension of 0.86, against 0.76 for the seven who did not. Across all twenty-six, however, self-rated comprehensibility and measured comprehension correlate only weakly, at $\rho = 0.31$, with a 95\% bootstrap interval of $-0.05$ to 0.60. The interval includes zero, so this sample does not establish whether respondents' confidence tracks their understanding.
+ 
+One measure falls below zero, and one only just above it. Error protection scores $-0.12$, and accounts for the low Reliability figure. Respondents read a description of Regia and never compiled a program, so the validation and diagnostics of Chapter~\ref{ch:implementation} were not visible to them; the measure records an aspect which would be mitigated in an actual development scenario. Uniqueness, whether Regia provides one and only one way to express each concept, scores $+0.10$. ``I do not know'' was most common on uniqueness, necessity, and the absence of conflicting elements, the three measures phrased in the most technical terms.
+ 
+\section{Threats to Validity}
+\label{sec:threats}
+ 
+We state the threats to both evaluations here. For the questionnaire we follow the four categories of validity common in empirical software engineering~\cite{Wohlin2012}.
+ 
+\subsection{Metamodel Comparison}
+\label{sec:threats-faml}
+\label{sec:faml-comparison-threats}
+ 
+A single analyst mapped Regia's constructs to FAML's concepts by hand, a judgement AgentDSM-Eval's own procedure also requires for every concept its tool cannot match~\cite{Alaca2021}, and distinguishing Full from Partial support adds a second judgement to each pairing. The comparison with PDT cannot be applied directly either, since PDT was scored by the framework's tool, in binary, by other evaluators. Reporting coverage with and without partial matches addresses both, and shows which conclusions depend on the partial judgements: the design-time gap holds under either scoring, while Regia's runtime coverage matches PDT's only when partial matches are counted.
+ 
+\subsection{Questionnaire}
+\label{sec:threats-questionnaire}
+ 
+\paragraph{Construct validity.} Respondents read Regia from a document its authors wrote, so comprehension scores measure the language and the document together. They never used the compiler, so ratings of error protection had little basis. A single rater coded every answer, so the codes' reproducibility is not established; all codes are in the repository for inspection (\lstinline{q_scores/}). The form's length limit truncated the three most complete generation submissions, making their coverage a lower bound.
+ 
+\paragraph{Internal validity.} The form was unsupervised, so independence rests on each respondent's declaration, and its fixed order may have let fatigue lower scores on later items and on the generation task. One response, completed in seven minutes with the lowest comprehension score, is consistent with reading a multi-select instruction the wrong way round. We retain it, having set no exclusion rule in advance; removing it changes no conclusion. The five responses collected last were completed faster than the others, with a median of 62 minutes against 120, scored lower on the explanation items, with a median of 0.79 against 0.87, and include no attempt at the generation task. We retain them under the same rule. They account for the weak correlation between self-rated and measured comprehension: over the first twenty-one responses, $\rho = 0.53$, with a 95\% bootstrap interval of 0.18 to 0.77.
+ 
+\paragraph{External validity.} Twenty-three of the twenty-six respondents have a background in computer science. The results therefore mainly describe programmers new to Regia, not the designers without programming experience for whom it is intended. Respondents were volunteers, and the reading items present short fragments rather than a narrative spread across many files.
+ 
+\paragraph{Conclusion validity.} With twenty-six respondents and scores near the maximum, correlations rest on few data points, so we report every result descriptively and compute no significance tests. The single correlation reported is given with its bootstrap interval, which includes zero: its direction is not established.
+ 
+\medskip
+ 
+Two threats bear most on the conclusions: the runtime comparison with PDT depends on the partial judgements, and the questionnaire describes programmers rather than designers. Section~\ref{sec:discussion} reads the results with both in view.
