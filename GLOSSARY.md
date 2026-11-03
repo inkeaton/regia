@@ -96,6 +96,18 @@ _Avoid_: Flag, annotation, modifier
 A single step of a Plan's Body: an Action, a Director Statement, or control flow (`IF`/`ELSE`).
 _Avoid_: Instruction, command
 
+**Block**:
+A group of Statements or declarations that belong to a header, such as a Playbook, a Plan or an `IF` branch. Its body is either indented under the header or written on the header's line.
+_Avoid_: Scope, suite, section
+
+**Block header**:
+The line, or part of a line, that opens a Block. It always ends with `:`.
+_Avoid_: Head, opener
+
+**Inline block**:
+A Block whose body is written on the same line as its header. It ends at a `;` or at the end of the line.
+_Avoid_: One-liner, explicit block
+
 **Action**:
 Anything an Agent does: acting on the world, changing its own Facts and Goals, or communicating.
 _Avoid_: Command, operation
@@ -112,10 +124,24 @@ _Avoid_: Built-in, primitive, internal action
 A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `TRANSITION`, `START SUBPLOT`, `END PLOT`).
 _Avoid_: Director action, plot command
 
+## Comments
+
+**Comment**:
+Text for human readers that has no meaning for the language. It starts with `#`, or is enclosed in `#[ … ]#` across several lines.
+_Avoid_: Note, remark
+
+**Doc comment**:
+A comment documenting the declaration directly below it, written `#@key: value`. Unlike a plain Comment, it belongs to the declaration and is read by tools.
+_Avoid_: Docstring, annotation, documentation comment
+
+**Doc key**:
+The name in a Doc comment saying what the text is about, such as `desc`, `author` or `version`. A Doc comment without a key is a `desc`.
+_Avoid_: Tag, field, attribute
+
 ## Instancing and tooling
 
 **Instancing comment**:
-A comment carrying information for instancing the agents after transpilation (for example, how many Agents play a Role). It sits at a different abstraction level from the rest of the language.
+A comment carrying information for instancing the agents after transpilation (for example, how many Agents play a Role), starting with `#%`. It sits at a different abstraction level from the rest of the language.
 _Avoid_: Compilation comment, deployment config
 
 **Target**:
