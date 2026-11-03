@@ -70,6 +70,18 @@ _Avoid_: Multi-definition, enum, list
 Shorthand for declaring several Vocabulary items in one line. Unlike a Group, it creates no relationship between the items.
 _Avoid_: Group, batch declaration
 
+**Parameter name**:
+The name given to a slot when a Vocabulary item is declared, such as `person` in `FACT hates(person)`. It documents what the slot means and never binds anything.
+_Avoid_: Parameter (when meaning an argument), formal parameter
+
+**Value**:
+A fixed name, number or string written in a slot, such as `host` in `hates(host)`.
+_Avoid_: Constant, atom, bound parameter, literal
+
+**Placeholder**:
+A blank in a slot, written `?name`, that the Agent fills by matching in a Plan's Trigger or Context and that the Body then uses. It is filled once per Plan run and never reassigned.
+_Avoid_: Variable, unbound parameter, logic variable, wildcard
+
 ## Plans and statements
 
 **Plan**:
