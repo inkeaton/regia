@@ -28,6 +28,7 @@ A complete design spec for Regia 2.0. It covers the language (syntax, constructs
 - [Numbers and arithmetic](issues/04-numbers-and-arithmetic.md): one Number kind; `< > <= >= =` and `+ - * /`; `RANDOM(a, b)` inclusive. The Context only tests (`=` compares); a Body names values with `?name = Expression.`, once and never reassigned. Non-Numbers make a Context comparison false and Body arithmetic fail the Plan. Spec: `docs/spec/04-numbers-and-expressions.md`, ADR 0002.
 - [Goals and Trigger kinds](issues/05-goals-and-trigger-kinds.md): achievement Goals only, declared like Facts, reached when their Plan finishes; Events are momentary; Trigger kinds are `WHEN e:`, `WHEN f LEARNED/FORGOTTEN:`, `TO g:`, `WHEN g DROPPED:`; `WHEN` replaces `ON`; `FROM Role ?who` / `FROM DIRECTOR` on anything sent. Spec: `docs/spec/05-goals-and-triggers.md`, ADR 0003.
 - [Context vs control flow](issues/06-context-vs-control-flow.md): `GIVEN` is the Context, a Block under the Trigger; several `GIVEN`s share a Trigger, first match in the text wins, optional `ELSE`, no prefix Statements. `IF`/`ELSE IF`/`ELSE` are Body Statements; their Placeholders live in their branch. `AND`/`OR` mixing needs parentheses. ASL: negate earlier siblings with fresh names. No loops. Spec: `docs/spec/06-context-and-control-flow.md`, ADR 0004.
+- [Messaging between Agents](issues/08-messaging.md): `TELL <recipient> <fact or event>`, `ASK <recipient> TO <goal>`, `SIGNAL <event>` (to every Director giving the Playbook). Recipients are a filled Placeholder, a Role or `EVERYONE` (`BROADCAST` gone), never a named Agent. Messages only add; sending never waits. A told Fact is the receiver's own, with no source; `LEARNED FROM` fires only if new. Cooperation words reserved (`REFUSE`, `AGREED`/`REFUSED`/`REACHED`/`FAILED`, `TOLD`, trailing clauses). Spec: `docs/spec/07-messaging.md`.
 
 ## Not yet specified
 
@@ -41,6 +42,7 @@ A complete design spec for Regia 2.0. It covers the language (syntax, constructs
 - **Visual Editor architecture**: the Transpiler running in-browser (WASM), a file system with folders and tabs, one tab per Plot.
 - **What the graph shows**: which elements, toggling layers on and off, staying readable; how doc comments are shown or turned into generated documentation.
 - **Testing strategy for the language spec**: how a spec chapter proves itself (examples, conformance cases). Not the development process.
+- **Agent cooperation and undoing Messages**: a receiver refusing an `ASK` (`REFUSE`), replies to the asker as Goal kind words (`AGREED`, `REFUSED`, `REACHED`, `FAILED`), trailing clauses on message Statements (wait, timeout, expect reply), negotiation; Messages that make another Agent forget a Fact or drop a Goal; Fact provenance (`WHEN f TOLD FROM ?who`). Words reserved in spec 07. Post-2.0 unless the core needs it.
 
 ## Out of scope
 

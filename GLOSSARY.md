@@ -59,7 +59,7 @@ Something that happens in the world and is over once noticed. It triggers Plans 
 _Avoid_: Triggering event, percept, message, happening
 
 **Signal**:
-An Event an Agent sends to the Director of the Plot that gave it a Playbook. The Director reacts to it like any other Event, and can tell which Role sent it.
+An Event an Agent sends to the Directors of every Plot currently giving it the Playbook the Signal is written in. The Directors react to it like any other Event, and can tell which Role sent it. It is an Agent's only way to reach a Director.
 _Avoid_: Notification, message
 
 **Group**:
@@ -105,8 +105,16 @@ Which sort of thing starts a Plan, such as an Event happening or a Fact being le
 _Avoid_: Event type, triggering event
 
 **Sender**:
-The Agent or Director that sent what a Trigger reacts to, such as a Signal or a Goal. A Trigger can restrict or name it with `FROM`.
+The Agent or Director that sent what a Trigger reacts to, such as a Signal, a Message or a Goal. A Trigger can restrict or name it with `FROM`. Things the game or the Agent itself caused have no Sender.
 _Avoid_: Source
+
+**Message**:
+A Fact, an Event or a request to pursue a Goal that one Agent sends to others. A told Fact or Event becomes the receiver's own, like one from the game; a requested Goal becomes the receiver's own Goal. Messages only add, never take away.
+_Avoid_: Communication, performative, speech act
+
+**Recipient**:
+Who a Message goes to: an Agent held by a Placeholder, every Agent playing a Role, or everyone. Never the sender, and never an Agent named in the source.
+_Avoid_: Receiver (when meaning the written target), addressee, target
 
 **Context**:
 The condition that must hold for a Plan to be chosen, written after `GIVEN`. It is checked once, when the Plan is chosen, before any of its Body runs.

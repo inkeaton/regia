@@ -30,7 +30,7 @@ An Agent can be given a Goal by:
 - **the Director** of a Plot, with a Director Statement;
 - **another Agent**, with a message.
 
-How each is written is decided in *Basic action set*, *Director capabilities* and *Messaging*.
+Another Agent writes `ASK ?who TO g.` (chapter 07). How the Agent itself and the Director write it is decided in *Basic action set* and *Director capabilities*.
 
 ### Reaching a Goal
 
@@ -107,7 +107,7 @@ WHEN avenge(?who) DROPPED:
 
 ## Who sent it: `FROM`
 
-A Trigger for something that was **sent** (a Signal at a Director, a Goal given by the Director or by another Agent, a message) can say who sent it with `FROM`:
+A Trigger for something that was **sent** (a Signal at a Director, a Goal given by the Director or by another Agent, a Fact or Event told by another Agent) can say who sent it with `FROM`:
 
 | Written | Matches |
 |---|---|
@@ -129,9 +129,9 @@ TO find_sword FROM DIRECTOR:
 
 - `?who` follows the Placeholder rules of chapter 03: filled once, by matching. What a Director can do with it (`ASSIGN … TO ?who`) is decided in *Director capabilities* and *Role setup*.
 - `FROM DIRECTOR` is worked out at runtime, so a Playbook never names a Plot and stays Plot-independent. A Goal from a Director whose Plot doesn't give this Playbook doesn't match.
-- `FROM` is an error on Triggers that have no sender: Facts learned or forgotten, and Events from the game.
+- `FROM` is an error on `FORGOTTEN`, which never has a Sender. On `LEARNED` it matches only a Fact told by another Agent, and only when the Fact was new (chapter 07); a Fact learned from the game or from the Agent's own `BELIEVE` has no Sender, so no `FROM` clause matches it. Likewise an Event from the game has no Sender.
 - A Goal the Agent gave itself has **no sender**, so no `FROM` clause matches it. Without `FROM`, it matches as usual.
-- The sender forms for messages between Agents are decided in *Messaging*.
+- Messages between Agents use these same forms (chapter 07, `07-messaging.md`).
 
 ## Order of a Trigger
 
@@ -153,6 +153,5 @@ The kind words and `FROM` are reserved, so the parser always knows where the ite
 
 - How a Body gives a Goal (to itself, waiting or not) and drops one, and their names: *Basic action set*.
 - How the Director gives Goals, and how Phase entry and exit Triggers are worded: *Director capabilities*.
-- Message contents, and the sender forms for messages between Agents: *Messaging*.
 - The "Goal fails" Trigger and what happens when no `TO` Plan applies: *Plan failure and fallback*.
 - Renaming `EVENT` to `CUE`, Goals that are kept or reached when a Fact holds, and `FROM SELF`: not yet specified.
