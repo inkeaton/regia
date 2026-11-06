@@ -153,8 +153,8 @@ An Action defined outside Regia and declared in the Vocabulary, usually affectin
 _Avoid_: External action, user action
 
 **Basic Action**:
-An Action built into Regia that any Agent can use (such as `PRINT`, `BELIEVE`, `SIGNAL`). It is written without `DO`.
-_Avoid_: Built-in, primitive, internal action
+An Action built into Regia that any Agent can use, for changing its own Facts and Goals (`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`), sending (`TELL`, `ASK`, `SIGNAL`), printing or waiting. It is written without `DO`.
+_Avoid_: Built-in, primitive, internal action, BELIEVE, ACHIEVE
 
 **Director Statement**:
 A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `TRANSITION`, `START SUBPLOT`, `END PLOT`).

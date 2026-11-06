@@ -13,8 +13,8 @@ A Plan asks two kinds of question, at two different times:
 WHEN food_served:
     GIVEN is_hungry:
         DO PRINT("A guest notices food arriving.").
-        BELIEVE served.
-        IF NOT hates(host):          # checked now, after the PRINT and the BELIEVE
+        LEARN served.
+        IF NOT hates(host):          # checked now, after the PRINT and the LEARN
             DO eat_food.
         ELSE:
             DO complain.

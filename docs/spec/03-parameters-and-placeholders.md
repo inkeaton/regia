@@ -48,7 +48,7 @@ A Placeholder is **not** a programming variable:
 
 - It is **filled by matching**, or **named once** in the Body (`?dmg = RANDOM(1, 6).`, see chapter 04). It is never reassigned.
 - It is filled **once per Plan run**, and keeps that value until the run ends.
-- It is gone when the run ends. Anything an Agent must remember, or that changes over time, is a Fact: `FORGET counter(3)`, `BELIEVE counter(4)`.
+- It is gone when the run ends. Anything an Agent must remember, or that changes over time, is a Fact: `FORGET counter(3)`, `LEARN counter(4)`.
 
 ## Where Placeholders are filled and used
 

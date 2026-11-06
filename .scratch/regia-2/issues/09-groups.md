@@ -11,3 +11,4 @@ What does a Group mean, and how is it used (primer ch.3)? A Group is a named set
 ## Comments
 
 From *Parameters and variables* (03): "pick one at random" and "for every match" over a Context's matches are in the map's fog under match selection. If Groups bring a random-choice construct, check whether the same construct should also cover Placeholder matches.
+- From *Basic Action set* (07): no Basic Action works over Groups yet. Decide whether picking an Action from a Group (e.g. at random, weighted) is a Statement of its own, and how it reads next to `DO`. See `docs/spec/08-basic-actions.md`.

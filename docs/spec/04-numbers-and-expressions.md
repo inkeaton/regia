@@ -2,7 +2,7 @@
 
 How Regia writes numbers, compares them, calculates with them and rolls random ones, and how a Plan's Body names a computed value. Decided in the ticket *Numbers and arithmetic* (`.scratch/regia-2/issues/04-numbers-and-arithmetic.md`). It builds on *Parameters and Placeholders* (`03-parameters-and-placeholders.md`). The choice to name values only in the Body is recorded in `docs/adr/0002-values-are-named-in-the-body.md`.
 
-In the examples, the Context is written as the `IF` directly under the Trigger, as in chapter 03. Chapter 06 (`06-context-and-control-flow.md`) replaces this with `GIVEN`. Changing a Fact is written as `FORGET` followed by `BELIEVE` until *Basic action set* decides.
+In the examples, the Context is written as the `IF` directly under the Trigger, as in chapter 03. Chapter 06 (`06-context-and-control-flow.md`) replaces this with `GIVEN`. Changing a Fact in one step is `CHANGE … TO` (chapter 08); the examples spell it out with `FORGET` and `LEARN`.
 
 ## Numbers
 
@@ -33,7 +33,7 @@ An **Expression** is something that works out to a Value: a Value, a filled Plac
 | `/` | divide; the result is always a decimal when it doesn't come out whole (`7 / 2` is `3.5`) |
 | `( … )` | group |
 
-`*` and `/` bind tighter than `+` and `-`, as in school math. There is no remainder or whole-number division. Arithmetic works only on Numbers; there is no `+` for joining strings (see *Basic action set*).
+`*` and `/` bind tighter than `+` and `-`, as in school math. There is no remainder or whole-number division. Arithmetic works only on Numbers; there is no `+` for joining strings (`PRINT` joins its arguments with spaces, chapter 08).
 
 Spaces around operators are optional: `?h-10` and `?h - 10` are the same, since names never contain `-`.
 
@@ -72,7 +72,7 @@ Every `RANDOM(…)` is a fresh roll. To use the same roll twice, name it in the 
 
 | Place | Expressions? |
 |---|---|
-| Body argument slots: `BELIEVE health(?h - 10)` | yes |
+| Body argument slots: `LEARN health(?h - 10)` | yes |
 | Either side of a comparison in a Context: `?a + ?b > 10` | yes |
 | Trigger slots: `WHEN damaged(?n + 1)` | **no**: a Trigger matches what arrived, with Values and Placeholders only |
 | Declarations: `FACT health(80)` | **no**: declarations hold parameter names |
@@ -104,7 +104,7 @@ WHEN hit:
     IF health(?h):
         ?dmg = RANDOM(1, 6).
         FORGET health(?h).
-        BELIEVE health(?h - ?dmg).
+        LEARN health(?h - ?dmg).
         PRINT("Ouch! Lost", ?dmg).      # the same roll
 ```
 
@@ -122,7 +122,7 @@ WHEN gift_received(?giver):
         ELSE:
             ?gain = 1.
         FORGET trust(?giver, ?t).
-        BELIEVE trust(?giver, ?t + ?gain).   # every branch named ?gain
+        LEARN trust(?giver, ?t + ?gain).   # every branch named ?gain
 ```
 
 A value that has to last beyond one Plan run is stored as a Fact and read back by matching:
@@ -130,14 +130,14 @@ A value that has to last beyond one Plan run is stored as a Fact and read back b
 ```regia
 WHEN banquet_starts:
     ?luck = RANDOM(1, 10).
-    BELIEVE luck(?luck).
+    LEARN luck(?luck).
 
 WHEN dice_game_offered:
     IF luck(?l) AND ?l > 7:
         DO accept_game.
 ```
 
-An Expression that's used only once doesn't need a name: `BELIEVE mood(?m + ?t).`
+An Expression that's used only once doesn't need a name: `LEARN mood(?m + ?t).`
 
 ## When a Number isn't a Number
 
@@ -149,5 +149,5 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 
 ## Not decided here
 
-- Changing a numeric Fact in one step, and joining strings for `PRINT`: *Basic action set*.
+- Changing a numeric Fact in one step (`CHANGE … TO`), and joining values for `PRINT`: decided in chapter 08 (`08-basic-actions.md`).
 - A shorthand comparison on a Fact (`health < 20`), a math library (`abs`, `round`, …), and naming values in the Context: not yet specified.

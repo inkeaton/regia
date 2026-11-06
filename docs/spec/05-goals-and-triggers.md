@@ -30,7 +30,7 @@ An Agent can be given a Goal by:
 - **the Director** of a Plot, with a Director Statement;
 - **another Agent**, with a message.
 
-Another Agent writes `ASK ?who TO g.` (chapter 07). How the Agent itself and the Director write it is decided in *Basic action set* and *Director capabilities*.
+Another Agent writes `ASK ?who TO g.` (chapter 07). The Agent itself writes `PURSUE g.` (chapter 08); how the Director writes it is decided in *Director capabilities*.
 
 ### Reaching a Goal
 
@@ -44,7 +44,7 @@ If an Agent is told to pursue a Goal it is already pursuing, with the same argum
 
 ### Waiting for a Goal
 
-A Body that pursues a Goal can either **wait** until it is reached and then continue, or **start it and carry on**. Both exist. Their syntax, and which is the default, are decided in *Basic action set*. A Goal given to another Agent never makes the giver wait.
+A Body that pursues a Goal can either **wait** until it is reached and then continue, or **start it and carry on**. Both exist. `PURSUE g.` waits and `PURSUE g, WITHOUT WAITING.` carries on (chapter 08). A Goal given to another Agent never makes the giver wait.
 
 ### Testing Goals in a Context
 
@@ -65,7 +65,7 @@ WHEN insult_heard(?s):
 An **Event** (`EVENT food_served`) is something that happens and is over once noticed. It triggers Plans and leaves nothing behind:
 
 - it can't be tested in a Context: `IF food_served` is an error;
-- it can't be `BELIEVE`d or `FORGET`ed;
+- it can't be added with `LEARN` or removed with `FORGET`;
 - a Plan that needs to remember it records a Fact.
 
 A Fact lasts until it is forgotten, and a Context can test it at any time. Both can trigger Plans: an Event when it happens, a Fact when it is learned or forgotten.
@@ -100,7 +100,7 @@ WHEN avenge(?who) DROPPED:
 
 - **Fact Triggers always have a kind word.** `WHEN hates(?h):` is an error; the Transpiler knows `hates` is a Fact and suggests `LEARNED` or `FORGOTTEN`. So a reader never has to look up whether a bare name is a Fact or an Event.
 - **The kind word follows the item**, using a participle: `LEARNED`, `FORGOTTEN`, `DROPPED`.
-- **`LEARNED` and `FORGOTTEN` fire whatever caused the change**: the game, a message, or the Agent's own `BELIEVE` and `FORGET`.
+- **`LEARNED` and `FORGOTTEN` fire whatever caused the change**: the game, a message, or the Agent's own `LEARN` and `FORGET`.
 - **A kind word must suit the item.** `WHEN food_served LEARNED` (an Event) or `WHEN find_food LEARNED` (a Goal) is an error.
 - **A `TO` Plan is an ordinary Plan**: Placeholders in its Trigger, a Context, Labels and a Body follow the same rules as in a `WHEN` Plan.
 - **`WHEN` is the only reaction keyword.** Plot Phases no longer use `ON ENTER` / `ON EXIT`; Phase entry and exit are `WHEN` Triggers, worded by *Director capabilities*.
@@ -129,7 +129,7 @@ TO find_sword FROM DIRECTOR:
 
 - `?who` follows the Placeholder rules of chapter 03: filled once, by matching. What a Director can do with it (`ASSIGN … TO ?who`) is decided in *Director capabilities* and *Role setup*.
 - `FROM DIRECTOR` is worked out at runtime, so a Playbook never names a Plot and stays Plot-independent. A Goal from a Director whose Plot doesn't give this Playbook doesn't match.
-- `FROM` is an error on `FORGOTTEN`, which never has a Sender. On `LEARNED` it matches only a Fact told by another Agent, and only when the Fact was new (chapter 07); a Fact learned from the game or from the Agent's own `BELIEVE` has no Sender, so no `FROM` clause matches it. Likewise an Event from the game has no Sender.
+- `FROM` is an error on `FORGOTTEN`, which never has a Sender. On `LEARNED` it matches only a Fact told by another Agent, and only when the Fact was new (chapter 07); a Fact learned from the game or from the Agent's own `LEARN` has no Sender, so no `FROM` clause matches it. Likewise an Event from the game has no Sender.
 - A Goal the Agent gave itself has **no sender**, so no `FROM` clause matches it. Without `FROM`, it matches as usual.
 - Messages between Agents use these same forms (chapter 07, `07-messaging.md`).
 
@@ -151,7 +151,7 @@ The kind words and `FROM` are reserved, so the parser always knows where the ite
 
 ## Not decided here
 
-- How a Body gives a Goal (to itself, waiting or not) and drops one, and their names: *Basic action set*.
+- How a Body gives a Goal and drops one is decided in chapter 08 (`08-basic-actions.md`).
 - How the Director gives Goals, and how Phase entry and exit Triggers are worded: *Director capabilities*.
 - The "Goal fails" Trigger and what happens when no `TO` Plan applies: *Plan failure and fallback*.
 - Renaming `EVENT` to `CUE`, Goals that are kept or reached when a Fact holds, and `FROM SELF`: not yet specified.

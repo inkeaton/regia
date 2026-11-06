@@ -1,6 +1,6 @@
 # Messaging
 
-How Agents send Facts, Events and Goals to one another, how they Signal their Directors, and what the receiver sees. Decided in the ticket *Messaging between Agents* (`.scratch/regia-2/issues/08-messaging.md`). It builds on chapters 03, 05 and 06, and replaces the `TELL`, `BROADCAST` and `SIGNAL` parts of primer ch.4. The final names of the verbs are confirmed in *Basic action set*.
+How Agents send Facts, Events and Goals to one another, how they Signal their Directors, and what the receiver sees. Decided in the ticket *Messaging between Agents* (`.scratch/regia-2/issues/08-messaging.md`). It builds on chapters 03, 05 and 06, and replaces the `TELL`, `BROADCAST` and `SIGNAL` parts of primer ch.4. Their names are confirmed in chapter 08 (`08-basic-actions.md`).
 
 Labels are written `, PRIORITY 5` as a placeholder until *Label syntax* decides.
 
@@ -65,7 +65,7 @@ A recipient is one of:
 A told Fact becomes the receiver's **own Fact**. Nothing remembers who told it.
 
 - `WHEN f LEARNED FROM ?who` fires only if the Agent **didn't already know** `f`; `?who` is the teller. Being told a Fact you already know does nothing.
-- A Fact learned from the game, or from the Agent's own `BELIEVE`, has no Sender, so no `FROM` clause matches it. Without `FROM`, `LEARNED` matches it as usual.
+- A Fact learned from the game, or from the Agent's own `LEARN`, has no Sender, so no `FROM` clause matches it. Without `FROM`, `LEARNED` matches it as usual.
 - `FORGET f` removes the Fact completely, however many Agents told it.
 - `FORGOTTEN` never has a Sender; `FROM` on it is an error.
 
@@ -80,7 +80,7 @@ A designer who needs to know *who* said what, for trust or gossip ("believe it o
 
 ```regia
 WHEN rumor(?about) FROM ?who:
-    BELIEVE heard_from(?who, ?about).
+    LEARN heard_from(?who, ?about).
 ```
 
 The reserved Trigger kind `TOLD` (below) is where built-in provenance may go later.
@@ -136,7 +136,7 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- The final names of `TELL`, `ASK` and `SIGNAL`, and whether self-pursuit's "wait" uses the trailing-clause shape: *Basic action set*.
+- The names of `TELL`, `ASK` and `SIGNAL` were confirmed, and `PURSUE g, WITHOUT WAITING` uses the trailing-clause shape: chapter 08.
 - How a Playbook names Roles, and which Staging a Role recipient or `FROM Role` means there: *Roles inside Playbooks*.
 - What a failing Plan does (non-Agent recipient, asked Goal with no `TO` Plan), and the `FAILED` kind word: *Plan failure and fallback*.
 - How a Director gives Goals, Facts and Events to Roles or Agents: *Director capabilities*.
