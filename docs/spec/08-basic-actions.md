@@ -16,7 +16,7 @@ The Actions built into Regia: changing the Agent's own Facts and Goals, sending,
 | `ASK <recipient> TO <goal>.` | asks for a Goal (chapter 07) | at the receiver |
 | `SIGNAL <event>.` | sends an Event to the Directors (chapter 07) | at the Directors |
 | `PRINT(e1, e2, …).` | prints Expressions, for debugging | nothing |
-| `WAIT …` | pauses the Body | nothing |
+| `WAIT <Duration>.` | pauses the Body | nothing |
 | `FAIL.` | fails the current Plan (chapter 11) | `WHEN g FAILED`, in a `TO g` Plan |
 
 - Basic Actions are written **without `DO`**. Only Custom Actions take `DO` (`DO eat_food.`).
@@ -109,7 +109,7 @@ PRINT("Ouch! Lost", ?dmg, "health").    # Ouch! Lost 12 health
 
 ## `WAIT`
 
-`WAIT` pauses the Body and is a Basic Action. Its argument, its units, and whether time belongs to the language or to the Target are decided in *Time and timers*.
+`WAIT 3 SECONDS.` pauses the Body for a Duration (`SECONDS` or `MINUTES`, always written). It pauses only its own Body, and fails only when the Duration isn't a Number. The clock belongs to the Target. All of this is in chapter 12 (`12-time.md`).
 
 ## Reserved words
 
@@ -127,7 +127,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- `WAIT`'s argument and units: *Time and timers*.
 - Picking an Action at random: a Random choice, `EITHER:` … `OR:` (chapter 09). There are no Groups.
 - Which of these Actions a Director can use, and how it gives Goals: *Director capabilities*.
 - Changing or dropping everything that matches a blank: the *Match selection* fog.

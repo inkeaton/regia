@@ -10,6 +10,7 @@ A Plan **fails** when one of its Statements can't be carried out:
 |---|---|
 | Body arithmetic on something that isn't a Number, or a division by zero | 04 |
 | A Weight that isn't a Number | 09 |
+| A `WAIT` Duration that isn't a Number | 12 |
 | A `TELL` or `ASK` whose Recipient Placeholder isn't an Agent | 07 |
 | `CHANGE f TO f2.` when `f` isn't known | 08 |
 | A Custom Action that the Target reports as failed | here |
@@ -17,6 +18,7 @@ A Plan **fails** when one of its Statements can't be carried out:
 | `FAIL.` | here |
 
 - **Custom Actions** fail only when the Target, or the game behind it, reports that they failed. Regia never checks the world itself. On a Target that never reports failure, every Custom Action succeeds.
+- **Nothing else to do with time fails.** 2.0 has no timeouts (chapter 12), and a Plan stopped during a `WAIT` just stops.
 - The no-ops of chapter 08 (learning a known Fact, forgetting an unknown one, dropping a Goal that isn't pursued) and an all-zero Random choice (chapter 09) are **not** failures.
 
 ### What a failed Plan leaves behind
@@ -108,7 +110,7 @@ Every failure leaves a **trace entry**, whether or not a `FAILED` Plan handles i
 - **the cause**: the Statement, by source location, and one of the causes in the table above, or "no applicable `TO` Plan";
 - **the chain**: each Goal that failed in turn because of it, and each waiting Plan that stopped.
 
-Runtime warnings (negative or all-zero Weights, chapter 09) go in the same trace, marked as warnings, since the Plan carries on.
+Runtime warnings (negative or all-zero Weights, chapter 09; negative Durations, chapter 12) go in the same trace, marked as warnings, since the Plan carries on.
 
 The language fixes only **what** a trace can explain. How it is formatted, where it goes, and how it is monitored at runtime belong to the Target (*The full ASL mapping* fog). The Transpiler's duty is to pass each Target the names and source locations it needs. Future runtime monitoring builds on this trace.
 
@@ -138,5 +140,4 @@ For *The full ASL mapping* to pick up:
 
 - Format, routing and monitoring of the trace: *The full ASL mapping* (logging).
 - What a failing Director Plan does to its Plot (Phase, Staging): *Director capabilities*.
-- Whether `WAIT` or other time constructs can fail (timeouts): *Time and timers*.
 - Replies to an asker when an asked Goal fails, and their wording now that `FROM` on `FAILED` means the Goal's Sender: *Agent cooperation* fog.

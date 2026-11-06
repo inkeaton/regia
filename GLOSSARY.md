@@ -90,6 +90,10 @@ _Avoid_: Variable, unbound parameter, logic variable, wildcard
 A Value that is a number, whole or decimal, such as `80` or `-0.5`. There is only one kind of Number.
 _Avoid_: Integer, float, numeric literal
 
+**Duration**:
+An amount of time, written as an Expression followed by `SECONDS` or `MINUTES`. The language says how long; the Target decides which clock measures it, such as wall-clock time or game time that pauses with the game.
+_Avoid_: Delay, timeout, ticks
+
 **Expression**:
 Something that works out to a Value: a Value, a filled Placeholder, a random roll, or these combined with arithmetic.
 _Avoid_: Formula, computation, term
@@ -177,7 +181,7 @@ An Action defined outside Regia and declared in the Vocabulary, usually affectin
 _Avoid_: External action, user action
 
 **Basic Action**:
-An Action built into Regia that any Agent can use, for changing its own Facts and Goals (`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`), sending (`TELL`, `ASK`, `SIGNAL`), printing, waiting, or failing on purpose (`FAIL`). It is written without `DO`.
+An Action built into Regia that any Agent can use, for changing its own Facts and Goals (`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`), sending (`TELL`, `ASK`, `SIGNAL`), printing, waiting for a Duration (`WAIT`), or failing on purpose (`FAIL`). It is written without `DO`.
 _Avoid_: Built-in, primitive, internal action, BELIEVE, ACHIEVE
 
 **Director Statement**:
