@@ -17,6 +17,7 @@ The Actions built into Regia: changing the Agent's own Facts and Goals, sending,
 | `SIGNAL <event>.` | sends an Event to the Directors (chapter 07) | at the Directors |
 | `PRINT(e1, e2, …).` | prints Expressions, for debugging | nothing |
 | `WAIT …` | pauses the Body | nothing |
+| `FAIL.` | fails the current Plan (chapter 11) | `WHEN g FAILED`, in a `TO g` Plan |
 
 - Basic Actions are written **without `DO`**. Only Custom Actions take `DO` (`DO eat_food.`).
 - Each Fact and Goal Action is worded like the Trigger kind it fires: `LEARN`/`LEARNED`, `FORGET`/`FORGOTTEN`, `DROP`/`DROPPED`, and `PURSUE` matches the Context test `PURSUING`.
@@ -48,7 +49,7 @@ WHEN hit(?dmg):
 ```
 
 - Both sides name the **same Fact**, and they may differ only in their arguments. `CHANGE health(?h) TO mood(3)` is an error.
-- **The old Fact must be known.** If it isn't, the Plan fails, because a change from something that isn't there is a mistake rather than a no-op. (A plain `FORGET` of an unknown Fact does nothing.) What failing does is decided in *Plan failure and fallback*.
+- **The old Fact must be known.** If it isn't, the Plan fails, because a change from something that isn't there is a mistake rather than a no-op. (A plain `FORGET` of an unknown Fact does nothing.) What failing does is in chapter 11 (`11-failure.md`).
 - It fires exactly what the pair would: `FORGOTTEN` for the old Fact, then `LEARNED` for the new one. If both sides are equal, nothing changes and nothing fires.
 
 ## Goals
@@ -69,7 +70,7 @@ WHEN dawn:
 - **`, WITHOUT WAITING`** is a trailing clause in the `,` shape reserved for message Statements (chapter 07). The Body goes on at once, and `g` is pursued alongside it.
 - `ASK` never waits, as chapter 07 says. Doing something yourself is sequential, but sending isn't.
 - **Pursuing a Goal already being pursued** (same arguments) starts nothing new (chapter 05). A waiting `PURSUE` waits for that existing pursuit to be reached, and continues when it is.
-- What happens when no `TO` Plan applies, or the recipe fails, is decided in *Plan failure and fallback*. A waiting Body is affected by it; a Body that used `WITHOUT WAITING` isn't.
+- If no `TO` Plan applies, or the recipe fails, `g` fails (chapter 11). A waiting Body fails with it; a Body that used `WITHOUT WAITING` isn't affected.
 
 ### Dropping
 
@@ -88,9 +89,9 @@ WHEN avenge(?s) DROPPED:
 3. fires `WHEN g DROPPED`.
 
 - Goals started `WITHOUT WAITING` are not stopped: they were deliberately set loose.
-- A Body that was **waiting** on `g` with `PURSUE g.` fails, since `g` will never be reached. What failing does is decided in *Plan failure and fallback*.
+- A Body that was **waiting** on `g` with `PURSUE g.` fails, since `g` will never be reached. What failing does is in chapter 11 (`11-failure.md`).
 - **Dropping a Goal that isn't being pursued does nothing**, and `DROPPED` doesn't fire.
-- Whether Goals stopped in step 2 fire their own `DROPPED` is decided in *Plan failure and fallback*, together with what a stopped Plan leaves behind.
+- Goals stopped in step 2 **fire their own `DROPPED`**, innermost first, before `g`'s. A stopped Plan leaves behind whatever it already did; nothing is undone (chapter 11).
 
 ## Sending
 
@@ -112,7 +113,7 @@ PRINT("Ouch! Lost", ?dmg, "health").    # Ouch! Lost 12 health
 
 ## Reserved words
 
-`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`, `PRINT`, `WAIT`, and the clause `WITHOUT WAITING`; plus chapter 07's `TELL`, `ASK`, `SIGNAL`, `EVERYONE`. `BELIEVE` and `ACHIEVE` are no longer keywords.
+`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`, `PRINT`, `WAIT`, `FAIL` (chapter 11), and the clause `WITHOUT WAITING`; plus chapter 07's `TELL`, `ASK`, `SIGNAL`, `EVERYONE`. `BELIEVE` and `ACHIEVE` are no longer keywords.
 
 ## ASL mapping notes
 
@@ -128,6 +129,5 @@ For *The full ASL mapping* to pick up:
 
 - `WAIT`'s argument and units: *Time and timers*.
 - Picking an Action at random: a Random choice, `EITHER:` … `OR:` (chapter 09). There are no Groups.
-- What a failing Plan does (`CHANGE` of an unknown Fact, a dropped Goal being waited on, no `TO` Plan); whether a stopped sub-Goal fires `DROPPED`; and an Action that fails a Plan on purpose: *Plan failure and fallback*.
 - Which of these Actions a Director can use, and how it gives Goals: *Director capabilities*.
 - Changing or dropping everything that matches a blank: the *Match selection* fog.

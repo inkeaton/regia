@@ -1,12 +1,27 @@
 # Plan failure and fallback
 
 Type: grilling
-Status: open
+Status: resolved
+Assignee: Edoardo Vassallo
 Blocked by: 05
 
 ## Question
 
 What happens when things go wrong (Q4b)? An Action fails, a Goal can't be reached, or no Plan applies to an Event. Does Regia expose failure handling (like ASL `-!` plans), and how would a designer write a fallback? What is the default behaviour when nothing handles a failure?
+
+## Answer
+
+Spec chapter: `docs/spec/11-failure.md`. ADR 0007 (`FAILED` notifies, it does not rescue). Glossary: *Failure* and *Trace* added; *Trigger*, *Trigger kind* and *Basic Action* updated.
+
+- **Causes:** the runtime cases from chapters 04, 07, 08 and 09, plus a **Custom Action the Target reports as failed** (Regia never checks the world; with no reports, Actions succeed) and the new Basic Action **`FAIL.`** (no argument). The no-ops and an all-zero Random choice are not failures.
+- **A failed Plan stops at the Statement**, and nothing is undone.
+- **It spreads:** a failed `TO g` Plan fails `g`, and every Body waiting on `g` fails, up the chain; `WITHOUT WAITING` stops the spread. A failed `WHEN` Plan just stops. There is **no automatic retry** of another `TO g` Plan.
+- **No Plan applies:** an Event or Fact change is ignored (normal). A Goal **fails at once**, however it was given.
+- **`WHEN g FAILED:`** is a real Trigger kind and a **notification, not a rescue**: waiters have already failed (ADR 0007). Every level of a chain fires, innermost first. It has no reason clause. `FROM` on `FAILED`/`DROPPED` means the Goal's Sender. A failing `FAILED`/`DROPPED` Plan just stops.
+- **Every Goal that stops unreached fires exactly one of `DROPPED`/`FAILED`.** `DROP`'s stopped sub-Goals fire their own `DROPPED`, innermost first.
+- **Trace:** every failure (handled or not) and every runtime warning leaves a trace entry that can say what failed, why (Statement and source location), and what failed in turn. The language fixes what a trace explains; the Target decides format, routing and monitoring.
+- **Transpiler warnings:** a Goal with no `TO` Plan in the Program; Statements after `FAIL.`. No warning for `GIVEN`s without `ELSE`.
+- **Handed off:** trace format and runtime monitoring to *The full ASL mapping* fog; a failing Director Plan to *Director capabilities*; timeouts to *Time and timers*; the clash between `FROM` on local `FAILED` and the reserved reply `FAILED FROM ?who` to the cooperation fog.
 
 ## Comments
 

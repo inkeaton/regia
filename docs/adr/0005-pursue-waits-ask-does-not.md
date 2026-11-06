@@ -12,5 +12,5 @@ Designers read a Body as a list of steps, each one finished before the next star
 ## Consequences
 
 - `PURSUE` and `ASK … TO` look alike but differ on waiting. The Visual Editor should show the difference.
-- A waiting Body depends on its Goal: it fails if the Goal is dropped or can't be reached (*Plan failure and fallback*).
+- A waiting Body depends on its Goal: it fails if the Goal is dropped or can't be reached (chapter 11, `docs/spec/11-failure.md`).
 - A Goal already being pursued must be joined, not restarted, which needs generated ASL beyond a plain `!g`.

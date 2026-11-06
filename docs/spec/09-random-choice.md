@@ -49,7 +49,7 @@ WHEN bored:
 - **All the weights are worked out together, once**, when the Body reaches `EITHER`, before the roll. Nothing an Option does can change the roll.
 - A **weight of 0** means that Option is never picked.
 - A **negative weight counts as 0**, and the Agent writes a **runtime warning** to the log, because a negative weight is usually a sign mistake.
-- A **weight that isn't a Number fails the Plan**, like any Body arithmetic (chapter 04). What failing does is decided in *Plan failure and fallback*.
+- A **weight that isn't a Number fails the Plan**, like any Body arithmetic (chapter 04). What failing does is in chapter 11 (`11-failure.md`).
 - **If every weight is 0** (or negative), no Option runs. The Agent writes a runtime warning to the log, and the Body carries on. Like the no-op Basic Actions (chapter 08), this doesn't fail the Plan.
 - Runtime warnings go wherever the Target logs, the same place as `PRINT` output. A Target with no log skips them.
 
@@ -104,5 +104,4 @@ For *The full ASL mapping* to pick up:
 
 - Picking one of a Context's matches at random, or running for every match: the *Match selection* fog. `EITHER` chooses among written Options only, and doesn't take up a word that work might need.
 - Named weight levels (`OFTEN`, `RARELY`) as sugar: not in 2.0.
-- What a failing Plan does (a non-Number weight): *Plan failure and fallback*.
 - The format and routing of runtime warnings: *The full ASL mapping* (logging).

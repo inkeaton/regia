@@ -55,7 +55,7 @@ WHEN fan_greets:
 Each `GIVEN` Block, and the `ELSE` Block, is **one Plan**. The rules:
 
 - **First match wins, top to bottom.** Of the `GIVEN` Blocks under one Trigger, only the **first in the text whose Context holds** runs. If none holds, the `ELSE` runs. This holds however the Plans end up ordered at runtime, and whatever other Playbooks react to the same Trigger. How Plans from different Trigger Blocks compete is decided in *Priority model*.
-- **`ELSE` is optional** and must come last. Without it, if no Context holds, none of these Plans applies (what that means is decided in *Plan failure and fallback*). An `ELSE` with no `GIVEN` before it is an error.
+- **`ELSE` is optional** and must come last. Without it, if no Context holds, none of these Plans applies (for an Event or a Fact change, nothing happens; for a Goal, it fails: chapter 11). An `ELSE` with no `GIVEN` before it is an error.
 - **A Trigger Block holds either a Body or `GIVEN`/`ELSE` Blocks, never both.** A `WHEN` whose Statements come straight after it is a single Plan with no Context. Statements before, between or after `GIVEN` Blocks are an error, and the message explains that the Context is checked before any Statement runs. 1.0's "prefix" Statements, which were copied into every branch, are gone: write the Statement in each Plan, or use one Plan with an `IF`.
 - **What the Plans share.** Everything in the Trigger: the item, its kind word, the Placeholders it fills, `FROM`, and the Labels on the Trigger's header. Each Plan fills its own Context Placeholders, so sibling `GIVEN` Blocks may reuse a name. Whether a single `GIVEN` can carry its own Labels is decided in *Label syntax*.
 - **Doc comments** (chapter 02). A doc comment above the Trigger documents every Plan under it. A doc comment above a `GIVEN` or `ELSE` documents only that Plan.
@@ -129,7 +129,6 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - Labels on a single `GIVEN`: *Label syntax*.
-- What happens when no Plan applies, including a Trigger Block with no matching `GIVEN` and no `ELSE`: *Plan failure and fallback*.
 - How Plans from different Trigger Blocks or Playbooks compete for the same Trigger: *Priority model*.
 - Choosing among matches explicitly, and running for every match: *Match selection*, not yet specified.
 - Loops: deferred.

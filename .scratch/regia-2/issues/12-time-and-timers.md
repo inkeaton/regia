@@ -10,3 +10,4 @@ How does Regia deal with time (Q4c)? `WAIT` exists, but there is no way to sched
 ## Comments
 
 - From *Basic Action set* (07): `WAIT` is a Basic Action, written without `DO`. Its argument, its units, and whether it takes a trailing `,` clause are this ticket's. See `docs/spec/08-basic-actions.md`.
+- From *Plan failure and fallback* (11): decide whether `WAIT`, a timer or a timeout can fail a Plan, and if so add it to the causes table in `docs/spec/11-failure.md`. Every failure must leave a trace entry.

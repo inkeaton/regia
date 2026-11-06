@@ -145,7 +145,7 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 
 - The **Transpiler** reports every misuse it can see in the source, such as `host + 1` or `"hi" < 3`.
 - At runtime, in a **Context**, a comparison that needs Numbers and doesn't get them is **false**: that match doesn't satisfy the Context.
-- At runtime, in a **Body**, arithmetic on something that isn't a Number, or a division by zero, makes the **Plan fail**. What failure does is decided in *Plan failure and fallback*.
+- At runtime, in a **Body**, arithmetic on something that isn't a Number, or a division by zero, makes the **Plan fail**. What failure does is in chapter 11 (`11-failure.md`).
 
 ## Not decided here
 

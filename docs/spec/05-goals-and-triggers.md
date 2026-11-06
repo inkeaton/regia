@@ -36,7 +36,7 @@ Another Agent writes `ASK ?who TO g.` (chapter 07). The Agent itself writes `PUR
 
 A Goal is **reached when a Plan for it finishes its Body**. Nothing checks the world. There is no "Goal reached" Trigger: if the Director or another Agent needs to know, the Plan tells them (a Signal, a message).
 
-What happens when no Plan for the Goal applies, or the Plan fails, is decided in *Plan failure and fallback*.
+If no Plan for the Goal applies, or its Plan fails, the Goal **fails** and `WHEN g FAILED` fires (chapter 11, `11-failure.md`).
 
 ### Pursuing a Goal twice
 
@@ -83,7 +83,7 @@ Everything a Plan can start from is a **Trigger kind**. Each is written after `W
 | A Fact is forgotten | `WHEN hates(?h) FORGOTTEN:` |
 | A Goal is pursued (a recipe) | `TO find_food:` |
 | A Goal is dropped | `WHEN find_food DROPPED:` |
-| A Goal fails | reserved: *Plan failure and fallback* |
+| A Goal fails | `WHEN find_food FAILED:` (chapter 11) |
 | A Phase is entered or left (Director Plans) | a `WHEN` Trigger: *Director capabilities* |
 
 ```regia
@@ -99,7 +99,7 @@ WHEN avenge(?who) DROPPED:
 ```
 
 - **Fact Triggers always have a kind word.** `WHEN hates(?h):` is an error; the Transpiler knows `hates` is a Fact and suggests `LEARNED` or `FORGOTTEN`. So a reader never has to look up whether a bare name is a Fact or an Event.
-- **The kind word follows the item**, using a participle: `LEARNED`, `FORGOTTEN`, `DROPPED`.
+- **The kind word follows the item**, using a participle: `LEARNED`, `FORGOTTEN`, `DROPPED`, `FAILED`.
 - **`LEARNED` and `FORGOTTEN` fire whatever caused the change**: the game, a message, or the Agent's own `LEARN` and `FORGET`.
 - **A kind word must suit the item.** `WHEN food_served LEARNED` (an Event) or `WHEN find_food LEARNED` (a Goal) is an error.
 - **A `TO` Plan is an ordinary Plan**: Placeholders in its Trigger, a Context, Labels and a Body follow the same rules as in a `WHEN` Plan.
@@ -130,6 +130,7 @@ TO find_sword FROM DIRECTOR:
 - `?who` follows the Placeholder rules of chapter 03: filled once, by matching. What a Director can do with it (`ASSIGN … TO ?who`) is decided in *Director capabilities* and *Role setup*.
 - `FROM DIRECTOR` is worked out at runtime, so a Playbook never names a Plot and stays Plot-independent. A Goal from a Director whose Plot doesn't give this Playbook doesn't match.
 - `FROM` is an error on `FORGOTTEN`, which never has a Sender. On `LEARNED` it matches only a Fact told by another Agent, and only when the Fact was new (chapter 07); a Fact learned from the game or from the Agent's own `LEARN` has no Sender, so no `FROM` clause matches it. Likewise an Event from the game has no Sender.
+- On `DROPPED` and `FAILED`, `FROM` means **the Goal's Sender**, as on `TO g FROM …`: `WHEN find_sword FAILED FROM DIRECTOR:` (chapter 11).
 - A Goal the Agent gave itself has **no sender**, so no `FROM` clause matches it. Without `FROM`, it matches as usual.
 - Messages between Agents use these same forms (chapter 07, `07-messaging.md`).
 
@@ -153,5 +154,4 @@ The kind words and `FROM` are reserved, so the parser always knows where the ite
 
 - How a Body gives a Goal and drops one is decided in chapter 08 (`08-basic-actions.md`).
 - How the Director gives Goals, and how Phase entry and exit Triggers are worded: *Director capabilities*.
-- The "Goal fails" Trigger and what happens when no `TO` Plan applies: *Plan failure and fallback*.
 - Renaming `EVENT` to `CUE`, Goals that are kept or reached when a Fact holds, and `FROM SELF`: not yet specified.

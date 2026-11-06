@@ -41,7 +41,7 @@ A recipient is one of:
 - One recipient per Statement. To reach two, write two Statements.
 - How a Playbook can name a Role at all, and which Staging's Agents a Role means there, is decided in *Roles inside Playbooks*.
 - `EVERYONE` is the only audience that doesn't depend on a Plot, which is why it is the whole game. Narrower audiences are Roles.
-- If the recipient Placeholder holds something that is not an Agent at runtime (`?h` filled with `sword`), the **Plan fails**, like arithmetic on a non-Number (chapter 04). What failing does is decided in *Plan failure and fallback*.
+- If the recipient Placeholder holds something that is not an Agent at runtime (`?h` filled with `sword`), the **Plan fails**, like arithmetic on a non-Number (chapter 04). What failing does is in chapter 11 (`11-failure.md`).
 - An empty Role, or `EVERYONE` when nobody else exists, sends nothing. That is not an error.
 
 ## Signals
@@ -102,7 +102,7 @@ TO avenge(?s) FROM Guest ?who:
 ```
 
 - Asking for a Goal the receiver already pursues, with the same arguments, is ignored (chapter 05).
-- What happens when no `TO` Plan applies is decided in *Plan failure and fallback*.
+- If no `TO` Plan applies, the asked Goal fails at the receiver and fires its `WHEN … FAILED` there (chapter 11). The asker hears nothing in 2.0.
 
 ### Sender forms
 
@@ -113,7 +113,7 @@ Messages between Agents use the `FROM` forms of chapter 05 and add none: `FROM R
 Agent cooperation (accepting and refusing requests, hearing back, negotiating) is not part of 2.0. These choices keep it an addition, not a redesign:
 
 - **`ASK` is a request, not a command.** In 2.0 the receiver always takes the Goal on, but that is 2.0's behaviour, not the meaning of `ASK`. A later version may let the receiver decline, for example with a `REFUSE` Statement in a `TO … FROM ?who` Plan, without changing any `ASK` already written.
-- **Replies will be Trigger kinds on the Goal**, shaped like `DROPPED`: `WHEN find_sword AGREED FROM ?who`, `REFUSED`, `REACHED`, `FAILED`. These kind words are **reserved** now and do nothing in 2.0. (`FAILED` is also reserved by *Plan failure and fallback*. There is still no local "Goal reached" Trigger: chapter 05.)
+- **Replies will be Trigger kinds on the Goal**, shaped like `DROPPED`: `WHEN find_sword AGREED FROM ?who`, `REFUSED`, `REACHED`, `FAILED`. These kind words are **reserved** now and do nothing in 2.0. (`FAILED` is now a real local Trigger kind, chapter 11, where `FROM` names the Goal's *Sender*. A reply `WHEN find_sword FAILED FROM ?who` would use `FROM` for the *replier*, which clashes, so the reply wording must be redesigned with cooperation. There is still no local "Goal reached" Trigger: chapter 05.)
 - **Message Statements may later take trailing clauses**, `,`-separated like Labels on a Trigger: `ASK ?g TO find_sword, AND WAIT`, `…, WITHIN 30s`. 2.0 defines none, and any clause is an error.
 - **No conversation ids.** A request is identified by its Goal *with its arguments* plus `FROM`, which tells `find_sword` asked of Bob from the same Goal asked of Carl. If cooperation later needs more ("this auction, not that one"), a Goal argument carries it.
 - **`TOLD` is reserved** as a Trigger kind for Facts, for provenance: a later `WHEN f TOLD FROM ?who` could fire on *every* tell, even of a known Fact, alongside a Context test of who told it. It would add meaning, never change `LEARNED`.
@@ -138,6 +138,5 @@ For *The full ASL mapping* to pick up:
 
 - The names of `TELL`, `ASK` and `SIGNAL` were confirmed, and `PURSUE g, WITHOUT WAITING` uses the trailing-clause shape: chapter 08.
 - How a Playbook names Roles, and which Staging a Role recipient or `FROM Role` means there: *Roles inside Playbooks*.
-- What a failing Plan does (non-Agent recipient, asked Goal with no `TO` Plan), and the `FAILED` kind word: *Plan failure and fallback*.
 - How a Director gives Goals, Facts and Events to Roles or Agents: *Director capabilities*.
 - Messages that undo (forget a Fact, drop a Goal), agent cooperation, and provenance (`TOLD`): not yet specified.

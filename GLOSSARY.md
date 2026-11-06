@@ -101,11 +101,11 @@ A reaction to something that happened, or a recipe for reaching a Goal. It is ma
 _Avoid_: Rule, reaction, behaviour
 
 **Trigger**:
-The part of a Plan that names what starts it: an Event, a Fact learned or forgotten, or a Goal pursued or dropped. One Trigger can head several Plans, which share everything written in it.
+The part of a Plan that names what starts it: an Event, a Fact learned or forgotten, or a Goal pursued, dropped or failed. One Trigger can head several Plans, which share everything written in it.
 _Avoid_: Condition, head
 
 **Trigger kind**:
-Which sort of thing starts a Plan, such as an Event happening or a Fact being learned. Written as a word after the item (`LEARNED`, `FORGOTTEN`, `DROPPED`), or as `TO` for a Goal recipe.
+Which sort of thing starts a Plan, such as an Event happening or a Fact being learned. Written as a word after the item (`LEARNED`, `FORGOTTEN`, `DROPPED`, `FAILED`), or as `TO` for a Goal recipe.
 _Avoid_: Event type, triggering event
 
 **Sender**:
@@ -127,6 +127,14 @@ _Avoid_: Guard, precondition, IF (when meaning the context)
 **Body**:
 The ordered Statements a Plan carries out.
 _Avoid_: Procedure, steps
+
+**Failure**:
+What happens when a Plan can't carry out one of its Statements: the Plan stops there, and nothing it already did is undone. A Goal fails when its Plan fails or no Plan for it applies, and so does every Plan waiting on it.
+_Avoid_: Error, exception, crash
+
+**Trace**:
+The record an Agent leaves of each Failure and runtime warning: what failed, why, and what failed in turn because of it. It explains a run after the fact; where it is written depends on the Target.
+_Avoid_: Stack trace, error log
 
 **Random choice**:
 A Body Statement that runs exactly one of its Options, picked at random, written `EITHER:` … `OR:`.
@@ -169,7 +177,7 @@ An Action defined outside Regia and declared in the Vocabulary, usually affectin
 _Avoid_: External action, user action
 
 **Basic Action**:
-An Action built into Regia that any Agent can use, for changing its own Facts and Goals (`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`), sending (`TELL`, `ASK`, `SIGNAL`), printing or waiting. It is written without `DO`.
+An Action built into Regia that any Agent can use, for changing its own Facts and Goals (`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`), sending (`TELL`, `ASK`, `SIGNAL`), printing, waiting, or failing on purpose (`FAIL`). It is written without `DO`.
 _Avoid_: Built-in, primitive, internal action, BELIEVE, ACHIEVE
 
 **Director Statement**:
