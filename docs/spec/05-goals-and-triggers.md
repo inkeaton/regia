@@ -10,7 +10,7 @@ A **Goal** is an objective an Agent pursues. Regia 2.0 has only one kind: a Goal
 
 ### Declaring Goals
 
-Goals are declared like every other Vocabulary item, with untyped parameter names (chapter 03), multi-definition and Groups:
+Goals are declared like every other Vocabulary item, with untyped parameter names (chapter 03) and multi-definition:
 
 ```regia
 GOAL find_food

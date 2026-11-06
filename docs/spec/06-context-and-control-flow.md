@@ -133,3 +133,4 @@ For *The full ASL mapping* to pick up:
 - How Plans from different Trigger Blocks or Playbooks compete for the same Trigger: *Priority model*.
 - Choosing among matches explicitly, and running for every match: *Match selection*, not yet specified.
 - Loops: deferred.
+- Random choice among written Options (`EITHER`/`OR`): chapter 09.

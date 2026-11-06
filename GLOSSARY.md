@@ -62,12 +62,8 @@ _Avoid_: Triggering event, percept, message, happening
 An Event an Agent sends to the Directors of every Plot currently giving it the Playbook the Signal is written in. The Directors react to it like any other Event, and can tell which Role sent it. It is an Agent's only way to reach a Director.
 _Avoid_: Notification, message
 
-**Group**:
-A named set of Vocabulary items that are declared to belong together, for example so that one can be picked at random.
-_Avoid_: Multi-definition, enum, list
-
 **Multi-definition**:
-Shorthand for declaring several Vocabulary items in one line. Unlike a Group, it creates no relationship between the items.
+Shorthand for declaring several Vocabulary items in one line. It creates no relationship between the items.
 _Avoid_: Group, batch declaration
 
 **Parameter name**:
@@ -124,12 +120,24 @@ _Avoid_: Guard, precondition, IF (when meaning the context)
 The ordered Statements a Plan carries out.
 _Avoid_: Procedure, steps
 
+**Random choice**:
+A Body Statement that runs exactly one of its Options, picked at random, written `EITHER:` … `OR:`.
+_Avoid_: Group, switch, random block, selector
+
+**Option**:
+One `EITHER` or `OR` Block of a Random choice.
+_Avoid_: Branch (kept for `IF`), case, alternative
+
+**Weight**:
+How likely an Option is to be picked compared with the others, written `, WEIGHT …` on its header. An Option without one has weight 1.
+_Avoid_: Chance, probability, percentage
+
 **Label**:
 An optional tag on a Plan's Trigger that influences how the Plan is chosen or what it changes (e.g. priority, mood).
 _Avoid_: Flag, annotation, modifier
 
 **Statement**:
-A single step of a Plan's Body: an Action, a Director Statement, or control flow (`IF`/`ELSE`). An `IF` is checked when the Body reaches it, unlike the Context.
+A single step of a Plan's Body: an Action, a Director Statement, control flow (`IF`/`ELSE`), or a Random choice. An `IF` is checked when the Body reaches it, unlike the Context.
 _Avoid_: Instruction, command
 
 **Block**:

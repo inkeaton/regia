@@ -127,7 +127,7 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - `WAIT`'s argument and units: *Time and timers*.
-- Actions over Groups (for example a random Action from a Group): *Groups*.
+- Picking an Action at random: a Random choice, `EITHER:` … `OR:` (chapter 09). There are no Groups.
 - What a failing Plan does (`CHANGE` of an unknown Fact, a dropped Goal being waited on, no `TO` Plan); whether a stopped sub-Goal fires `DROPPED`; and an Action that fails a Plan on purpose: *Plan failure and fallback*.
 - Which of these Actions a Director can use, and how it gives Goals: *Director capabilities*.
 - Changing or dropping everything that matches a blank: the *Match selection* fog.
