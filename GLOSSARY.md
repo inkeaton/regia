@@ -62,6 +62,14 @@ _Avoid_: Triggering event, percept, message, happening
 An Event an Agent sends to the Directors of every Plot currently giving it the Playbook the Signal is written in. The Directors react to it like any other Event, and can tell which Role sent it. It is an Agent's only way to reach a Director.
 _Avoid_: Notification, message
 
+**External name**:
+The name the game uses for a Fact, Event or Action, given when it differs from the name used in Regia: `ACTION engine.security.summon_guards AS call_guards`. Only the Target sees it; the source always uses the name after `AS`.
+_Avoid_: Alias (when meaning the external name), qualified name, namespace
+
+**Local Vocabulary**:
+Facts and Goals declared inside a Playbook or Plot. They are private to it: other Playbooks on the same Agent, and other files, can't see them, and they can't be sent.
+_Avoid_: Private facts, scoped declarations, inner vocabulary
+
 **Multi-definition**:
 Shorthand for declaring several Vocabulary items in one line. It creates no relationship between the items.
 _Avoid_: Group, batch declaration
@@ -167,6 +175,20 @@ _Avoid_: Built-in, primitive, internal action, BELIEVE, ACHIEVE
 **Director Statement**:
 A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `TRANSITION`, `START SUBPLOT`, `END PLOT`).
 _Avoid_: Director action, plot command
+
+## Files and names
+
+**Import**:
+A line at the top of a file, `IMPORT "path".`, that makes another file's declarations visible, together with everything that file imports in turn.
+_Avoid_: Include, require, use
+
+**Entry file**:
+A file the Transpiler is given to start from.
+_Avoid_: Main file, root file (Root is kept for the Root Plot)
+
+**Program**:
+Every file reachable from the Entry files through Imports. A name means the same thing everywhere in a Program.
+_Avoid_: Project, package, module, build
 
 ## Comments
 

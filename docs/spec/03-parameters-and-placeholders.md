@@ -15,7 +15,7 @@ ACTION toast(target)
 - Parameter names are documentation. They tell readers and tools what each slot means (the Visual Editor can show `hates(person: …)`), but they never bind anything. A Plan is free to use different names.
 - An item without parentheses takes no parameters.
 - A Signal is sent with the parameters of the Event it is declared as: `SIGNAL insult_thrown(host)`.
-- Parameters are **untyped**: any slot accepts any value. The Transpiler checks that every use has as many arguments as the declaration has parameters.
+- Parameters are **untyped**: any slot accepts any value. The Transpiler checks that every use has as many arguments as the declaration has parameters. A name has one parameter count across the Program, so `hates(a)` and `hates(a, b)` can't both be declared (chapter 10, ADR 0006).
 - Writing `?` in a declaration is an error, since a declaration describes slots and doesn't fill them.
 
 Optional types (`target: Role`) are not part of 2.0. The `name: type` form is kept free so they can be added later.

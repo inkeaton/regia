@@ -20,7 +20,7 @@ GOAL get_fed, find_shelter
 
 ### One name, one kind
 
-A Vocabulary name belongs to exactly one kind. Declaring `FACT fed` and `GOAL fed` is an error. A Goal and the Fact that tells it is done get two names: `GOAL get_fed`, `FACT fed`.
+A Vocabulary name belongs to exactly one kind. Declaring `FACT fed` and `GOAL fed` is an error. A Goal and the Fact that tells it is done get two names: `GOAL get_fed`, `FACT fed`. A name also has one parameter count, across the whole Program (chapter 10, ADR 0006).
 
 ### Who gives a Goal
 
