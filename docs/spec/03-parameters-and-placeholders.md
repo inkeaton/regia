@@ -70,7 +70,7 @@ WHEN insult_heard(?speaker):       # anyone
     DO toast(?speaker).
 ```
 
-When both Plans match, which one runs is decided in *Priority model*.
+When both Plans match in the same Playbook, the first in the text runs, so the narrower one goes first. Between Playbooks, precedence decides (chapter 13, `13-plan-selection.md`).
 
 ### Same name, same value
 

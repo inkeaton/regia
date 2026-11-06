@@ -11,3 +11,4 @@ What information do instancing comments carry, and where do they live (primer ch
 ## Comments
 
 - From *Context vs control flow* (06): an Instancing comment selects the ASL dialect the Transpiler emits for, such as `#% ASL_VERSION = JASON` / `GENERIC` (native `if/elif/else` vs `IF` lowered to subgoal plans for the in-house interpreters). Decide its name, values, default and where it may appear. See `docs/spec/06-context-and-control-flow.md`.
+- From *Priority model* (14): Instancing may order **independent** Plots only (no common ancestor Plot), as an ordered list of top-level Plots, highest first, with no ties. An order between Plots that share an ancestor is an error. Decide its syntax, and whether Plots other than the Root Plot can be started by Instancing at all (if not, this never occurs). See `docs/spec/13-plan-selection.md`, section *Instancing*.

@@ -153,8 +153,20 @@ How likely an Option is to be picked compared with the others, written `, WEIGHT
 _Avoid_: Chance, probability, percentage
 
 **Label**:
-An optional tag on a Plan's Trigger that influences how the Plan is chosen or what it changes (e.g. priority, mood).
+An optional tag on a Plan's Trigger that influences how the Plan is chosen or what it changes (e.g. mood).
 _Avoid_: Flag, annotation, modifier
+
+**Precedence**:
+The order in which Plans from different Playbooks, Plots or Phases are considered when several could react to the same Trigger on one Agent. It is written by whoever puts them together (a Plot, or Instancing for independent Plots), never inside a Playbook about another.
+_Avoid_: Priority, salience, rank
+
+**Selection function**:
+The Target's way of choosing among equally ranked Plans by the Agent's mood. It only ever chooses where a designer allowed it: among Mood alternatives, or between Playbooks declared tied.
+_Avoid_: Temper selection, option selection, utility
+
+**Mood alternative**:
+One of several Trigger Blocks in a Playbook with the same Trigger, all carrying mood Labels. They are different Plans even with identical Contexts, and the Selection function picks among those whose Context holds.
+_Avoid_: Variant, duplicate plan
 
 **Statement**:
 A single step of a Plan's Body: an Action, a Director Statement, control flow (`IF`/`ELSE`), or a Random choice. An `IF` is checked when the Body reaches it, unlike the Context.
