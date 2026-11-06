@@ -2,7 +2,7 @@
 
 How Regia writes numbers, compares them, calculates with them and rolls random ones, and how a Plan's Body names a computed value. Decided in the ticket *Numbers and arithmetic* (`.scratch/regia-2/issues/04-numbers-and-arithmetic.md`). It builds on *Parameters and Placeholders* (`03-parameters-and-placeholders.md`). The choice to name values only in the Body is recorded in `docs/adr/0002-values-are-named-in-the-body.md`.
 
-In the examples, the Context is written as the `IF` directly under the Trigger, as in chapter 03. How a Context is written is decided in *Context vs control flow*. Changing a Fact is written as `FORGET` followed by `BELIEVE` until *Basic action set* decides.
+In the examples, the Context is written as the `IF` directly under the Trigger, as in chapter 03. Chapter 06 (`06-context-and-control-flow.md`) replaces this with `GIVEN`. Changing a Fact is written as `FORGET` followed by `BELIEVE` until *Basic action set* decides.
 
 ## Numbers
 
@@ -53,7 +53,7 @@ From tightest to loosest:
 
 1. arithmetic (`*` `/`, then `+` `-`)
 2. comparisons
-3. `NOT`, `AND`, `OR` (their order among themselves: *Context vs control flow*)
+3. `NOT`, `AND`, `OR` (`NOT` before `AND` before `OR`, and mixing `AND` with `OR` needs parentheses: chapter 06)
 
 So `NOT ?h + 1 = 5` means `NOT ((?h + 1) = 5)`.
 
@@ -150,5 +150,4 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 ## Not decided here
 
 - Changing a numeric Fact in one step, and joining strings for `PRINT`: *Basic action set*.
-- Which operators Body `IF` conditions use, and whether a Body `IF` can fill Placeholders by matching Facts: *Context vs control flow*.
 - A shorthand comparison on a Fact (`health < 20`), a math library (`abs`, `round`, …), and naming values in the Context: not yet specified.

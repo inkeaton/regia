@@ -20,6 +20,8 @@ ACTION toast(target)
 
 Optional types (`target: Role`) are not part of 2.0. The `name: type` form is kept free so they can be added later.
 
+In the examples, the Context is written as the `IF` directly under the Trigger, as in 1.0. Chapter 06 (`06-context-and-control-flow.md`) replaces this with `GIVEN`.
+
 ## Values and Placeholders
 
 Every argument slot holds either a Value or a Placeholder.
@@ -55,7 +57,7 @@ A Placeholder is **not** a programming variable:
 - Using a Placeholder in the Body that was never filled, or before the Statement that names it, is an error.
 - The rules are the same for Plans in Playbooks and Plans in Plots.
 
-Whether an `IF` inside a Body can also fill Placeholders is decided in *Context vs control flow*.
+An `IF` inside a Body can also fill Placeholders, usable only inside its branch: see chapter 06 (`06-context-and-control-flow.md`).
 
 ### Values in a Trigger restrict it
 

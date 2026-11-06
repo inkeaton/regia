@@ -93,11 +93,11 @@ _Avoid_: Formula, computation, term
 ## Plans and statements
 
 **Plan**:
-A reaction to something that happened, or a recipe for reaching a Goal. It is made of a Trigger, a Context and a Body.
+A reaction to something that happened, or a recipe for reaching a Goal. It is made of a Trigger, an optional Context and a Body. Several Plans can share one Trigger, each with its own Context; only the first whose Context holds runs.
 _Avoid_: Rule, reaction, behaviour
 
 **Trigger**:
-The part of a Plan that names what starts it: an Event, a Fact learned or forgotten, or a Goal pursued or dropped.
+The part of a Plan that names what starts it: an Event, a Fact learned or forgotten, or a Goal pursued or dropped. One Trigger can head several Plans, which share everything written in it.
 _Avoid_: Condition, head
 
 **Trigger kind**:
@@ -109,7 +109,7 @@ The Agent or Director that sent what a Trigger reacts to, such as a Signal or a 
 _Avoid_: Source
 
 **Context**:
-The condition on Facts that must hold for a Plan to be chosen.
+The condition that must hold for a Plan to be chosen, written after `GIVEN`. It is checked once, when the Plan is chosen, before any of its Body runs.
 _Avoid_: Guard, precondition, IF (when meaning the context)
 
 **Body**:
@@ -121,11 +121,11 @@ An optional tag on a Plan's Trigger that influences how the Plan is chosen or wh
 _Avoid_: Flag, annotation, modifier
 
 **Statement**:
-A single step of a Plan's Body: an Action, a Director Statement, or control flow (`IF`/`ELSE`).
+A single step of a Plan's Body: an Action, a Director Statement, or control flow (`IF`/`ELSE`). An `IF` is checked when the Body reaches it, unlike the Context.
 _Avoid_: Instruction, command
 
 **Block**:
-A group of Statements or declarations that belong to a header, such as a Playbook, a Plan or an `IF` branch. Its body is either indented under the header or written on the header's line.
+A group of Statements or declarations that belong to a header, such as a Playbook, a Trigger, a `GIVEN` or an `IF` branch. Its body is either indented under the header or written on the header's line.
 _Avoid_: Scope, suite, section
 
 **Block header**:
