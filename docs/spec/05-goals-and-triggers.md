@@ -112,7 +112,7 @@ A Trigger for something that was **sent** (a Signal at a Director, a Goal given 
 | Written | Matches |
 |---|---|
 | no `FROM` | any sender, or none |
-| `FROM Guest` | a sender playing the Role `Guest` in this Staging |
+| `FROM Guest` | a sender playing the Role `Guest`: in a Plot, in this Staging; in a Playbook, bound to the Playbook's Role `Guest` by any giving (chapter 15) |
 | `FROM ?who` | any sender, and fills `?who` with the sending Agent |
 | `FROM Guest ?who` | a sender playing `Guest`, and fills `?who` with it |
 | `FROM DIRECTOR` | the Director of any Plot that currently gives this Playbook to the Agent |

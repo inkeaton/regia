@@ -37,7 +37,7 @@ A recipient is one of:
 
 - **Regia never names an Agent.** Agent names belong to instancing, not to the language. An Agent is reached only through a Placeholder filled at runtime, from `FROM ?who`, or from a Fact whose slot holds an Agent (`hates(?h)`). A Value in the recipient position is an error.
 - One recipient per Statement. To reach two, write two Statements.
-- How a Playbook can name a Role at all, and which Staging's Agents a Role means there, is decided in *Roles inside Playbooks*.
+- A Playbook names Roles it declares itself (`ROLE host.`), filled by the Plot that gives it. A Role there reaches the Agents bound to it by every giving the Agent holds, across Plots and Stagings (chapter 15, `15-roles-and-mappings.md`).
 - `EVERYONE` is the only audience that doesn't depend on a Plot, which is why it is the whole game. Narrower audiences are Roles.
 - If the recipient Placeholder holds something that is not an Agent at runtime (`?h` filled with `sword`), the **Plan fails**, like arithmetic on a non-Number (chapter 04). What failing does is in chapter 11 (`11-failure.md`).
 - An empty Role, or `EVERYONE` when nobody else exists, sends nothing. That is not an error.
@@ -104,7 +104,7 @@ TO avenge(?s) FROM Guest ?who:
 
 ### Sender forms
 
-Messages between Agents use the `FROM` forms of chapter 05 and add none: `FROM Role`, `FROM ?who`, `FROM Role ?who`. `FROM DIRECTOR` matches only what a Director sent. Inside a Playbook, which Staging `FROM Role` refers to is decided in *Roles inside Playbooks*.
+Messages between Agents use the `FROM` forms of chapter 05 and add none: `FROM Role`, `FROM ?who`, `FROM Role ?who`. `FROM DIRECTOR` matches only what a Director sent. Inside a Playbook, `FROM Role` matches a Sender bound to that Playbook Role by any giving the Agent holds (chapter 15).
 
 ## Room for cooperation
 
@@ -135,6 +135,6 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - The names of `TELL`, `ASK` and `SIGNAL` were confirmed, and `PURSUE g, WITHOUT WAITING` uses the trailing-clause shape: chapter 08.
-- How a Playbook names Roles, and which Staging a Role recipient or `FROM Role` means there: *Roles inside Playbooks*.
+- How a Playbook names Roles, and which Staging a Role recipient or `FROM Role` means there: chapter 15 (`15-roles-and-mappings.md`).
 - How a Director gives Goals, Facts and Events to Roles or Agents: *Director capabilities*.
 - Messages that undo (forget a Fact, drop a Goal), agent cooperation, and provenance (`TOLD`): not yet specified.

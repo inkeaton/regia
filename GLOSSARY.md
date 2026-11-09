@@ -9,8 +9,8 @@ A single character living in the game at runtime. An Agent may play several Role
 _Avoid_: Instance, agent instance, NPC, actor
 
 **Role**:
-A class of Agents inside one Plot. The Role's name, and which Agents play it, are local to that Plot.
-_Avoid_: Agent (1.0 name), character, class
+A class of Agents named by a Plot or a Playbook. A Plot's Role is played by the Agents cast in it; a Playbook's Role is filled by the Plot that gives the Playbook, through a Mapping. A Role's name is local to the Plot or Playbook that declares it. In a Playbook a Role is only an address for Messages: a Playbook never directs another Agent.
+_Avoid_: Agent (1.0 name), character, class, part, slot
 
 **Plot**:
 A narrative state machine describing how a scenario unfolds through its Phases and the Roles that take part in it.
@@ -31,6 +31,14 @@ _Avoid_: State, stage
 **Subplot**:
 A Plot started from within another Plot, which becomes its parent. The parent's Roles are mapped onto the Subplot's Roles.
 _Avoid_: Child story, nested plot
+
+**Mapping**:
+How a Plot fills a Role of a Playbook it gives, or of a Subplot it starts, with one of its own Roles, or with a number or share of that Role's Agents picked at random. Roles with the same name are mapped without writing it.
+_Avoid_: Binding, casting, role assignment
+
+**Giving**:
+One handing of a Playbook to Agents by a Plot, with its own Mappings. An Agent may hold several givings of the same Playbook; they add up, and taking one away leaves the others.
+_Avoid_: Assignment (when meaning the result), grant
 
 **Director**:
 The behind-the-scenes agent that runs a Plot: it moves the Plot between Phases, gives Playbooks to Roles, and reacts to Signals.

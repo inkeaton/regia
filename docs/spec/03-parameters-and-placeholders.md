@@ -34,7 +34,7 @@ A **Value** is fixed when the Plan is written:
 | Number | `3`, `-0.5` (see chapter 04, `04-numbers-and-expressions.md`) |
 | String | `"A guest finishes their meal."` |
 
-Whether a Role name can be a Value (`toast(Host)`) is decided in *Roles inside Playbooks*.
+A Role name can't be a Value (`toast(Host)` is an error): Roles are only recipients and `FROM` Senders (chapter 15, `15-roles-and-mappings.md`). Fill a Placeholder with `FROM Host ?h` and use `?h`.
 
 A **Placeholder** is a blank the Agent fills in by matching. It is written `?name`, with the same `?` wherever it appears, so a reader never has to look elsewhere to tell it apart from a Value.
 
