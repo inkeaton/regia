@@ -139,5 +139,5 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - Format, routing and monitoring of the trace: *The full ASL mapping* (logging).
-- What a failing Director Plan does to its Plot (Phase, Staging): *Director capabilities*.
+- A failing Director Plan stops with a Trace entry and leaves its Phase and Staging untouched; Director Statements never fail (chapter 20).
 - Replies to an asker when an asked Goal fails, and their wording now that `FROM` on `FAILED` means the Goal's Sender: *Agent cooperation* fog.

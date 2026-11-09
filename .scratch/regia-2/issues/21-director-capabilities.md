@@ -1,11 +1,24 @@
 # Director capabilities
 
 Type: grilling
-Status: open
+Status: resolved
+Assignee: Edoardo Vassallo
 
 ## Question
 
 What can a Director do and know (primer ch.5)? Decide the `WORLD` keyword (rename?), whether the Director has its own Facts (whose Facts does a Plot Context read?), whether it receives world Events directly, and whether it should have Goals or stay a simple state machine (what would richer Directors give us?).
+
+## Answer
+
+Spec chapter: `docs/spec/20-directors.md`. Specs 05, 07, 08, 11, 12, 13, 14, 15, 16, 17 and 19 updated. ADR 0009 (Directors direct through Messages, not orders). Glossary: *Director*, *Giving*, *Mapping* and *Director Statement* updated.
+
+- **What a Director is:** one per Staging, a reactive state machine. It perceives game Events and Facts like an Agent and has its own Facts (game, `LEARN`/`FORGET`/`CHANGE`, Local Vocabulary), private to its Staging. A Plot `GIVEN` reads only those, never Agents' Facts. No Goals and no Propensities in 2.0 (Labels on Director Plans stay errors). No `STARTS WITH` for the Director: starting Facts go in `DURING PLOT: WHEN ENTERED:`.
+- **Directing:** only through `ASK … TO` and `TELL` (Sender `DIRECTOR`, same meaning as Role setup's `PURSUE`/`LEARN`) and Director Statements. `Role DO` and `WORLD` are retired; a Director writes `DO x.` A Role recipient reaches the Role's current Agents in this Staging, one-off; `EVERYONE` keeps its spec 07 meaning. No replies: Agents Signal when the Director needs to know.
+- **One Agent (`?who`, from Signals, `JOINED` or Outcomes):** recipient, `ASSIGN`/`UNASSIGN … ?who` (not standing), and `MAPPING ?who TO role` on `ASSIGN` and `START SUBPLOT`. An Agent that has left is dropped with a Trace warning.
+- **Actions and Triggers:** `PURSUE`, `DROP` and `SIGNAL` are errors in a Director; so are `TO g:`, `DROPPED`, `FAILED` and `FROM DIRECTOR`. `WAIT` is allowed.
+- **Phases:** `WHEN ENTERED:` / `WHEN EXITED:` inside `DURING <phase>`, and in `DURING PLOT` for Staging start (after setups, before the initial Phase) and end. Leaving a Phase stops its running Plans silently. `TRANSITION`: stop the old Phase's Plans, run `EXITED` to completion, switch and clear Quotas, run `ENTERED` as an ordinary Plan. `WAIT`/`TRANSITION`/`END PLOT` in `EXITED` are errors. `TRANSITION` ends its Body; to the current Phase it re-enters.
+- **Failure:** a failing Director Plan stops with a Trace entry, Phase and Staging untouched. Director Statements never fail.
+- **Handed off:** Directors with Goals and Director starting Facts to *Richer Directors* (new fog); Plot moods to *Richer Propensities*; replies to a Director's `ASK` to *Agent cooperation*; percept routing and Phase-tagged intentions to *The full ASL mapping*.
 
 ## Comments
 

@@ -23,7 +23,7 @@ A Giving whose target is a **whole Role** is **standing**: it gives the Playbook
 
 ```regia
 DURING feast:
-    WHEN ENTERED:                                   # wording: Director capabilities
+    WHEN ENTERED:
         ASSIGN NobleSocializing TO Guest, MAPPING Host TO host.
 ```
 
@@ -89,7 +89,7 @@ DURING PLOT:
 | `WHEN Guest LEFT:` / `WHEN Guest ?who LEFT:` | an Agent playing `Guest` in this Staging leaves |
 | `WHEN Guest EMPTIED:` | the last Agent playing `Guest` in this Staging leaves |
 
-- The Role comes first and the Placeholder after it, as in `FROM Guest ?who` (chapter 05). `?who` follows chapter 03. What a Director can do with it besides sending Messages is *Director capabilities*' question.
+- The Role comes first and the Placeholder after it, as in `FROM Guest ?who` (chapter 05). `?who` follows chapter 03. Besides Messages, a Director can give it a Playbook or map it onto a Role (chapter 20).
 - `EMPTIED` takes no Placeholder. It exists because no Context can count a Role's Agents in 2.0 (*Match selection*), so after a `LEFT` a Director can't tell whether anyone is left.
 - They are **Director Trigger kinds only**. A Playbook doesn't know Plot Roles, and its own Roles are addresses (chapter 15). In a Playbook they are an error.
 - They are **not** heard for a Staging's starting Cast. Starting is not joining: the starting Cast gets its Role setups and the initial Phase's entry Plans (chapter 16).
@@ -137,4 +137,4 @@ For *The full ASL mapping* to pick up:
 - A Director moving Agents between Roles of a running Staging (`CAST`, `UNCAST`): *Richer Mappings and Role tests*.
 - Joiners carrying through to running Subplots: not in 2.0 (cast fixed at start).
 - How Instancing gives a joining Agent's kind its Root Plot Roles: *Instancing comments*.
-- What a Director can do with `?who` from `JOINED`/`LEFT` beyond Messages: *Director capabilities*.
+- `?who` from `JOINED` can be given a Playbook or mapped onto a Role; from `LEFT` it is only a dropped recipient (chapter 20).

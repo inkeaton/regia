@@ -136,5 +136,5 @@ For *The full ASL mapping* to pick up:
 
 - The names of `TELL`, `ASK` and `SIGNAL` were confirmed, and `PURSUE g, WITHOUT WAITING` uses the trailing-clause shape: chapter 08.
 - How a Playbook names Roles, and which Staging a Role recipient or `FROM Role` means there: chapter 15 (`15-roles-and-mappings.md`).
-- How a Director gives Goals, Facts and Events to Roles or Agents: *Director capabilities*.
+- A Director uses `ASK`/`TELL` too, with Sender `DIRECTOR`; it can never use `SIGNAL` (chapter 20).
 - Messages that undo (forget a Fact, drop a Goal), agent cooperation, and provenance (`TOLD`): not yet specified.

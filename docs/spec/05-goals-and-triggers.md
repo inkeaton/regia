@@ -30,7 +30,7 @@ An Agent can be given a Goal by:
 - **the Director** of a Plot, with a Director Statement;
 - **another Agent**, with a message.
 
-Another Agent writes `ASK ?who TO g.` (chapter 07). The Agent itself writes `PURSUE g.` (chapter 08); how the Director writes it is decided in *Director capabilities*.
+Another Agent writes `ASK ?who TO g.` (chapter 07). The Agent itself writes `PURSUE g.` (chapter 08); the Director writes `ASK ?who TO g.` or `ASK Role TO g.` (chapter 20).
 
 ### Reaching a Goal
 
@@ -84,7 +84,7 @@ Everything a Plan can start from is a **Trigger kind**. Each is written after `W
 | A Goal is pursued (a recipe) | `TO find_food:` |
 | A Goal is dropped | `WHEN find_food DROPPED:` |
 | A Goal fails | `WHEN find_food FAILED:` (chapter 11) |
-| A Phase is entered or left (Director Plans) | a `WHEN` Trigger: *Director capabilities* |
+| A Phase is entered or left (Director Plans) | `WHEN ENTERED:`, `WHEN EXITED:` (chapter 20) |
 | An Agent joins or leaves a Role, or a Role empties (Director Plans) | `WHEN Guest ?g JOINED:`, `WHEN Guest LEFT:`, `WHEN Guest EMPTIED:` (chapter 19) |
 
 ```regia
@@ -104,7 +104,7 @@ WHEN avenge(?who) DROPPED:
 - **`LEARNED` and `FORGOTTEN` fire whatever caused the change**: the game, a message, or the Agent's own `LEARN` and `FORGET`.
 - **A kind word must suit the item.** `WHEN food_served LEARNED` (an Event) or `WHEN find_food LEARNED` (a Goal) is an error.
 - **A `TO` Plan is an ordinary Plan**: Placeholders in its Trigger, a Context, Labels and a Body follow the same rules as in a `WHEN` Plan.
-- **`WHEN` is the only reaction keyword.** Plot Phases no longer use `ON ENTER` / `ON EXIT`; Phase entry and exit are `WHEN` Triggers, worded by *Director capabilities*.
+- **`WHEN` is the only reaction keyword.** Plot Phases no longer use `ON ENTER` / `ON EXIT`; Phase entry and exit are `WHEN` Triggers, `WHEN ENTERED:` and `WHEN EXITED:` (chapter 20).
 
 ## Who sent it: `FROM`
 
@@ -128,7 +128,7 @@ TO find_sword FROM DIRECTOR:
     DO search_armory.
 ```
 
-- `?who` follows the Placeholder rules of chapter 03: filled once, by matching. What a Director can do with it (`ASSIGN … TO ?who`) is decided in *Director capabilities* and *Role setup*.
+- `?who` follows the Placeholder rules of chapter 03: filled once, by matching. A Director can send it Messages, `ASSIGN … TO ?who` and map it onto a Role (chapter 20).
 - `FROM DIRECTOR` is worked out at runtime, so a Playbook never names a Plot and stays Plot-independent. A Goal from a Director whose Plot doesn't give this Playbook doesn't match.
 - `FROM` is an error on `FORGOTTEN`, which never has a Sender. On `LEARNED` it matches only a Fact told by another Agent, and only when the Fact was new (chapter 07); a Fact learned from the game or from the Agent's own `LEARN` has no Sender, so no `FROM` clause matches it. Likewise an Event from the game has no Sender.
 - On `DROPPED` and `FAILED`, `FROM` means **the Goal's Sender**, as on `TO g FROM …`: `WHEN find_sword FAILED FROM DIRECTOR:` (chapter 11).
@@ -155,5 +155,5 @@ The kind words and `FROM` are reserved, so the parser always knows where the ite
 ## Not decided here
 
 - How a Body gives a Goal and drops one is decided in chapter 08 (`08-basic-actions.md`).
-- How the Director gives Goals, and how Phase entry and exit Triggers are worded: *Director capabilities*.
+- The Director gives Goals with `ASK`; Phase entry and exit are `WHEN ENTERED:` / `WHEN EXITED:` (chapter 20).
 - Renaming `EVENT` to `CUE`, Goals that are kept or reached when a Fact holds, and `FROM SELF`: not yet specified.

@@ -42,7 +42,7 @@ WHEN food_served:
 - **A negative Duration counts as 0**, and the Agent writes a **runtime warning** to the trace (chapter 11), the same as a negative Weight (chapter 09). The Body carries on.
 - **A Duration that isn't a Number fails the Plan**, like any Body arithmetic (chapter 04). This is the only way `WAIT` fails. What failing does is in chapter 11.
 - **A Plan stopped during a `WAIT`** (by `DROP`, or because its Playbook is taken away) just stops. The wait isn't a failure of its own. What gets reported is whatever stopped it, such as the Goal's `DROPPED` (chapter 08).
-- `WAIT` means the same wherever it's allowed. Whether a Director's Plans can use it is decided in *Director capabilities*.
+- `WAIT` means the same wherever it's allowed. A Director's Plans can use it, except in an `EXITED` Plan; leaving a Phase stops its paused Plans silently (chapter 20).
 
 ## Transpiler checks
 
@@ -54,7 +54,7 @@ WHEN food_served:
 2.0 has only `WAIT`. These belong to later versions (map: *Out of scope*):
 
 - **Repeating Triggers** (`EVERY 10 SECONDS:`). Until they exist, a repeating Event such as `digestion_check` is an External Event that the game sends.
-- **Delayed Triggers** (`AFTER 30 SECONDS:`), counted from entering a Phase or from a Playbook being given, for timeouts on a Phase. Until then, a Director can only approximate them with `WAIT` in a Phase Plan, if *Director capabilities* allows it.
+- **Delayed Triggers** (`AFTER 30 SECONDS:`), counted from entering a Phase or from a Playbook being given, for timeouts on a Phase. Until then, a Director can only approximate them with `WAIT` in a Phase Plan (chapter 20).
 - **Timeout clauses** on waiting Statements (`PURSUE g, WITHIN 30 SECONDS`), and the reserved trailing clauses on Message Statements (chapter 07).
 
 So in 2.0, nothing to do with time can fail a Plan except a Duration that isn't a Number.
@@ -73,6 +73,6 @@ For *The full ASL mapping* and *Supporting multiple Targets* to pick up:
 
 ## Not decided here
 
-- Whether a Director's Plans can use `WAIT`: *Director capabilities*.
+- A Director's Plans can use `WAIT` (chapter 20).
 - Timers, repeating and delayed Triggers, and timeouts: out of scope for 2.0.
 - How a Target picks its clock: *Supporting multiple Targets*.

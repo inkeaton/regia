@@ -36,7 +36,7 @@ Inside a Playbook a Role is **only an address**: it says who a Message goes to, 
 
 Anywhere else a Role name is an error: as an argument (`hates(host)`, `DO toast(host)`), in a Context, or in an Expression. To talk about a particular Agent, fill a Placeholder (`FROM host ?h`) and use `?h`.
 
-**A Playbook never directs another Agent.** It describes the behaviour of the Agent it is given to, and reaches others only by communicating: `TELL` informs, and `ASK … TO` is a request the receiver's own `TO … FROM` Plans decide on (and, after 2.0, may refuse: chapter 07, *Room for cooperation*). A Playbook can't make another Agent run an Action (the primer's `Host DO call_guards`), can't give or take away Playbooks, and can't change who plays a Role. Directing Agents, deciding what they do and when, is the job of Plots and their Directors.
+**A Playbook never directs another Agent.** It describes the behaviour of the Agent it is given to, and reaches others only by communicating: `TELL` informs, and `ASK … TO` is a request the receiver's own `TO … FROM` Plans decide on (and, after 2.0, may refuse: chapter 07, *Room for cooperation*). A Playbook can't make another Agent run an Action (the primer's `Host DO call_guards`), can't give or take away Playbooks, and can't change who plays a Role. Directing Agents, deciding what they do and when, is the job of Plots and their Directors, and even a Director does it only with Messages and Givings, never by making an Agent run an Action (chapter 20, ADR 0009).
 
 Roles are also where cooperation will hang after 2.0 (replies, refusal, negotiation, chapter 07): those features address Roles and Agents the same way, so they add to this chapter rather than change it.
 
@@ -140,7 +140,7 @@ These follow the rules for `WAIT` (chapter 12) and `WEIGHT` (chapter 09).
 
 ## Not in 2.0
 
-- **Filling a Role with one Agent** (`MAPPING ?challenger TO opponent`): what a Director can do with a Placeholder is *Director capabilities*' question.
+- **Filling a Role with one Agent** (`MAPPING ?challenger TO opponent`) is allowed in a Director's `ASSIGN` and `START SUBPLOT` (chapter 20).
 - **One Role filled by several giving Roles** (`Host` and `Guest` both as `noble`).
 - **A separate pick per receiving Agent** (`ASSIGN Chatting TO EACH Guest, MAPPING 1 OF Host TO partner`).
 - **Counted recipients** (`TELL 2 OF Guest …`).
@@ -158,6 +158,6 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - How Subplots run once started, parent and child cooperation, and how Stagings of one Plot are told apart: chapter 17 (`17-subplots.md`).
-- What a Director can do with `?who`, and whether a Role can be filled with one Agent: *Director capabilities*.
+- A Director can send `?who` Messages, `ASSIGN`/`UNASSIGN` a Playbook to it (not standing), and map it onto a Role (chapter 20).
 - What happens to bindings and picks when Agents join or leave mid-Plot: decided in chapter 19 (`19-cast-changes.md`). Whole-Role givings are standing; picks never grow and leavers drop out.
 - Starting state for a Role: *Role setup*, decided in chapter 16 (`STARTS WITH`; its `ASSIGN` takes the same Mappings, without counted picks).

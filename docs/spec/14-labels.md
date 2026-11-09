@@ -80,7 +80,7 @@ The set is **fixed by the language**. A Target can't add its own. 2.0 has exactl
 
   Complaining lowers sympathy and raises aggressiveness. Toasting only lowers sympathy.
 - `SUITS` is never allowed on a `GIVEN` or `ELSE`, since `GIVEN` siblings never compete (chapter 13).
-- **On a Director's Plans**, any Label is an error until *Director capabilities* decides whether Directors have Propensities.
+- **On a Director's Plans**, any Label is an error: Directors have no Propensities (chapter 20).
 
 ## Suits alternatives
 
@@ -142,5 +142,5 @@ For *The full ASL mapping* to pick up. VEsNA-Pro facts are from the research not
 ## Not decided here
 
 - The `#%` syntax for Propensity values and the VEsNA strategy: *Instancing comments*.
-- Whether Directors have Propensities: *Director capabilities*.
+- Directors have no Propensities (chapter 20). Plot moods (pacing, tension) are with *Richer Propensities*.
 - How Labels and Propensities map on Targets other than Jason+VEsNA: *Supporting multiple Targets*.

@@ -45,7 +45,7 @@ The setup speaks for the Director. A setup Fact arrives **told by the Director**
 
 - `WHEN invited LEARNED FROM DIRECTOR:` fires, only if the Fact is new (chapter 07). A Plan with no `FROM` fires as usual.
 - `TO find_seat FROM DIRECTOR:` matches the setup Goal.
-- `LEARN` and `PURSUE` are borrowed for their readability ("a Guest starts by learning `invited`"). Inside a setup they don't mean the Agent's own Actions (chapter 08); they mean the Director's telling and asking. How a Director tells and asks in its own Plans is *Director capabilities*' question; the setup only fixes the meaning.
+- `LEARN` and `PURSUE` are borrowed for their readability ("a Guest starts by learning `invited`"). Inside a setup they don't mean the Agent's own Actions (chapter 08); they mean the Director's telling and asking. A Director's own Plans write the same thing as `TELL` and `ASK` (chapter 20).
 
 ### Order and trouble
 
@@ -95,5 +95,5 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- How a Director tells Facts and asks Goals in its own Plans: *Director capabilities*.
+- A Director tells Facts and asks Goals in its own Plans with `TELL` and `ASK` (chapter 20).
 - A counted pick per joining Agent in a setup (`EACH`): with *Richer Mappings and Role tests*.

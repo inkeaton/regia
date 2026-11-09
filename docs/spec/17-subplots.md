@@ -73,7 +73,7 @@ PLOT HonorDuel:
 ```
 
 - `END PLOT WITH <event>` takes exactly one Event declared in the Vocabulary. Different endings use different Events (`duel_settled`, `duel_abandoned`).
-- Its arguments must be filled: Values or filled Placeholders, as for any Action (chapter 08). An Agent is allowed (`?winner`); what the parent's Director can then do with it is *Director capabilities*' question.
+- Its arguments must be filled: Values or filled Placeholders, as for any Action (chapter 08). An Agent is allowed (`?winner`); the parent's Director can send it Messages, give it Playbooks and map it onto Roles (chapter 20).
 - The child declares no list of its endings. The Transpiler warns when a parent matches an Outcome the child never ends with.
 - A plain `END PLOT.` ends with no Outcome. In a Plot that isn't a Subplot, `WITH` has no one to tell and is ignored with a warning.
 
@@ -146,6 +146,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- What a parent Director can do with an Agent from an Outcome (`?w`), and `TRANSITION`'s place in a Body: *Director capabilities*.
+- An Agent from an Outcome (`?w`) can be a recipient, an `ASSIGN` target or a `MAPPING`; `TRANSITION` ends its Body like `END PLOT` (chapter 20).
 - Whether top-level Plots other than the Root Plot exist, and who starts them: *Instancing comments*.
 - Plot parameters, a mid-run channel from child to parent (`SIGNAL PARENT e`), naming or ending one particular Staging, and recursive Subplots: *Richer Subplots* in the fog.

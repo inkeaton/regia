@@ -53,15 +53,15 @@ The Event a Subplot ends with, handed to its parent so the parent can react to h
 _Avoid_: Result, return value, ending (when meaning the Event)
 
 **Mapping**:
-How a Plot fills a Role of a Playbook it gives, or of a Subplot it starts, with one of its own Roles, or with a number or share of that Role's Agents picked at random. Roles with the same name are mapped without writing it.
+How a Plot fills a Role of a Playbook it gives, or of a Subplot it starts, with one of its own Roles, with a number or share of that Role's Agents picked at random, or with one Agent held by a Placeholder. Roles with the same name are mapped without writing it.
 _Avoid_: Binding, casting, role assignment
 
 **Giving**:
-One handing of a Playbook to Agents by a Plot, with its own Mappings. An Agent may hold several givings of the same Playbook; they add up, and taking one away leaves the others. A giving to a whole Role is standing: it also reaches Agents who join the Role later, until it is taken away.
+One handing of a Playbook to Agents by a Plot, with its own Mappings. An Agent may hold several givings of the same Playbook; they add up, and taking one away leaves the others. A giving to a whole Role is standing: it also reaches Agents who join the Role later, until it is taken away. A giving to one Agent held by a Placeholder is not.
 _Avoid_: Assignment (when meaning the result), grant
 
 **Director**:
-The behind-the-scenes agent that runs a Plot: it moves the Plot between Phases, gives Playbooks to Roles, and reacts to Signals.
+The behind-the-scenes agent that runs a Plot: it moves the Plot between Phases, gives Playbooks to Roles, tells and asks its Agents through Messages, and reacts to the game and to Signals. It has its own Facts but no Goals and no Propensities, and it never reads its Agents' Facts.
 _Avoid_: Narrator, manager, game master
 
 **Playbook**:
@@ -249,8 +249,8 @@ An Action built into Regia that any Agent can use, for changing its own Facts an
 _Avoid_: Built-in, primitive, internal action, BELIEVE, ACHIEVE
 
 **Director Statement**:
-A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `TRANSITION`, `START SUBPLOT`, `END SUBPLOT`, `END PLOT`).
-_Avoid_: Director action, plot command
+A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `UNASSIGN`, `TRANSITION`, `START SUBPLOT`, `END SUBPLOT`, `END PLOT`). Director Statements never fail.
+_Avoid_: Director action, plot command, `Role DO` (1.0 order to a Role)
 
 ## Files and names
 

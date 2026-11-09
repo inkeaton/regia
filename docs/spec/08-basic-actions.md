@@ -128,5 +128,5 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - Picking an Action at random: a Random choice, `EITHER:` … `OR:` (chapter 09). There are no Groups.
-- Which of these Actions a Director can use, and how it gives Goals: *Director capabilities*.
+- A Director can use all of these except `PURSUE`, `DROP` and `SIGNAL`, and gives Goals with `ASK` (chapter 20).
 - Changing or dropping everything that matches a blank: the *Match selection* fog.
