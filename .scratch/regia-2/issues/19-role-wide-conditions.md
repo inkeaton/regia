@@ -11,3 +11,4 @@ How does a Director react to conditions over a whole Role (Q4d)? For example "wh
 ## Comments
 
 - From *Messaging between Agents* (08): a Signal reaches every Director giving the Playbook, and Agents can `TELL`/`ASK` a whole Role. Quantifiers over a Role's Signals ("when ALL Guests signal X") build on that. See `docs/spec/07-messaging.md`.
+- From *Subplots and Stagings* (18): a Subplot's cast is fixed when it starts, and a parent hears its Subplots only through `WHEN P ENDED[, WITH e]` (one Trigger, first match). Role-wide conditions are about a Director's own Roles in its own Staging; check that quantified Triggers read alongside `ENDED`. See `docs/spec/17-subplots.md`.

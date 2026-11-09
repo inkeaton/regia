@@ -250,6 +250,6 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - How Instancing writes the order of independent Plots, and who picks the Root Plot: *Instancing comments*.
-- How Subplots are started and identified, and how a Staging relates to its Plot's position: *Subplots and Stagings*.
+- How Subplots are started and identified: chapter 17 (`17-subplots.md`). Stagings of one Subplot under one parent share its position; a Plot under two parents keeps its best rank.
 - Whether Directors have Propensities: *Director capabilities*.
 - Choosing among a Context's matches: *Match selection*, not yet specified.

@@ -12,12 +12,16 @@ _Avoid_: Instance, agent instance, NPC, actor
 A class of Agents named by a Plot or a Playbook. A Plot's Role is played by the Agents cast in it; a Playbook's Role is filled by the Plot that gives the Playbook, through a Mapping. A Role's name is local to the Plot or Playbook that declares it. In a Playbook a Role is only an address for Messages: a Playbook never directs another Agent.
 _Avoid_: Agent (1.0 name), character, class, part, slot
 
+**Role setup**:
+What every Agent of a Plot's Role starts with, written in a `STARTS WITH` Block on the Role: Playbooks, Facts and Goals, given by the Director each time an Agent starts playing the Role in a Staging.
+_Avoid_: Role instantiation, initial state, starting kit, init block
+
 **Plot**:
 A narrative state machine describing how a scenario unfolds through its Phases and the Roles that take part in it.
 _Avoid_: Story (1.0 name), quest, scenario
 
 **Staging**:
-One running copy of a Plot. The same Plot may have several Stagings at once, each with its own Agents and current Phase.
+One running copy of a Plot. The same Plot may have several Stagings at once, each with its own Agents and current Phase. Stagings have no names in the language; each knows only its parent and the Subplots it started.
 _Avoid_: Plot instance, run, session
 
 **Root Plot**:
@@ -29,8 +33,12 @@ One of the mutually exclusive states of a Plot. A Plot is in exactly one Phase a
 _Avoid_: State, stage
 
 **Subplot**:
-A Plot started from within another Plot, which becomes its parent. The parent's Roles are mapped onto the Subplot's Roles.
+A Plot started from within another Plot, which becomes its parent. The parent's Roles are mapped onto the Subplot's Roles, and its cast is fixed when it starts. It runs until it ends itself, the parent ends it, or the parent ends.
 _Avoid_: Child story, nested plot
+
+**Outcome**:
+The Event a Subplot ends with, handed to its parent so the parent can react to how it went.
+_Avoid_: Result, return value, ending (when meaning the Event)
 
 **Mapping**:
 How a Plot fills a Role of a Playbook it gives, or of a Subplot it starts, with one of its own Roles, or with a number or share of that Role's Agents picked at random. Roles with the same name are mapped without writing it.
@@ -225,7 +233,7 @@ An Action built into Regia that any Agent can use, for changing its own Facts an
 _Avoid_: Built-in, primitive, internal action, BELIEVE, ACHIEVE
 
 **Director Statement**:
-A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `TRANSITION`, `START SUBPLOT`, `END PLOT`).
+A Statement only a Director can use, changing the Plot's infrastructure (such as `ASSIGN`, `TRANSITION`, `START SUBPLOT`, `END SUBPLOT`, `END PLOT`).
 _Avoid_: Director action, plot command
 
 ## Files and names

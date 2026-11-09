@@ -62,7 +62,7 @@ PLOT RoyalBanquet:
 - **Many to one is fine.** Several receiving Roles may be filled by the same giving Role (`MAPPING Host TO host, MAPPING Host TO speaker`). A receiving Role gets at most one `MAPPING` per Statement; two is an error.
 - A `MAPPING` naming a Role the receiver doesn't declare is an error.
 
-How a Subplot's Roles behave once started (who is told when it ends, how Stagings are told apart) is decided in *Subplots and Stagings*; the Mapping form and its counts are decided here and shared by both Statements.
+How a Subplot's Roles behave once started (cast at start, who is told when it ends, how Stagings are told apart) is decided in chapter 17 (`17-subplots.md`); the Mapping form and its counts are decided here and shared by both Statements.
 
 ### What a binding means
 
@@ -156,7 +156,7 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- How Subplots run once started, parent and child cooperation, and how Stagings of one Plot are told apart: *Subplots and Stagings*.
+- How Subplots run once started, parent and child cooperation, and how Stagings of one Plot are told apart: chapter 17 (`17-subplots.md`).
 - What a Director can do with `?who`, and whether a Role can be filled with one Agent: *Director capabilities*.
 - What happens to bindings and picks when Agents join or leave mid-Plot, beyond "a pick never grows": *Cast changes mid-Plot*.
-- Starting state for a Role: *Role setup*.
+- Starting state for a Role: *Role setup*, decided in chapter 16 (`STARTS WITH`; its `ASSIGN` takes the same Mappings, without counted picks).
