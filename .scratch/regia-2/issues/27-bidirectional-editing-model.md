@@ -17,3 +17,4 @@ How do edits on the Visual Editor's graph become edits to the Regia source? Buil
 ## Comments
 
 - From Statement and block syntax: indentation and explicit `.`/`;` styles mix freely, and redundant terminators are allowed. Decide whether write-back preserves the user's style or normalises it.
+- From [Implementation language for the Transpiler](26-implementation-language.md): Rust, with a hand-written lexer that keeps whitespace and comments as tokens, and a recursive-descent parser that marks where nodes start and finish (ADR 0010). Still open: rowan (0.17, no mutable API; 0.18-alpha with trivia on tokens and rust-analyzer's `SyntaxEditor`) or our own tree, and which form trivia takes. That ties into the comment-ownership question above. lelwel's tree is a reference.
