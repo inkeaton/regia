@@ -137,7 +137,7 @@ WHEN dice_game_offered:
         DO accept_game.
 ```
 
-An Expression that's used only once doesn't need a name: `LEARN mood(?m + ?t).`
+An Expression that's used only once doesn't need a name: `LEARN score(?m + ?t).`
 
 ## When a Number isn't a Number
 

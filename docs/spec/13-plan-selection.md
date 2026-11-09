@@ -2,7 +2,7 @@
 
 Which Plan runs when several could react to the same Trigger on one Agent: inside a Playbook, between Playbooks, between a Plot and its Subplots, and in a Director. Decided in the ticket *Priority model* (`.scratch/regia-2/issues/14-priority-model.md`). It builds on chapters 03, 05, 06 and 11, and replaces `PRIORITY` in primer ch.2, ch.4 and ch.5. The proposal `docs/agents/Regia Plan Precedence and Composition (Proposal).md` was input: its composition-level relations, fall-through and conflict report are kept; its `STORY` unit, layers, numeric tie-breaks, handler labels and `WITH`/`PARALLEL` are not (see *Not in 2.0*). Why precedence is declared where Playbooks are put together is recorded in `docs/adr/0008-precedence-is-declared-where-playbooks-are-put-together.md`.
 
-Labels are written `, TEMPER …` as a placeholder until *Label syntax* decides their names.
+Labels and Propensities (`SUITS`, `SHIFTS`, `TRAIT`, `MOOD`) are defined in chapter 14 (`14-labels.md`).
 
 ## What this chapter decides
 
@@ -46,7 +46,7 @@ If no candidate is left, an Event or Fact change is dropped (chapter 07), and a 
 The candidates are ranked, and the first one runs:
 
 1. **Precedence**: the order of the Playbooks the candidates belong to, as described below.
-2. **The Selection function**: only among candidates that precedence leaves deliberately tied (*Mood*, below).
+2. **The Selection function**: only among candidates that precedence leaves deliberately tied (*Propensities*, below).
 3. **Name order**: the last resort, for competitions nobody ordered. It always comes with a warning.
 
 The order never depends on file order between files, include order, or the order Playbooks were loaded or given.
@@ -63,7 +63,7 @@ PLAYBOOK NobleSocializing:
         DO frown.
 ```
 
-The Transpiler warns about a Trigger Block that can never run because an earlier one always catches its Trigger first. The exception is mood alternatives (*Mood*, below).
+The Transpiler warns about a Trigger Block that can never run because an earlier one always catches its Trigger first. The exception is Suits alternatives (*Propensities*, below).
 
 ### Who orders what
 
@@ -132,7 +132,7 @@ PLOT HonorDuel:
 |---|---|
 | `A OVER B.` | Every candidate of A ranks above every candidate of B. |
 | `A OVER B ON item.` | The same, only for Triggers on `item`. Elsewhere A and B stay unordered. |
-| `A TIES B.` / `A TIES B ON item.` | A and B are equal on purpose: the Selection function chooses between their candidates (*Mood*, below). |
+| `A TIES B.` / `A TIES B ON item.` | A and B are equal on purpose: the Selection function chooses between their candidates (*Propensities*, below). |
 
 - `A` and `B` name:
   - Playbooks this Plot gives out;
@@ -145,38 +145,38 @@ PLOT HonorDuel:
 - **`TIES` joins only Playbooks given by the same Plot.** It can't join Subplots, `SELF`, `PARENT` or Phases.
 - Numeric priorities (`PRIORITY 5`) don't exist. An order is always written as a relation by someone who can see both sides.
 
-## Mood
+## Propensities
 
-The **Selection function** is the Target's way of choosing among equally ranked Plans by the Agent's mood (VEsNA-Pro's temper selection today). Mood decides only where a designer chose to let it decide, in exactly two places.
+The **Selection function** is the Target's way of choosing among equally ranked Plans by the Agent's Propensities, its Traits and Moods (VEsNA-Pro's temper selection today). Propensities decide only where a designer chose to let them decide, in exactly two places.
 
-### Mood alternatives inside a Playbook
+### Suits alternatives inside a Playbook
 
-Trigger Blocks in one Playbook with the same Trigger, all carrying mood Labels, are **mood alternatives**. They are different Plans even when their Contexts are identical, and none shadows another. Every alternative whose Context holds goes to the Selection function, which picks one:
+Trigger Blocks in one Playbook with the same Trigger, all carrying a `SUITS` Label, are **Suits alternatives**. They are different Plans even when their Contexts are identical, and none shadows another. Every alternative whose Context holds goes to the Selection function, which picks one:
 
 ```regia
 PLAYBOOK NobleSocializing:
-    WHEN insult_heard, TEMPER sympathy(-0.5): DO complain.
-    WHEN insult_heard, TEMPER sympathy(0.5):  DO toast(host).
+    WHEN insult_heard, SUITS sympathy AT -0.5: DO complain.
+    WHEN insult_heard, SUITS sympathy AT 0.5:  DO toast(host).
 ```
 
-- **Mixing is an error.** For one Trigger in one Playbook, either every Trigger Block carries mood Labels (they are alternatives) or none does (first in the text wins). A "neutral" alternative writes a neutral Label explicitly.
+- **Mixing is an error.** For one Trigger in one Playbook, either every Trigger Block carries `SUITS` (they are alternatives) or none does (first in the text wins). A `SHIFTS` Label doesn't count. There is no neutral alternative: a "default" reaction writes ordinary values, such as `SUITS sympathy AT 0` (chapter 14).
 - The "can never run" warning doesn't apply between alternatives: they are meant to overlap.
-- Alternatives are always separate Trigger Blocks. `GIVEN` siblings are never alternatives, even if *Label syntax* lets a single `GIVEN` carry Labels.
+- Alternatives are always separate Trigger Blocks. `GIVEN` siblings are never alternatives, and `SUITS` on a `GIVEN` is an error (chapter 14).
 
 ### `TIES` between Playbooks
 
-`A TIES B` pools the two Playbooks' candidates into **one** Selection: each side's mood alternatives that hold, and each side's winning unlabelled Trigger Block. Unlabelled candidates are scored however the Selection function scores "no mood". Mixing across Playbooks is fine, since the two authors couldn't coordinate their Labels.
+`A TIES B` pools the two Playbooks' candidates into **one** Selection: each side's Suits alternatives that hold, and each side's winning unlabelled Trigger Block. Unlabelled candidates are ranked against labelled ones however the Target ranks them, and the Transpiler warns about such a mixed pool (on VEsNA-Pro an unlabelled candidate counts as a perfect fit, chapter 14). Mixing across Playbooks is allowed, since the two authors couldn't coordinate their Labels.
 
 - `TIES` also marks the competition as intended, so name order's warning doesn't fire.
 - `TIES` between Playbooks already ordered by `OVER` is an error.
-- **`TIES` with no mood Labels** on any pooled candidate has nothing to choose by. It falls back to name order with a warning ("no mood Labels on these Trigger Blocks: use `OVER`, or add mood Labels"). Random variety is written with `EITHER`/`OR` (chapter 09).
+- **`TIES` with no `SUITS`** on any pooled candidate has nothing to choose by. It falls back to name order with a warning ("no `SUITS` on these Trigger Blocks: use `OVER`, or add `SUITS`"). Random variety is written with `EITHER`/`OR` (chapter 09).
 
 ### What the language promises
 
-- The Selection function picks **exactly one** of the candidates it is given, and it is only given candidates of **equal rank**: mood never overrides precedence.
-- How it scores (personality, current mood, how `EFFECTS` change the mood after the choice) belongs to the Target. A run that uses it is reproducible only given the same mood history.
-- **A Target without a Selection function** resolves mood alternatives by text order and `TIES` by name order, with **one warning per Program**. How unsupported Labels are reported in general is decided in *Label syntax*.
-- A Program with no mood Labels never uses the Selection function.
+- The Selection function picks **exactly one** of the candidates it is given, and it is only given candidates of **equal rank**: Propensities never override precedence.
+- How it scores (Traits, current Moods, and when `SHIFTS` changes the Moods) belongs to the Target. A run that uses it is reproducible only given the same Mood history.
+- **A Target without a Selection function** resolves Suits alternatives by text order and `TIES` by name order, with **one warning per Program** (chapter 14: an unsupported Label is ignored with one warning per Program per Label).
+- A Program with no `SUITS` Labels never uses the Selection function.
 
 ## Instancing
 
@@ -194,7 +194,7 @@ The order between **independent** Plots (no common ancestor Plot) depends on whi
 - A cycle in one Plot's relations (the message prints the cycle).
 - `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
 - A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot.
-- Mixing mood-labelled and unlabelled Trigger Blocks for one Trigger in one Playbook.
+- Mixing Trigger Blocks with and without `SUITS` for one Trigger in one Playbook.
 - An Instancing order between Plots that share an ancestor.
 
 **Warnings**
@@ -202,8 +202,9 @@ The order between **independent** Plots (no common ancestor Plot) depends on whi
 - A competition ordered only by name.
 - A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes).
 - A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
-- `TIES` with no mood Labels to choose by.
-- Mood Labels on a Target without a Selection function (once per Program).
+- `TIES` with no `SUITS` to choose by.
+- A `TIES` pool mixing `SUITS` and unlabelled candidates.
+- `SUITS` on a Target without a Selection function (once per Program).
 
 **Notes**
 
@@ -242,14 +243,13 @@ For *The full ASL mapping* to pick up:
 - **The order never comes from the plan library.** Jason's default picks the first applicable plan in plan-library order, which follows include order. Precedence is enforced explicitly instead, so loading Playbooks at runtime and reorganising files can't change behaviour.
 - **Rank key.** When a Director gives a Playbook, it passes a rank key: the path of positions from the top down (the Instancing position of the top-level Plot, then the position of each Subplot among its siblings and `SELF`, then the Playbook's position inside its Plot). The Agent stores it with the Playbook, for example by extending today's belief to `playbook_active(Name, Director, Key)`. A Playbook given twice keeps its best key.
 - **Annotations.** Each Trigger Block's plans carry `playbook(Name)`, as proposed by the Jason dynamic-plans research. `priority(N)` is no longer emitted.
-- **Selection** happens in VEsNA-Pro's `selectOption`, which already checks every candidate plan: keep the applicable options with the best key (compared position by position); if several remain and they are mood alternatives or a `TIES` pool, apply temper selection; then break ties by Playbook name. Inside a Playbook, an unlabelled Trigger Block's position in the text is part of the key, so text order holds without relying on plan order.
-- **Mood alternatives** are separate plans with their `temper` annotations and no negated sibling Contexts between them, so `selectOption` sees them all. `GIVEN` siblings keep chapter 06's negated Contexts and carry no mood Labels.
+- **Selection** happens in VEsNA-Pro's `selectOption`, which already checks every candidate plan: keep the applicable options with the best key (compared position by position); if several remain and they are Suits alternatives or a `TIES` pool, apply temper selection; then break ties by Playbook name. Inside a Playbook, an unlabelled Trigger Block's position in the text is part of the key, so text order holds without relying on plan order.
+- **Suits alternatives** are separate plans with their `temper` annotations and no negated sibling Contexts between them, so `selectOption` sees them all. `GIVEN` siblings keep chapter 06's negated Contexts and carry no `temper` (a `GIVEN`'s own `SHIFTS` becomes `effects` on its plan only).
 - How a Plot's position is computed when the same Plot is started from two different parents, and the exact key encoding, are left to *The full ASL mapping*. Other Targets need only "compare keys, then the Selection function, then names".
 
 ## Not decided here
 
-- The names and syntax of mood Labels, Labels on a single `GIVEN`, and unsupported Labels: *Label syntax*.
 - How Instancing writes the order of independent Plots, and who picks the Root Plot: *Instancing comments*.
 - How Subplots are started and identified, and how a Staging relates to its Plot's position: *Subplots and Stagings*.
-- Whether Directors have a mood: *Director capabilities*.
+- Whether Directors have Propensities: *Director capabilities*.
 - Choosing among a Context's matches: *Match selection*, not yet specified.

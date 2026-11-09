@@ -57,7 +57,7 @@ Each `GIVEN` Block, and the `ELSE` Block, is **one Plan**. The rules:
 - **First match wins, top to bottom.** Of the `GIVEN` Blocks under one Trigger, only the **first in the text whose Context holds** runs. If none holds, the `ELSE` runs. This holds however the Plans end up ordered at runtime, and whatever other Playbooks react to the same Trigger. How Plans from different Trigger Blocks compete is decided in chapter 13 (`13-plan-selection.md`).
 - **`ELSE` is optional** and must come last. Without it, if no Context holds, none of these Plans applies (for an Event or a Fact change, nothing happens; for a Goal, it fails: chapter 11). An `ELSE` with no `GIVEN` before it is an error.
 - **A Trigger Block holds either a Body or `GIVEN`/`ELSE` Blocks, never both.** A `WHEN` whose Statements come straight after it is a single Plan with no Context. Statements before, between or after `GIVEN` Blocks are an error, and the message explains that the Context is checked before any Statement runs. 1.0's "prefix" Statements, which were copied into every branch, are gone: write the Statement in each Plan, or use one Plan with an `IF`.
-- **What the Plans share.** Everything in the Trigger: the item, its kind word, the Placeholders it fills, `FROM`, and the Labels on the Trigger's header. Each Plan fills its own Context Placeholders, so sibling `GIVEN` Blocks may reuse a name. Whether a single `GIVEN` can carry its own Labels is decided in *Label syntax*.
+- **What the Plans share.** Everything in the Trigger: the item, its kind word, the Placeholders it fills, `FROM`, and the Labels on the Trigger's header. Each Plan fills its own Context Placeholders, so sibling `GIVEN` Blocks may reuse a name. A single `GIVEN` or `ELSE` may add its own `SHIFTS` Label, never `SUITS` (chapter 14, `14-labels.md`).
 - **Doc comments** (chapter 02). A doc comment above the Trigger documents every Plan under it. A doc comment above a `GIVEN` or `ELSE` documents only that Plan.
 - **A `GIVEN` that can never run** gets a **warning**: one an earlier `GIVEN` always catches first, such as `GIVEN a AND b:` after `GIVEN a:`. The Transpiler checks this as far as it can (fully for plain Facts, best effort with Placeholders and comparisons). The fix is usually to move the narrower case up.
 - The same rules apply to `TO` Triggers (Goal recipes), and to Plans in Playbooks and in Plots.
@@ -121,14 +121,14 @@ For *The full ASL mapping* to pick up:
   +!regia_if_1(Speaker) : not hates(Speaker) & not friend_of(Speaker, F_1) <- true.
   ```
 
-  This needs: generated goal names under a prefix designers can't declare, loaded and unloaded with their Playbook; a branch's failure propagating as the Plan's own failure, never visible to designers; the duplicate-Goal rule and `PURSUING` (chapter 05) applying to declared Goals only; and no Labels on generated plans, so mood-based selection never picks among branches. It costs one extra reasoning cycle per `IF`.
+  This needs: generated goal names under a prefix designers can't declare, loaded and unloaded with their Playbook; a branch's failure propagating as the Plan's own failure, never visible to designers; the duplicate-Goal rule and `PURSUING` (chapter 05) applying to declared Goals only; and no Labels on generated plans, so the Selection function never picks among branches. It costs one extra reasoning cycle per `IF`.
 - If an interpreter can't suspend a plan on a subgoal, the fallback is to split the Plan at each `IF`, with each branch plan ending by posting a continuation goal that holds the rest of the Body. More machinery for the same behaviour; used only if needed.
 - **Choosing the encoding.** Which of the two encodings is emitted (native `if/elif/else`, or subgoal plans) is selected per build with an Instancing comment, for example `#% ASL_VERSION = JASON` or `#% ASL_VERSION = GENERIC`. Its exact name, values, default and where it may appear are decided in *Instancing comments*. The language semantics are the same either way.
 - The emitted contexts grow quadratically with the number of `GIVEN` Blocks, and earlier Contexts are re-tested. That's acceptable for chains of designer size.
 
 ## Not decided here
 
-- Labels on a single `GIVEN`: *Label syntax*.
+- Labels on a single `GIVEN`: chapter 14 (`14-labels.md`).
 - How Plans from different Trigger Blocks or Playbooks compete for the same Trigger: chapter 13 (`13-plan-selection.md`).
 - Choosing among matches explicitly, and running for every match: *Match selection*, not yet specified.
 - Loops: deferred.

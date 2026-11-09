@@ -2,7 +2,7 @@
 
 What Goals are, how they are declared, and every kind of Trigger a Plan can start from. Decided in the ticket *Goals and Trigger kinds* (`.scratch/regia-2/issues/05-goals-and-trigger-kinds.md`). It builds on *Parameters and Placeholders* (`03-parameters-and-placeholders.md`) and replaces the Goal and trigger-type parts of primer ch.2–4. The choice to treat Fact changes and Goals as Trigger kinds, with Events kept momentary, is recorded in `docs/adr/0003-events-are-momentary-fact-changes-are-trigger-kinds.md`.
 
-In the examples, the Context is written as the `IF` directly under the Trigger, as in chapter 03. Chapter 06 (`06-context-and-control-flow.md`) replaces this with `GIVEN`. Labels are written `, TEMPER …` as a placeholder until *Label syntax* decides.
+In the examples, the Context is written as the `IF` directly under the Trigger, as in chapter 03. Chapter 06 (`06-context-and-control-flow.md`) replaces this with `GIVEN`.
 
 ## Goals
 
@@ -142,10 +142,10 @@ A Trigger reads, left to right:
 2. the Vocabulary item, with its slots;
 3. the kind word, if any;
 4. `FROM …`, if any;
-5. the Labels, if any (*Label syntax*).
+5. the Labels, if any (chapter 14, `14-labels.md`).
 
 ```regia
-WHEN hates(?h) LEARNED FROM ?teller, TEMPER sympathy(-0.5):
+WHEN hates(?h) LEARNED FROM ?teller, SUITS sympathy AT -0.5:
 ```
 
 The kind words and `FROM` are reserved, so the parser always knows where the item ends.

@@ -9,7 +9,7 @@ Regia 2.0 has **no Groups**. The primer's `FACT GROUP a, b, c` was meant for pic
 | Need | Written as |
 |---|---|
 | Do one of several things at random | a Random choice (below) |
-| "Any of a family" in a Context | a parameterised Fact: `FACT mood(kind)`, `GIVEN mood(?m):` |
+| "Any of a family" in a Context | a parameterised Fact: `FACT feeling(kind)`, `GIVEN feeling(?f):` |
 | The same choice in several Plans | a Goal whose recipe makes the choice: `TO idle: EITHER: …`, then `PURSUE idle.` |
 | Declaring several items in one line | Multi-definition: `FACT a, b, c` |
 

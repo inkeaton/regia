@@ -2,8 +2,6 @@
 
 How Agents send Facts, Events and Goals to one another, how they Signal their Directors, and what the receiver sees. Decided in the ticket *Messaging between Agents* (`.scratch/regia-2/issues/08-messaging.md`). It builds on chapters 03, 05 and 06, and replaces the `TELL`, `BROADCAST` and `SIGNAL` parts of primer ch.4. Their names are confirmed in chapter 08 (`08-basic-actions.md`).
 
-Labels are written `, TEMPER …` as a placeholder until *Label syntax* decides.
-
 ## Three ways to send
 
 | Statement | Sends | To |

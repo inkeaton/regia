@@ -43,7 +43,7 @@ _Avoid_: Behaviour, module, plan library
 ## Vocabulary
 
 **Vocabulary**:
-The declared Facts, Events, Actions and Goals that Plans are built from.
+The declared Facts, Events, Actions, Goals and Propensities that Plans are built from.
 _Avoid_: Declarations, components
 
 **Fact**:
@@ -60,6 +60,18 @@ _Avoid_: Triggering event, percept, message, happening
 
 **Signal**:
 An Event an Agent sends to the Directors of every Plot currently giving it the Playbook the Signal is written in. The Directors react to it like any other Event, and can tell which Role sent it. It is an Agent's only way to reach a Director.
+
+**Propensity**:
+A named disposition of an Agent, either a Trait or a Mood. Labels use Propensities to choose between Plans and to say how running a Plan changes the Agent. Propensities are not Facts: a Context can't test them.
+_Avoid_: Temper, personality, emotion, attribute
+
+**Trait**:
+A Propensity that never changes during a run, such as bravery.
+_Avoid_: Personality, stat
+
+**Mood**:
+A Propensity that changes as the Agent runs Plans, such as sympathy.
+_Avoid_: Emotion, dynamic temper, feeling
 _Avoid_: Notification, message
 
 **External name**:
@@ -153,20 +165,28 @@ How likely an Option is to be picked compared with the others, written `, WEIGHT
 _Avoid_: Chance, probability, percentage
 
 **Label**:
-An optional tag on a Plan's Trigger that influences how the Plan is chosen or what it changes (e.g. mood).
+An optional tag on a Plan's Trigger that influences how the Plan is chosen or what it changes. The set is fixed by the language: Suits and Shifts.
 _Avoid_: Flag, annotation, modifier
 
 **Precedence**:
 The order in which Plans from different Playbooks, Plots or Phases are considered when several could react to the same Trigger on one Agent. It is written by whoever puts them together (a Plot, or Instancing for independent Plots), never inside a Playbook about another.
 _Avoid_: Priority, salience, rank
 
+**Suits Label**:
+A Label saying which Propensity values a Plan best fits, written `, SUITS sympathy AT -0.5`. It is the only Label that affects which Plan runs.
+_Avoid_: Temper, mood Label, propensity annotation
+
+**Shifts Label**:
+A Label saying how running a Plan changes the Agent's Moods, written `, SHIFTS aggressiveness BY 0.2`.
+_Avoid_: Effects, post-effects, mood change
+
 **Selection function**:
-The Target's way of choosing among equally ranked Plans by the Agent's mood. It only ever chooses where a designer allowed it: among Mood alternatives, or between Playbooks declared tied.
+The Target's way of choosing among equally ranked Plans by the Agent's Propensities. It only ever chooses where a designer allowed it: among Suits alternatives, or between Playbooks declared tied.
 _Avoid_: Temper selection, option selection, utility
 
-**Mood alternative**:
-One of several Trigger Blocks in a Playbook with the same Trigger, all carrying mood Labels. They are different Plans even with identical Contexts, and the Selection function picks among those whose Context holds.
-_Avoid_: Variant, duplicate plan
+**Suits alternative**:
+One of several Trigger Blocks in a Playbook with the same Trigger, all carrying a Suits Label. They are different Plans even with identical Contexts, and the Selection function picks among those whose Context holds.
+_Avoid_: Mood alternative, variant, duplicate plan
 
 **Statement**:
 A single step of a Plan's Body: an Action, a Director Statement, control flow (`IF`/`ELSE`), or a Random choice. An `IF` is checked when the Body reaches it, unlike the Context.

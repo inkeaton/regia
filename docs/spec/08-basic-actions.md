@@ -48,7 +48,7 @@ WHEN hit(?dmg):
         CHANGE health(?h) TO health(?h - ?dmg).
 ```
 
-- Both sides name the **same Fact**, and they may differ only in their arguments. `CHANGE health(?h) TO mood(3)` is an error.
+- Both sides name the **same Fact**, and they may differ only in their arguments. `CHANGE health(?h) TO score(3)` is an error.
 - **The old Fact must be known.** If it isn't, the Plan fails, because a change from something that isn't there is a mistake rather than a no-op. (A plain `FORGET` of an unknown Fact does nothing.) What failing does is in chapter 11 (`11-failure.md`).
 - It fires exactly what the pair would: `FORGOTTEN` for the old Fact, then `LEARNED` for the new one. If both sides are equal, nothing changes and nothing fires.
 

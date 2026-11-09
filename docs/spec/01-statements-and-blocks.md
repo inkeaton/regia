@@ -97,7 +97,7 @@ DO eat_food,
     PRINT("A guest finishes their meal.")
 ```
 
-Long lines with no comma, such as a Trigger with many Labels, are left to *Label syntax*.
+A Trigger with many Labels wraps after any of the `,` that separate them (chapter 14, `14-labels.md`).
 
 ## Empty Blocks
 
