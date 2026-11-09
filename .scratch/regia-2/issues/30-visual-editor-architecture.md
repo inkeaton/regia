@@ -20,6 +20,8 @@ How is the Visual Editor put together around the WASM Workspace (spec 23)? Decid
 - What the graph shows is a separate question, still in the fog.
 - Mid-session: asked what to keep in mind for a future VS Code extension that shows the graph next to VS Code's editor. Answered with LSP shapes at the WASM boundary, a graph package independent of its host, and a package split (Q16–Q19).
 
+- Added after resolution (2026-11-09, while resolving [What the graph shows](31-what-the-graph-shows.md)): the editor follows Material 3 through its design tokens and components of our own, in a `regia-theme` package (spec 24, *Design system: Material 3*).
+
 ## Answer
 
 Spec: `docs/spec/24-visual-editor-architecture.md`. Spec 23 updated (LSP shapes at the boundary, `fixes`, `semanticTokens`, `moveFile`); spec 10's note on roots updated. Glossary: **Project**, **Build**. No ADR: nothing here is hard to reverse.

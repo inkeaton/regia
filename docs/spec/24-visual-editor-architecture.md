@@ -6,8 +6,19 @@ How the Visual Editor is put together around the WASM Workspace: where the platf
 
 - A **static web app**: Vite, React, Monaco (`@monaco-editor/react`), React Flow (`@xyflow/react`) and zustand, as in 1.0. There is no backend. The HTTP calls 1.0 made to the Python Transpiler are replaced by the WASM Workspace (chapter 23).
 - The graph is laid out with elkjs, top to bottom (chapter 25).
+- The look follows **Material 3**, through its design tokens rather than a component library (below).
 - The Workspace runs in a **Web Worker**. The UI reaches it through an async client (Comlink). The client also debounces rebuilds and drops results that a newer change has made stale, so typing never waits on a Model rebuild.
 - A desktop wrapper (Tauri) is not part of 2.0. It could be added later as one more project store backend (below), without changing anything else.
+
+## Design system: Material 3
+
+The editor follows Material Design 3, adopted through its **design tokens**, with components of our own.
+
+- **Why not a component library:** MUI still implements Material Design 2, with M3 only on its roadmap, and Google's own M3 web components (`@material/web`) are in maintenance mode. The editor needs few components (a file tree, tabs, toolbars, menus, dialogs, a side panel), so writing them over tokens costs little and depends on nothing that has stalled.
+- **Colour:** light and dark schemes are generated from one seed colour with Google's `@material/material-color-utilities`, the library behind Material Theme Builder. The editor follows the system's light or dark setting, and the user can override it.
+- **Tokens as CSS variables:** M3's names (`--md-sys-color-primary`, `--md-sys-color-surface-container`, `--md-sys-typescale-body-medium-*`, `--md-sys-shape-corner-medium`, elevation levels, state-layer opacities) are set on the root element. Components use only these variables, never raw colours.
+- **Everything themes from the same tokens:** the app's components, the graph (nodes, edges, labels and import marks, chapter 25), and a Monaco theme generated from the scheme for each of light and dark, with semantic token colours taken from the scheme's colour roles.
+- **The tokens live in their own package**, `regia-theme`, used by both `regia-web` and `regia-graph`. In a future VS Code webview, the host maps VS Code's theme variables onto the same token names, so the graph follows the VS Code theme instead.
 
 ## Projects and the project store
 
@@ -89,8 +100,9 @@ The frontend is an npm-workspaces monorepo next to the Cargo workspace:
 | Package | Holds | Depends on |
 | --- | --- | --- |
 | `regia-wasm` | The wasm-pack output of the `regia-wasm` crate, plus a typed async **Workspace client**. The client hides whether the Workspace runs in a Web Worker or, later, in Node. | — |
-| `regia-graph` | The graph component: React Flow, layout, and the graph's edit gestures. | `regia-wasm` (types only) |
-| `regia-web` | The app: project store, Monaco, the Monaco adapters, tabs, layout, builds. | both |
+| `regia-theme` | Material 3 tokens as CSS variables, the light and dark schemes, and the Monaco themes generated from them. | — |
+| `regia-graph` | The graph component: React Flow, layout, and the graph's edit gestures. | `regia-wasm` (types only), `regia-theme` |
+| `regia-web` | The app: project store, Monaco, the Monaco adapters, tabs, layout, builds. | all three |
 
 ### The graph's host interface
 

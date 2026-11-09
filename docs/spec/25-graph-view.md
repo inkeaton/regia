@@ -11,7 +11,7 @@ The graph pane shows one Plot at a time (one tab per Plot, chapter 24) in one of
 | **Phase map** | A state machine: Phases are nodes, transitions are edges labelled with their Trigger. | yes |
 | **Nested Plans** | Boxes inside boxes: a `DURING PLOT` frame holds a box per Phase, and each Phase box holds a card per Plan. Transitions start from the Plan that makes them. | no |
 
-Both views are drawn from the same graph view data (below). Neither stores anything in the source.
+Both views are drawn from the same graph view data (below). Neither stores anything in the source. Their colours, type and shapes come from the editor's Material 3 tokens (chapter 24), in light and dark.
 
 ## Layout
 
