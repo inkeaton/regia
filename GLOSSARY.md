@@ -310,6 +310,10 @@ _Avoid_: Backend, output language
 The tool that translates Regia source into a Target.
 _Avoid_: Compiler
 
+**Model**:
+What a Program means, as the Transpiler understands it once every file is read: each name tied to what it names, across files, with the constructs kept as the designer wrote them. Checks, translation into a Target and the Visual Editor's graph all work from it.
+_Avoid_: AST, syntax tree (those describe one file's text), IR
+
 **Visual Editor**:
 The tool that shows Regia source next to a flowchart of it, with both sides editable and kept in sync.
 _Avoid_: Editor (unqualified), BIRDBRAIN

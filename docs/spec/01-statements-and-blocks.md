@@ -99,6 +99,10 @@ DO eat_food,
 
 A Trigger with many Labels wraps after any of the `,` that separate them (chapter 14, `14-labels.md`).
 
+## Parsing never depends on declarations
+
+Every construct can be parsed from its tokens alone, without knowing what any name is declared as or in which file. Keywords carry the shape (`DO`, `LEARN`, `PURSUE`, …), and names are only names. This is what lets each file be parsed on its own and its imports be found before any name is resolved (chapter 23). A syntax that would need to know a name's kind to be parsed is rejected.
+
 ## Empty Blocks
 
 A Block header with no body is allowed, and the Transpiler warns about it. This supports sketching, for example in the Visual Editor. There is no placeholder keyword.
