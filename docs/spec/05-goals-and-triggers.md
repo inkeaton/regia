@@ -133,6 +133,7 @@ TO find_sword FROM DIRECTOR:
 - On `DROPPED` and `FAILED`, `FROM` means **the Goal's Sender**, as on `TO g FROM …`: `WHEN find_sword FAILED FROM DIRECTOR:` (chapter 11).
 - A Goal the Agent gave itself has **no sender**, so no `FROM` clause matches it. Without `FROM`, it matches as usual.
 - Messages between Agents use these same forms (chapter 07, `07-messaging.md`).
+- On an Event Trigger, a quantity before the Role (`FROM ALL Guest`, `FROM 3 OF Guest`, `FROM 50 PERCENT OF Guest`) makes a Quota Trigger, which waits until enough different Agents of the Role have sent the Event (chapter 18, `18-quota-triggers.md`).
 
 ## Order of a Trigger
 

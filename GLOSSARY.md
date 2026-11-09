@@ -140,6 +140,10 @@ _Avoid_: Condition, head
 Which sort of thing starts a Plan, such as an Event happening or a Fact being learned. Written as a word after the item (`LEARNED`, `FORGOTTEN`, `DROPPED`, `FAILED`), or as `TO` for a Goal recipe.
 _Avoid_: Event type, triggering event
 
+**Quota Trigger**:
+A Trigger that fires once enough different Agents of a Role have sent the same Event, written `FROM ALL Guest`, `FROM 3 OF Guest` or `FROM 50 PERCENT OF Guest`. Each Agent counts once, and the count starts again after it fires.
+_Avoid_: Quantifier, aggregate condition, barrier, threshold trigger
+
 **Sender**:
 The Agent or Director that sent what a Trigger reacts to, such as a Signal, a Message or a Goal. A Trigger can restrict or name it with `FROM`. Things the game or the Agent itself caused have no Sender.
 _Avoid_: Source

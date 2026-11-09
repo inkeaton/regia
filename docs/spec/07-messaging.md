@@ -74,7 +74,7 @@ WHEN hates(?h) LEARNED FROM ?teller:
 
 **Scenario.** Bob tells Alice `hates(host)`; `LEARNED FROM ?who` fires with `?who` = bob. Carl tells her the same; nothing fires, she already knows it. Alice runs `FORGET hates(host)`; she no longer knows it.
 
-A designer who needs to know *who* said what, for trust or gossip ("believe it once three people say it"), models it in the open: tell an Event and record the teller in a Fact.
+A designer who needs to know *who* said what, for trust or gossip ("believe it once three people say it"), models it in the open: tell an Event and record the teller in a Fact. Counting tellers is a Quota Trigger, `WHEN rumor(?about) FROM 3 OF neighbour:` (chapter 18).
 
 ```regia
 WHEN rumor(?about) FROM ?who:

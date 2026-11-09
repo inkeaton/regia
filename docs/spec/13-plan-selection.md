@@ -26,7 +26,7 @@ The unit that competes is the **Trigger Block**: one `WHEN` or `TO` header with 
 A Trigger Block is a **candidate** for a Trigger when:
 
 - its Playbook is currently given to the Agent (or, in a Director, its `DURING` Block is active), and
-- its Trigger matches, Values and `FROM` included (chapters 03, 05), and
+- its Trigger matches, Values and `FROM` included (chapters 03, 05; a Quota Trigger never matches the plain Event, chapter 18), and
 - it can run: one of its `GIVEN`s holds, or it has an `ELSE`, or it has no Context.
 
 A Trigger Block whose `GIVEN`s all fail and that has no `ELSE` is **not a candidate**, and the Trigger **falls through** to the next candidate in order. This lets a story Playbook take over only when its own Context holds:
