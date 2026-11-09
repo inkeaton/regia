@@ -20,7 +20,7 @@ The edit API is made of domain operations, such as adding a Phase to a Plot, add
 
 The Visual Editor reads node spans to highlight a construct, reveal it in the text, or keep a selection. It never builds edits out of spans itself. All editing logic lives in the core, in Rust, and is tested as *source before, operation, expected source after*.
 
-Which operations exist, and where a new declaration lands (for example a new Event a transition needs), depends on what the graph shows, which is still open.
+Which operations exist, and where a new declaration lands (for example a new Event a transition needs), are in chapter 25 (`25-graph-view.md`).
 
 ## Extent: what moves with a construct
 

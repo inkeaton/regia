@@ -326,6 +326,14 @@ _Avoid_: Workspace (the Transpiler's in-editor state), package
 The Target files produced from one Entry file, with the Instancing that Entry reaches.
 _Avoid_: Compilation, output (unqualified)
 
+**Graph view**:
+The Visual Editor's drawing of one Plot. The **Phase map** (the default) draws Phases, transitions labelled with their Triggers, and endings; the **Nested Plans** view draws each Phase as a box of Plan cards. The layout is always automatic.
+_Avoid_: Diagram, canvas (the drawing surface, not what is drawn), state chart
+
+**Layer**:
+A kind of detail the graph view can show or hide, such as Givings, Messages or Subplots. Layers are off by default and are an editor setting, never part of the source.
+_Avoid_: Filter, overlay
+
 **Extent**:
 A construct together with the comments that belong to it: the comment lines directly above it with no blank line between, and a comment after it on the same line. Moving or deleting a construct in the Visual Editor moves or deletes its extent.
 _Avoid_: Span, range, trivia

@@ -1,11 +1,11 @@
 # Visual Editor architecture
 
-How the Visual Editor is put together around the WASM Workspace: where the platform runs, how project files are stored and fed to the Workspace, the layout, highlighting, quick fixes, builds, and the package split that keeps the core and the graph reusable in a future VS Code extension. Decided in the ticket *Visual Editor architecture* (`.scratch/regia-2/issues/30-visual-editor-architecture.md`). It builds on chapter 10 (imports), chapter 21 (Instancing), chapter 22 (bidirectional editing) and chapter 23 (Transpiler architecture). What the graph draws is still open.
+How the Visual Editor is put together around the WASM Workspace: where the platform runs, how project files are stored and fed to the Workspace, the layout, highlighting, quick fixes, builds, and the package split that keeps the core and the graph reusable in a future VS Code extension. Decided in the ticket *Visual Editor architecture* (`.scratch/regia-2/issues/30-visual-editor-architecture.md`). It builds on chapter 10 (imports), chapter 21 (Instancing), chapter 22 (bidirectional editing) and chapter 23 (Transpiler architecture). What the graph draws is in chapter 25.
 
 ## Platform
 
 - A **static web app**: Vite, React, Monaco (`@monaco-editor/react`), React Flow (`@xyflow/react`) and zustand, as in 1.0. There is no backend. The HTTP calls 1.0 made to the Python Transpiler are replaced by the WASM Workspace (chapter 23).
-- The graph layout engine (dagre or elkjs) is decided together with what the graph shows.
+- The graph is laid out with elkjs, top to bottom (chapter 25).
 - The Workspace runs in a **Web Worker**. The UI reaches it through an async client (Comlink). The client also debounces rebuilds and drops results that a newer change has made stale, so typing never waits on a Model rebuild.
 - A desktop wrapper (Tauri) is not part of 2.0. It could be added later as one more project store backend (below), without changing anything else.
 
