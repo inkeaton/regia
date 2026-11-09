@@ -313,3 +313,7 @@ _Avoid_: Compiler
 **Visual Editor**:
 The tool that shows Regia source next to a flowchart of it, with both sides editable and kept in sync.
 _Avoid_: Editor (unqualified), BIRDBRAIN
+
+**Extent**:
+A construct together with the comments that belong to it: the comment lines directly above it with no blank line between, and a comment after it on the same line. Moving or deleting a construct in the Visual Editor moves or deletes its extent.
+_Avoid_: Span, range, trivia

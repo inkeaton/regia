@@ -74,7 +74,7 @@ So `DO complain.SIGNAL insult_thrown` reads as one dotted name and is an error; 
 
 ## Redundant terminators
 
-A `.` at the end of a line, or a `;` closing an Inline block right at the end of a line, does nothing and is allowed without a warning. This keeps most pasted 1.0 code parsing. Whether the Visual Editor normalises it on write-back is decided in *Bidirectional editing model*.
+A `.` at the end of a line, or a `;` closing an Inline block right at the end of a line, does nothing and is allowed without a warning. This keeps most pasted 1.0 code parsing. The Visual Editor keeps it when it writes edits back: it never normalises text an edit doesn't touch (chapter 22, `22-bidirectional-editing.md`).
 
 ## Indentation rules
 

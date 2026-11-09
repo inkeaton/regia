@@ -35,7 +35,7 @@ DO toast #[ for now ]# (host)
 
 Multiline plain comments **nest**. Inside one, every opener (`#[`, `#@key[`, `#%[`) counts as a level and needs its own `]#`. This means commenting out code that already holds a multiline comment still works.
 
-Plain comments mean nothing to the Transpiler. They are kept in the syntax tree as trivia, next to whitespace, so that text survives round-trips through the Visual Editor exactly as written. Which construct a plain comment moves with when the Visual Editor edits the tree is decided in *Bidirectional editing model*.
+Plain comments mean nothing to the Transpiler. They are kept in the syntax tree as trivia, next to whitespace, so that text survives round-trips through the Visual Editor exactly as written. A plain comment directly above a construct, or after it on the same line, moves with that construct when the Visual Editor moves or deletes it; one set apart by a blank line stays where it is (chapter 22, `22-bidirectional-editing.md`).
 
 Comment-only lines don't count for indentation (see *Statements and blocks*). Neither do the lines a multiline comment spans.
 
