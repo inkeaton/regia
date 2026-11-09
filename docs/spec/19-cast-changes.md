@@ -6,7 +6,7 @@ How the Cast of a running Staging changes when Agents join or leave the Program:
 
 The **Cast** of a Staging is the Agents playing its Roles (glossary). In 2.0, only the **game** changes it, by adding Agents to the Program or removing them:
 
-- **Joining**: an Agent enters the Program while it runs (the game spawns it). It joins the **Root Plot's** Staging in the Roles Instancing gives its kind, exactly as a starting Agent is cast. How Instancing says this is *Instancing comments*' question.
+- **Joining**: an Agent enters the Program while it runs (the game spawns it). It joins the **Root Plot's** Staging in the Roles its Agent kind plays (an Agent declaration, chapter 21), exactly as a starting Agent is cast. The game reports the kind and a name for the new Agent.
 - **Leaving**: an Agent leaves the Program (the game removes it). It stops playing **every Role in every Staging** at once.
 
 Nothing else changes a Cast in 2.0:
@@ -136,5 +136,4 @@ For *The full ASL mapping* to pick up:
 
 - A Director moving Agents between Roles of a running Staging (`CAST`, `UNCAST`): *Richer Mappings and Role tests*.
 - Joiners carrying through to running Subplots: not in 2.0 (cast fixed at start).
-- How Instancing gives a joining Agent's kind its Root Plot Roles: *Instancing comments*.
 - `?who` from `JOINED` can be given a Playbook or mapped onto a Role; from `LEFT` it is only a dropped recipient (chapter 20).

@@ -74,7 +74,7 @@ Each author orders only what they can see:
 - **A Plot orders its direct Subplots against itself and against each other.** It names a Subplot by its Plot name (it writes that name in `START SUBPLOT` anyway) and itself as `SELF`. It never names a Subplot's Playbooks.
 - **A Subplot counts together with everything it starts.** When RoyalBanquet says `HonorDuel OVER SELF`, every Playbook given by HonorDuel or by any Plot HonorDuel starts is ranked above RoyalBanquet's own. How HonorDuel and its own Subplots compare is HonorDuel's business. Nobody ever names a grandchild.
 - **A Subplot may refer to the Plot that started it only as `PARENT`**, since a reusable Subplot can't know its name. If parent and Subplot contradict each other, **the parent wins**, and the Transpiler notes the dropped relation.
-- **Independent Plots**, with no common ancestor Plot, can be ordered only by Instancing (see *Instancing*, below).
+- **There are no independent Plots.** Every Plot is the Root Plot or a Subplot below it (chapter 21), so every two Plots have a common ancestor that orders them.
 
 The result is a hierarchy: first the order between Plots (and their Subplots), then the order of Playbooks inside the winning Plot.
 
@@ -90,7 +90,6 @@ With nothing declared:
 | One Playbook given by two Plots | no competition | nothing |
 | Two Playbooks given by the same Plot | name order | a **warning** |
 | Two sibling Subplots | name order | a **warning** |
-| Two independent Plots that Instancing doesn't order | name order | a **warning** |
 
 - **A Subplot beats its parent**: it is the more specific part of the story. Since every story hangs under the Root Plot, "the story beats everyday behaviour" needs no declaration.
 - **A Phase beats `DURING PLOT`** for the same reason: it is the more specific state.
@@ -180,12 +179,7 @@ PLAYBOOK NobleSocializing:
 
 ## Instancing
 
-The order between **independent** Plots (no common ancestor Plot) depends on which Plots a game runs together, so it may be set by Instancing, as an ordered list of top-level Plots, highest first. Everything else (a Plot's own Playbooks, its Phases, its Subplots) is ordered in Regia source only.
-
-- An Instancing order between Plots that share an ancestor is an error: that order belongs to the ancestor.
-- Instancing can't declare ties.
-- Independent Plots that Instancing doesn't order fall back to name order with a warning.
-- The `#%` syntax, and whether Plots other than the Root Plot can be started by Instancing at all, are decided in *Instancing comments*. If every Plot hangs under the Root Plot, independent Plots never occur.
+Instancing orders nothing. A Program has exactly one Root Plot and Instancing never starts a Plot (chapter 21), so stories that run side by side are Subplots of the Root Plot, ordered by its `PRECEDENCE`. All precedence is written in Regia source.
 
 ## Transpiler checks
 
@@ -195,7 +189,6 @@ The order between **independent** Plots (no common ancestor Plot) depends on whi
 - `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
 - A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot.
 - Mixing Trigger Blocks with and without `SUITS` for one Trigger in one Playbook.
-- An Instancing order between Plots that share an ancestor.
 
 **Warnings**
 
@@ -241,7 +234,7 @@ Map: *Not yet specified*.
 For *The full ASL mapping* to pick up:
 
 - **The order never comes from the plan library.** Jason's default picks the first applicable plan in plan-library order, which follows include order. Precedence is enforced explicitly instead, so loading Playbooks at runtime and reorganising files can't change behaviour.
-- **Rank key.** When a Director gives a Playbook, it passes a rank key: the path of positions from the top down (the Instancing position of the top-level Plot, then the position of each Subplot among its siblings and `SELF`, then the Playbook's position inside its Plot). The Agent stores it with the Playbook, for example by extending today's belief to `playbook_active(Name, Director, Key)`. A Playbook given twice keeps its best key.
+- **Rank key.** When a Director gives a Playbook, it passes a rank key: the path of positions from the top down (starting at the Root Plot: the position of each Subplot among its siblings and `SELF`, then the Playbook's position inside its Plot). The Agent stores it with the Playbook, for example by extending today's belief to `playbook_active(Name, Director, Key)`. A Playbook given twice keeps its best key.
 - **Annotations.** Each Trigger Block's plans carry `playbook(Name)`, as proposed by the Jason dynamic-plans research. `priority(N)` is no longer emitted.
 - **Selection** happens in VEsNA-Pro's `selectOption`, which already checks every candidate plan: keep the applicable options with the best key (compared position by position); if several remain and they are Suits alternatives or a `TIES` pool, apply temper selection; then break ties by Playbook name. Inside a Playbook, an unlabelled Trigger Block's position in the text is part of the key, so text order holds without relying on plan order.
 - **Suits alternatives** are separate plans with their `temper` annotations and no negated sibling Contexts between them, so `selectOption` sees them all. `GIVEN` siblings keep chapter 06's negated Contexts and carry no `temper` (a `GIVEN`'s own `SHIFTS` becomes `effects` on its plan only).
@@ -249,7 +242,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- How Instancing writes the order of independent Plots, and who picks the Root Plot: *Instancing comments*.
 - How Subplots are started and identified: chapter 17 (`17-subplots.md`). Stagings of one Subplot under one parent share its position; a Plot under two parents keeps its best rank.
 - Directors have no Propensities (chapter 20).
 - Choosing among a Context's matches: *Match selection*, not yet specified.

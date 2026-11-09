@@ -8,7 +8,7 @@ How comments are written in Regia, and which of them mean something to the Trans
 |---|---|---|---|
 | Plain comment | `# text` | `#[ … ]#` | None: for human readers only |
 | Doc comment | `#@key: value` | `#@key[ … ]#` | Documents the declaration below it |
-| Instancing comment | `#% …` | `#%[ … ]#` | Instancing information, see *Instancing comments* |
+| Instancing comment | `#% …` | `#%[ … ]#` | Instancing information, see chapter 21 |
 
 The rule is the same for all three: the kind's marker (`#`, `#@key`, `#%`) followed by `[` opens the multiline form, and `]#` closes it. The primer's `#-` continuation and `## … ##` are dropped, so a line starting with `##` is just a plain comment.
 
@@ -82,7 +82,7 @@ A key may repeat. Two `#@author:` lines give two authors. Values are plain text.
 
 ## Instancing comments
 
-`#%` (single line) and `#%[ … ]#` (multiline) are reserved for Instancing comments. Like doc comments, they are part of the grammar, must start their own line, and their multiline form doesn't nest. What they carry and where they may appear is decided in *Instancing comments*.
+`#%` (single line) and `#%[ … ]#` (multiline) mark Instancing comments. Like doc comments, they are part of the grammar, must start their own line, and their multiline form doesn't nest. They sit only at the top level of a file, after its Imports. What they carry, and the `.regin` Instancing file that holds the same content without the markers, are in chapter 21 (`21-instancing.md`).
 
 ## Errors
 

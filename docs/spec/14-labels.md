@@ -21,7 +21,7 @@ MOOD sympathy, aggressiveness
 - They are declared at **file level only**, like `EVENT` and `ACTION`. A Propensity belongs to the whole Agent, never to one Playbook.
 - They may give an External name with `<external> AS <name>` (chapter 10), for when the Target calls them something else.
 - Matching re-declarations merge (chapter 10).
-- **Starting values come from Instancing**, per Agent (VEsNA-Pro: the `temper(...)` parameter in the `.jcm`). The `#%` syntax for them is decided in *Instancing comments*. An Agent with no value for a Propensity is the Target's business; VEsNA-Pro skips it.
+- **Starting values come from Instancing**, per Agent kind, as `bravery AT 0.3.` or `AT RANDOM(a, b)` drawn per Agent (chapter 21; VEsNA-Pro: the `temper(...)` parameter in the `.jcm`). An Agent with no value for a Propensity is the Target's business; VEsNA-Pro skips it. The Transpiler warns when a `SUITS` Label mentions a Propensity a kind gives no value.
 - **Propensities are not Facts.** In 2.0 a Context can't test them and no Action changes them. Only Labels mention them.
 
 ## Writing Labels
@@ -132,7 +132,7 @@ Map: *Not yet specified*.
 For *The full ASL mapping* to pick up. VEsNA-Pro facts are from the research note above, as of upstream commit `3f857f5`.
 
 - `SUITS p AT a AND q AT b` becomes the plan annotation `temper([p(a), q(b)])`. `SHIFTS m BY d` becomes `effects([m(d)])`. A `GIVEN`'s `SHIFTS` merges into its own plan's `effects` list. External names replace Regia names.
-- **Propensity values** go into the Agent's `.jcm` as `temper(t1(v), …, m1(v)[mood], …)`, with Moods tagged `[mood]`. The `strategy` parameter (`most_similar` or `random`) must be set, or VEsNA-Pro crashes. Picking it belongs to Instancing.
+- **Propensity values** go into the Agent's `.jcm` as `temper(t1(v), …, m1(v)[mood], …)`, with Moods tagged `[mood]`. The `strategy` parameter (`most_similar` or `random`) must be set, or VEsNA-Pro crashes. It is the `strategy` setting of Instancing's `TARGET JASON` group, defaulting to `most_similar` (chapter 21).
 - **Known VEsNA-Pro behaviour** that the language doesn't promise:
   - A plan without `temper` scores as a perfect fit. Under `most_similar` it beats every labelled plan that doesn't fit exactly; under `random` it is almost never picked.
   - Effects apply only when the temper path picks an intention: at least two pending intentions, one with `temper`. A lone running Plan never shifts a Mood, and a contested one may shift it at every step.
@@ -141,6 +141,5 @@ For *The full ASL mapping* to pick up. VEsNA-Pro facts are from the research not
 
 ## Not decided here
 
-- The `#%` syntax for Propensity values and the VEsNA strategy: *Instancing comments*.
 - Directors have no Propensities (chapter 20). Plot moods (pacing, tension) are with *Richer Propensities*.
 - How Labels and Propensities map on Targets other than Jason+VEsNA: *Supporting multiple Targets*.

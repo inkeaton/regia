@@ -36,7 +36,7 @@ The Transpiler can only offer the hint when the declaring file is still part of 
 
 ## The program
 
-- The Transpiler is given one or more **Entry files**. The **Program** is every file reachable from them through imports.
+- The Transpiler is given one or more **Entry files**. The **Program** is every file reachable from them through imports. Entry files are often `.regin` Instancing files, which import `.regia` files and other `.regin` files; a `.regia` file can't import a `.regin` (chapter 21).
 - **Visibility is per file**: a file can only use names it declares or reaches through its imports.
 - **Uniqueness is program-wide**: the checks below cover every file of the Program, even two files that never import each other. At runtime they could meet on one Agent that runs Playbooks from both, so one name must mean one thing everywhere.
 

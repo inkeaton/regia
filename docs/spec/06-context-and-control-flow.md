@@ -123,7 +123,7 @@ For *The full ASL mapping* to pick up:
 
   This needs: generated goal names under a prefix designers can't declare, loaded and unloaded with their Playbook; a branch's failure propagating as the Plan's own failure, never visible to designers; the duplicate-Goal rule and `PURSUING` (chapter 05) applying to declared Goals only; and no Labels on generated plans, so the Selection function never picks among branches. It costs one extra reasoning cycle per `IF`.
 - If an interpreter can't suspend a plan on a subgoal, the fallback is to split the Plan at each `IF`, with each branch plan ending by posting a continuation goal that holds the rest of the Body. More machinery for the same behaviour; used only if needed.
-- **Choosing the encoding.** Which of the two encodings is emitted (native `if/elif/else`, or subgoal plans) is selected per build with an Instancing comment, for example `#% ASL_VERSION = JASON` or `#% ASL_VERSION = GENERIC`. Its exact name, values, default and where it may appear are decided in *Instancing comments*. The language semantics are the same either way.
+- **Choosing the encoding.** Which of the two encodings is emitted (native `if/elif/else`, or subgoal plans) follows from the Target the build is for: Jason gets native `if`, the in-house interpreters get subgoal plans. There is no `ASL_VERSION` setting (chapter 21). The language semantics are the same either way.
 - The emitted contexts grow quadratically with the number of `GIVEN` Blocks, and earlier Contexts are re-tested. That's acceptable for chains of designer size.
 
 ## Not decided here

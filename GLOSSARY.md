@@ -29,7 +29,7 @@ The Agents playing a Plot's Roles in one Staging. It is set when the Staging sta
 _Avoid_: Role instances (Target-level term), participants, members
 
 **Joining**:
-An Agent entering the Program while it runs. It joins the Root Plot's Cast in the Roles Instancing gives it, never a Subplot already running.
+An Agent entering the Program while it runs. It joins the Root Plot's Cast in the Roles of its Agent kind, never a Subplot already running.
 _Avoid_: Spawning, arriving, entering (a Plot)
 
 **Leaving**:
@@ -37,7 +37,7 @@ An Agent leaving the Program while it runs. It stops playing every Role in every
 _Avoid_: Despawning, dying, exiting (a Plot)
 
 **Root Plot**:
-The Plot every Agent starts in. Baseline behaviour is a Playbook the Root Plot gives out.
+The one Plot every Agent starts in; every other Plot is a Subplot below it. Baseline behaviour is a Playbook the Root Plot gives out.
 _Avoid_: Default story, main plot, world plot
 
 **Phase**:
@@ -201,7 +201,7 @@ An optional tag on a Plan's Trigger that influences how the Plan is chosen or wh
 _Avoid_: Flag, annotation, modifier
 
 **Precedence**:
-The order in which Plans from different Playbooks, Plots or Phases are considered when several could react to the same Trigger on one Agent. It is written by whoever puts them together (a Plot, or Instancing for independent Plots), never inside a Playbook about another.
+The order in which Plans from different Playbooks, Plots or Phases are considered when several could react to the same Trigger on one Agent. It is written by whoever puts them together (a Plot), never inside a Playbook about another.
 _Avoid_: Priority, salience, rank
 
 **Suits Label**:
@@ -282,9 +282,25 @@ _Avoid_: Tag, field, attribute
 
 ## Instancing and tooling
 
+**Instancing**:
+The information that turns a Program into a running cast: which Plot is the Root Plot, which kinds of Agent exist and how many, their starting Propensity values, and settings for a Target. It sits at a different abstraction level from the rest of the language and is optional.
+_Avoid_: Deployment, configuration, compilation settings
+
 **Instancing comment**:
-A comment carrying information for instancing the agents after transpilation (for example, how many Agents play a Role), starting with `#%`. It sits at a different abstraction level from the rest of the language.
+A line of Instancing written inside a Regia file, starting with `#%` (or enclosed in `#%[ … ]#`).
 _Avoid_: Compilation comment, deployment config
+
+**Agent kind**:
+A sort of Agent in one build, such as `noble`: which Root Plot Roles its Agents play, how many start, and their starting Propensity values. The game names a kind when it adds an Agent. Regia code never mentions kinds; Plans address Roles.
+_Avoid_: Archetype, class, prefab, template, Role (a Role belongs to a Plot)
+
+**Agent declaration**:
+The Instancing Block that describes an Agent kind, written `AGENT noble PLAYS Guest:` with `COUNT` and Propensity values inside.
+_Avoid_: Agent definition, spawn rule
+
+**Instancing file**:
+A `.regin` file holding only Imports and Instancing, written without the `#%` markers. It overrides the Instancing of the files it imports.
+_Avoid_: Config file, cast file, `.jcm` (the Jason file it can produce)
 
 **Target**:
 A language Regia is translated into so that it can run, for example AgentSpeak.

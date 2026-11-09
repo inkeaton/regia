@@ -147,5 +147,4 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - An Agent from an Outcome (`?w`) can be a recipient, an `ASSIGN` target or a `MAPPING`; `TRANSITION` ends its Body like `END PLOT` (chapter 20).
-- Whether top-level Plots other than the Root Plot exist, and who starts them: *Instancing comments*.
 - Plot parameters, a mid-run channel from child to parent (`SIGNAL PARENT e`), naming or ending one particular Staging, and recursive Subplots: *Richer Subplots* in the fog.
