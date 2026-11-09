@@ -318,6 +318,14 @@ _Avoid_: AST, syntax tree (those describe one file's text), IR
 The tool that shows Regia source next to a flowchart of it, with both sides editable and kept in sync.
 _Avoid_: Editor (unqualified), BIRDBRAIN
 
+**Project**:
+A folder of Regia files opened together in the Visual Editor. It bounds which files are seen; it is not a namespace, and imports stay relative to the importing file.
+_Avoid_: Workspace (the Transpiler's in-editor state), package
+
+**Build**:
+The Target files produced from one Entry file, with the Instancing that Entry reaches.
+_Avoid_: Compilation, output (unqualified)
+
 **Extent**:
 A construct together with the comments that belong to it: the comment lines directly above it with no blank line between, and a comment after it on the same line. Moving or deleting a construct in the Visual Editor moves or deletes its extent.
 _Avoid_: Span, range, trivia

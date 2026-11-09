@@ -104,6 +104,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- Project roots, search paths and packages: the Visual Editor's file system (*Visual Editor architecture* fog).
+- Project roots, search paths and packages: not in 2.0. The Visual Editor's Project only bounds which files the Workspace holds (chapter 24). Roots can be added later, since a relative path stays valid.
 - How the Visual Editor shows names that come through other files: *What the graph shows*.
 - Per-Target External names (the same Fact named differently in each Target): *Supporting multiple Targets*.
