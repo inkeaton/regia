@@ -36,7 +36,7 @@ PLOT RoyalBanquet:
 A setup is **sugar**. Everything in it could be written in the initial Phase's entry Plan, giving to the Role and telling it Facts and Goals. It adds no new kind of behaviour, only a place to write it and one rule a Plan can't easily follow: it applies to **each Agent when that Agent starts playing the Role**.
 
 - **At Staging start**, every Role's setup runs for the starting cast, in Role declaration order, **before** the initial Phase's entry Plans.
-- **When an Agent joins** a running Staging in the Role, the setup runs again for that Agent only. When and how Agents join is *Cast changes mid-Plot*'s question; whatever it decides, joining runs the setup.
+- **When an Agent joins** a running Staging in the Role, the setup runs again for that Agent only, before the Role's standing Givings reach it and before the Director's `JOINED` Triggers (chapter 19). In 2.0 only an Agent entering the Program joins, and only the Root Plot.
 - **Per Staging.** An Agent playing `Guest` in two Stagings of RoyalBanquet receives the setup twice, once from each. The two Givings of NobleSocializing add up (chapter 15); the Facts and Goals simply arrive twice.
 
 ### Sender
@@ -95,6 +95,5 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- When and how Agents join or leave a running Staging: *Cast changes mid-Plot*.
 - How a Director tells Facts and asks Goals in its own Plans: *Director capabilities*.
 - A counted pick per joining Agent in a setup (`EACH`): with *Richer Mappings and Role tests*.

@@ -54,7 +54,7 @@ A recipient is one of:
 
 - **Sending never waits**, whatever is sent. A Goal given to another Agent never makes the giver wait (chapter 05).
 - Messages from one sender to one receiver arrive **in the order they were sent**. Nothing is promised about the order across different senders.
-- A message is never lost. When it arrives is up to the Target.
+- A message is never lost while its receiver is in the Program. When it arrives is up to the Target. A Message to an Agent that has left the Program is dropped, with a trace entry, and doesn't fail the sender (chapter 19).
 
 ## What the receiver sees
 

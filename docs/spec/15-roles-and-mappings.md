@@ -83,6 +83,7 @@ A Guest's `partner` is the Hosts; a Host's `partner` is the Guests.
 - `TELL partner …` reaches the union; `FROM partner` matches a Sender in any of them. This is the same rule `SIGNAL` and `FROM DIRECTOR` follow: every Plot currently giving the Playbook (chapters 05, 07).
 - It is still **one Playbook** with one set of Trigger Blocks on the Agent; its Plans don't run once per giving (chapter 13).
 - `UNASSIGN Chatting FROM Guest` takes away exactly that giving and its bindings. Other givings, and the Roles they bind, stay.
+- A giving to a whole Role is **standing**: it also reaches Agents who join the Role later, until it is taken away. A giving to a counted target is not (chapter 19).
 
 ## Counts and fractions
 
@@ -158,5 +159,5 @@ For *The full ASL mapping* to pick up:
 
 - How Subplots run once started, parent and child cooperation, and how Stagings of one Plot are told apart: chapter 17 (`17-subplots.md`).
 - What a Director can do with `?who`, and whether a Role can be filled with one Agent: *Director capabilities*.
-- What happens to bindings and picks when Agents join or leave mid-Plot, beyond "a pick never grows": *Cast changes mid-Plot*.
+- What happens to bindings and picks when Agents join or leave mid-Plot: decided in chapter 19 (`19-cast-changes.md`). Whole-Role givings are standing; picks never grow and leavers drop out.
 - Starting state for a Role: *Role setup*, decided in chapter 16 (`STARTS WITH`; its `ASSIGN` takes the same Mappings, without counted picks).

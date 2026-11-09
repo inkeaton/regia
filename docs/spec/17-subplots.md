@@ -28,7 +28,7 @@ A Subplot's Roles are **played**, unlike a Playbook's Roles, which are only addr
 - A whole-Role Mapping (`MAPPING Guest TO Spectator`) casts everyone playing the parent's `Guest` in the parent's Staging **when `START SUBPLOT` runs**. An Agent who starts playing `Guest` later does not become a Spectator.
 - A counted pick (`1 OF Guest`) works as in chapter 15: once, at random, no Agent twice in one Statement.
 - Role setups run for this cast, per chapter 16.
-- Whether Agents joining or leaving the parent's Role carry through to a running Subplot is *Cast changes mid-Plot*'s question.
+- Agents joining the parent's Role **don't** carry through to a running Subplot. An Agent leaving the Program leaves every Staging, the Subplot's included, and its Director hears `LEFT`/`EMPTIED` (chapter 19).
 
 ### Being in both
 
@@ -146,7 +146,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- Whether joiners and leavers of a parent Role carry through to a running Subplot: *Cast changes mid-Plot*.
 - What a parent Director can do with an Agent from an Outcome (`?w`), and `TRANSITION`'s place in a Body: *Director capabilities*.
 - Whether top-level Plots other than the Root Plot exist, and who starts them: *Instancing comments*.
 - Plot parameters, a mid-run channel from child to parent (`SIGNAL PARENT e`), naming or ending one particular Staging, and recursive Subplots: *Richer Subplots* in the fog.

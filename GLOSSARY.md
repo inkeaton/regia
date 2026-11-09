@@ -24,6 +24,18 @@ _Avoid_: Story (1.0 name), quest, scenario
 One running copy of a Plot. The same Plot may have several Stagings at once, each with its own Agents and current Phase. Stagings have no names in the language; each knows only its parent and the Subplots it started.
 _Avoid_: Plot instance, run, session
 
+**Cast**:
+The Agents playing a Plot's Roles in one Staging. It is set when the Staging starts and changes only when Agents join or leave the Program.
+_Avoid_: Role instances (Target-level term), participants, members
+
+**Joining**:
+An Agent entering the Program while it runs. It joins the Root Plot's Cast in the Roles Instancing gives it, never a Subplot already running.
+_Avoid_: Spawning, arriving, entering (a Plot)
+
+**Leaving**:
+An Agent leaving the Program while it runs. It stops playing every Role in every Staging at once. An Agent that is dead but still in the world has not left.
+_Avoid_: Despawning, dying, exiting (a Plot)
+
 **Root Plot**:
 The Plot every Agent starts in. Baseline behaviour is a Playbook the Root Plot gives out.
 _Avoid_: Default story, main plot, world plot
@@ -45,7 +57,7 @@ How a Plot fills a Role of a Playbook it gives, or of a Subplot it starts, with 
 _Avoid_: Binding, casting, role assignment
 
 **Giving**:
-One handing of a Playbook to Agents by a Plot, with its own Mappings. An Agent may hold several givings of the same Playbook; they add up, and taking one away leaves the others.
+One handing of a Playbook to Agents by a Plot, with its own Mappings. An Agent may hold several givings of the same Playbook; they add up, and taking one away leaves the others. A giving to a whole Role is standing: it also reaches Agents who join the Role later, until it is taken away.
 _Avoid_: Assignment (when meaning the result), grant
 
 **Director**:

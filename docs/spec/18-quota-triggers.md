@@ -58,6 +58,7 @@ Only Events are counted. A Director never reads its Agents' Facts. Agents send a
 - `PERCENT` means **at least that share**, with no rounding: 50 PERCENT of 3 Guests needs 2. This deliberately differs from picks, which round down (chapter 15), because a threshold that rounds down can be met too easily.
 - `n OF` with more than n Agents in the Role is fine. With fewer, it can't be met and never fires.
 - `ALL` of an **empty Role never fires**.
+- Only **current** players count. An Agent that leaves the Program stops counting, and the quota is checked again when someone leaves, so a non-sender leaving can complete an `ALL`. A joiner raises the denominator of `ALL` and `PERCENT` (chapter 19).
 
 ### Arguments
 
@@ -118,6 +119,5 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- An Agent leaving after it was counted, or a non-sender leaving, which could complete an `ALL` with no new Signal: *Cast changes mid-Plot*. The lean is that only current Role players count and the quota is checked again when someone leaves.
 - Quantities over Subplot endings ("when every HonorDuel has ended"): *Richer Subplots*. `ENDED` takes no quantity in 2.0 (chapter 17).
 - Counting an Agent's or Director's own Facts in a Context (`GIVEN 3 OF hates(?x)`): *Match selection*.

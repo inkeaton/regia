@@ -85,6 +85,7 @@ Everything a Plan can start from is a **Trigger kind**. Each is written after `W
 | A Goal is dropped | `WHEN find_food DROPPED:` |
 | A Goal fails | `WHEN find_food FAILED:` (chapter 11) |
 | A Phase is entered or left (Director Plans) | a `WHEN` Trigger: *Director capabilities* |
+| An Agent joins or leaves a Role, or a Role empties (Director Plans) | `WHEN Guest ?g JOINED:`, `WHEN Guest LEFT:`, `WHEN Guest EMPTIED:` (chapter 19) |
 
 ```regia
 WHEN hates(?h) LEARNED:
