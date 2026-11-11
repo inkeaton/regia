@@ -14,3 +14,4 @@ What trace does a running Program leave, for debugging and runtime verification?
 - From *How a spec chapter proves itself* (33): this ticket must also define the `.trace` expectation format for behaviour Conformance cases, and how a case scripts its run (Events from the game, Agents joining and leaving). See `docs/spec/27-conformance.md`.
 - From *Director runtime in ASL* (36): new Trace sources are a failed `EXITED` Plan (the transition carries on), a skipped Role setup Statement, and a `?who` Giving or Mapping dropped because the Agent isn't in the cast (chapter 30).
 - From *Stagings and Subplots runtime in ASL* (37): new Trace sources are a failed `EXITED` during an ending (the ending carries on), and an ending Staging (chapter 31).
+- From *Precedence encoding in ASL* (38): new Trace source: a ranked option whose Playbook has no `regia_given`, dropped by `selectOption` (guard bypassed) (chapter 32).

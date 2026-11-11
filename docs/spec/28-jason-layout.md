@@ -1,6 +1,6 @@
 # Jason Build layout
 
-What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`).
+What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`); how precedence is enforced is chapter 32 (`32-jason-precedence.md`).
 
 ## Files
 
@@ -34,7 +34,7 @@ build/<entry>/
 Some of the Infrastructure has to be Java. Jason picks among the applicable plans for an event in `Agent.selectOption`, and ASL code can't see the other options, so precedence (chapter 13) can only be enforced there.
 
 - The Java code lives in **`regia-jason`**, a small library released and versioned with the Transpiler. It is never generated.
-- The Agents' class **extends VEsNA-Pro's** agent class and follows VEsNA's approach: plans carry annotations, and `selectOption` reads them. Regia adds a ranking annotation. `selectOption` keeps the options with the best rank, hands those to VEsNA's temper selection when they are Suits alternatives or a `TIES` pool, and breaks what remains by Playbook name. The annotation's shape and how ranks compare are decided by *Precedence encoding in ASL*. A plan annotation can hold only the fixed part of a rank (the Playbook, and the Trigger Block's position in it). The part that depends on who gave the Playbook is runtime state (below).
+- The Agents' class **extends VEsNA-Pro's** agent class and follows VEsNA's approach: plans carry annotations, and `selectOption` reads them. Regia adds a ranking annotation. `selectOption` keeps the options with the best rank, hands those to VEsNA's temper selection when they are Suits alternatives or a `TIES` pool, and breaks what remains by Playbook name. The annotation's shape and how ranks compare are decided in chapter 32. A plan annotation can hold only the fixed part of a rank (the Playbook, and the Trigger Block's position in it). The part that depends on who gave the Playbook is runtime state (below).
 - Directors run on a separate class, `regia.DirectorAgent`, which extends Jason's `Agent`: Directors have no Temper, and a Subplot Director has no VEsNA body, without which `VesnaAgent` can't start (chapter 30). The ranking code is a helper shared by both classes.
 - The `.jcm` points at these classes by default (chapter 21: `ag-class` never has to be written).
 - `regia-jason` is also the home for any other Java the Jason Target needs, such as a trace writer or internal actions.
@@ -47,7 +47,7 @@ Some of the Infrastructure has to be Java. Jason picks among the applicable plan
 
 | Concept | Held by | Functor | Owning ticket |
 | --- | --- | --- | --- |
-| A Giving of a Playbook | Agent | `regia_given` | *Giving and taking Playbooks at runtime* (chapter 29); rank from *Precedence encoding in ASL* |
+| A Giving of a Playbook | Agent | `regia_given` | *Giving and taking Playbooks at runtime* (chapter 29); rank from chapter 32 |
 | A Playbook in the Agent's files | Agent | `regia_playbook` | *Giving and taking Playbooks at runtime* (chapter 29) |
 | The Plot a Director runs, its parent and children, an ending | Director | `regia_staging`, `regia_parent`, `regia_child`, `regia_ending` | *Stagings and Subplots runtime in ASL* (chapter 31) |
 | The current Phase | Director | `regia_phase` | *Director runtime in ASL* (chapter 30) |

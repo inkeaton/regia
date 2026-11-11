@@ -45,7 +45,7 @@ A Staging is identified by **its Director's Jason agent name**. Nothing else nam
 2. **Create the child** with `regia.start_staging(honorDuel, Child)`.
 3. **Record it**: `+regia_child(Child, honorDuel)`.
 4. **Send the percept snapshot** (chapter 30): `regia.add_percepts` of the parent's `source(percept)` Facts that HonorDuel hears.
-5. **Send the start**: `.send(Child, achieve, regia_start([cast(…), …]))`.
+5. **Send the start**: `.send(Child, achieve, regia_start([cast(…), …], Prefix))`, where `Prefix` is the parent's `regia_rank_prefix` plus HonorDuel's level under this Plot (chapter 32).
 
 The parent's Body carries on at once (chapter 17). Jason keeps one sender's messages in order, so the snapshot is in place before the start.
 
@@ -53,8 +53,9 @@ On the child, `regia/director.asl` handles it:
 
 ```
 @regia_start[atomic]
-+!regia_start(Cast)[source(P)] : not regia_parent(_)
++!regia_start(Cast, Prefix)[source(P)] : not regia_parent(_)
    <- +regia_parent(P);
+      +regia_rank_prefix(Prefix);   // chapter 32
       // add regia_cast(Me, Role, A) for each cast(Role, A) in Cast
       !regia_begin.          // chapter 30: initial Phase, cast copies, Role setups, ENTERED
 ```
@@ -154,7 +155,7 @@ Rows added to chapter 28's table, and one retired:
 
 | Message | From → to | Meaning |
 | --- | --- | --- |
-| `achieve regia_start(Cast)` | parent → new child | start the Staging with this cast |
+| `achieve regia_start(Cast, Prefix)` | parent → new child | start the Staging with this cast, at this place in the tree (chapter 32) |
 | `achieve regia_end` | parent → child | end, with Outcome `none` |
 | `achieve regia_ended(Plot, Outcome)` | child → parent | the child has ended: an ack if the parent is ending, else `WHEN <Plot> ENDED` |
 | `achieve regia_end_staging` | Director → each cast Agent | take away every Giving and the cast copy of this Staging |
@@ -167,6 +168,5 @@ Rows added to chapter 28's table, and one retired:
 
 - The Root Director's starting cast, and its `.jcm` entry: *.jcm generation* and *Quota counts and cast changes in ASL*.
 - An Agent of a Subplot's cast leaving between `START SUBPLOT` and `regia_start`, and a `SIGNAL` or Message sent to a Director that has ended (`.kill_agent`): caught and traced like sends to Agents that have left, *Quota counts and cast changes in ASL*.
-- Rank keys of a Subplot's Givings (its position under its parent, chapter 17): *Precedence encoding in ASL*.
 - Telling the game the Root Staging has ended: *Custom Actions through VEsNA*.
 - Trace entries for an ending: *Trace and logging*.

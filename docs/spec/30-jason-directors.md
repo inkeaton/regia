@@ -54,9 +54,10 @@ The Director holds its current Phase as `regia_phase(Phase)`. Each Director is o
 Every plan generated from a `DURING feast` Block:
 
 - starts its context with `regia_phase(feast)`, so it applies only in that Phase (the same guard pattern as Givings, chapter 29);
-- carries a `regia_phase(feast)` annotation in its label, so the intentions running it can be found when the Phase is left.
+- carries a `regia_phase(feast)` annotation in its label, so the intentions running it can be found when the Phase is left;
+- carries a `regia_rank(Level, Pos)` annotation, resolved at compile time, which ranks it against `DURING PLOT` (chapter 32). `DURING PLOT` Trigger plans carry one too.
 
-`DURING PLOT` Trigger plans have no annotation, and their context starts with `regia_phase(_)`: a Director with no current Phase is ending and hears nothing (chapter 31).
+`DURING PLOT` Trigger plans have no `regia_phase` annotation, and their context starts with `regia_phase(_)`: a Director with no current Phase is ending and hears nothing (chapter 31).
 
 `ENTERED` and `EXITED` Plans are compiled to plans for the generated Goals `regia_entered(phase(feast))`, `regia_entered(plot)`, `regia_exited(phase(feast))` and `regia_exited(plot)`. Each has a catch-all plan that does nothing, so a Phase without an `ENTERED` or `EXITED` Plan, or one whose `GIVEN`s don't match, is fine.
 
@@ -167,7 +168,6 @@ Rows filled in or added in chapter 28's table:
 
 - The Staging's identity (its Director's name), Director names, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: chapter 31 (`31-jason-stagings.md`).
 - The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: *Quota counts and cast changes in ASL*.
-- Rank values in `regia_standing` and on Director plans: *Precedence encoding in ASL*.
 - How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: *Custom Actions through VEsNA*.
 - The Root Director's `.jcm` entry (its `address` and `port`, and `ag-class: regia.DirectorAgent`): *.jcm generation*.
 - The format of Trace entries: *Trace and logging*.

@@ -94,7 +94,7 @@ With nothing declared:
 - **A Subplot beats its parent**: it is the more specific part of the story. Since every story hangs under the Root Plot, "the story beats everyday behaviour" needs no declaration.
 - **A Phase beats `DURING PLOT`** for the same reason: it is the more specific state.
 - **A Playbook given by two Plots** is still one Playbook with one set of Trigger Blocks. Against other Playbooks it ranks at the **best** of its positions.
-- **Name order** is the Playbook's or Plot's name, alphabetically. It is deliberately arbitrary, and the warning names the pair and suggests the relation to add.
+- **Name order** is the Playbook's or Plot's name, alphabetically, wherever the relations leave a free choice: the members of a Plot are placed one at a time, and when several could come next, the alphabetically first goes. Comparing unordered pairs by name one at a time isn't used, since it can form a cycle with the relations (chapter 32). It is deliberately arbitrary, and the warning names the pair and suggests the relation to add.
 
 Warnings only appear for Playbooks that share a Trigger. A Program whose Playbooks react to different things gets none. The Transpiler knows which Playbooks an Agent *can* hold, not which are given at the same time, so two Playbooks that are never given together (one in `reception`, one in `feast`) can still be warned about.
 
@@ -231,14 +231,14 @@ Map: *Not yet specified*.
 
 ## ASL mapping notes
 
-For *The full ASL mapping* to pick up:
+Settled in chapter 32 (`32-jason-precedence.md`):
 
 - **The order never comes from the plan library.** Jason's default picks the first applicable plan in plan-library order, which follows include order. Precedence is enforced explicitly instead, so loading Playbooks at runtime and reorganising files can't change behaviour.
-- **Rank key.** When a Director gives a Playbook, it passes a rank key: the path of positions from the top down (starting at the Root Plot: the position of each Subplot among its siblings and `SELF`, then the Playbook's position inside its Plot). The Agent stores it with the Playbook, as the `Rank` of its `regia_given` record (chapter 29). A Playbook given twice keeps its best key.
-- **Annotations.** Each Trigger Block's plans carry `playbook(Name)`, as proposed by the Jason dynamic-plans research. `priority(N)` is no longer emitted.
+- **Rank key.** When a Director gives a Playbook, it passes a rank key: the path of positions from the top down (starting at the Root Plot: the position of each Subplot among its siblings and `SELF`, then the Playbook's position inside its Plot). The Agent stores it with the Playbook, as the `Rank` of its `regia_given` record (chapter 29). A Playbook given twice keeps its best key. Chapter 32 makes each step a level worked out at compile time, with per-item overrides for `ON` relations.
+- **Annotations.** Each Trigger Block's plans carry `regia_rank(Playbook, Item, Pos)` (chapter 32), which replaces the `playbook(Name)` proposed by the Jason dynamic-plans research. `priority(N)` is no longer emitted.
 - **Selection** happens in `selectOption`, in the `regia-jason` agent class that extends VEsNA-Pro's (chapter 28), which sees every candidate plan: keep the applicable options with the best key (compared position by position); if several remain and they are Suits alternatives or a `TIES` pool, hand them to VEsNA-Pro's temper selection; then break ties by Playbook name. Inside a Playbook, an unlabelled Trigger Block's position in the text is part of the key, so text order holds without relying on plan order.
 - **Suits alternatives** are separate plans with their `temper` annotations and no negated sibling Contexts between them, so `selectOption` sees them all. `GIVEN` siblings keep chapter 06's negated Contexts and carry no `temper` (a `GIVEN`'s own `SHIFTS` becomes `effects` on its plan only).
-- How a Plot's position is computed when the same Plot is started from two different parents, and the exact key encoding, are left to *The full ASL mapping*. Other Targets need only "compare keys, then the Selection function, then names".
+- A Plot started from two different parents gets its prefix from whichever parent started each Staging, and the best Giving is taken per item at selection time (chapter 32). Other Targets need only "compare keys, then the Selection function, then names".
 
 ## Not decided here
 

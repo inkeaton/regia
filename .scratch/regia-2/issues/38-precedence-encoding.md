@@ -1,12 +1,24 @@
 # Precedence encoding in ASL
 
 Type: grilling
-Status: open
+Status: resolved
+Assignee: Edoardo Vassallo
 Blocked by: 34, 35
 
 ## Question
 
 How is precedence (spec 13) encoded in Jason? Decide the rank key's encoding, how a Plot's position is computed when it is started from two parents, and how `selectOption` compares keys.
+
+## Answer
+
+Spec chapter: `docs/spec/32-jason-precedence.md`, checked against VEsNA-Pro's `VesnaAgent.selectOption`. Chapters 13, 17 and 28–31 point to it; chapter 31's `regia_start` gains a `Prefix` argument; `playbook(P)` is retired.
+
+- **Levels at compile time**: per Plot, a Staging table (Subplots and `SELF`, with children's `PARENT` relations folded in, parent winning) and a Playbook table, each worked out per item named in an `ON` and once for the rest. Defaults go in as relations; `TIES` share a level (only if `SUITS` is on either side for that item); a topological sort takes the alphabetically first free member. Lower wins. The conflict report prints the same tables. Chapter 13's "name order" now means alphabetical where the sort has a free choice, since pairwise name order can cycle with relations.
+- **Rank**: a path of levels from the Root, `Prefix ++ [SELF's level in G, P's level in G]`. A step is `N` or `lv(N, [Item-M, …])`. It is compared for one item, step by step.
+- **Two parents**: the parent sends `regia_start(Cast, Prefix)`, stored as `regia_rank_prefix(Path)` (Root: `[]` as an initial belief). Each Staging has its own prefix; a Playbook given several times keeps every Giving, and the best per item is taken at selection time, never stored merged.
+- **Annotation**: `regia_rank(Playbook, Item, Pos)` on every Playbook plan, with `Item` as `when(e)`, `learned(f)`, `forgotten(f)`, `to(g)`, `dropped(g)`, `failed(g)`; Suits alternatives and `GIVEN` siblings share a `Pos`. It replaces `playbook(P)`; `regia.stop_playbook` reads it.
+- **`selectOption`**: no `regia_rank` → `super`; keep the best Rank for the item (best over the Playbook's Givings; a ranked option with no Giving is dropped and traced); keep each Playbook's lowest `Pos`; sort by Playbook name and hand a fresh list to `VesnaAgent.selectOption` (temper if any `temper`, else first).
+- **Directors**: `regia_rank(Level, Pos)` resolved at compile time (Phases 0, `DURING PLOT` 1, `ON` swaps per item); `regia.DirectorAgent` compares `[Level, Pos]`. A shared helper resolves and compares paths.
 
 ## Comments
 

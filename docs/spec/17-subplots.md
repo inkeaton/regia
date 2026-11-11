@@ -114,7 +114,7 @@ Spec 13 ranks a Subplot by its position under its parent. Nothing new is needed:
 
 - Two Stagings of one Subplot under the same parent share that position and tie. They are one Plot with one set of Playbooks.
 - A Plot started from two different parents has a position under each. An Agent holding Givings from both keeps the better rank, as spec 13 says of a Playbook given twice.
-- The rank key's encoding stays with *The full ASL mapping*.
+- The rank key's encoding: chapter 32 (`32-jason-precedence.md`). A Staging gets its place from its parent in `regia_start`.
 
 ## No cycles
 
