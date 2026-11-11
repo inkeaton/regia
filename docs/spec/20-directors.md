@@ -92,6 +92,22 @@ Director Statements (`ASSIGN`, `UNASSIGN`, `TRANSITION`, `START SUBPLOT`, `END S
 | `TO g:`, `WHEN g DROPPED:`, `WHEN g FAILED:` | error: no Goals |
 | `FROM DIRECTOR` | error: a Director is never its own Sender, and a parent reaches a Subplot only through Mappings and Outcomes |
 
+## Declaring Phases
+
+```regia
+PLOT RoyalBanquet:
+    PHASE reception INITIAL.
+    PHASE feast.
+```
+
+Decided in the ticket *Phase declaration checks* (`.scratch/regia-2/issues/44-phase-declaration-checks.md`).
+
+- A Plot that declares Phases marks **exactly one** `INITIAL`, even when it has only one Phase. The Staging starts in it. Declaration order is free (chapter 10), so there is no default "first Phase".
+- **A Plot may declare no Phases.** It has only Role setups and `DURING PLOT` Plans, which is enough for a small Subplot that gives a Playbook and ends on a Signal. It behaves as if it had one Phase that is never left: `DURING PLOT`'s `ENTERED` fires when the Staging starts, and `EXITED` when it ends. With no Phase to name, any `TRANSITION TO` in it is an error.
+- **One Block per Phase.** Each declared Phase has at most one `DURING` Block, and the Plot at most one `DURING PLOT`, so a Phase's Plans are all in one place.
+- A Phase with no `DURING` Block is fine: a quiet Phase, moved on by `DURING PLOT` Plans. So is a Phase that nothing leaves: it can be the last act, ended by `END PLOT` or by the parent.
+- `PHASE` and `DURING` belong to Plots only.
+
 ## Entering and leaving Phases
 
 `ON ENTER` and `ON EXIT` are retired (chapter 05). Inside a `DURING` Block, Phase entry and exit are `WHEN` Triggers whose subject is the enclosing Block:
@@ -151,6 +167,14 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 - `R2004` A Statement after `TRANSITION` in the same branch.
 - `R2005` `ENTERED`, `EXITED` or `ENDED` in a Playbook (Director Trigger kinds only).
 - `R2006` `Role DO …` or `WORLD DO …` (not part of the language).
+- `R2007` A Plot that declares Phases with no `INITIAL` Phase, or with several (a quick fix marks one `INITIAL`).
+- `R2008` `DURING p:` or `TRANSITION TO p` naming a Phase the Plot doesn't declare (with a "did you mean" hint when a declared name is close).
+- `R2009` Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks.
+- `R2010` `PHASE` or `DURING` inside a `PLAYBOOK`.
+
+**Warnings**
+
+- `R2011` A Phase that can never be entered: it isn't `INITIAL`, and no `TRANSITION TO` in the Plot names it.
 
 A Label on a Director's Plan is `R1406`; `JOINED`, `LEFT` and `EMPTIED` in a Playbook are `R1901`; an unfilled Placeholder in `ASSIGN`, `MAPPING` or a recipient is `R0304`/`R0305`.
 

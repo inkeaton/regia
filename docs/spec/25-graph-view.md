@@ -30,6 +30,8 @@ Both views are drawn from the same graph view data (below). Neither stores anyth
 | Transitions | An edge per Plan of `DURING <phase>` that runs `TRANSITION TO`, labelled with the Trigger as written: `food_served`, `insult_thrown FROM Guest ?who`, `HonorDuel ENDED WITH apology`. A Plan under a `GIVEN` adds its Context to the label (`food_served · GIVEN hungry`). A Plan whose `IF` branches go to two different Phases gives one edge to each. |
 | Timeouts | A `WHEN ENTERED` Plan that transitions is drawn dotted, labelled `after <Duration>` when a `WAIT` comes before the `TRANSITION` (chapter 20), otherwise `on entry`. |
 | Endings | An `END PLOT` node per Outcome (`END PLOT · ruined`, plus a plain one for a bare `END PLOT`), with an edge from each Plan that ends the Plot. Endings are drawn because they are where a transition goes. |
+
+A Plot with no Phases (chapter 20) draws a single unnamed node for the whole Plot, with the start dot and its endings.
 | Import marks | On every name in a label (below). |
 
 A Phase node shows nothing else unless a layer is on. Everything else about a Phase is in the Inspector.
@@ -54,7 +56,7 @@ Plans that neither transition nor end the Plot appear only through the layers ab
 
 ## The Nested Plans view
 
-- A dashed `DURING PLOT` frame holds the `DURING PLOT` Plans and a box per Phase. The initial Phase is marked `INITIAL`.
+- A dashed `DURING PLOT` frame holds the `DURING PLOT` Plans and a box per Phase. The initial Phase is marked `INITIAL`. A Plot with no Phases (chapter 20) draws only the frame.
 - Each Plan is a card: its Trigger, then a short summary of its Body (Custom Actions, Givings, Messages, `START SUBPLOT`). `TRANSITION` and `END PLOT` are the card's outgoing edges, not lines on it.
 - Edges go from a Plan card to the target Phase's box or an `END PLOT` node. Timeouts are dotted, as in the Phase map.
 - A Subplot is a collapsed node with a "starts" edge from the Plan that starts it. **Expanding it** draws the Subplot's own Phase map inside it, from that Plot's graph view (another `graph(plot)` call, whatever file the Plot is in). Expanding is read-only; editing a Subplot means opening its own tab.

@@ -41,7 +41,7 @@ The one Plot every Agent starts in; every other Plot is a Subplot below it. Base
 _Avoid_: Default story, main plot, world plot
 
 **Phase**:
-One of the mutually exclusive states of a Plot. A Plot is in exactly one Phase at a time.
+One of the mutually exclusive states of a Plot. A Plot that declares Phases is in exactly one at a time, starting in the one marked `INITIAL`. A Plot may declare none, and then has only its `DURING PLOT` Plans.
 _Avoid_: State, stage
 
 **Subplot**:

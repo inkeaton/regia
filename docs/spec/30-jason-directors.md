@@ -51,6 +51,8 @@ A Subplot started after the game reported `door_open` starts **knowing** `door_o
 
 The Director holds its current Phase as `regia_phase(Phase)`. Each Director is one Staging, so the belief needs no Staging argument.
 
+A Plot that declares no Phases (chapter 20) gets one hidden Phase, the Generated name `regia_phase__plot`, as its initial Phase. Everything below works unchanged: the Director has a current Phase, so its `DURING PLOT` plans hear, and the hidden Phase has no plans of its own and is never left. It writes no `phase` Trace entry, and the source map folds it away (chapter 35).
+
 Every plan generated from a `DURING feast` Block:
 
 - starts its context with `regia_phase(feast)`, so it applies only in that Phase (the same guard pattern as Givings, chapter 29);
