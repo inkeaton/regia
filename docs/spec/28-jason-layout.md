@@ -1,6 +1,6 @@
 # Jason Build layout
 
-What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`).
+What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`).
 
 ## Files
 
@@ -49,8 +49,7 @@ Some of the Infrastructure has to be Java. Jason picks among the applicable plan
 | --- | --- | --- | --- |
 | A Giving of a Playbook | Agent | `regia_given` | *Giving and taking Playbooks at runtime* (chapter 29); rank from *Precedence encoding in ASL* |
 | A Playbook in the Agent's files | Agent | `regia_playbook` | *Giving and taking Playbooks at runtime* (chapter 29) |
-| A Role the Agent plays in a Staging | Agent | `regia_plays` | *Stagings and Subplots runtime in ASL* |
-| The Plot and Staging a Director runs | Director | `regia_staging` | *Stagings and Subplots runtime in ASL* |
+| The Plot a Director runs, its parent and children, an ending | Director | `regia_staging`, `regia_parent`, `regia_child`, `regia_ending` | *Stagings and Subplots runtime in ASL* (chapter 31) |
 | The current Phase | Director | `regia_phase` | *Director runtime in ASL* (chapter 30) |
 | A standing Giving | Director | `regia_standing` | *Director runtime in ASL* (chapter 30) |
 | What a Plot hears from the game | Director | `regia_hears` | *Director runtime in ASL* (chapter 30) |

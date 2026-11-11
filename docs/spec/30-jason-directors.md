@@ -10,6 +10,7 @@ A Director runs on **`regia.DirectorAgent`**, a class of `regia-jason` that exte
 - **Its body is optional.** The Root Director has one: a WebSocket to the game, opened with VEsNA's `WsClient` from the `address` and `port` in the `.jcm` (*.jcm generation*). A Subplot Director has none.
 - Why not `VesnaAgent`: its body setup is private and parses `port` unconditionally, so an agent without a port fails to start, and a subclass can't skip that step.
 - Directors still rank their Plans (a Phase over `DURING PLOT`, chapter 13). The ranking code is a helper shared by `regia.DirectorAgent` and the Agents' class (chapter 28), and doesn't live in either class.
+- Every Staging is its own `regia.DirectorAgent`, and its name is the Staging's identity (chapter 31).
 
 ## What the game sends
 
@@ -30,7 +31,7 @@ VEsNA's own message types don't fit Regia. `signal` has a fixed `type(status, re
 
 - When a Director takes in a percept, from its body or from its parent, it passes it on to each running child Staging whose Plot **hears** it, as an `achieve regia_percept(P)` message, with `P` being `event(e)`, `learned(f)` or `forgotten(f)`.
 - The child accepts `regia_percept` only from its parent and applies it with `regia.perceive(P)`, a `regia-jason` internal action that does what the body would have done: the same momentary event, or the same `source(percept)` belief added or removed. So `WHEN e:`, `WHEN f LEARNED:` and `GIVEN f` behave exactly as for a Director that hears the game directly, and a forwarded percept never looks like a Signal or a `FROM Role` Message.
-- The child records a Director keeps are decided by *Stagings and Subplots runtime in ASL*; forwarding reads them.
+- Forwarding reads the Director's `regia_child(Child, Plot)` records (chapter 31), and stops while the Director is ending.
 - **Which Facts and Events a Plot hears is known at compile time.** Each Director file lists, as initial beliefs, `regia_hears(Plot, Name, Arity)` for its own Plot and for every Plot below it. A Plot hears every Event and Fact its Triggers and Contexts name, **plus everything its Subplots hear**, so a Director keeps the game Facts its descendants need, even ones it never uses itself.
 - Which percepts the game sends the Root Director is up to the game. Regia only filters on the way down.
 - Rejected: a VEsNA body for every Director (the game would have to learn about Stagings and runtime-spawned agents), and a central router agent (one more agent, which duplicates the parent's record of its children).
@@ -42,7 +43,7 @@ A Subplot started after the game reported `door_open` starts **knowing** `door_o
 - When it starts a child Staging, the parent sends the child a **snapshot** of its own `source(percept)` beliefs that the child's Plot hears. The child adds them with `regia.add_percepts(L)`, which adds beliefs **without generating events**.
 - The snapshot is starting state, so **`LEARNED` doesn't fire** for it, just as joining Triggers don't fire for a starting Cast (chapter 19). Later changes are forwarded live and fire as usual.
 - Facts the parent learned itself (`LEARN`, `source(self)`) are never passed on: Facts belong to one Staging (chapter 20).
-- The snapshot is sent before the child's start message, so per-sender ordering puts it in place before the child's Role setups. The start message itself belongs to *Stagings and Subplots runtime in ASL*.
+- The snapshot is sent before the child's start message, so per-sender ordering puts it in place before the child's Role setups. The start message itself is `regia_start` (chapter 31).
 
 ## Phases
 
@@ -55,7 +56,7 @@ Every plan generated from a `DURING feast` Block:
 - starts its context with `regia_phase(feast)`, so it applies only in that Phase (the same guard pattern as Givings, chapter 29);
 - carries a `regia_phase(feast)` annotation in its label, so the intentions running it can be found when the Phase is left.
 
-`DURING PLOT` plans have neither.
+`DURING PLOT` Trigger plans have no annotation, and their context starts with `regia_phase(_)`: a Director with no current Phase is ending and hears nothing (chapter 31).
 
 `ENTERED` and `EXITED` Plans are compiled to plans for the generated Goals `regia_entered(phase(feast))`, `regia_entered(plot)`, `regia_exited(phase(feast))` and `regia_exited(plot)`. Each has a catch-all plan that does nothing, so a Phase without an `ENTERED` or `EXITED` Plan, or one whose `GIVEN`s don't match, is fine.
 
@@ -69,14 +70,14 @@ Every plan generated from a `DURING feast` Block:
 4. **Post `ENTERED`** with `!!regia_entered(phase(x))`. It starts after the atomic plan, as an ordinary intention of the new Phase: it may `WAIT`, and it is stopped if the Phase is left.
 5. **End the Body.** `regia.end_body` drops the intention that ran the `TRANSITION`, silently. `TRANSITION` ends its Body (chapter 20) even inside an `IF` branch with Statements after the `IF`, and in a `DURING PLOT` Plan too.
 
-`TRANSITION` to the current Phase takes the same path, so it re-enters the Phase. `END PLOT` reuses steps 1 and 2 for the current Phase, then runs `!regia_exited(plot)` the same way. The rest of `END PLOT` is *Stagings and Subplots runtime in ASL*.
+`TRANSITION` to the current Phase takes the same path, so it re-enters the Phase. `END PLOT` reuses steps 1 and 2 for the current Phase, then runs `!regia_exited(plot)` the same way. The rest of `END PLOT` is chapter 31.
 
 ## Starting a Staging
 
-Once the Director has its cast (how it gets it is *Stagings and Subplots runtime in ASL*), it runs `!regia_begin`, an `[atomic]` plan:
+Once the Director has its cast (from `regia_start`, chapter 31), it runs `!regia_begin`, an `[atomic]` plan:
 
 1. Add `regia_phase(Initial)`. The initial Phase is current from the start.
-2. Send every cast Agent the **cast copy** (chapter 29) as one message: `achieve regia_cast_copy(S, [cast(Role, Agent), …])`. `regia/agent.asl` replaces any copy it holds for `S`. Every cast Agent gets it, so the Director needn't track who already has one.
+2. Send every cast Agent the **cast copy** (chapter 29) as one message: `achieve regia_cast_copy([cast(Role, Agent), …])`. `regia/agent.asl` replaces any copy it holds from that Director, the `[source]`, which is the Staging (chapter 31). Every cast Agent gets it, so the Director needn't track who already has one.
 3. **Run the Role setups**: for each Role in declaration order, for each Agent playing it, `!regia_setup__guest(Agent)`.
 
 After the atomic plan, it posts `!!regia_entered(plot)` and then `!!regia_entered(phase(Initial))`. Jason picks events in the order they were posted, so `DURING PLOT`'s `ENTERED` **starts** first. "Before" in chapter 20 means it starts first, not that it finishes first: a `WAIT` in it doesn't hold up the Phase's `ENTERED`.
@@ -87,7 +88,7 @@ Each `ROLE Guest STARTS WITH:` Block is a generated Director plan `regia_setup__
 
 | Setup Statement | Sent |
 | --- | --- |
-| `ASSIGN P[, MAPPING …]` | `achieve regia_give(p, S, role(guest), Rank, Bindings)` (chapter 29) |
+| `ASSIGN P[, MAPPING …]` | `achieve regia_give(p, role(guest), Rank, Bindings)` (chapter 29) |
 | `LEARN f` | `tell f` |
 | `PURSUE g` | `achieve g` |
 
@@ -100,7 +101,7 @@ How the game reports a join, and how the Director's `regia_cast` and the other A
 
 1. Send the joiner the cast copy.
 2. Run each joined Role's setup for it, in Role declaration order.
-3. **Replay the standing Givings** of the joined Roles, in `Seq` order (below), as `regia_give(p, S, role(r), Rank, Bindings)`.
+3. **Replay the standing Givings** of the joined Roles, in `Seq` order (below), as `regia_give(p, role(r), Rank, Bindings)`.
 
 After the atomic plan, it posts `!!regia_joined(Role, Agent)` for each joined Role in declaration order, which runs the `WHEN Role [?who] JOINED` Plans. This is chapter 19's order: setups, then standing Givings, then `JOINED`.
 
@@ -121,14 +122,14 @@ regia_standing(Seq, Playbook, Role, Rank, Bindings)
 
 ## One Agent
 
-`ASSIGN P TO ?who`, `UNASSIGN P FROM ?who` and `MAPPING ?who TO r` first check `regia_cast(S, _, Who)`: is that Agent in this Staging's cast **now**?
+`ASSIGN P TO ?who`, `UNASSIGN P FROM ?who` and `MAPPING ?who TO r` first check `regia_cast(Me, _, Who)`: is that Agent in this Staging's cast **now**?
 
-- **If it is**, the Giving is `regia_give(p, S, agent(who), Rank, Bindings)` (chapter 29), or the Mapping is `bind(r, fixed([who]))`.
+- **If it is**, the Giving is `regia_give(p, agent(who), Rank, Bindings)` (chapter 29), or the Mapping is `bind(r, fixed([who]))`.
 - **If it isn't**, the Giving or Mapping is dropped with a Trace warning. That covers an Agent that has left (chapter 20) **and** an Agent that was never in this Staging, such as one named by a game Event's argument. A Director directs its own cast. Since every cast Agent already has the cast copy, nothing more needs tracking.
 
 ## Messages from a Director
 
-- `TELL Role f` and `ASK Role TO g` send `tell f` or `achieve g` to each Agent with `regia_cast(S, Role, A)` when the Statement runs (chapter 20). A send to an Agent that has left is caught and traced (*Quota counts and cast changes in ASL*).
+- `TELL Role f` and `ASK Role TO g` send `tell f` or `achieve g` to each Agent with `regia_cast(Me, Role, A)` when the Statement runs (chapter 20). A send to an Agent that has left is caught and traced (*Quota counts and cast changes in ASL*).
 - A filled Placeholder recipient is a single `.send`.
 
 ### `EVERYONE`
@@ -164,7 +165,7 @@ Rows filled in or added in chapter 28's table:
 
 ## Not decided here
 
-- The Staging's identity, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: *Stagings and Subplots runtime in ASL*. Agents must recognise a Director as a Sender (`FROM DIRECTOR`), so Director agent names are decided there too.
+- The Staging's identity (its Director's name), Director names, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: chapter 31 (`31-jason-stagings.md`).
 - The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: *Quota counts and cast changes in ASL*.
 - Rank values in `regia_standing` and on Director plans: *Precedence encoding in ASL*.
 - How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: *Custom Actions through VEsNA*.

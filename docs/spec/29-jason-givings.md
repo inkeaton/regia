@@ -19,7 +19,7 @@ Each Role file lists the Playbooks it includes as initial beliefs, `regia_playbo
 Every plan generated from Playbook P starts its context with a test that P is given:
 
 ```
-+!greet(G) : regia_given(nobleSocializing, _, _, _, _, _) & <designer's Context> <- …
++!greet(G) : regia_given(nobleSocializing, _, _, _, _) & <designer's Context> <- …
 ```
 
 - It covers **every** plan of P: the designer's Plans, the plans of P's Local Goals, and the generated plans for P's Goals (`-!g`, `DROPPED`, the `regia_if__N` and `regia_either__N` helpers). Nothing of a Playbook that isn't given can run.
@@ -31,25 +31,24 @@ Every plan generated from Playbook P starts its context with a test that P is gi
 Each Giving an Agent holds is one belief:
 
 ```
-regia_given(Playbook, Staging, Director, Target, Rank, Bindings)
+regia_given(Playbook, Director, Target, Rank, Bindings)
 ```
 
 | Argument | Holds |
 | --- | --- |
 | `Playbook` | the Playbook's Jason name (`nobleSocializing`) |
-| `Staging` | the giving Staging's identity; its shape is decided by *Stagings and Subplots runtime in ASL* |
-| `Director` | the Jason agent name of the giving Director, taken from the message's `[source]`, never from its arguments |
+| `Director` | the Jason agent name of the giving Director, taken from the message's `[source]`, never from its arguments. It is also the giving Staging's identity: each Staging is its own Director agent (chapter 31) |
 | `Target` | `role(guest)` for a Giving to a Role: whole, counted, or from a Role setup. `agent(Name)` for a Giving to `?who` |
 | `Rank` | the rank key of this Giving (chapter 13); its encoding is decided by *Precedence encoding in ASL* |
-| `Bindings` | one entry per Playbook Role: `bind(host, live(host))` for a whole-Role Mapping, resolved live in `Staging`; `bind(rival, fixed([a1, a2]))` for a counted pick or `MAPPING ?who` |
+| `Bindings` | one entry per Playbook Role: `bind(host, live(host))` for a whole-Role Mapping, resolved live in that Director's Staging; `bind(rival, fixed([a1, a2]))` for a counted pick or `MAPPING ?who` |
 
-- **There is no Giving id.** A Giving is identified by Playbook, Staging and Target. Two identical Givings (the same `ASSIGN` running again with the same bindings) are the same belief, and Givings that differ only in bindings or rank add up as spec 15 says. Taking away matches on Playbook, Staging and Target, so it removes all of them at once, which is what `UNASSIGN` means anyway (chapter 15).
-- **The Director's address is stored separately** from the Staging, so a `SIGNAL` always has someone to send to, however Stagings are identified.
+- **There is no Giving id.** A Giving is identified by Playbook, Director and Target. Two identical Givings (the same `ASSIGN` running again with the same bindings) are the same belief, and Givings that differ only in bindings or rank add up as spec 15 says. Taking away matches on Playbook, Director and Target, so it removes all of them at once, which is what `UNASSIGN` means anyway (chapter 15).
+- **The Director's address is the Staging's identity** (chapter 31), so a `SIGNAL` always has someone to send to.
 - The record holds no Agent lists for whole-Role bindings. Who plays a Role is read from the Agent's copy of the cast (below).
 
 ### The cast copy
 
-A whole-Role binding is live: `TELL host f` reaches whoever plays `Host` in that Staging **now** (chapter 15). Every Agent holding a Giving from a Staging therefore keeps a **copy of that Staging's cast**, as `regia_cast(Staging, Role, Agent)`, the same functor the Director uses for its own record (chapter 28).
+A whole-Role binding is live: `TELL host f` reaches whoever plays `Host` in that Staging **now** (chapter 15). Every Agent holding a Giving from a Staging therefore keeps a **copy of that Staging's cast**, as `regia_cast(Director, Role, Agent)`, the same functor the Director uses for its own record (chapter 28).
 
 - The Director sends its cast to an Agent before the first Giving it sends that Agent. Jason keeps one sender's messages in order, so the copy is there before the Giving arrives.
 - Keeping the copies up to date when Agents join and leave belongs to *Quota counts and cast changes in ASL*.
@@ -61,22 +60,22 @@ The Director gives and takes away with `achieve` messages. The Agent handles the
 
 ```
 // Director side (ASSIGN NobleSocializing TO Guest, MAPPING Host TO host), per Agent playing Guest
-.send(alice, achieve, regia_give(nobleSocializing, S, role(guest), Rank, [bind(host, live(host))]))
+.send(alice, achieve, regia_give(nobleSocializing, role(guest), Rank, [bind(host, live(host))]))
 
 // Agent side, in regia/agent.asl
 @regia_give[atomic]
-+!regia_give(P, S, T, R, B)[source(D)] : regia_playbook(P)
-   <- +regia_given(P, S, D, T, R, B).
-+!regia_give(P, _, _, _, _)[source(D)]
++!regia_give(P, T, R, B)[source(D)] : regia_playbook(P)
+   <- +regia_given(P, D, T, R, B).
++!regia_give(P, _, _, _)[source(D)]
    <- // trace warning: P isn't in this Agent's files (a Transpiler bug); the Giving is ignored
 
 @regia_take[atomic]
-+!regia_take(P, S, T)[source(D)]
-   <- // remove every regia_given(P, S, D, T', _, _) with T' matching T (T = all matches any Target)
++!regia_take(P, T)[source(D)]
+   <- // remove every regia_given(P, D, T', _, _) with T' matching T (T = all matches any Target)
       // if no regia_given(P, …) remains: stop P (below)
 ```
 
-- `regia_give` carries the record without the Director; the Agent adds `D` from `[source]`. A forged or stale argument can't make a Giving look like it came from another Director.
+- `regia_give` carries the record without the Director, which is also the Staging; the Agent adds `D` from `[source]`. A forged or stale argument can't make a Giving look like it came from another Director.
 - A `regia_give` for a Playbook the Agent's files don't hold is a Transpiler bug, not a designer error. The Agent writes a Trace warning and ignores it.
 - Whether a newly given Playbook starts any Quota counts, and how ranks are combined when it is given twice, belong to *Quota counts and cast changes in ASL* and *Precedence encoding in ASL*.
 
@@ -84,13 +83,13 @@ The Director gives and takes away with `achieve` messages. The Agent handles the
 
 | Statement | Sent to | Message |
 | --- | --- | --- |
-| `ASSIGN P TO Guest` (whole Role, standing) | each Agent playing `Guest` in the Staging; later each joiner (chapter 19) | `regia_give(p, S, role(guest), …)` |
-| `ASSIGN P TO 2 OF Guest` | each picked Agent | `regia_give(p, S, role(guest), …)` |
-| A Role setup's `ASSIGN P` (chapter 16) | the Agent starting or joining the Role | `regia_give(p, S, role(guest), …)` |
-| `ASSIGN P TO ?who` | that Agent | `regia_give(p, S, agent(who), …)` |
-| `UNASSIGN P FROM Guest` | each Agent in the Staging's cast | `regia_take(p, S, role(guest))` |
-| `UNASSIGN P FROM ?who` | that Agent | `regia_take(p, S, all)` |
-| A Staging ending (chapter 17) | each Agent in its cast | `regia_take(p, S, all)` for each Playbook it gave |
+| `ASSIGN P TO Guest` (whole Role, standing) | each Agent playing `Guest` in the Staging; later each joiner (chapter 19) | `regia_give(p, role(guest), …)` |
+| `ASSIGN P TO 2 OF Guest` | each picked Agent | `regia_give(p, role(guest), …)` |
+| A Role setup's `ASSIGN P` (chapter 16) | the Agent starting or joining the Role | `regia_give(p, role(guest), …)` |
+| `ASSIGN P TO ?who` | that Agent | `regia_give(p, agent(who), …)` |
+| `UNASSIGN P FROM Guest` | each Agent in the Staging's cast | `regia_take(p, role(guest))` |
+| `UNASSIGN P FROM ?who` | that Agent | `regia_take(p, all)` |
+| A Staging ending (chapter 17) | each Agent in its cast | `regia_end_staging`, which takes away every Giving from that Director and its cast copy (chapter 31) |
 
 The Director doesn't track which Agents hold which Givings. A take-away goes to the whole cast, and each Agent removes whatever matches in its own record. Sending to an Agent that has left is caught and traced (chapter 19).
 
@@ -99,8 +98,8 @@ The Director doesn't track which Agents hold which Givings. A take-away goes to 
 | Language | What the Infrastructure does |
 | --- | --- |
 | A Plan of P runs | the guard: some `regia_given(p, …)` exists |
-| `SIGNAL e` in P | sends `e` to every distinct `Director` in `regia_given(p, _, Director, …)` (chapter 07) |
-| `TELL host f` in P | the union, over every `regia_given(p, …)`, of each `host` binding: `live(R)` reads `regia_cast(Staging, R, A)`, `fixed(L)` reads `L`; minus the Agent itself (chapter 15) |
+| `SIGNAL e` in P | sends `e` to every distinct `Director` in `regia_given(p, Director, …)` (chapter 07) |
+| `TELL host f` in P | the union, over every `regia_given(p, …)`, of each `host` binding: `live(R)` reads `regia_cast(Director, R, A)`, `fixed(L)` reads `L`; minus the Agent itself (chapter 15) |
 | `WHEN … FROM host` in P | the Sender is in that same union, checked when the Message arrives |
 | A Quota Trigger over `host` in P | counts against the same union (chapter 18) |
 | Precedence | `selectOption` reads `Rank` from the `regia_given` beliefs of each candidate's Playbook (chapter 13) |
@@ -109,7 +108,7 @@ The Director doesn't track which Agents hold which Givings. A take-away goes to 
 
 Removing a Giving removes its record. If the Agent **still holds another Giving of P**, nothing else happens: P's Plans keep running, and the bindings of the remaining Givings are all that `TELL host` and `FROM host` see.
 
-When the **last** Giving of P goes, inside the same atomic `regia_take` plan:
+When the **last** Giving of P goes, inside the same atomic `regia_take` (or `regia_end_staging`, chapter 31) plan:
 
 1. **P's running Plans stop.** On each intention, the outermost plan of P (found by its `playbook(P)` annotation, chapter 13) and everything above it on the stack stop, as `DROP` would stop them (chapter 08).
    - If that plan was pursuing a Goal, the Goal is dropped: it fires `DROPPED`, and the sub-Goals stopped above it fire theirs first, innermost first. The `DROPPED` Plans run only if their Playbook is still given (the guard), so P's own `WHEN g DROPPED` Plans don't run.
@@ -129,13 +128,13 @@ Rows filled in or added in chapter 28's table:
 
 | Concept | Held by | Functor and arguments |
 | --- | --- | --- |
-| A Giving of a Playbook | Agent | `regia_given(Playbook, Staging, Director, Target, Rank, Bindings)` |
+| A Giving of a Playbook | Agent | `regia_given(Playbook, Director, Target, Rank, Bindings)` |
 | A Playbook in the Agent's files | Agent (initial beliefs of its Role file) | `regia_playbook(Playbook)` |
-| A Role's members | Director, and a copy in each Agent holding a Giving from that Staging | `regia_cast(Staging, Role, Agent)` |
+| A Role's members | Director, and a copy in each Agent holding a Giving from that Staging | `regia_cast(Director, Role, Agent)` |
 
 ## Not decided here
 
-- The shape of a Staging's identity, and how `START SUBPLOT` and `END PLOT` send their Givings: *Stagings and Subplots runtime in ASL*.
+- The Staging's identity (its Director's name), and taking a whole Staging's Givings away when it ends: chapter 31.
 - The `Rank` encoding, and how two Givings' ranks combine: *Precedence encoding in ASL*.
 - The Director's standing-Giving record (`regia_standing`), replaying it for joiners, and the cast copy's message (`regia_cast_copy`): chapter 30.
 - Keeping cast copies and counted picks up to date on join and leave, and starting and clearing Quota counts: *Quota counts and cast changes in ASL*.

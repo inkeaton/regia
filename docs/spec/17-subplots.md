@@ -41,7 +41,7 @@ An Agent cast into a Subplot **keeps** its Roles and Givings in the parent. It n
 
 A **Staging** is one running copy of a Plot (glossary). Stagings are **anonymous in the language**: nothing in Regia names one. Each Staging knows its parent (if it is a Subplot) and the Subplots it started. Everything a Director writes is about its own Staging: its Roles, its Phase, its Givings, its Subplots.
 
-- Telling Stagings apart at runtime (an identifier per Director, carried in Givings and Signals) belongs to *The full ASL mapping*.
+- Telling Stagings apart at runtime belongs to the Target. In Jason, a Staging is identified by its Director agent's name (chapter 31).
 - Picking out **one** of several running Stagings of the same Subplot is not in 2.0.
 
 ## A Subplot outlives its Phase
@@ -137,7 +137,7 @@ A Plot may not start itself, directly or through other Plots (A starts B starts 
 
 ## ASL mapping notes
 
-For *The full ASL mapping* to pick up:
+For *The full ASL mapping* to pick up (for Jason, decided in chapter 31, `31-jason-stagings.md`: one Director agent per Staging, whose name is the Staging's identity):
 
 - Each Staging needs a runtime identity (for example, a Director agent per Staging, with its parent's name as a belief). Givings, Signals and rank keys carry it.
 - `START SUBPLOT` creates the child's Director (or a Staging inside an existing one), passes the cast (resolved whole Roles and counted picks), and returns at once.
