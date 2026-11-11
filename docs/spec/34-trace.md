@@ -11,7 +11,7 @@ Every entry has a **kind**:
 | Kind | Written when |
 | --- | --- |
 | `run` | the run starts (with its Entry and random seed) and ends |
-| `action` | a Custom Action (`DO`) returns, with its result |
+| `action` | a Custom Action (`DO`) is sent, and again when its outcome comes back (linked by `of`) |
 | `message` | a `TELL` or `ASK` is **sent**. A send that is dropped (the recipient left, chapter 19) is a `message` entry at warning level |
 | `plan` | a Plan starts: its Trigger and the values of its Placeholders |
 | `goal` | a Goal is pursued, reached, dropped or failed |
@@ -59,14 +59,14 @@ Chapter 11 requires the Trace to say what failed, why, and what failed in turn b
 Every runtime warning and every Failure cause has a stable **Trace code**: `T`, the chapter's two digits, then two digits numbering it within the chapter (`T0901` might be a negative Weight). It follows the same rules as the Diagnostic codes of chapter 27: codes are never reused, and a dropped one is marked retired.
 
 - Every chapter that defines a runtime warning or a Failure cause lists its codes in a `## Trace entries` section.
-- Target chapters (28–35) number their own Target-only entries: a Giving for a Playbook the Agent's files don't hold, a guard bypassed in `selectOption`, a send caught by `regia.send`, and so on.
+- Target chapters (28–37) number their own Target-only entries: a Giving for a Playbook the Agent's files don't hold, a guard bypassed in `selectOption`, a send caught by `regia.send`, and so on.
 - Behaviour cases match on codes, not on message wording, so wording can improve without breaking cases.
 
 Sources to number (gathered from the chapters; numbering them is the ticket *Number the checks and add exemplar cases*):
 
 - Failure causes: chapter 11's table, and "no applicable `TO` Plan".
 - Runtime warnings: negative and all-zero Weights (09), negative Durations (12), a counted Mapping asking for more than are left or for a negative number (15), a skipped Role setup Statement (16), a dropped Message (19), a dropped Giving or Mapping, and a failing Director Plan (20).
-- Jason Target entries: a Giving for an unknown Playbook, and a Plan stopped because its Playbook was taken away (29); a failed `EXITED`, and a `?who` outside the cast (30); a failed `EXITED` during an ending (31); a ranked option whose guard was bypassed (32); nonsensical join or leave reports, a send caught by `regia.send`, and a join after the Root Staging has ended (33).
+- Jason Target entries: a Giving for an unknown Playbook, and a Plan stopped because its Playbook was taken away (29); a failed `EXITED`, and a `?who` outside the cast (30); a failed `EXITED` during an ending (31); a ranked option whose guard was bypassed (32); nonsensical join or leave reports, a send caught by `regia.send`, and a join after the Root Staging has ended (33); an Action reply with an unknown or finished `id`, and an unknown message type at the Root Director's body (37).
 
 ## The console line
 
@@ -75,6 +75,7 @@ Every entry is also shown as one line of text, the **console line**, as it is wr
 ```
 #42 DO halt(thief_1)  watch.regia:12:5
 #43 GOAL chase(thief_1) PURSUED  watch.regia:13:5
+#56 DO chase(thief_1) FAILED  watch.regia:14:9
 #57 FAILURE T1101 DO chase(thief_1) failed  watch.regia:14:9
 #58 FAILURE GOAL chase(thief_1) FAILED because #57  watch.regia:20:1
 ```
@@ -84,7 +85,7 @@ Every entry is also shown as one line of text, the **console line**, as it is wr
 | Kind | Text |
 | --- | --- |
 | `run` | `RUN STARTED <entry> SEED <n>`, `RUN ENDED` |
-| `action` | `DO <action>`, `DO <action> FAILED` |
+| `action` | `DO <action>` when sent; `DO <action> DONE` / `FAILED` / `REFUSED` when its outcome comes back, with the game's reason if it gave one |
 | `message` | `TELL <to> <fact>`, `ASK <to> TO <goal>`, prefixed `DROPPED` when dropped |
 | `plan` | `PLAN <trigger>` |
 | `goal` | `GOAL <goal> PURSUED` / `REACHED` / `DROPPED` / `FAILED` |
@@ -112,12 +113,16 @@ Lines starting with `>` are **script steps**. The game is played by a stand-in d
 | `> fact +<name>(<args>)`, `> fact -<name>(<args>)` | the game reports a Fact holding, or no longer holding |
 | `> join <kind> <name>` | an Agent of this kind joins the Program |
 | `> leave <name>` | an Agent leaves the Program |
-| `> action fails <action pattern>` | from now on, Actions matching the pattern fail (`*` matches any argument) |
-| `> action succeeds <action pattern>` | undoes an `action fails` |
+| `> action fails <action pattern>` | from now on, Actions matching the pattern are accepted, then fail (`*` matches any argument) |
+| `> action refused <action pattern>` | from now on, Actions matching the pattern are refused |
+| `> action holds <action pattern>` | from now on, Actions matching the pattern are accepted and left unfinished |
+| `> action succeeds <action pattern>` | back to the default for the pattern: done at once |
+| `> action done <action pattern>` | finishes every held Action matching the pattern |
+| `> action failed <action pattern>` | fails every held Action matching the pattern |
 | `> wait <n> seconds` | moves the clock forward |
 
-- **Actions succeed by default.** A case makes one fail with `action fails`.
-- **A step runs once the run has settled**: every running Plan has finished or is paused in `WAIT`, and no Message is on its way. Then the step is played, and a `script` entry is written.
+- **Actions are done at once by default.** A case makes one fail with `action fails` or `action refused`, and holds one open with `action holds` to test what happens while a `DO` waits, or after a `DO … , WITHOUT WAITING` has moved on. Each standing rule replaces the previous one for its pattern.
+- **A step runs once the run has settled**: every running Plan has finished, is paused in `WAIT`, or waits on a held Action, and no Message is on its way. Then the step is played, and a `script` entry is written.
 - **Time is virtual.** In a case, the clock only moves forward when the run has settled and something is waiting: it jumps straight to the next wake-up. `> wait` moves it on explicitly. A long `WAIT` costs nothing, and wake-ups always come in the same order.
 - **Randomness is seeded.** A case runs with a fixed seed (`#! seed: <n>` in its header, `1` by default), so `EITHER`, `AT RANDOM` and `RANDOM` Propensity values draw the same way every run.
 - **Agents step together.** A case runs the Agents in lockstep, one reasoning cycle each per step of the Target's scheduler, so the order inside one Agent doesn't depend on thread timing.
@@ -133,9 +138,11 @@ Every other non-blank line is an **expected entry**: the agent, a colon, and the
 > event intruder_seen(thief_1)
 guard_1: PLAN WHEN intruder_seen(thief_1)
 guard_1: DO halt(thief_1)
+guard_1: DO halt(thief_1) DONE
 director:Watch: PHASE Calm -> Alarm ON intruder_seen(thief_1)
 > action fails chase(*)
 > event intruder_fled(thief_1)
+guard_1: DO chase(thief_1) FAILED
 guard_1: FAILURE T1101 DO chase(thief_1) failed
 guard_1: FAILURE GOAL chase(thief_1) FAILED
 ```

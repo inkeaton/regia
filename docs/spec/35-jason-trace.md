@@ -14,7 +14,7 @@ ASL code reaches it through the internal action **`regia.trace(Kind, Level, Code
 | Kind | Written by |
 | --- | --- |
 | `run` | the writer itself, at start-up and shutdown |
-| `action` | the agent architecture, when an Action's result comes back (*Custom Actions through VEsNA*) |
+| `action` | `regia.act` when it sends, and the reply intake of `regia.RegiaAgent` and `regia.DirectorAgent` when the outcome comes back (chapter 37) |
 | `message` | `regia.send` (chapter 33), which every generated and Infrastructure send goes through |
 | `plan` | a `regia.trace` call first in every generated plan Body for a designer's Plan |
 | `goal` | `regia.trace` calls in the generated `+!`/`-!` plans and `DROPPED` events (chapter 11) |
@@ -68,11 +68,11 @@ Behaviour cases (chapter 34) run in **test mode**, launched by `regia.testing.Ru
 java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
 ```
 
-1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (`regia_event`, `regia_fact`, `regia_join`, `regia_leave`, chapters 30 and 33, and the Action messages of *Custom Actions through VEsNA*).
+1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (`regia_event`, `regia_fact`, `regia_join`, `regia_leave`, chapters 30 and 33, and `regia_action`, `regia_action_result` and `regia_story_ended`, chapter 37).
 2. It starts the MAS from the Build's `.jcm`, in the same JVM, with **Jason's synchronous execution control**, so agents step in lockstep reasoning cycles, and with the case's **seed** given to every random source `regia-jason` controls: `EITHER`, Picks `AT RANDOM`, and `RANDOM` Propensity values (drawn by `regia.RegiaAgent`, chapter 36). Starting Agents are named `<kind>_<n>` (chapter 36). The Root Director and the Agents connect their bodies to `ScriptedGame` exactly as they would to Godot.
 3. For each `>` step of the `.trace` file, it waits for the run to **settle**, plays the step through `ScriptedGame`, and writes a `script` entry.
-4. **Settled** means: for every agent, no intention is running except ones paused in `regia.wait`, the mailbox and event queue are empty, and `ScriptedGame` has nothing left to send, for one whole cycle. If the run has settled and something is paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of the next step.
-5. `ScriptedGame` answers each Action with **success**, unless a `> action fails` pattern matches it.
+4. **Settled** means: for every agent, no intention is running except ones paused in `regia.wait` or waiting in `regia.act` on an Action `ScriptedGame` holds, the mailbox and event queue are empty, and `ScriptedGame` has nothing left to send, for one whole cycle. If the run has settled and something is paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of the next step.
+5. `ScriptedGame` answers each Action with a single **`done`**, unless a standing rule (`> action fails`, `refused`, `holds`) matches it (chapter 37).
 6. After the last step, and once the run has settled, `RunCase` writes `RUN ENDED`, stops the MAS and exits. The Trace file is the only output.
 
 **Matching is done in Rust**, in the Transpiler's Conformance suite, which builds the case, runs `RunCase`, reads the `.jsonl` and applies chapter 34's matching. `RunCase` itself never reads the expected lines.
@@ -94,5 +94,4 @@ java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
 
 ## Not decided here
 
-- How an Action's result comes back from the game, and so where `action` entries are written and what `ScriptedGame` sends: *Custom Actions through VEsNA*.
-- Numbering the Jason Target's Trace codes in chapters 28–35: *Number the checks and add exemplar cases*.
+- Numbering the Jason Target's Trace codes in chapters 28–37: *Number the checks and add exemplar cases*.

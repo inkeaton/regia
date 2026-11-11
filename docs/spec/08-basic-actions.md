@@ -19,7 +19,7 @@ The Actions built into Regia: changing the Agent's own Facts and Goals, sending,
 | `WAIT <Duration>.` | pauses the Body | nothing |
 | `FAIL.` | fails the current Plan (chapter 11) | `WHEN g FAILED`, in a `TO g` Plan |
 
-- Basic Actions are written **without `DO`**. Only Custom Actions take `DO` (`DO eat_food.`).
+- Basic Actions are written **without `DO`**. Only Custom Actions take `DO` (`DO eat_food.`), below.
 - Each Fact and Goal Action is worded like the Trigger kind it fires: `LEARN`/`LEARNED`, `FORGET`/`FORGOTTEN`, `DROP`/`DROPPED`, and `PURSUE` matches the Context test `PURSUING`.
 - Arguments follow chapter 03: Values, or Placeholders that are **certainly filled**. Expressions are allowed in any argument (chapter 04): `LEARN health(?h - 10).` A blank (an unfilled Placeholder) is an error in every Basic Action. "Forget every `hates`" is written `FOR EACH hates(?x): FORGET hates(?x).` (chapter 26), and the error message suggests it.
 - The kind of a name must suit the Action: `LEARN` or `FORGET` with an Event or a Goal, or `PURSUE` or `DROP` with a Fact or an Event, is an error that suggests the right Action.
@@ -110,6 +110,19 @@ PRINT("Ouch! Lost", ?dmg, "health").    # Ouch! Lost 12 health
 ## `WAIT`
 
 `WAIT 3 SECONDS.` pauses the Body for a Duration (`SECONDS` or `MINUTES`, always written). It pauses only its own Body, and fails only when the Duration isn't a Number. The clock belongs to the Target. All of this is in chapter 12 (`12-time.md`).
+
+## Custom Actions
+
+```regia
+WHEN intruder_seen(?x):
+    DO walk_to(gate).                     # waits until the game says it's done
+    DO shout(?x), WITHOUT WAITING.        # carries on once the game has started it
+```
+
+- **`DO a.` waits until the Action is done**, like every other Statement (ADR 0005). It fails if the game refuses the Action or reports that it failed (chapter 11).
+- **`DO a, WITHOUT WAITING.`** carries on as soon as the game has **accepted** the Action. It fails only if the game refuses it. A later failure can't reach a Body that has moved on: it is only recorded in the Trace.
+- **The game decides what "done" means** for each Action (arrived, animation finished, at once). The `ACTION` declaration's doc comment is where that is written down.
+- How the Jason Target sends Actions and hears their results: chapter 37.
 
 ## Reserved words
 

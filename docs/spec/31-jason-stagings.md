@@ -128,7 +128,7 @@ Chapter 29's per-Playbook `regia_take(p, S, all)` on ending is **replaced** by o
 
 ### The Root Director's `END PLOT`
 
-The Root Staging ends by the same walk, so every Staging ends and every Agent loses every Giving. But the Root Director's **agent stays alive**, because it holds the game connection (chapter 30). It is idle: with no Phase, it ignores everything. Agents keep running with no Givings. Whether and how the game is told the story has ended is *Custom Actions through VEsNA*.
+The Root Staging ends by the same walk, so every Staging ends and every Agent loses every Giving. But the Root Director's **agent stays alive**, because it holds the game connection (chapter 30). It is idle: with no Phase, it ignores everything. Agents keep running with no Givings. Before going idle, it sends the game `regia_story_ended` with the Outcome (chapter 37).
 
 ## `WHEN <Plot> ENDED`
 
@@ -168,5 +168,5 @@ Rows added to chapter 28's table, and one retired:
 
 - The Root Director's `.jcm` entry: chapter 36. Its starting cast is chapter 33.
 - An Agent of a Subplot's cast leaving between `START SUBPLOT` and `regia_start`, and a `SIGNAL` or Message sent to a Director that has ended (`.kill_agent`): decided in chapter 33: the leave needs no special case, and sends go through `regia.send`.
-- Telling the game the Root Staging has ended: *Custom Actions through VEsNA*.
+- Telling the game the Root Staging has ended: chapter 37.
 - Trace entries for an ending: chapters 34 (`staging` entries) and 35.

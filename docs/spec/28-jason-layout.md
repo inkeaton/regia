@@ -80,7 +80,7 @@ Tickets that need a concept missing from this table add a row.
 ### External names
 
 - External names (chapter 10) are emitted **exactly as written**, with no lowercasing or renaming.
-- An Action's External name with dots (`engine.security.summon_guards`) is a **Java internal action**: Jason looks for a Java class by that name. One without dots is an **environment action**, sent to the game through VEsNA. VEsNA-Pro today sends only its own internal actions (`vesna.walk`, …) to the game, so how a dot-less Action reaches the game, and how its result comes back, is decided by *Custom Actions through VEsNA*.
+- An Action's External name with dots (`engine.security.summon_guards`) is a **Java internal action**: Jason looks for a Java class by that name. One without dots is a **game Action**, compiled to `regia.act(A)`, which sends it to the game through the agent's body and waits for the game's reply (chapter 37).
 - A Fact's or Event's External name must be a valid **Jason atom** (a lowercase letter, then letters, digits and `_`), because beliefs and percepts can't contain dots. Anything else is an error for the Jason Target.
 
 ## The clock

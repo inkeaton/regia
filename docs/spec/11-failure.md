@@ -13,11 +13,11 @@ A Plan **fails** when one of its Statements can't be carried out:
 | A `WAIT` Duration that isn't a Number | 12 |
 | A `TELL` or `ASK` whose Recipient Placeholder isn't an Agent | 07 |
 | `CHANGE f TO f2.` when `f` isn't known | 08 |
-| A Custom Action that the Target reports as failed | here |
+| A Custom Action that the game refuses, or reports as failed while the `DO` waits | 08, here |
 | `PURSUE g.` waiting on a Goal that is dropped or fails | 08, here |
 | `FAIL.` | here |
 
-- **Custom Actions** fail only when the Target, or the game behind it, reports that they failed. Regia never checks the world itself. On a Target that never reports failure, every Custom Action succeeds.
+- **Custom Actions** fail only when the Target, or the game behind it, reports that they failed. Regia never checks the world itself. On a Target that never reports failure, every Custom Action succeeds. A `DO … , WITHOUT WAITING.` fails only if the game refuses the Action; a later failure is only traced (chapter 08).
 - **Nothing else to do with time fails.** 2.0 has no timeouts (chapter 12), and a Plan stopped during a `WAIT` just stops.
 - The no-ops of chapter 08 (learning a known Fact, forgetting an unknown one, dropping a Goal that isn't pursued) and an all-zero Random choice (chapter 09) are **not** failures.
 
@@ -134,7 +134,7 @@ For *The full ASL mapping* to pick up:
 - `WITHOUT WAITING` (`!!g`) runs on its own intention, so its failure doesn't reach the starter, as required.
 - On Targets without a native `if`, a failure inside a generated `regia_if__N` or `regia_either__N` plan must be passed straight through as the Plan's own failure, with no `FAILED` and no trace entry for the generated goal (chapter 06). Trace entries name the designer's Plan and Statement, never generated names.
 - Stopped sub-Goals of a `DROP` need generated `DROPPED` events, as for the dropped Goal itself.
-- Custom Action failure comes from the environment's action feedback (Jason's `executeAction` result). Whether VEsNA reports it is a Target question.
+- Custom Action failure comes from the game's `refused` or `failed` reply to `regia.act` (chapter 37).
 
 ## Not decided here
 

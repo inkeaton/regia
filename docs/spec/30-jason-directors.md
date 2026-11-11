@@ -21,9 +21,9 @@ VEsNA's own message types don't fit Regia. `signal` has a fixed `type(status, re
 | `regia_event` | `{"name": "insult_thrown", "args": [...]}` | a momentary event `+insult_thrown(…)`, as VEsNA's `signal` does: no belief is kept |
 | `regia_fact` | `{"op": "add" \| "remove", "name": "door_open", "args": [...]}` | `+door_open(…)[source(percept)]` or `-door_open(…)[source(percept)]` |
 
-- `name` is the External name (chapter 28), and `args` are Jason terms.
+- `name` is the External name (chapter 28). `args` is a JSON array of numbers, strings and arrays (chapter 37), turned into Jason terms on the way in.
 - A game Fact is marked **`source(percept)`**. VEsNA's own `addBel` marks beliefs `source(self)`, the same as a Director's own `LEARN`; the explicit source lets a Director tell what the game reported from what it learned itself (below).
-- How `regia-jason` receives these inside an Agent's `VesnaAgent` body, how Custom Actions reach the game, and how the game reports an Action's result are decided by *Custom Actions through VEsNA*.
+- An Agent receives these by `regia.RegiaAgent` overriding VEsNA-Pro's public `myHandleMsg`; the Root Director reads its own body. Custom Actions and their results: chapter 37.
 
 ## Routing percepts to Directors
 
@@ -144,7 +144,7 @@ regia_standing(Seq, Playbook, Role, Rank, Bindings)
 
 ## Custom Actions in a Subplot Director
 
-A Subplot Director has no body, so `DO play_music.` there is passed **up the tree** as `achieve regia_act(A)`, until it reaches the Root Director, which performs it through its body. This mirrors percepts going down. How the Root Director performs it, whether `DO` waits for the game's answer, and how a failure comes back to the Subplot Director's Plan are decided by *Custom Actions through VEsNA*.
+A Subplot Director has no body, so `DO play_music.` there is sent **directly to the Root Director** as `achieve regia_act(A, ReqId)`. The Root performs it through its body and relays the game's replies back, so the Subplot Director's `DO` waits and fails as anywhere else (chapter 37). Unlike percepts, an Action needs no filtering on the way, so it skips the Directors in between.
 
 ## Infrastructure state
 
@@ -168,6 +168,6 @@ Rows filled in or added in chapter 28's table:
 
 - The Staging's identity (its Director's name), Director names, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: chapter 31 (`31-jason-stagings.md`).
 - The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: chapter 33.
-- How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: *Custom Actions through VEsNA*.
+- How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: chapter 37.
 - The Root Director's `.jcm` entry (its `address` and `port`, and `ag-class: regia.DirectorAgent`): chapter 36.
 - The format of Trace entries: chapters 34 and 35.

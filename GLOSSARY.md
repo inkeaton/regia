@@ -253,8 +253,8 @@ Anything an Agent does: acting on the world, changing its own Facts and Goals, o
 _Avoid_: Command, operation
 
 **Custom Action**:
-An Action defined outside Regia and declared in the Vocabulary, usually affecting the game world. It is always written after `DO`.
-_Avoid_: External action, user action
+An Action defined outside Regia and declared in the Vocabulary, usually affecting the game world. It is always written after `DO`. The game decides when it is done (an arrival, an animation finishing, at once), and can refuse it or report it failed. `DO` waits until it is done; `DO …, WITHOUT WAITING` waits only until the game has accepted it.
+_Avoid_: External action, user action, environment action
 
 **Basic Action**:
 An Action built into Regia that any Agent can use, for changing its own Facts and Goals (`LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`), sending (`TELL`, `ASK`, `SIGNAL`), printing, waiting for a Duration (`WAIT`), or failing on purpose (`FAIL`). It is written without `DO`.

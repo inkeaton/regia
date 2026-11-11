@@ -196,6 +196,6 @@ Codes are assigned by *Number the checks and add exemplar cases*.
 
 ## Not decided here
 
-- How the Root Director's body receives `regia_join` and `regia_leave`, and how a dot-less Action reaches the game: *Custom Actions through VEsNA*.
+- How the Root Director's body receives `regia_join` and `regia_leave`, and how a dot-less Action reaches the game: chapter 37.
 - How VEsNA and Godot read `cast.json` and open bodies: out of scope (VEsNA/Godot internals).
 - A per-joiner address, per-Agent overrides, and Targets other than Jason: not in 2.0.
