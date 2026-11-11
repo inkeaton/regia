@@ -15,3 +15,4 @@ What does the Jason output look like as a set of files? Decide:
 
 - Graduated from the map's fog in the scoping pass of 2026-11-09.
 - First of the full ASL mapping tickets; the others build on its layout.
+- From *Match selection over a Context* (32): Picks, `FOR EACH` and `COUNT` lower to `.setof` over a tuple of the condition's blanks (notes in `docs/spec/26-match-selection.md`). Open check: whether Jason's `for` keeps variables bound in its body across rounds; if so, `FOR EACH` lowers to a generated recursive goal.

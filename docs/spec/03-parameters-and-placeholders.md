@@ -103,7 +103,7 @@ The Body can only use a Placeholder that is filled on every way the Context can 
 
 ### Several matches
 
-When several matches satisfy the Context, the Agent uses **one**, and **the language does not say which**. A Plan must not rely on any particular order, even if one Target always gives the same answer. Explicit ways to choose (at random, for every match, by priority or ranking) are not yet specified.
+When several matches satisfy the Context, the Agent uses **one**, and **the language does not say which**. A Plan must not rely on any particular order, even if one Target always gives the same answer. Choosing on purpose (`, AT RANDOM`, `, HIGHEST ?p`, `, LOWEST ?p`), running for every match (`FOR EACH`) and counting matches (`COUNT`) are in chapter 26 (`26-match-selection.md`).
 
 ## Not decided here
 

@@ -120,4 +120,4 @@ For *The full ASL mapping* to pick up:
 ## Not decided here
 
 - Quantities over Subplot endings ("when every HonorDuel has ended"): *Richer Subplots*. `ENDED` takes no quantity in 2.0 (chapter 17).
-- Counting an Agent's or Director's own Facts in a Context (`GIVEN 3 OF hates(?x)`): *Match selection*.
+- Counting an Agent's or Director's own Facts: `COUNT(condition)`, a Number Expression (chapter 26). `n OF` stays a Quota form.

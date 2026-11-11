@@ -10,5 +10,5 @@ Regia has no mutable variables and no assignment statement. A Plan's unknowns ar
 
 ## Consequences
 
-- When a Context has several matches, which one is used is unspecified. Explicit choice (random, every match, ranking) has to be its own construct.
+- When a Context has several matches, which one is used is unspecified. Explicit choice (random, every match, ranking) has to be its own construct. Those constructs are Picks (`, AT RANDOM`, `, HIGHEST`, `, LOWEST`), `FOR EACH` and `COUNT` (spec chapter 26); the default stays unspecified.
 - Amended by ADR 0002 (`0002-values-are-named-in-the-body.md`): a Body can also fill a Placeholder by naming a computed value (`?dmg = RANDOM(1, 6).`). It is still filled once and never reassigned, and a Context still only fills by matching.

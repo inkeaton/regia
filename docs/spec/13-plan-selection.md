@@ -17,7 +17,7 @@ A Trigger arriving at an Agent raises four separate questions. 2.0 lets designer
 
 - **One Plan runs per Trigger on an Agent.** If two Playbooks react to the same Event, only one of them does. Several Playbooks reacting to one Trigger is a future feature.
 - The rules are the same for every Trigger kind: Events, `LEARNED`, `FORGOTTEN`, `DROPPED`, `FAILED` and `TO` recipes, in Playbooks and in Plots.
-- Choosing **among the matches of one Context** ("the guest I hate most") is a different question, left to *Match selection* (chapter 03).
+- Choosing **among the matches of one Context** ("the guest I hate most") is a different question, decided in chapter 26 (`26-match-selection.md`).
 
 ## Candidates
 
@@ -244,4 +244,4 @@ For *The full ASL mapping* to pick up:
 
 - How Subplots are started and identified: chapter 17 (`17-subplots.md`). Stagings of one Subplot under one parent share its position; a Plot under two parents keeps its best rank.
 - Directors have no Propensities (chapter 20).
-- Choosing among a Context's matches: *Match selection*, not yet specified.
+- Choosing among a Context's matches: chapter 26 (`26-match-selection.md`).

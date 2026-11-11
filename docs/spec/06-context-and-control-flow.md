@@ -80,7 +80,7 @@ ELSE:
 ```
 
 - Any number of `ELSE IF`s, an optional final `ELSE`, nesting to any depth. If no branch is taken and there is no `ELSE`, the Body carries on after the `IF`.
-- The condition is matched against the Agent's Facts and Goals **at that moment**. With several matches, one is used and the language doesn't say which (chapter 03).
+- The condition is matched against the Agent's Facts and Goals **at that moment**. With several matches, one is used and the language doesn't say which (chapter 03), unless a Pick chooses (chapter 26).
 
 ### Placeholders in an `IF`
 
@@ -101,7 +101,7 @@ WHEN insult_heard FROM ?speaker:
 
 ## Loops
 
-There are no `WHILE` or `FOR` loops in 2.0. Repetition comes from a Plan pursuing its Goal again, or from reacting to Fact changes. Running a Body for every match of a condition belongs to *Match selection*, which is not yet specified. Loops are deferred, not ruled out.
+There are no `WHILE` or counted loops in 2.0. Repetition comes from a Plan pursuing its Goal again, from reacting to Fact changes, or from `FOR EACH`, which runs a Block once for every match of a condition (chapter 26). Other loops are post-2.0.
 
 ## ASL mapping notes
 
@@ -130,6 +130,6 @@ For *The full ASL mapping* to pick up:
 
 - Labels on a single `GIVEN`: chapter 14 (`14-labels.md`).
 - How Plans from different Trigger Blocks or Playbooks compete for the same Trigger: chapter 13 (`13-plan-selection.md`).
-- Choosing among matches explicitly, and running for every match: *Match selection*, not yet specified.
-- Loops: deferred.
+- Choosing among matches explicitly, running for every match, and counting matches: chapter 26 (`26-match-selection.md`).
+- Other loops: post-2.0.
 - Random choice among written Options (`EITHER`/`OR`): chapter 09.

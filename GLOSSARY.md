@@ -135,7 +135,7 @@ An amount of time, written as an Expression followed by `SECONDS` or `MINUTES`. 
 _Avoid_: Delay, timeout, ticks
 
 **Expression**:
-Something that works out to a Value: a Value, a filled Placeholder, a random roll, or these combined with arithmetic.
+Something that works out to a Value: a Value, a filled Placeholder, a random roll, a count of Matches, or these combined with arithmetic.
 _Avoid_: Formula, computation, term
 
 ## Plans and statements
@@ -171,6 +171,18 @@ _Avoid_: Receiver (when meaning the written target), addressee, target
 **Context**:
 The condition that must hold for a Plan to be chosen, written after `GIVEN`. It is checked once, when the Plan is chosen, before any of its Body runs.
 _Avoid_: Guard, precondition, IF (when meaning the context)
+
+**Match**:
+One way a condition holds: a Value for each of its blanks. When a condition has several Matches, one is used and the language doesn't say which, unless a Pick chooses.
+_Avoid_: Unifier, binding, solution, result
+
+**Pick**:
+A clause on a condition's header that chooses which Match is used: `, AT RANDOM`, `, HIGHEST ?p` or `, LOWEST ?p`. It never changes whether the condition holds.
+_Avoid_: Selector, filter, sort, order by
+
+**For each**:
+A Body Statement, `FOR EACH <condition>:`, that runs its Block once for every Match of the condition, taken when the Body reaches it.
+_Avoid_: Loop, iteration, foreach, map
 
 **Body**:
 The ordered Statements a Plan carries out.

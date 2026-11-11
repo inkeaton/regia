@@ -90,7 +90,7 @@ DURING PLOT:
 | `WHEN Guest EMPTIED:` | the last Agent playing `Guest` in this Staging leaves |
 
 - The Role comes first and the Placeholder after it, as in `FROM Guest ?who` (chapter 05). `?who` follows chapter 03. Besides Messages, a Director can give it a Playbook or map it onto a Role (chapter 20).
-- `EMPTIED` takes no Placeholder. It exists because no Context can count a Role's Agents in 2.0 (*Match selection*), so after a `LEFT` a Director can't tell whether anyone is left.
+- `EMPTIED` takes no Placeholder. It exists because no condition can count a Role's Agents in 2.0 (`COUNT` counts only the Director's own Facts, chapter 26), so after a `LEFT` a Director can't tell whether anyone is left.
 - They are **Director Trigger kinds only**. A Playbook doesn't know Plot Roles, and its own Roles are addresses (chapter 15). In a Playbook they are an error.
 - They are **not** heard for a Staging's starting Cast. Starting is not joining: the starting Cast gets its Role setups and the initial Phase's entry Plans (chapter 16).
 - They follow chapter 13 like any Trigger: blocks in a Phase and in `DURING PLOT` compete, with the Phase winning by default.

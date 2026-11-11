@@ -21,7 +21,7 @@ There is **one kind of Number**. Whole numbers and decimals are the same kind, s
 
 ## Expressions
 
-An **Expression** is something that works out to a Value: a Value, a filled Placeholder, `RANDOM(…)`, or any of these combined with operators.
+An **Expression** is something that works out to a Value: a Value, a filled Placeholder, `RANDOM(…)`, `COUNT(…)` (the number of matches of a condition, chapter 26), or any of these combined with operators.
 
 ### Arithmetic
 

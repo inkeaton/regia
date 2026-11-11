@@ -102,6 +102,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- Picking one of a Context's matches at random, or running for every match: the *Match selection* fog. `EITHER` chooses among written Options only, and doesn't take up a word that work might need.
+- Picking one of a condition's matches at random (`, AT RANDOM`), or running for every match (`FOR EACH`): chapter 26 (`26-match-selection.md`). `EITHER` chooses among written Options only. Weighted Picks are post-2.0.
 - Named weight levels (`OFTEN`, `RARELY`) as sugar: not in 2.0.
 - The format and routing of runtime warnings: *The full ASL mapping* (logging).

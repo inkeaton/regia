@@ -21,7 +21,7 @@ The Actions built into Regia: changing the Agent's own Facts and Goals, sending,
 
 - Basic Actions are written **without `DO`**. Only Custom Actions take `DO` (`DO eat_food.`).
 - Each Fact and Goal Action is worded like the Trigger kind it fires: `LEARN`/`LEARNED`, `FORGET`/`FORGOTTEN`, `DROP`/`DROPPED`, and `PURSUE` matches the Context test `PURSUING`.
-- Arguments follow chapter 03: Values, or Placeholders that are **certainly filled**. Expressions are allowed in any argument (chapter 04): `LEARN health(?h - 10).` A blank (an unfilled Placeholder) is an error in every Basic Action. "Forget every `hates`" or "drop every `avenge`" is not in 2.0.
+- Arguments follow chapter 03: Values, or Placeholders that are **certainly filled**. Expressions are allowed in any argument (chapter 04): `LEARN health(?h - 10).` A blank (an unfilled Placeholder) is an error in every Basic Action. "Forget every `hates`" is written `FOR EACH hates(?x): FORGET hates(?x).` (chapter 26), and the error message suggests it.
 - The kind of a name must suit the Action: `LEARN` or `FORGET` with an Event or a Goal, or `PURSUE` or `DROP` with a Fact or an Event, is an error that suggests the right Action.
 - There is no empty Statement. A branch that does nothing is left out (`ELSE` is optional, chapter 06).
 
@@ -129,4 +129,4 @@ For *The full ASL mapping* to pick up:
 
 - Picking an Action at random: a Random choice, `EITHER:` … `OR:` (chapter 09). There are no Groups.
 - A Director can use all of these except `PURSUE`, `DROP` and `SIGNAL`, and gives Goals with `ASK` (chapter 20).
-- Changing or dropping everything that matches a blank: the *Match selection* fog.
+- Changing or dropping everything that matches a blank: `FOR EACH`, chapter 26 (`26-match-selection.md`).
