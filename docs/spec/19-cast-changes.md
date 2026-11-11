@@ -29,7 +29,8 @@ DURING feast:
 
 A Guest who arrives mid-feast gets `NobleSocializing` with the same Mapping as every other Guest, so a latecomer behaves like the rest.
 
-- `UNASSIGN NobleSocializing FROM Guest` takes the standing Giving away from everyone holding it, and later joiners no longer get it.
+- `UNASSIGN NobleSocializing FROM Guest` takes the standing Giving away from everyone holding it, and later joiners no longer get it. It also takes away this Staging's counted Givings to `Guest` (chapter 15).
+- `UNASSIGN NobleSocializing FROM ?who` takes it away from that Agent only. The standing Giving stays, and later joiners still get it.
 - A Giving to a **counted target** (`ASSIGN Brawling TO 2 OF Guest`) is **not** standing. It is a fixed set, like every pick (chapter 15): a joiner never gets it.
 - A standing Giving keeps its own Mappings. A whole-Role Mapping in it is live anyway (chapter 15). A counted pick in it (`MAPPING 1 OF Host TO confidant`) was made once, when the `ASSIGN` ran, and the joiner shares that pick.
 - **Messages are not replayed.** Facts told and Goals asked earlier (`TELL Guest …`, `ASK Guest TO …`) were Messages and reached only the Agents playing the Role when they were sent. Starting state for every Agent of a Role belongs in its Role setup (chapter 16).

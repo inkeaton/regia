@@ -16,3 +16,4 @@ How does a Director run in Jason? Decide:
 ## Comments
 
 - Graduated from the map's fog in the scoping pass of 2026-11-09.
+- From *Giving and taking Playbooks at runtime* (35): Givings are `achieve regia_give(…)`/`regia_take(…)` messages (chapter 29). The Director tracks no holders; `regia_standing` only needs what replaying to a joiner requires. Send the cast before the first Giving to an Agent.

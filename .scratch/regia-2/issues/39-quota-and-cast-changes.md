@@ -13,3 +13,4 @@ How do Quota Triggers and cast changes run in Jason? Decide:
 ## Comments
 
 - Graduated from the map's fog in the scoping pass of 2026-11-09.
+- From *Giving and taking Playbooks at runtime* (35): Agents keep a copy of each giving Staging's cast as `regia_cast(Staging, Role, Agent)`; keep it in sync on join/leave, and drop leavers from `fixed([…])` bindings in `regia_given`. Quota counts start on a Playbook's first Giving and are cleared when its last goes (chapter 29).

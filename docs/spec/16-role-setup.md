@@ -90,7 +90,7 @@ The setup is undone only where the things it gave are undone anyway:
 For *The full ASL mapping* to pick up:
 
 - The Director runs each Role's setup when it starts the Staging, for each cast Agent, before posting the initial Phase's entry event; and again for each Agent joining the Role.
-- A setup `ASSIGN` is the same `add_playbook` message the Director sends for a Phase `ASSIGN`, with the bindings attached; `LEARN` and `PURSUE` are `tell` and `achieve` sent by the Director, so the Agent's `[source(Director)]` makes `FROM DIRECTOR` match.
+- A setup `ASSIGN` is the same `regia_give` message (chapter 29) the Director sends for a Phase `ASSIGN`, with the bindings attached; `LEARN` and `PURSUE` are `tell` and `achieve` sent by the Director, so the Agent's `[source(Director)]` makes `FROM DIRECTOR` match.
 - A skipped Statement writes a Trace entry and moves on, inside the Director's setup code.
 
 ## Not decided here

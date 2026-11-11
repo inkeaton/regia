@@ -16,3 +16,4 @@ How does Instancing (spec 21) become a Jason `.jcm`? Decide:
 
 - Graduated from the map's fog in the scoping pass of 2026-11-09.
 - From *ASL infrastructure layout* (34): Role files exist only for Root Plot Roles, under `asl/roles/`, and include `regia/agent.asl`; Jason doesn't skip duplicate includes, so combining Role files for a kind must include the Infrastructure once. `ag-class` defaults to the `regia-jason` agent class; `asl/` is the source path (spec 28).
+- From *Giving and taking Playbooks at runtime* (35): each Role file lists its Playbooks as `regia_playbook(P)` initial beliefs; combining Role files must not duplicate those or the Playbook includes (chapter 29).

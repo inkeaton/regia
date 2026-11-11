@@ -109,7 +109,7 @@ For *The full ASL mapping* to pick up:
 - External names are emitted in place of the Regia name. 1.0 already did this for Actions.
 - Local Facts and Goals get Generated names that can't collide across Playbooks: `regia_local__<Playbook or Plot>__<name>` (chapter 28).
 - Names, Generated names and External names in Jason: chapter 28.
-- Keeping local Facts while the Playbook is taken away fits filtering Plans by a belief (*Research: dynamic plan loading in Jason*). The beliefs stay, only the Plans that read them are switched off. Dropping local Goals belongs to the code that takes a Playbook away.
+- Keeping local Facts while the Playbook is taken away fits filtering Plans by a belief (*Research: dynamic plan loading in Jason*). The beliefs stay, only the Plans that read them are switched off. Dropping local Goals belongs to the code that takes a Playbook away: chapter 29 (`29-jason-givings.md`).
 
 ## Not decided here
 

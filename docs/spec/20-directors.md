@@ -51,7 +51,7 @@ DURING feast:
 An Agent held by a Placeholder (from `FROM Guest ?who`, `WHEN Guest ?who JOINED`, or an Outcome `WITH e(?w)`) can be:
 
 - a **recipient**: `ASK ?who TO apologise.`
-- **given a Playbook**: `ASSIGN Brawling TO ?who.` and `UNASSIGN Brawling FROM ?who.` The Giving is **not standing**: it goes to that Agent only (chapter 19).
+- **given a Playbook**: `ASSIGN Brawling TO ?who.` and `UNASSIGN Brawling FROM ?who.` The Giving is **not standing**: it goes to that Agent only (chapter 19). `UNASSIGN Brawling FROM ?who` takes away every Giving of `Brawling` this Staging made that the Agent holds, including one it got through a whole Role; the standing record stays (chapter 15).
 - **mapped onto a Role** of a Playbook or a Subplot: `MAPPING ?who TO opponent` on `ASSIGN` and on `START SUBPLOT`. The Role is filled with exactly that Agent.
 
 ```regia
@@ -161,7 +161,7 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 - One Director per Staging, as in 1.0; its beliefs are the Staging's Facts. Game percepts the Director should see are routed to it by the environment.
 - `ASK`/`TELL` from a Director are `achieve`/`tell` sent by the Director, as for Role setup (chapter 16), so `[source(Director)]` matches `FROM DIRECTOR`.
 - Leaving a Phase drops the intentions of that Phase's Plans (`.drop_intention` on intentions tagged with the Phase) before running `EXITED`. `EXITED` Plans run inside the atomic `switch_phase` as 1.0's `on_exit`; `ENTERED` Plans are posted as ordinary, non-atomic events after it, so they may `WAIT`.
-- A Giving to `?who` is a single `add_playbook` with no standing record. A `MAPPING ?who TO r` binds `r` to that Agent alone.
+- A Giving to `?who` is a single `regia_give` message with no standing record (chapter 29). A `MAPPING ?who TO r` binds `r` to that Agent alone.
 
 ## Handed off
 

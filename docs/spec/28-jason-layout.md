@@ -1,6 +1,6 @@
 # Jason Build layout
 
-What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8.
+What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`).
 
 ## Files
 
@@ -16,7 +16,7 @@ build/<entry>/
     asl/roles/Guest.asl                one per Role of the Root Plot
 ```
 
-- **Playbook files** hold the Plans of one Playbook and nothing else. They never include any file.
+- **Playbook files** hold the Plans of one Playbook and nothing else. Which Playbooks a Role file includes, and the `regia_playbook` beliefs that list them, are in chapter 29. They never include any file.
 - **Director files** hold one Plot's Director. Every Staging of that Plot runs the same file (chapter 17). A Director file includes `regia/director.asl`.
 - **Role files** exist only for the **Root Plot's Roles**, because only they start Agents (chapter 21). A Role file includes `regia/agent.asl` and every Playbook file the Role can be given in its lifetime, following Subplot Mappings down the Plot tree. A Subplot Role such as `Challenger` gets no file: the Playbooks it brings are included in the Root Plot Role files that map to it. How Role files combine for an Agent kind that plays several Roles is decided by *.jcm generation*.
 - **File names** are the Regia names exactly as written. Names are unique ignoring case (chapter 10), so this is safe on file systems that ignore case.
@@ -46,12 +46,13 @@ Some of the Infrastructure has to be Java. Jason picks among the applicable plan
 
 | Concept | Held by | Functor | Owning ticket |
 | --- | --- | --- | --- |
-| A Giving of a Playbook | Agent | `regia_given` | *Giving and taking Playbooks at runtime*; rank from *Precedence encoding in ASL* |
+| A Giving of a Playbook | Agent | `regia_given` | *Giving and taking Playbooks at runtime* (chapter 29); rank from *Precedence encoding in ASL* |
+| A Playbook in the Agent's files | Agent | `regia_playbook` | *Giving and taking Playbooks at runtime* (chapter 29) |
 | A Role the Agent plays in a Staging | Agent | `regia_plays` | *Stagings and Subplots runtime in ASL* |
 | The Plot and Staging a Director runs | Director | `regia_staging` | *Stagings and Subplots runtime in ASL* |
 | The current Phase | Director | `regia_phase` | *Director runtime in ASL* |
 | A standing Giving | Director | `regia_standing` | *Director runtime in ASL* |
-| A Role's members | Director | `regia_cast` | *Quota counts and cast changes in ASL* |
+| A Role's members | Director, and a copy in Agents (chapter 29) | `regia_cast` | *Quota counts and cast changes in ASL* |
 | A Quota Trigger count | Agent or Director | `regia_quota` | *Quota counts and cast changes in ASL* |
 
 Tickets that need a concept missing from this table add a row.

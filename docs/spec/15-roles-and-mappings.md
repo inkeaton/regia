@@ -82,7 +82,8 @@ A Guest's `partner` is the Hosts; a Host's `partner` is the Guests.
 - An Agent's Playbook Role is the **union over every giving it currently holds**: from this Plot, from other Plots, and from other Stagings of the same Plot. An Agent playing both `Host` and `Guest` above has `partner` = every Host and every Guest (except itself, as always for recipients).
 - `TELL partner …` reaches the union; `FROM partner` matches a Sender in any of them. This is the same rule `SIGNAL` and `FROM DIRECTOR` follow: every Plot currently giving the Playbook (chapters 05, 07).
 - It is still **one Playbook** with one set of Trigger Blocks on the Agent; its Plans don't run once per giving (chapter 13).
-- `UNASSIGN Chatting FROM Guest` takes away exactly that giving and its bindings. Other givings, and the Roles they bind, stay.
+- `UNASSIGN Chatting FROM Guest` takes away every giving of `Chatting` this Staging made **to `Guest`**: to the whole Role, to a counted part of it (`2 OF Guest`), or through `Guest`'s Role setup (chapter 16). Their bindings go with them. Givings from other Stagings, and this Staging's givings to other targets, stay.
+- `UNASSIGN Chatting FROM ?who` takes away every giving of `Chatting` this Staging made that `?who` holds, whatever its target. Standing givings stay standing: a later joiner still gets the Playbook, only `?who` loses it (chapter 20).
 - A giving to a whole Role is **standing**: it also reaches Agents who join the Role later, until it is taken away. A giving to a counted target is not (chapter 19).
 
 ## Counts and fractions
@@ -154,6 +155,7 @@ For *The full ASL mapping* to pick up:
 - `TELL host f` expands to a send to every Agent in the union of the Agent's bindings for `host`, minus itself. `FROM host` in a Trigger becomes a Context test on the Sender against the same union, at arrival time.
 - A counted pick runs in the Director: it reads the Role's current Agents, shuffles, takes the count, and removes them from the Statement's pool for that Role. The chosen set is sent along with the giving.
 - 1.0's `signal_directors` already keeps "which Director gave this Playbook"; bindings extend that record.
+- Decided in chapter 29 (`29-jason-givings.md`): the per-giving record `regia_given`, the cast copy each Agent keeps for live bindings, and how recipients and `FROM Role` are expanded against them.
 
 ## Not decided here
 
