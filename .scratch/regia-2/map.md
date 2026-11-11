@@ -6,6 +6,50 @@ Label: wayfinder:map
 
 A complete design spec for Regia 2.0. It covers the language (syntax, constructs, semantics), the instancing layer, the ASL mapping, and the architecture of the Transpiler and Visual Editor. It is written as docs (`GLOSSARY.md`, decision records in `docs/adr/`, spec chapters in `docs/spec/`), with every `#discuss` in `docs/primer/` either resolved or explicitly deferred, and is ready to hand to a separate effort that plans development.
 
+## Destination reached
+
+Closed 2026-11-11: every ticket is resolved, and nothing is left in *Not yet specified*. This map is finished. The development effort starts a fresh map or plan of its own and doesn't reopen tickets here.
+
+**Where to start**
+
+- `GLOSSARY.md`: the designer-facing vocabulary. Read it first.
+- `docs/spec/`, 37 chapters:
+  - 01–21 and 26: the language.
+  - 22–25: the Transpiler and Visual Editor architecture.
+  - 27 and 34: Conformance and the Trace.
+  - 28–37: the Jason Target (layout, Givings, Directors, Stagings, precedence, cast changes and Quotas, the Trace in Jason, `.jcm`, the game protocol).
+- `docs/adr/`: 14 decision records, for the choices that are hard to reverse.
+- `docs/spec/cases/`: one exemplar Conformance case per language chapter. Every check and Trace entry has a code (`R<ch><nn>`, `T<ch><nn>`) in its chapter. Full coverage is written test-first by the development effort (chapter 27).
+
+**Handed to the development effort**, as the spec says:
+
+- The handoff constraint in *Notes*: the Transpiler's author is new to Rust, so tickets are cut small and Claude sets exercises (ADR 0010).
+- Checking the Jason lowering against Jason's actual semantics where the spec asks for it: `-!g` failure handling (chapter 11), variables bound inside a `for` across rounds (chapter 26), and seeding any random source `regia-jason` doesn't control (chapter 35).
+- The editor's performance budget for full reparse and rebuild (chapters 22 and 23).
+- How the test runner is built, how cases are vendored, and any ASL snapshot tests (chapter 27). The 22 exemplar cases have never been run: the first Transpiler is their first check.
+- *Out of scope* below doubles as the post-2.0 backlog.
+
+**Primer `#discuss` points**: all 16 are resolved. The tag's definition in the Introduction is the 17th, and it isn't a question.
+
+| Primer | Point | Where |
+| --- | --- | --- |
+| 1 Syntax | `;` before `ELSE`, swapping `.` and `;` | chapter 01 |
+| 1 Syntax | continuing lines after `,` | chapter 01 |
+| 1 Syntax | other comment symbols | chapter 02 |
+| 2 Architecture | the priority system | chapters 13, 32 |
+| 3 Vocabulary | local Vocabulary | chapter 10 |
+| 3 Vocabulary | unbounded parameters, variables | chapter 03, ADR 0006 (one count per name) |
+| 3 Vocabulary | types, aliases | chapter 03 (types post-2.0), chapter 10 (External names) |
+| 3 Vocabulary | Event kinds for Facts and Goals | chapter 05, ADR 0003 |
+| 4 Plans | `PRIORITY` on other constructs | chapters 13, 14 |
+| 4 Plans | a kind word after the Event | chapter 05 |
+| 5 Plots | the `WORLD` keyword, `Role DO` | chapter 20 (both retired) |
+| 5 Plots | parent and child cooperation | chapter 17; the rest is *Richer Subplots* |
+| 5 Plots | Directors with Goals | chapter 20; *Richer Directors* |
+| 7 Visual Editor | what the graph shows | chapter 25 |
+| 7 Visual Editor | doc comments as documentation | chapter 25 (Docs tab); generating files is post-2.0 |
+| 8 ASL | adding and removing Playbooks | chapter 29 |
+
 ## Notes
 
 - Domain: language design for a BDI-based DSL aimed at game designers. Input is `docs/primer/` (frozen: superseded, never edited), plus the 1.0 code and docs in `1.0/` as a reference.
