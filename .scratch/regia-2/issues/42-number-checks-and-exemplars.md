@@ -18,3 +18,4 @@ AFK: mechanical, no design decisions. Nothing to decide beyond what chapter 27 f
 ## Comments
 
 - Graduated from *How a spec chapter proves itself* (33).
+- From *ASL infrastructure layout* (34): new checks to number: in chapter 10, names that differ only in case, names starting with `regia_`, and names containing `__`; in chapter 28 (a Target chapter), a Fact or Event External name that isn't a Jason atom.

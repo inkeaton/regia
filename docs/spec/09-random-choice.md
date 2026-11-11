@@ -97,7 +97,7 @@ For *The full ASL mapping* to pick up:
 
   Constant weights are folded by the Transpiler (no clamp or warning code when they are fixed and non-negative). When all weights are constant and equal, `.random` over a single index is enough. A non-Number weight makes the Jason arithmetic fail, which fails the Plan as required. Warnings should carry the Plan's source location once the logging scheme is decided (*The full ASL mapping* fog).
 - Generated variable names (`W1`, `T`, `R`, …) use a prefix designers can't produce, like the other generated names in chapter 06.
-- **Targets without a native `if`**: lowered like an `IF` chain (chapter 06). The Body computes the weights and the roll, then posts `!regia_either_N(R, W1, W2, …, captured Placeholders)`. There is one plan per Option, with contexts on running sums (`R < W1`, `R >= W1 & R < W1 + W2`, …), plus a generated plan for the all-zero case that logs the warning and succeeds.
+- **Targets without a native `if`**: lowered like an `IF` chain (chapter 06). The Body computes the weights and the roll, then posts `!regia_either__N(R, W1, W2, …, captured Placeholders)`. There is one plan per Option, with contexts on running sums (`R < W1`, `R >= W1 & R < W1 + W2`, …), plus a generated plan for the all-zero case that logs the warning and succeeds.
 - Jason keeps variables bound inside a branch bound afterwards. The scoping rules above mean a later Statement never sees them, so no renaming is needed (as for `IF`).
 
 ## Not decided here

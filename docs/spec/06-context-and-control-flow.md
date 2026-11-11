@@ -111,14 +111,14 @@ For *The full ASL mapping* to pick up:
 - A body `IF` chain maps to Jason's `if (…) { … } elif (…) { … } else { … }`. Jason keeps variables bound in an `if` condition bound for the rest of the plan. The Placeholder rules above mean this never changes what a later condition tests, so no renaming is needed.
 - Each `GIVEN` Block becomes its own ASL plan with the shared trigger. To keep "first match wins" independent of plan order (Playbooks loaded at runtime, precedence enforced in `selectOption`, chapter 13), the plan's context is its own Context **AND the negation of every earlier sibling's Context**: `ctx3 & not ctx1 & not ctx2`. The `ELSE` plan's context is the negation of all of them.
 - In the negated copies, every Placeholder **not filled by the Trigger** gets a **fresh variable name**. Without this, `GIVEN hates(?x)` then `GIVEN fears(?x)` would emit `fears(X) & not hates(X)` ("someone I fear but don't hate") instead of "I hate nobody, and fear someone". Placeholders filled by the Trigger stay shared on purpose.
-- **Targets without a native `if`** (the in-house AgentSpeak interpreters): each `IF` chain is lowered to an internal subgoal with one plan per branch. The Body posts `!regia_if_N(…)`, which waits until the branch finishes, and then carries on. The branch plans use the same encoding as `GIVEN`: each context negates the earlier siblings', with fresh names for Placeholders the subgoal doesn't receive. When no `ELSE` is written, an empty one is always generated, so "no branch taken" never fails the Plan. Every Placeholder filled before the `IF` and used in the condition or branch is passed as an argument; Placeholders filled in a branch's condition live only in that branch's plan, which is exactly the scoping rule above. Nesting is a subgoal posted from a branch plan.
+- **Targets without a native `if`** (the in-house AgentSpeak interpreters): each `IF` chain is lowered to an internal subgoal with one plan per branch. The Body posts `!regia_if__N(…)`, which waits until the branch finishes, and then carries on. The branch plans use the same encoding as `GIVEN`: each context negates the earlier siblings', with fresh names for Placeholders the subgoal doesn't receive. When no `ELSE` is written, an empty one is always generated, so "no branch taken" never fails the Plan. Every Placeholder filled before the `IF` and used in the condition or branch is passed as an argument; Placeholders filled in a branch's condition live only in that branch's plan, which is exactly the scoping rule above. Nesting is a subgoal posted from a branch plan.
 
   ```
   +insult_heard[source(Speaker)] : true <-
-      frown; !regia_if_1(Speaker); leave.
-  +!regia_if_1(Speaker) : hates(Speaker) <- curse(Speaker).
-  +!regia_if_1(Speaker) : friend_of(Speaker, F) & not hates(Speaker) <- complain_to(F).
-  +!regia_if_1(Speaker) : not hates(Speaker) & not friend_of(Speaker, F_1) <- true.
+      frown; !regia_if__1(Speaker); leave.
+  +!regia_if__1(Speaker) : hates(Speaker) <- curse(Speaker).
+  +!regia_if__1(Speaker) : friend_of(Speaker, F) & not hates(Speaker) <- complain_to(F).
+  +!regia_if__1(Speaker) : not hates(Speaker) & not friend_of(Speaker, F_1) <- true.
   ```
 
   This needs: generated goal names under a prefix designers can't declare, loaded and unloaded with their Playbook; a branch's failure propagating as the Plan's own failure, never visible to designers; the duplicate-Goal rule and `PURSUING` (chapter 05) applying to declared Goals only; and no Labels on generated plans, so the Selection function never picks among branches. It costs one extra reasoning cycle per `IF`.

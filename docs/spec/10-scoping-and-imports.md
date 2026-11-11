@@ -48,6 +48,14 @@ The Transpiler can only offer the hint when the declaring file is still part of 
 - **Re-declaring** a name with the same kind, the same parameter count and the same External name (or none) declares **the same item**. This lets a Playbook file declare what it uses without a shared file. Parameter names may differ, since they only document (chapter 03). Any mismatch is an error that names both declarations.
 - Re-declaring a **Playbook or Plot** is always an error: they have bodies, so two of them can't be "the same".
 
+## Name rules
+
+Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`), so that every Target can turn names into its own and make up names of its own (chapter 28).
+
+- **Names are unique ignoring case.** `Guest` and `guest` can't both be declared in the program-wide namespace, nor as two Roles or two Phases of one Plot. Readers would mix them up, and Targets that change case (Jason lowercases the first letter) or file systems that ignore case would merge them.
+- **A name can't start with `regia_`** (in any case), and **can't contain `__`**. Both are kept for Generated names (chapter 28), so the Transpiler's own names never collide with a designer's.
+- External names (below) are exempt: they are the game's names, not Regia's.
+
 ## Declaration order
 
 After the imports, top-level declarations (Vocabulary, Playbooks, Plots) can come **in any order**, and a name can be used before it is declared. The primer's rule that Vocabulary must come first is dropped.
@@ -99,7 +107,8 @@ For *The full ASL mapping* to pick up:
 
 - Imports are resolved by the Transpiler. Nothing about them reaches the Target.
 - External names are emitted in place of the Regia name. 1.0 already did this for Actions.
-- Local Facts and Goals need generated names that can't collide across Playbooks: a prefix designers can't produce, plus the Playbook or Plot name, like the other generated names in chapter 06.
+- Local Facts and Goals get Generated names that can't collide across Playbooks: `regia_local__<Playbook or Plot>__<name>` (chapter 28).
+- Names, Generated names and External names in Jason: chapter 28.
 - Keeping local Facts while the Playbook is taken away fits filtering Plans by a belief (*Research: dynamic plan loading in Jason*). The beliefs stay, only the Plans that read them are switched off. Dropping local Goals belongs to the code that takes a Playbook away.
 
 ## Not decided here

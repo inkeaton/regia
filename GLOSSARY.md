@@ -350,6 +350,14 @@ _Avoid_: Workspace (the Transpiler's in-editor state), package
 The Target files produced from one Entry file, with the Instancing that Entry reaches.
 _Avoid_: Compilation, output (unqualified)
 
+**Infrastructure**:
+The fixed Target code every Build carries, the same for every Program, that runs Regia's own machinery (Givings, Phases, Stagings, Precedence) around the designer's Plans.
+_Avoid_: Runtime, boilerplate, infrastructural plans
+
+**Generated name**:
+A name the Transpiler makes up for its own use in Target code, such as the private name of a Local Fact. Designers can't write one, so it never collides with theirs.
+_Avoid_: Mangled name, internal name
+
 **Graph view**:
 The Visual Editor's drawing of one Plot. The **Phase map** (the default) draws Phases, transitions labelled with their Triggers, and endings; the **Nested Plans** view draws each Phase as a box of Plan cards. The layout is always automatic.
 _Avoid_: Diagram, canvas (the drawing surface, not what is drawn), state chart

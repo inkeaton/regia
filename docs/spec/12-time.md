@@ -69,10 +69,10 @@ For *The full ASL mapping* and *Supporting multiple Targets* to pick up:
 
 - **Wall clock (Jason):** `WAIT d SECONDS.` maps to `.wait(D)`, where `D` is the Duration in milliseconds (`d * 1000`, or `d * 60000` for minutes). `.wait` suspends only its own intention, as required. A constant Duration is folded by the Transpiler. Otherwise the Body works it out into a fresh variable, clamps negatives to 0 with a trace warning, and calls `.wait` on the result, as for Weights (chapter 09).
 - Dropping the intention (`.drop_desire`, chapter 08) during a `.wait` removes it, which gives the "just stops" behaviour.
-- **Game clock (VEsNA/Godot):** the Target must wait on the game's time, for example by asking the environment to send a generated wake-up Event after `D` game-time milliseconds and waiting for that Event. Which clock a Target uses, and how it is chosen, is per Target (*Supporting multiple Targets* fog).
+- **Game clock (VEsNA/Godot):** the Target must wait on the game's time, for example by asking the environment to send a generated wake-up Event after `D` game-time milliseconds and waiting for that Event. Which clock a Target uses is per Target. The Jason Target uses the wall clock only, with no setting (chapter 28); a game clock is post-2.0.
 
 ## Not decided here
 
 - A Director's Plans can use `WAIT` (chapter 20).
 - Timers, repeating and delayed Triggers, and timeouts: out of scope for 2.0.
-- How a Target picks its clock: *Supporting multiple Targets*.
+- How Targets other than Jason pick their clock: out of scope for 2.0 (Jason: chapter 28).

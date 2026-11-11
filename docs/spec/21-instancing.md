@@ -150,7 +150,7 @@ For *The full ASL mapping* to pick up:
 - The `.jcm` gets one `agent` entry per starting Agent, named by the Target (`noble_1` …), with its Role file(s), and the Propensity values as the user parameter `temper(t(v), …, m(v)[mood], …)` (chapter 14). `RANDOM` values are drawn by the infrastructure when the Agent is created, not by the Transpiler, so each run and each joiner draws again.
 - `strategy` from the `JASON` group goes into each Agent's parameters.
 - The Root Plot's Director starts with the cast: each starting Agent and its Roles. Joining reaches the same Director with the kind's Roles (chapter 19), so the Director needs each kind's Roles and Propensity values.
-- An Agent playing several Root Plot Roles needs every Playbook those Roles can be given. How Role files combine for a kind is part of the full ASL mapping.
+- An Agent playing several Root Plot Roles needs every Playbook those Roles can be given. Role files exist for Root Plot Roles only (chapter 28); how they combine for a kind is decided by *.jcm generation*.
 
 ## Not decided here
 
