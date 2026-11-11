@@ -193,7 +193,7 @@ What happens when a Plan can't carry out one of its Statements: the Plan stops t
 _Avoid_: Error, exception, crash
 
 **Trace**:
-The record an Agent leaves of each Failure and runtime warning: what failed, why, and what failed in turn because of it. It explains a run after the fact; where it is written depends on the Target.
+The record of what a run did, in order: the Actions done, Messages sent, Goals pursued and how they ended, Phase changes, Stagings starting and ending, Givings and cast changes, and every Failure and runtime warning with what failed, why, and what failed in turn because of it. It explains a run after the fact, and a behaviour case checks a run against it. It is written to a file and shown on the console at the same time.
 _Avoid_: Stack trace, error log
 
 **Random choice**:
@@ -334,9 +334,17 @@ _Avoid_: Compile error, lint, message
 The stable name of one kind of Diagnostic, such as `R1301`: `R`, the spec chapter that defines it, and its number in that chapter. It never changes meaning and is never reused.
 _Avoid_: Error number, error id
 
+**Trace code**:
+The stable name of one kind of runtime warning or Failure cause in the Trace, such as `T0901`: `T`, the spec chapter that defines it, and its number in that chapter. Like a Diagnostic code, it never changes meaning and is never reused.
+_Avoid_: Error number, warning id
+
 **Conformance case**:
 A small Program kept beside the spec, with the outcome the spec promises for it: the exact Diagnostics it gets, or, for a scripted run, the Trace it leaves. A Transpiler is correct when it passes them all.
 _Avoid_: Test, fixture, golden file, example
+
+**Scripted game**:
+The stand-in that plays the game's part while a Conformance case runs: it sends the case's Events, Facts, joins and leaves, and answers each Action, through the same connection the real game uses.
+_Avoid_: Mock, fake environment, simulator
 
 **Visual Editor**:
 The tool that shows Regia source next to a flowchart of it, with both sides editable and kept in sync.

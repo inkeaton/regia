@@ -67,7 +67,7 @@ So in 2.0, nothing to do with time can fail a Plan except a Duration that isn't 
 
 For *The full ASL mapping* and *Supporting multiple Targets* to pick up:
 
-- **Wall clock (Jason):** `WAIT d SECONDS.` maps to `.wait(D)`, where `D` is the Duration in milliseconds (`d * 1000`, or `d * 60000` for minutes). `.wait` suspends only its own intention, as required. A constant Duration is folded by the Transpiler. Otherwise the Body works it out into a fresh variable, clamps negatives to 0 with a trace warning, and calls `.wait` on the result, as for Weights (chapter 09).
+- **Wall clock (Jason):** `WAIT d SECONDS.` maps to `regia.wait(D)` (chapter 35: the wall clock in a run, a virtual clock in a behaviour case), where `D` is the Duration in milliseconds (`d * 1000`, or `d * 60000` for minutes). Like `.wait`, it suspends only its own intention, as required. A constant Duration is folded by the Transpiler. Otherwise the Body works it out into a fresh variable, clamps negatives to 0 with a trace warning, and calls `regia.wait` on the result, as for Weights (chapter 09).
 - Dropping the intention (`.drop_desire`, chapter 08) during a `.wait` removes it, which gives the "just stops" behaviour.
 - **Game clock (VEsNA/Godot):** the Target must wait on the game's time, for example by asking the environment to send a generated wake-up Event after `D` game-time milliseconds and waiting for that Event. Which clock a Target uses is per Target. The Jason Target uses the wall clock only, with no setting (chapter 28); a game clock is post-2.0.
 

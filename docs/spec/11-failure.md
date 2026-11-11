@@ -112,7 +112,7 @@ Every failure leaves a **trace entry**, whether or not a `FAILED` Plan handles i
 
 Runtime warnings (negative or all-zero Weights, chapter 09; negative Durations, chapter 12) go in the same trace, marked as warnings, since the Plan carries on.
 
-The language fixes only **what** a trace can explain. How it is formatted, where it goes, and how it is monitored at runtime belong to the Target (*The full ASL mapping* fog). The Transpiler's duty is to pass each Target the names and source locations it needs. Future runtime monitoring builds on this trace.
+The language fixes **what** a trace can explain, and chapter 34 fixes its entries, their codes, and how the chain is written (one linked entry per level). Only how it is written belongs to the Target (Jason: chapter 35). The Transpiler's duty is to pass each Target the names and source locations it needs. Future runtime monitoring builds on this trace.
 
 ## Transpiler checks
 
@@ -138,6 +138,6 @@ For *The full ASL mapping* to pick up:
 
 ## Not decided here
 
-- Format, routing and monitoring of the trace: *The full ASL mapping* (logging).
+- Format, routing and monitoring of the trace: chapter 34 (entries, codes, behaviour cases) and chapter 35 (Jason).
 - A failing Director Plan stops with a Trace entry and leaves its Phase and Staging untouched; Director Statements never fail (chapter 20).
 - Replies to an asker when an asked Goal fails, and their wording now that `FROM` on `FAILED` means the Goal's Sender: *Agent cooperation* fog.

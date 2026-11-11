@@ -11,7 +11,7 @@ A **Conformance case** is a small Program with the outcome the spec promises for
 
 Emitted ASL is **not** part of the spec. The spec promises what a Program means, not one way of writing it in a Target, so a golden `.asl` file would freeze one particular lowering. The development effort may keep ASL snapshot tests of its own; they aren't Conformance cases.
 
-Behaviour cases wait for the Trace format (*Trace and logging*). Until it exists, chapters have check cases only.
+The `.trace` format, the script of a run and how a Trace is matched are in chapter 34. Behaviour cases run against a scripted stand-in for the game (chapter 35, ADR 0014).
 
 ## Diagnostic codes
 
@@ -53,7 +53,7 @@ docs/spec/cases/
 
 - A case is one `.regia` file, or a **folder** when it needs several files (Imports, Instancing). The name is a slug saying what it exercises.
 - In a folder case, the Entry is the `.regin` file at its root if there is one; otherwise every `.regia` file in the folder is an Entry.
-- A behaviour case adds a sibling `.trace` file (a single-file case) or a `.trace` file inside its folder. Its format belongs to *Trace and logging*.
+- A behaviour case adds a sibling `.trace` file (a single-file case) or a `.trace` file inside its folder. Its format is in chapter 34.
 
 The spec owns the cases. The development effort copies or vendors them into the Transpiler's test suite and doesn't edit them there; a disagreement with a case is a change to the spec.
 
@@ -100,12 +100,11 @@ A language chapter is **proven** when:
 1. every error, warning and note in its `Transpiler checks` section has at least one check case that reports it;
 2. every rule the chapter states has at least one accepting case (`#! ok`) that uses it;
 3. every case names, in `rule:`, the rule or check it exercises;
-4. once the Trace format exists, every rule about what a Program does at run time has at least one behaviour case.
+4. every rule about what a Program does at run time has at least one behaviour case.
 
 The spec itself carries **one exemplar case per language chapter**, to show the format on that chapter's material. Full coverage is written by the development effort, test-first, as it builds each chapter's part of the Transpiler.
 
 ## Not decided here
 
-- The `.trace` format for behaviour cases, and how a scripted run is written: *Trace and logging*.
 - How the test runner is built, and how cases are vendored into the Transpiler's repository: the development effort.
 - ASL snapshot tests: the development effort, outside the spec.

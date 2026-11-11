@@ -246,5 +246,5 @@ Rows filled in or added in chapter 28's table:
 
 - The `regia_join` body fields, the kind's settings and Propensity values in the Root Director's file, and the `.jcm` names of starting Agents: *.jcm generation*.
 - How the Root Director's body receives `regia_join` and `regia_leave` next to `regia_event` and `regia_fact`: *Custom Actions through VEsNA*.
-- The Trace entries for nonsensical reports, caught sends, and joins after the Root Staging has ended: *Trace and logging*.
-- How a Conformance case scripts joins and leaves: *Trace and logging* (chapter 27).
+- The Trace entries for nonsensical reports, caught sends, and joins after the Root Staging has ended: chapters 34 and 35.
+- How a Conformance case scripts joins and leaves: `> join` and `> leave` steps, played by `ScriptedGame` as `regia_join`/`regia_leave` (chapters 34 and 35).

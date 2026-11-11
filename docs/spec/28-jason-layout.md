@@ -1,6 +1,6 @@
 # Jason Build layout
 
-What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`); how precedence is enforced is chapter 32 (`32-jason-precedence.md`); how the Cast changes and Quota Triggers are counted is chapter 33 (`33-jason-cast-changes-and-quotas.md`).
+What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`); how precedence is enforced is chapter 32 (`32-jason-precedence.md`); how the Cast changes and Quota Triggers are counted is chapter 33 (`33-jason-cast-changes-and-quotas.md`); how the Trace is written is chapter 35 (`35-jason-trace.md`).
 
 ## Files
 
@@ -14,6 +14,8 @@ build/<entry>/
     asl/playbooks/NobleSocializing.asl one per Playbook
     asl/directors/RoyalBanquet.asl     one per Plot
     asl/roles/Guest.asl                one per Role of the Root Plot
+    asl/regia/sourcemap.json           ASL locations and Generated names back to the designer's (chapter 35)
+    traces/<timestamp>.jsonl           one Trace per run, written at run time (chapter 35)
 ```
 
 - **Playbook files** hold the Plans of one Playbook and nothing else. Which Playbooks a Role file includes, and the `regia_playbook` beliefs that list them, are in chapter 29. They never include any file.

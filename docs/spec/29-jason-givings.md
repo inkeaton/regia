@@ -137,5 +137,5 @@ Rows filled in or added in chapter 28's table:
 - The Staging's identity (its Director's name), and taking a whole Staging's Givings away when it ends: chapter 31.
 - The Director's standing-Giving record (`regia_standing`), replaying it for joiners, and the cast copy's message (`regia_cast_copy`): chapter 30.
 - Keeping cast copies and counted picks up to date on join and leave, and starting and clearing Quota counts: chapter 33.
-- The Trace entries' format: *Trace and logging*.
+- The Trace entries' format: chapters 34 and 35.
 - How Role files combine for an Agent kind that plays several Roles, so that `regia_playbook` beliefs and Playbook includes aren't duplicated: *.jcm generation*.

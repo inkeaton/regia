@@ -170,4 +170,4 @@ Rows filled in or added in chapter 28's table:
 - The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: chapter 33.
 - How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: *Custom Actions through VEsNA*.
 - The Root Director's `.jcm` entry (its `address` and `port`, and `ag-class: regia.DirectorAgent`): *.jcm generation*.
-- The format of Trace entries: *Trace and logging*.
+- The format of Trace entries: chapters 34 and 35.

@@ -169,4 +169,4 @@ Rows added to chapter 28's table, and one retired:
 - The Root Director's `.jcm` entry: *.jcm generation*. Its starting cast is chapter 33.
 - An Agent of a Subplot's cast leaving between `START SUBPLOT` and `regia_start`, and a `SIGNAL` or Message sent to a Director that has ended (`.kill_agent`): decided in chapter 33: the leave needs no special case, and sends go through `regia.send`.
 - Telling the game the Root Staging has ended: *Custom Actions through VEsNA*.
-- Trace entries for an ending: *Trace and logging*.
+- Trace entries for an ending: chapters 34 (`staging` entries) and 35.

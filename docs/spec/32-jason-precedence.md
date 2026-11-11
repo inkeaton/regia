@@ -138,5 +138,5 @@ Changed from chapter 31:
 
 ## Not decided here
 
-- The Trace entry for an option whose guard was bypassed: *Trace and logging*.
+- The Trace entry for an option whose guard was bypassed: chapters 34 and 35.
 - A plain-Jason agent class without VEsNA-Pro, where step 4 would be plain name order: not in 2.0 (chapter 28).

@@ -141,4 +141,4 @@ For *The full ASL mapping* to pick up. Generated names use a prefix designers ca
 - Weighted random Picks (`, AT RANDOM WEIGHTED BY ?w`), ranking by more than one value, an ordered `FOR EACH`, and `FORGET EVERY …` shorthand: post-2.0 (map's Out of scope).
 - `WHILE` and counted loops: post-2.0 (map's Out of scope). `FOR EACH` is the only repetition construct in 2.0.
 - Counting a Role's Agents or testing Role membership in a condition: *Richer Mappings and Role tests*, post-2.0.
-- The format and routing of runtime warnings: *Trace and logging*.
+- The format and routing of runtime warnings: chapters 34 and 35.
