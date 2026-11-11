@@ -1,0 +1,20 @@
+# Number the checks and add exemplar cases
+
+Type: task
+Status: open
+Blocked by: 33
+
+## Question
+
+Bring every language chapter (01–21, 26) to the shape `docs/spec/27-conformance.md` sets, so the spec hands development a complete list of checks:
+
+- Give each chapter a `## Transpiler checks` section (Errors / Warnings / Notes), gathering the checks its prose states today. Ten chapters have one already; the others keep their errors in the prose.
+- Assign each check its Diagnostic code `R<chapter><nn>`.
+- Write one exemplar Conformance case per chapter under `docs/spec/cases/NN-<chapter>/`, using the `#!` annotations.
+- Where gathering the checks shows a gap (a rule with no error for its misuse, two chapters claiming one check), record it in a resolution comment rather than deciding it silently; a real gap becomes its own ticket.
+
+AFK: mechanical, no design decisions. Nothing to decide beyond what chapter 27 fixes.
+
+## Comments
+
+- Graduated from *How a spec chapter proves itself* (33).

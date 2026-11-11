@@ -326,6 +326,18 @@ _Avoid_: Compiler
 What a Program means, as the Transpiler understands it once every file is read: each name tied to what it names, across files, with the constructs kept as the designer wrote them. Checks, translation into a Target and the Visual Editor's graph all work from it.
 _Avoid_: AST, syntax tree (those describe one file's text), IR
 
+**Diagnostic**:
+An error, warning or note the Transpiler reports about a Program, pointing at the place in the source it concerns.
+_Avoid_: Compile error, lint, message
+
+**Diagnostic code**:
+The stable name of one kind of Diagnostic, such as `R1301`: `R`, the spec chapter that defines it, and its number in that chapter. It never changes meaning and is never reused.
+_Avoid_: Error number, error id
+
+**Conformance case**:
+A small Program kept beside the spec, with the outcome the spec promises for it: the exact Diagnostics it gets, or, for a scripted run, the Trace it leaves. A Transpiler is correct when it passes them all.
+_Avoid_: Test, fixture, golden file, example
+
 **Visual Editor**:
 The tool that shows Regia source next to a flowchart of it, with both sides editable and kept in sync.
 _Avoid_: Editor (unqualified), BIRDBRAIN

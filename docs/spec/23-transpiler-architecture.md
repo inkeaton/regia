@@ -79,6 +79,7 @@ Diagnostic {
 }
 ```
 
+- Codes follow chapter 27: `R`, the defining chapter's two digits, and the check's number in that chapter's `Transpiler checks` section. The Conformance cases in `docs/spec/cases/` pin down which code each Program gets.
 - Every pass collects diagnostics and none stops early, so all problems come back from one run.
 - Diagnostics are returned in one list, sorted by file and position. Duplicates and cascades from one broken construct are removed.
 - **Emit runs only when there are no errors.** Warnings don't block it.
