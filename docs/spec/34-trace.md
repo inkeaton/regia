@@ -19,7 +19,7 @@ Every entry has a **kind**:
 | `phase` | a Director changes Phase, with the Trigger that caused it |
 | `staging` | a Staging starts (with its cast) or ends (with its outcome) |
 | `giving` | a Playbook is given or taken away |
-| `cast` | an Agent joins or leaves the Program |
+| `cast` | an Agent joins or leaves the Program, or starts with its Propensity values |
 | `failure` | a Plan or Goal fails (below) |
 | `warning` | a runtime warning: the Plan carries on |
 | `script` | a behaviour case's `>` step is played (test mode only) |
@@ -92,7 +92,7 @@ Every entry is also shown as one line of text, the **console line**, as it is wr
 | `phase` | `PHASE <old> -> <new> ON <trigger>` |
 | `staging` | `STAGING <plot> STARTED <cast>`, `STAGING <plot> ENDED <outcome>` |
 | `giving` | `GIVE <playbook> TO <agent> AS <role>`, `TAKE <playbook> FROM <agent>` |
-| `cast` | `JOINED <agent> AS <roles>`, `LEFT <agent>` |
+| `cast` | `JOINED <agent> AS <roles>`, `LEFT <agent>`, `TEMPER <agent> <propensity> <value> …` |
 | `failure` | `FAILURE <code> <what>`, `FAILURE <what> because #<seq>` |
 | `warning` | `WARNING <code> <what>` |
 | `script` | `> <step>` |

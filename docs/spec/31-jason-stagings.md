@@ -18,7 +18,7 @@ A Staging is identified by **its Director's Jason agent name**. Nothing else nam
 
 ### Director names
 
-- The **Root Director** is declared in the `.jcm` as `regia_director__<plot>`, for example `regia_director__royalBanquet` (*.jcm generation*).
+- The **Root Director** is declared in the `.jcm` as `regia_director__<plot>`, for example `regia_director__royalBanquet` (chapter 36).
 - A **Subplot Director** is created at runtime by `regia.start_staging(Plot, Name)`, a `regia-jason` internal action. It calls Jason's `createAgent` with the base name `regia_director__<plot>` (`regia_director__honorDuel`), the source `directors/<Plot>.asl` and `agentClass("regia.DirectorAgent")`, starts the agent, and unifies `Name` with the name Jason actually gave it. Jason makes a clashing name unique by adding a number, so two duels get two names.
 - Names exist to be unique and readable in the mind inspector. The Infrastructure never parses them.
 - Because Generated names start with `regia_`, Agent names the game reports must not (checked where joins are reported, chapter 33).
@@ -61,7 +61,7 @@ On the child, `regia/director.asl` handles it:
 ```
 
 - A Role mapped from a parent Role that is empty when `START SUBPLOT` runs **starts empty**. That is not an error; the Director can `END PLOT` in `WHEN … EMPTIED` or never needs that Role.
-- How the **Root** Director gets its starting cast (from the `.jcm`'s Agents and the game) is an initial belief, `regia_start_cast`, compiled in (chapter 33); the Agents' names are *.jcm generation*. It then runs the same `!regia_begin`.
+- How the **Root** Director gets its starting cast (from the `.jcm`'s Agents and the game) is an initial belief, `regia_start_cast`, compiled in (chapter 33); the Agents' names are chapter 36. It then runs the same `!regia_begin`.
 
 ## Ending a Staging
 
@@ -166,7 +166,7 @@ Rows added to chapter 28's table, and one retired:
 
 ## Not decided here
 
-- The Root Director's `.jcm` entry: *.jcm generation*. Its starting cast is chapter 33.
+- The Root Director's `.jcm` entry: chapter 36. Its starting cast is chapter 33.
 - An Agent of a Subplot's cast leaving between `START SUBPLOT` and `regia_start`, and a `SIGNAL` or Message sent to a Director that has ended (`.kill_agent`): decided in chapter 33: the leave needs no special case, and sends go through `regia.send`.
 - Telling the game the Root Staging has ended: *Custom Actions through VEsNA*.
 - Trace entries for an ending: chapters 34 (`staging` entries) and 35.

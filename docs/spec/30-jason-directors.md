@@ -7,7 +7,7 @@ How the Jason Target runs a Director: its agent class, how game percepts reach e
 A Director runs on **`regia.DirectorAgent`**, a class of `regia-jason` that extends Jason's `Agent`, **not** VEsNA-Pro's `VesnaAgent`.
 
 - A Director has no Propensities (chapter 20), so it never needs VEsNA's Temper.
-- **Its body is optional.** The Root Director has one: a WebSocket to the game, opened with VEsNA's `WsClient` from the `address` and `port` in the `.jcm` (*.jcm generation*). A Subplot Director has none.
+- **Its body is optional.** The Root Director has one: a WebSocket to the game, opened with VEsNA's `WsClient` from the `address` and `port` in the `.jcm` (chapter 36). A Subplot Director has none.
 - Why not `VesnaAgent`: its body setup is private and parses `port` unconditionally, so an agent without a port fails to start, and a subclass can't skip that step.
 - Directors still rank their Plans (a Phase over `DURING PLOT`, chapter 13). The ranking code is a helper shared by `regia.DirectorAgent` and the Agents' class (chapter 28), and doesn't live in either class.
 - Every Staging is its own `regia.DirectorAgent`, and its name is the Staging's identity (chapter 31).
@@ -169,5 +169,5 @@ Rows filled in or added in chapter 28's table:
 - The Staging's identity (its Director's name), Director names, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: chapter 31 (`31-jason-stagings.md`).
 - The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: chapter 33.
 - How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: *Custom Actions through VEsNA*.
-- The Root Director's `.jcm` entry (its `address` and `port`, and `ag-class: regia.DirectorAgent`): *.jcm generation*.
+- The Root Director's `.jcm` entry (its `address` and `port`, and `ag-class: regia.DirectorAgent`): chapter 36.
 - The format of Trace entries: chapters 34 and 35.

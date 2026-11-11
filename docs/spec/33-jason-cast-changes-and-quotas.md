@@ -4,7 +4,7 @@ How the Jason Target handles the Cast changing and counts Quota Triggers. It cov
 
 ## The Root Director's starting cast
 
-The Transpiler names the starting Agents (`noble_1` …, *.jcm generation*), so it knows the Root Plot's starting cast at compile time. The Root Director's file carries it as an initial belief, next to `regia_rank_prefix([])` (chapter 32):
+The Transpiler names the starting Agents (`noble_1` …, chapter 36), so it knows the Root Plot's starting cast at compile time. The Root Director's file carries it as an initial belief, next to `regia_rank_prefix([])` (chapter 32):
 
 ```
 regia_start_cast([cast(guest, noble_1), cast(guest, noble_2), cast(host, lord_1)]).
@@ -25,7 +25,7 @@ Two more message types arrive on the Root Director's body, next to `regia_event`
 | `regia_join` | `{"kind": "noble", "name": "noble_7", …}` | the game spawned an Agent of this kind, with this name |
 | `regia_leave` | `{"name": "noble_7"}` | the game removed this Agent from the Program |
 
-- The fields the new agent's body needs to connect to the game (its port, for example) also travel in `regia_join`. Their names are decided by *.jcm generation*, together with the kind's settings.
+- The fields the new agent's body needs to connect to the game (its port, for example) also travel in `regia_join`. A join carries exactly `kind`, `name` and `port` (chapter 36).
 - A body closing is **not** a leave. VEsNA-Pro kills an agent whose WebSocket errors or closes (`VesnaAgent.myHandleError`). That is VEsNA's business: the Agent stays in every cast, and sends to it are caught (below). Only `regia_leave` removes an Agent from the Program (chapter 19).
 
 ### Reports that make no sense
@@ -41,7 +41,7 @@ The Root Director **ignores** these reports and writes a Trace warning, never a 
 The Root Director handles `regia_join` in one `[atomic]` plan:
 
 1. **Check** the report (above).
-2. **Create the agent** with `regia.spawn_agent(Kind, Name, Body)`, a `regia-jason` internal action. It creates a Jason agent of the kind's agent class and Role file(s), with the kind's settings and Propensity values (`RANDOM` drawn here, chapter 21) and the body fields from the report. Where the kind's settings live in the Root Director's file is decided by *.jcm generation*.
+2. **Create the agent** with `regia.spawn_agent(Kind, Name, Body)`, a `regia-jason` internal action. It creates a Jason agent of the kind's agent class and Role file(s), with the kind's settings and Propensity values (`RANDOM` drawn here, chapter 21) and the body fields from the report. It finds the kind in the Root Director's `regia_kind` beliefs (chapter 36).
 3. **Add it to the cast**: `regia_cast(Me, Role, A)` for each of the kind's Roles.
 4. **Tell the rest of the cast**: send `achieve regia_cast_joined(Role, A)` to every other Agent in `regia_cast(Me, _, _)`, once per Role.
 5. **Run the join**: `!regia_join(A, Roles)` (chapter 30): the joiner's cast copy, its Role setups, the standing Givings, then `JOINED`.
@@ -168,7 +168,7 @@ Jason handles one plan per event, but chapter 18 needs both the plain Trigger an
 - A real failure in a plain Plan carries another `error(…)`, so the two empty plans don't swallow it. It reaches the Trace as chapter 11 says.
 - **Precedence is unchanged.** Plans for `regia_when__ready` carry the same `regia_rank` as `+ready` plans would (`Item` `when(ready)`, chapter 32), and `selectOption` reads the annotation, not the trigger.
 - Events no Quota Trigger watches compile as before, without a dispatcher. Whether an Event is watched is a whole-Program fact, and the Transpiler always sees the whole Program (chapter 23).
-- An Agent kind playing several Roles gets each dispatcher once. Combining Role files without duplicating it is *.jcm generation*'s job, as for `regia_playbook`.
+- An Agent kind playing several Roles gets each dispatcher once. A combination file includes it once, as for `regia_playbook` (chapter 36).
 
 ### Counting
 
@@ -244,7 +244,7 @@ Rows filled in or added in chapter 28's table:
 
 ## Not decided here
 
-- The `regia_join` body fields, the kind's settings and Propensity values in the Root Director's file, and the `.jcm` names of starting Agents: *.jcm generation*.
+- The `regia_join` body fields, the kind's settings and Propensity values in the Root Director's file (`regia_kind`), and the `.jcm` names of starting Agents: chapter 36.
 - How the Root Director's body receives `regia_join` and `regia_leave` next to `regia_event` and `regia_fact`: *Custom Actions through VEsNA*.
 - The Trace entries for nonsensical reports, caught sends, and joins after the Root Staging has ended: chapters 34 and 35.
 - How a Conformance case scripts joins and leaves: `> join` and `> leave` steps, played by `ScriptedGame` as `regia_join`/`regia_leave` (chapters 34 and 35).

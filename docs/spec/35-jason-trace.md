@@ -69,7 +69,7 @@ java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
 ```
 
 1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (`regia_event`, `regia_fact`, `regia_join`, `regia_leave`, chapters 30 and 33, and the Action messages of *Custom Actions through VEsNA*).
-2. It starts the MAS from the Build's `.jcm`, in the same JVM, with **Jason's synchronous execution control**, so agents step in lockstep reasoning cycles, and with the case's **seed** given to every random source `regia-jason` controls: `EITHER`, Picks `AT RANDOM`, and `RANDOM` Propensity values. The Root Director and the Agents connect their bodies to `ScriptedGame` exactly as they would to Godot.
+2. It starts the MAS from the Build's `.jcm`, in the same JVM, with **Jason's synchronous execution control**, so agents step in lockstep reasoning cycles, and with the case's **seed** given to every random source `regia-jason` controls: `EITHER`, Picks `AT RANDOM`, and `RANDOM` Propensity values (drawn by `regia.RegiaAgent`, chapter 36). Starting Agents are named `<kind>_<n>` (chapter 36). The Root Director and the Agents connect their bodies to `ScriptedGame` exactly as they would to Godot.
 3. For each `>` step of the `.trace` file, it waits for the run to **settle**, plays the step through `ScriptedGame`, and writes a `script` entry.
 4. **Settled** means: for every agent, no intention is running except ones paused in `regia.wait`, the mailbox and event queue are empty, and `ScriptedGame` has nothing left to send, for one whole cycle. If the run has settled and something is paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of the next step.
 5. `ScriptedGame` answers each Action with **success**, unless a `> action fails` pattern matches it.
@@ -95,5 +95,4 @@ java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
 ## Not decided here
 
 - How an Action's result comes back from the game, and so where `action` entries are written and what `ScriptedGame` sends: *Custom Actions through VEsNA*.
-- The `.jcm` names of starting Agents, which behaviour cases use (`guard_1` …): *.jcm generation*.
 - Numbering the Jason Target's Trace codes in chapters 28–35: *Number the checks and add exemplar cases*.
