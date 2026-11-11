@@ -56,6 +56,7 @@ Only Events are counted. A Director never reads its Agents' Facts. Agents send a
 - Only Agents playing the Role count. A sender outside it is ignored for the quota, though it can still trigger other Plans.
 - `ALL` and `PERCENT` are measured against the Agents playing the Role **at the time of the check**, live, like a Role recipient (chapter 07).
 - `PERCENT` means **at least that share**, with no rounding: 50 PERCENT of 3 Guests needs 2. This deliberately differs from picks, which round down (chapter 15), because a threshold that rounds down can be met too easily.
+- In a Playbook, the Agent itself never counts and is left out of `ALL` and `PERCENT`: it never receives its own Events (chapter 07).
 - `n OF` with more than n Agents in the Role is fine. With fewer, it can't be met and never fires.
 - `ALL` of an **empty Role never fires**.
 - Only **current** players count. An Agent that leaves the Program stops counting, and the quota is checked again when someone leaves, so a non-sender leaving can complete an `ALL`. A joiner raises the denominator of `ALL` and `PERCENT` (chapter 19).
@@ -110,7 +111,7 @@ DURING reception:
 
 ## ASL mapping notes
 
-For *The full ASL mapping* to pick up:
+For *The full ASL mapping* to pick up. For Jason, these are implemented in chapter 33 (`33-jason-cast-changes-and-quotas.md`), in ASL (ADR 0013):
 
 - **In a Director**, the mapping between Roles and Agents is already stored in the Director, so it keeps each count as generated Facts, for example `quota_seen(TriggerId, Args, Agent)`. A Signal adds the sender if it plays the Role. The Director then checks the quota against its own Role records, posts an internal event for the Quota Trigger and removes that trigger's Facts for those arguments.
 - **In an Agent**, the same works against the per-Giving record of Role bindings (chapter 15's note), which the Agent needs for `FROM Role` anyway.

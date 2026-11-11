@@ -67,7 +67,7 @@ Every plan generated from a `DURING feast` Block:
 
 1. **Stop the old Phase's Plans.** `regia.stop_phase(Old)`, a `regia-jason` internal action like `regia.stop_playbook` (chapter 29), drops every intention running a plan annotated `regia_phase(Old)`. It drops them silently: Directors have no Goals, so nothing fires and nothing is traced. It **skips the intention running the `TRANSITION`**, which ends at step 5.
 2. **Run `EXITED` to completion**, as the subgoal `!regia_exited(phase(Old))`, inside the atomic plan. If it fails, a `-!regia_exited` plan writes the Trace entry (chapter 20) and the transition carries on: a Director Statement never fails.
-3. **Clear the old Phase's Quota counts**, through a hook owned by *Quota counts and cast changes in ASL*, then replace `regia_phase(Old)` with `regia_phase(x)`.
+3. **Clear the old Phase's Quota counts**, with `!regia_quota_clear(Old)` (chapter 33), then replace `regia_phase(Old)` with `regia_phase(x)`.
 4. **Post `ENTERED`** with `!!regia_entered(phase(x))`. It starts after the atomic plan, as an ordinary intention of the new Phase: it may `WAIT`, and it is stopped if the Phase is left.
 5. **End the Body.** `regia.end_body` drops the intention that ran the `TRANSITION`, silently. `TRANSITION` ends its Body (chapter 20) even inside an `IF` branch with Statements after the `IF`, and in a `DURING PLOT` Plan too.
 
@@ -98,7 +98,7 @@ Each `ROLE Guest STARTS WITH:` Block is a generated Director plan `regia_setup__
 
 ## An Agent joining
 
-How the game reports a join, and how the Director's `regia_cast` and the other Agents' copies are updated, belong to *Quota counts and cast changes in ASL*. Once that is done, the Director runs `!regia_join(Agent, Roles)`, an `[atomic]` plan:
+How the game reports a join, and how the Director's `regia_cast` and the other Agents' copies are updated, are in chapter 33. Once that is done, the Director runs `!regia_join(Agent, Roles)`, an `[atomic]` plan:
 
 1. Send the joiner the cast copy.
 2. Run each joined Role's setup for it, in Role declaration order.
@@ -130,7 +130,7 @@ regia_standing(Seq, Playbook, Role, Rank, Bindings)
 
 ## Messages from a Director
 
-- `TELL Role f` and `ASK Role TO g` send `tell f` or `achieve g` to each Agent with `regia_cast(Me, Role, A)` when the Statement runs (chapter 20). A send to an Agent that has left is caught and traced (*Quota counts and cast changes in ASL*).
+- `TELL Role f` and `ASK Role TO g` send `tell f` or `achieve g` to each Agent with `regia_cast(Me, Role, A)` when the Statement runs (chapter 20). A send to an Agent that has left is caught and traced by `regia.send` (chapter 33).
 - A filled Placeholder recipient is a single `.send`.
 
 ### `EVERYONE`
@@ -167,7 +167,7 @@ Rows filled in or added in chapter 28's table:
 ## Not decided here
 
 - The Staging's identity (its Director's name), Director names, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: chapter 31 (`31-jason-stagings.md`).
-- The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: *Quota counts and cast changes in ASL*.
+- The game reporting joins and leaves, keeping `regia_cast` and the cast copies up to date, catching sends to Agents that have left, and the Quota-clearing hook: chapter 33.
 - How `regia-jason` hooks into VEsNA-Pro's message handling, Custom Actions reaching the game, and Action results: *Custom Actions through VEsNA*.
 - The Root Director's `.jcm` entry (its `address` and `port`, and `ag-class: regia.DirectorAgent`): *.jcm generation*.
 - The format of Trace entries: *Trace and logging*.

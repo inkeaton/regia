@@ -15,3 +15,4 @@ How do Custom Actions and Regia's game messages work with VEsNA-Pro (`vesna-pro-
 
 - Surfaced by *Director runtime in ASL* (36), 2026-11-11.
 - From *Stagings and Subplots runtime in ASL* (37): the Root Director's `END PLOT` leaves its agent alive and idle; decide whether and how the game hears that the story has ended (chapter 31).
+- From *Quota counts and cast changes in ASL* (39): the Root Director's body also receives `regia_join` and `regia_leave` (chapter 33).

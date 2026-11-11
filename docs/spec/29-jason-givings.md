@@ -51,7 +51,7 @@ regia_given(Playbook, Director, Target, Rank, Bindings)
 A whole-Role binding is live: `TELL host f` reaches whoever plays `Host` in that Staging **now** (chapter 15). Every Agent holding a Giving from a Staging therefore keeps a **copy of that Staging's cast**, as `regia_cast(Director, Role, Agent)`, the same functor the Director uses for its own record (chapter 28).
 
 - The Director sends its cast to an Agent before the first Giving it sends that Agent. Jason keeps one sender's messages in order, so the copy is there before the Giving arrives.
-- Keeping the copies up to date when Agents join and leave belongs to *Quota counts and cast changes in ASL*.
+- Keeping the copies up to date when Agents join and leave: `regia_cast_joined` and `regia_cast_left`, chapter 33.
 - Rejected alternatives: asking the Director at every send or arrival (slow, and it blocks the Plan), and relaying Messages through the Director (the Sender becomes the Director, which breaks `FROM` and the per-sender ordering promised in chapter 07).
 
 ## Messages between Director and Agent
@@ -77,7 +77,7 @@ The Director gives and takes away with `achieve` messages. The Agent handles the
 
 - `regia_give` carries the record without the Director, which is also the Staging; the Agent adds `D` from `[source]`. A forged or stale argument can't make a Giving look like it came from another Director.
 - A `regia_give` for a Playbook the Agent's files don't hold is a Transpiler bug, not a designer error. The Agent writes a Trace warning and ignores it.
-- Whether a newly given Playbook starts any Quota counts, belongs to *Quota counts and cast changes in ASL*. A Playbook given twice keeps both Givings; `selectOption` takes the best Rank per item (chapter 32).
+- A newly given Playbook starts counting its Quota Triggers just by being given: counting is active while some `regia_given` exists (chapter 33). A Playbook given twice keeps both Givings; `selectOption` takes the best Rank per item (chapter 32).
 
 ### What each Director Statement sends
 
@@ -91,7 +91,7 @@ The Director gives and takes away with `achieve` messages. The Agent handles the
 | `UNASSIGN P FROM ?who` | that Agent | `regia_take(p, all)` |
 | A Staging ending (chapter 17) | each Agent in its cast | `regia_end_staging`, which takes away every Giving from that Director and its cast copy (chapter 31) |
 
-The Director doesn't track which Agents hold which Givings. A take-away goes to the whole cast, and each Agent removes whatever matches in its own record. Sending to an Agent that has left is caught and traced (chapter 19).
+The Director doesn't track which Agents hold which Givings. A take-away goes to the whole cast, and each Agent removes whatever matches in its own record. Sending to an Agent that has left is caught and traced (chapter 19): every send goes through `regia.send`, not `.send` (chapter 33).
 
 ## Reading the record
 
@@ -116,7 +116,7 @@ When the **last** Giving of P goes, inside the same atomic `regia_take` (or `reg
    - A stopped Plan whose Trigger isn't a Goal (`WHEN hit_by(?x)`) just stops, with a Trace entry saying its Playbook was taken away.
    - Goals started `WITHOUT WAITING` from a Plan of P run on their own intention. If their recipe is in P, that intention has a plan of P and stops too. This is how P's **Local Goals are dropped** (chapter 10): their recipes are only in P.
 2. **P's local Facts stay** (chapter 10). The guard hides the Plans that read them; they are there again if P is given back.
-3. **P's Quota counts are cleared** (chapter 18). How is decided by *Quota counts and cast changes in ASL*.
+3. **P's Quota counts are cleared** (chapter 18): the plan removes every `regia_quota(p, …)` (chapter 33).
 
 Step 1 is a `regia-jason` internal action, `regia.stop_playbook(P)`, since walking intentions by their plans' annotations is clumsy in ASL. It generates the `DROPPED` events and Trace entries itself.
 
@@ -136,6 +136,6 @@ Rows filled in or added in chapter 28's table:
 
 - The Staging's identity (its Director's name), and taking a whole Staging's Givings away when it ends: chapter 31.
 - The Director's standing-Giving record (`regia_standing`), replaying it for joiners, and the cast copy's message (`regia_cast_copy`): chapter 30.
-- Keeping cast copies and counted picks up to date on join and leave, and starting and clearing Quota counts: *Quota counts and cast changes in ASL*.
+- Keeping cast copies and counted picks up to date on join and leave, and starting and clearing Quota counts: chapter 33.
 - The Trace entries' format: *Trace and logging*.
 - How Role files combine for an Agent kind that plays several Roles, so that `regia_playbook` beliefs and Playbook includes aren't duplicated: *.jcm generation*.
