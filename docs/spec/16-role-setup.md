@@ -87,7 +87,7 @@ The setup is undone only where the things it gave are undone anyway:
 
 ## ASL mapping notes
 
-For *The full ASL mapping* to pick up:
+For *The full ASL mapping* to pick up (for Jason, done in chapter 30):
 
 - The Director runs each Role's setup when it starts the Staging, for each cast Agent, before posting the initial Phase's entry event; and again for each Agent joining the Role.
 - A setup `ASSIGN` is the same `regia_give` message (chapter 29) the Director sends for a Phase `ASSIGN`, with the bindings attached; `LEARN` and `PURSUE` are `tell` and `achieve` sent by the Director, so the Agent's `[source(Director)]` makes `FROM DIRECTOR` match.

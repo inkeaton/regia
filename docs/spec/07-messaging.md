@@ -127,7 +127,7 @@ For *The full ASL mapping* to pick up:
 - `TELL ?x f` (a Fact) maps to `.send(X, tell, f)`. `ASK ?x TO g` maps to `.send(X, achieve, g)`.
 - **Told Facts keep their Jason sources underneath.** The language hides them: `LEARNED` must fire only when the belief is new, so the receiving side checks whether `f` was already believed from any source before running a `LEARNED` Plan. `FORGET f` removes every source (e.g. `.abolish` or one removal per source), and `FORGOTTEN` fires only when the last one goes. Keeping the sources leaves room for `TOLD`.
 - **A told Event** isn't a belief. 1.0 sends `untell` then `tell` so that a repeated Event fires again; 2.0 should use a form that leaves nothing behind in the receiver's belief base (for example a generated achieve-goal per Event, or an immediate removal in the handling plan), so that Events stay momentary (chapter 05).
-- **Role recipients and `EVERYONE`** need the infrastructure to know which Agents play a Role and which Agents exist; part of *The full ASL mapping*. The sender is excluded.
+- **Role recipients and `EVERYONE`** need the infrastructure to know which Agents play a Role (chapter 29's cast copy). `EVERYONE` is a wrapped `.broadcast` that Directors ignore, so nobody needs to know every Agent (chapter 30). The sender is excluded.
 - **`SIGNAL`** keeps 1.0's shape: each Agent knows which Directors gave it which Playbook, and sends to each of them (`signal_directors` in the primer's ASL examples). The Signal reaches the Director with the Sender's Role available for `FROM Role`.
 - **A non-Agent recipient** must fail the Plan, so the generated send checks that `?x` names a known Agent first.
 - Jason's per-sender message order matches the ordering promise above.

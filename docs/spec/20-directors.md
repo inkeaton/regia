@@ -25,7 +25,7 @@ DURING PLOT:
 
 - **A Plot's `GIVEN` reads only its Director's own Facts.**
 - **Facts belong to one Staging.** Two Stagings of `HonorDuel` share none, and a parent can't read a Subplot's Facts or the other way round. A parent and its Subplot talk only through `START SUBPLOT` Mappings and Outcomes (chapter 17).
-- Which game Facts and Events reach which Director is the Target's business (*The full ASL mapping*).
+- Which game Facts and Events reach which Director is the Target's business. For Jason, see chapter 30: game percepts are passed down the Staging tree, and a Subplot starts knowing the game Facts it hears.
 - A Director that needs starting Facts learns them in `DURING PLOT: WHEN ENTERED:` (below). There is no `STARTS WITH` for the Director itself.
 
 ## How a Director directs Agents
@@ -160,7 +160,7 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 
 - One Director per Staging, as in 1.0; its beliefs are the Staging's Facts. Game percepts the Director should see are routed to it by the environment.
 - `ASK`/`TELL` from a Director are `achieve`/`tell` sent by the Director, as for Role setup (chapter 16), so `[source(Director)]` matches `FROM DIRECTOR`.
-- Leaving a Phase drops the intentions of that Phase's Plans (`.drop_intention` on intentions tagged with the Phase) before running `EXITED`. `EXITED` Plans run inside the atomic `switch_phase` as 1.0's `on_exit`; `ENTERED` Plans are posted as ordinary, non-atomic events after it, so they may `WAIT`.
+- Leaving a Phase drops the intentions of that Phase's Plans before running `EXITED`. `EXITED` Plans run inside the atomic transition; `ENTERED` Plans are posted as ordinary, non-atomic events after it, so they may `WAIT`. The Jason mapping is chapter 30.
 - A Giving to `?who` is a single `regia_give` message with no standing record (chapter 29). A `MAPPING ?who TO r` binds `r` to that Agent alone.
 
 ## Handed off
@@ -168,4 +168,4 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 - Directors with Goals (multi-step Director recipes): fog, *Richer Directors*.
 - Moods on a Plot (pacing, tension): *Richer Propensities*.
 - Replies to a Director's `ASK`: *Agent cooperation*.
-- Which percepts reach which Director, and how Phase-tagged intentions are dropped: *The full ASL mapping*.
+- Which percepts reach which Director, and how Phase-tagged intentions are dropped: chapter 30.

@@ -126,7 +126,7 @@ Nothing happens on its own when a Role empties:
 
 ## ASL mapping notes
 
-For *The full ASL mapping* to pick up:
+For *The full ASL mapping* to pick up (for Jason, the Director's side of joining and the standing record are chapter 30; the rest is *Quota counts and cast changes in ASL*):
 
 - The game reports joining and leaving to the infrastructure. Joining reaches the Root Plot's Director with the Agent's Roles from Instancing. Leaving reaches every Director whose Staging the Agent plays in.
 - Each Director keeps a record of its standing Givings, in order, next to its Role records, and replays them for a joiner after running its Role setups.

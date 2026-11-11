@@ -1,6 +1,6 @@
 # Jason Build layout
 
-What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`).
+What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation*. It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`).
 
 ## Files
 
@@ -34,8 +34,9 @@ build/<entry>/
 Some of the Infrastructure has to be Java. Jason picks among the applicable plans for an event in `Agent.selectOption`, and ASL code can't see the other options, so precedence (chapter 13) can only be enforced there.
 
 - The Java code lives in **`regia-jason`**, a small library released and versioned with the Transpiler. It is never generated.
-- Its agent class **extends VEsNA-Pro's** agent class and follows VEsNA's approach: plans carry annotations, and `selectOption` reads them. Regia adds a ranking annotation. `selectOption` keeps the options with the best rank, hands those to VEsNA's temper selection when they are Suits alternatives or a `TIES` pool, and breaks what remains by Playbook name. The annotation's shape and how ranks compare are decided by *Precedence encoding in ASL*. A plan annotation can hold only the fixed part of a rank (the Playbook, and the Trigger Block's position in it). The part that depends on who gave the Playbook is runtime state (below).
-- The `.jcm` points at this class by default (chapter 21: `ag-class` never has to be written).
+- The Agents' class **extends VEsNA-Pro's** agent class and follows VEsNA's approach: plans carry annotations, and `selectOption` reads them. Regia adds a ranking annotation. `selectOption` keeps the options with the best rank, hands those to VEsNA's temper selection when they are Suits alternatives or a `TIES` pool, and breaks what remains by Playbook name. The annotation's shape and how ranks compare are decided by *Precedence encoding in ASL*. A plan annotation can hold only the fixed part of a rank (the Playbook, and the Trigger Block's position in it). The part that depends on who gave the Playbook is runtime state (below).
+- Directors run on a separate class, `regia.DirectorAgent`, which extends Jason's `Agent`: Directors have no Temper, and a Subplot Director has no VEsNA body, without which `VesnaAgent` can't start (chapter 30). The ranking code is a helper shared by both classes.
+- The `.jcm` points at these classes by default (chapter 21: `ag-class` never has to be written).
 - `regia-jason` is also the home for any other Java the Jason Target needs, such as a trace writer or internal actions.
 - A Build contains ASL files and the `.jcm`, and no Java.
 
@@ -50,8 +51,9 @@ Some of the Infrastructure has to be Java. Jason picks among the applicable plan
 | A Playbook in the Agent's files | Agent | `regia_playbook` | *Giving and taking Playbooks at runtime* (chapter 29) |
 | A Role the Agent plays in a Staging | Agent | `regia_plays` | *Stagings and Subplots runtime in ASL* |
 | The Plot and Staging a Director runs | Director | `regia_staging` | *Stagings and Subplots runtime in ASL* |
-| The current Phase | Director | `regia_phase` | *Director runtime in ASL* |
-| A standing Giving | Director | `regia_standing` | *Director runtime in ASL* |
+| The current Phase | Director | `regia_phase` | *Director runtime in ASL* (chapter 30) |
+| A standing Giving | Director | `regia_standing` | *Director runtime in ASL* (chapter 30) |
+| What a Plot hears from the game | Director | `regia_hears` | *Director runtime in ASL* (chapter 30) |
 | A Role's members | Director, and a copy in Agents (chapter 29) | `regia_cast` | *Quota counts and cast changes in ASL* |
 | A Quota Trigger count | Agent or Director | `regia_quota` | *Quota counts and cast changes in ASL* |
 
@@ -74,7 +76,7 @@ Tickets that need a concept missing from this table add a row.
 ### External names
 
 - External names (chapter 10) are emitted **exactly as written**, with no lowercasing or renaming.
-- An Action's External name with dots (`engine.security.summon_guards`) is a **Java internal action**: Jason looks for a Java class by that name. One without dots is an **environment action**, sent to the game through VEsNA.
+- An Action's External name with dots (`engine.security.summon_guards`) is a **Java internal action**: Jason looks for a Java class by that name. One without dots is an **environment action**, sent to the game through VEsNA. VEsNA-Pro today sends only its own internal actions (`vesna.walk`, …) to the game, so how a dot-less Action reaches the game, and how its result comes back, is decided by *Custom Actions through VEsNA*.
 - A Fact's or Event's External name must be a valid **Jason atom** (a lowercase letter, then letters, digits and `_`), because beliefs and percepts can't contain dots. Anything else is an error for the Jason Target.
 
 ## The clock

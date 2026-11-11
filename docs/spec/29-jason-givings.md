@@ -137,7 +137,7 @@ Rows filled in or added in chapter 28's table:
 
 - The shape of a Staging's identity, and how `START SUBPLOT` and `END PLOT` send their Givings: *Stagings and Subplots runtime in ASL*.
 - The `Rank` encoding, and how two Givings' ranks combine: *Precedence encoding in ASL*.
-- The Director's standing-Giving record (`regia_standing`) and replaying it for joiners: *Director runtime in ASL*.
+- The Director's standing-Giving record (`regia_standing`), replaying it for joiners, and the cast copy's message (`regia_cast_copy`): chapter 30.
 - Keeping cast copies and counted picks up to date on join and leave, and starting and clearing Quota counts: *Quota counts and cast changes in ASL*.
 - The Trace entries' format: *Trace and logging*.
 - How Role files combine for an Agent kind that plays several Roles, so that `regia_playbook` beliefs and Playbook includes aren't duplicated: *.jcm generation*.
