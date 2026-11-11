@@ -128,6 +128,23 @@ WHEN intruder_seen(?x):
 
 `LEARN`, `FORGET`, `CHANGE`, `PURSUE`, `DROP`, `PRINT`, `WAIT`, `FAIL` (chapter 11), and the clause `WITHOUT WAITING`; plus chapter 07's `TELL`, `ASK`, `SIGNAL`, `EVERYONE`. `BELIEVE` and `ACHIEVE` are no longer keywords.
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0801` A blank (an unfilled Placeholder) in a Basic Action's argument (for `FORGET`, the hint suggests `FOR EACH`).
+- `R0802` A name whose kind doesn't suit the Action: `LEARN`/`FORGET`/`CHANGE` with an Event or a Goal, `PURSUE`/`DROP` with a Fact or an Event, `DO` with anything but a Custom Action (the message suggests the right Action).
+- `R0803` A Custom Action without `DO`, or `DO` before a Basic Action.
+- `R0804` `CHANGE f TO f2.` with two different Facts.
+- `R0805` A trailing clause other than `, WITHOUT WAITING`, or one on a Statement other than `PURSUE` and `DO`.
+
+## Trace entries
+
+**Failures**
+
+- `T0801` `CHANGE f TO f2.` when `f` isn't known.
+
 ## ASL mapping notes
 
 For *The full ASL mapping* to pick up:

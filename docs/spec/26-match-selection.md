@@ -118,6 +118,18 @@ WHEN insulted(?who):
 
 `AT`, `RANDOM`, `HIGHEST`, `LOWEST`, `FOR`, `EACH`, `COUNT`. `RANDOM` is also the Expression `RANDOM(a, b)` (chapter 04) and appears in Instancing (`AT RANDOM(a, b)`, chapter 21): followed by `(` it is the function, and otherwise it is the Pick.
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R2601` `HIGHEST` together with `LOWEST`, or a Pick clause written twice.
+- `R2602` A ranked Placeholder not filled by the same condition (a Trigger Placeholder, or one filled earlier in the Body).
+- `R2603` A Pick on `FOR EACH`, a Trigger, `COUNT(…)` or `ELSE`.
+- `R2604` A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block.
+
+A blank in a Basic Action, whose message suggests `FOR EACH`, is chapter 08's `R0801`.
+
 ## ASL mapping notes
 
 For *The full ASL mapping* to pick up. Generated names use a prefix designers can't produce (chapter 06). Every `?` becomes a fresh variable in the templates below, so that Matches are told apart by every blank.

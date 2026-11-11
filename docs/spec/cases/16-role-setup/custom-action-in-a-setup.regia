@@ -1,0 +1,9 @@
+#! case: a Role setup holds only ASSIGN, LEARN and PURSUE
+#! rule: R1602
+
+ACTION wave
+
+PLOT Banquet:
+    ROLE Guest STARTS WITH:
+        DO wave.                         #! error R1602
+    PHASE reception INITIAL.

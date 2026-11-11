@@ -185,23 +185,23 @@ Instancing orders nothing. A Program has exactly one Root Plot and Instancing ne
 
 **Errors**
 
-- A cycle in one Plot's relations (the message prints the cycle).
-- `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
-- A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot.
-- Mixing Trigger Blocks with and without `SUITS` for one Trigger in one Playbook.
+- `R1301` A cycle in one Plot's relations (the message prints the cycle).
+- `R1302` `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
+- `R1303` A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot.
+- `R1304` Trigger Blocks with and without `SUITS` mixed for one Trigger in one Playbook.
 
 **Warnings**
 
-- A competition ordered only by name.
-- A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes).
-- A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
-- `TIES` with no `SUITS` to choose by.
-- A `TIES` pool mixing `SUITS` and unlabelled candidates.
-- `SUITS` on a Target without a Selection function (once per Program).
+- `R1305` A competition ordered only by name.
+- `R1306` A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes).
+- `R1307` A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
+- `R1308` `TIES` with no `SUITS` to choose by.
+- `R1309` A `TIES` pool mixing `SUITS` and unlabelled candidates (once per pool).
+- `R1310` `SUITS` on a Target without a Selection function (once per Program).
 
 **Notes**
 
-- A Subplot's relation dropped because its parent says the opposite.
+- `R1311` A Subplot's relation dropped because its parent says the opposite.
 
 **Conflict report.** On request, the Transpiler lists, per Role and Trigger, the competing Trigger Blocks in the order they rank and why (relation, default, Selection function, or name):
 

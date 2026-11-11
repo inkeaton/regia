@@ -116,9 +116,23 @@ The language fixes **what** a trace can explain, and chapter 34 fixes its entrie
 
 ## Transpiler checks
 
-- **Warning:** a Goal that is pursued, asked or declared, but that has no `TO` Plan anywhere in the Program. It would always fail.
-- **Warning:** Statements after `FAIL.` in the same Block, which can never run.
-- There is no warning for a `TO` Plan with `GIVEN`s and no `ELSE`. Failing when no Context holds is often intended, and a warning there would fire on most recipes.
+**Warnings**
+
+- `R1101` A Goal that is pursued, asked or declared, but has no `TO` Plan anywhere in the Program. It would always fail.
+- `R1102` Statements after `FAIL.` in the same Block, which can never run.
+
+There is no warning for a `TO` Plan with `GIVEN`s and no `ELSE`. Failing when no Context holds is often intended, and a warning there would fire on most recipes.
+
+## Trace entries
+
+**Failures**
+
+- `T1101` A Custom Action that the game refuses, or reports as failed while the `DO` waits.
+- `T1102` `PURSUE g.` waiting on a Goal that is dropped or fails.
+- `T1103` `FAIL.`
+- `T1104` A Goal with no applicable `TO` Plan.
+
+The other causes in the table above have their codes in their own chapters: `T0401`, `T0402`, `T0701`, `T0801`, `T0901`, `T1201`.
 
 ## Reserved words
 

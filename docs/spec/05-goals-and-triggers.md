@@ -152,6 +152,17 @@ WHEN hates(?h) LEARNED FROM ?teller, SUITS sympathy AT -0.5:
 
 The kind words and `FROM` are reserved, so the parser always knows where the item ends.
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0501` One name declared as two kinds (`FACT fed` and `GOAL fed`).
+- `R0502` An Event tested in a Context or an `IF` (`IF food_served`).
+- `R0503` A Fact Trigger without a kind word (`WHEN hates(?h):`, hint: `LEARNED` or `FORGOTTEN`).
+- `R0504` A kind word that doesn't suit the item (`WHEN food_served LEARNED`, `WHEN find_food LEARNED`).
+- `R0505` `FROM` on a `FORGOTTEN` Trigger.
+
 ## Not decided here
 
 - How a Body gives a Goal and drops one is decided in chapter 08 (`08-basic-actions.md`).

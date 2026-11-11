@@ -1,0 +1,13 @@
+#! case: END PLOT ends its Body
+#! rule: R1702
+
+EVENT guards_arrived
+ACTION stop_music
+
+PLOT Banquet:
+    PHASE reception INITIAL.
+
+    DURING PLOT:
+        WHEN guards_arrived:
+            END PLOT.
+            DO stop_music.               #! error R1702

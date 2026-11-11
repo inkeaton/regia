@@ -56,17 +56,19 @@ Chapter 11 requires the Trace to say what failed, why, and what failed in turn b
 
 ## Trace codes
 
-Every runtime warning and every Failure cause has a stable **Trace code**: `T`, the chapter's two digits, then two digits numbering it within the chapter (`T0901` might be a negative Weight). It follows the same rules as the Diagnostic codes of chapter 27: codes are never reused, and a dropped one is marked retired.
+Every runtime warning and every Failure cause has a stable **Trace code**: `T`, the chapter's two digits, then two digits numbering it within the chapter (`T0902` is a negative Weight). It follows the same rules as the Diagnostic codes of chapter 27: codes are never reused, and a dropped one is marked retired.
 
 - Every chapter that defines a runtime warning or a Failure cause lists its codes in a `## Trace entries` section.
 - Target chapters (28–37) number their own Target-only entries: a Giving for a Playbook the Agent's files don't hold, a guard bypassed in `selectOption`, a send caught by `regia.send`, and so on.
 - Behaviour cases match on codes, not on message wording, so wording can improve without breaking cases.
 
-Sources to number (gathered from the chapters; numbering them is the ticket *Number the checks and add exemplar cases*):
+Where the codes are:
 
-- Failure causes: chapter 11's table, and "no applicable `TO` Plan".
-- Runtime warnings: negative and all-zero Weights (09), negative Durations (12), a counted Mapping asking for more than are left or for a negative number (15), a skipped Role setup Statement (16), a dropped Message (19), a dropped Giving or Mapping, and a failing Director Plan (20).
-- Jason Target entries: a Giving for an unknown Playbook, and a Plan stopped because its Playbook was taken away (29); a failed `EXITED`, and a `?who` outside the cast (30); a failed `EXITED` during an ending (31); a ranked option whose guard was bypassed (32); nonsensical join or leave reports, a send caught by `regia.send`, and a join after the Root Staging has ended (33); an Action reply with an unknown or finished `id`, and an unknown message type at the Root Director's body (37).
+| Chapters | Codes |
+| --- | --- |
+| Failure causes (chapter 11's table) | `T0401`, `T0402` arithmetic; `T0701` recipient; `T0801` `CHANGE`; `T0901` Weight; `T1101`–`T1104` Custom Action, waited-on Goal, `FAIL`, no applicable `TO` Plan; `T1201` Duration; `T1501` count |
+| Runtime warnings | `T0902`, `T0903` Weights; `T1202` Duration; `T1502`, `T1503` counts; `T1601` setup Statement; `T1901` dropped Message; `T2001`, `T2002` Directors |
+| Jason Target entries | `T2901`, `T2902` (29); `T3001` (30); `T3201` (32); `T3301`–`T3304` (33); `T3701`, `T3702` (37) |
 
 ## The console line
 
@@ -168,5 +170,4 @@ None. The Trace is written at run time; a behaviour case that doesn't match is a
 ## Not decided here
 
 - How the Jason Target writes the Trace, its file and console, test mode and the stand-in game: chapter 35.
-- Numbering every Trace code into each chapter's `## Trace entries` section: *Number the checks and add exemplar cases*.
 - A live Trace view in the Visual Editor, and runtime verification against properties over the Trace: post-2.0. The format carries `at` and is written as it happens, so both can be built on it.

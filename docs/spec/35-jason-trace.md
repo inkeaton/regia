@@ -90,8 +90,7 @@ java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
 
 **Warnings**
 
-- An unknown value for `trace_console` (as for any unknown key in a known Target's group, chapter 21).
+- `R3501` An unknown value for `trace_console` (as for an unknown key in a known Target's group, `R2113`).
 
 ## Not decided here
 
-- Numbering the Jason Target's Trace codes in chapters 28–37: *Number the checks and add exemplar cases*.

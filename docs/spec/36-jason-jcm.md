@@ -183,16 +183,12 @@ New rows for chapter 28's table:
 
 ## Transpiler checks
 
-### Errors
+**Errors**
 
-- A port past 65535: `base_port` plus the number of starting Agents is too large.
-- `base_port` that isn't a whole number in 1–65535.
+- `R3601` A port past 65535: `base_port` plus the number of starting Agents is too large.
+- `R3602` `base_port` that isn't a whole number in 1–65535.
 
-### Warnings
-
-- An unknown key in the `JASON` group (chapter 21). The known keys are `strategy`, `address`, `base_port` and `trace_console`.
-
-Codes are assigned by *Number the checks and add exemplar cases*.
+An unknown key in the `JASON` group is chapter 21's `R2113`. The known keys are `strategy`, `address`, `base_port` and `trace_console`.
 
 ## Not decided here
 

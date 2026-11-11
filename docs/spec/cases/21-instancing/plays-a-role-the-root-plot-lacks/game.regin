@@ -1,0 +1,7 @@
+#! case: an Agent kind plays only Roles of the Root Plot
+#! rule: R2105
+
+IMPORT "banquet".
+
+AGENT noble PLAYS Guest AND Drunkard:   #! error R2105
+    COUNT 1.

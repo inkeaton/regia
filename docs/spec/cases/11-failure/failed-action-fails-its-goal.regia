@@ -1,0 +1,24 @@
+#! case: a Custom Action the game reports as failed fails its Plan and the Goal the Plan was for
+#! rule: T1101
+#! rule: 11 How failure spreads
+
+#%[
+AGENT guard PLAYS Guard:
+    COUNT 1.
+]#
+
+EVENT intruder_seen(who)
+ACTION chase(who)
+GOAL catch(who)
+
+PLAYBOOK Watching:
+    WHEN intruder_seen(?x):
+        PURSUE catch(?x), WITHOUT WAITING.
+
+    TO catch(?x):
+        DO chase(?x).
+
+PLOT Watch:
+    ROLE Guard STARTS WITH:
+        ASSIGN Watching.
+    PHASE calm INITIAL.

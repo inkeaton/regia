@@ -242,6 +242,16 @@ Rows filled in or added in chapter 28's table:
 - Internal actions `regia.spawn_agent(Kind, Name, Body)` and `regia.send(Receiver, Ilf, Content)`.
 - Nothing for Quota counting (ADR 0013).
 
+
+## Trace entries
+
+**Warnings**
+
+- `T3301` A `regia_join` that makes no sense: a name starting with `regia_`, an Agent already in the Program, a kind with no Agent declaration, or a missing or invalid `port` (chapter 36). It is ignored.
+- `T3302` A `regia_leave` for an Agent that isn't in the Program, ignored.
+- `T3303` An Infrastructure send to an agent that doesn't exist, caught by `regia.send`. A designer's `TELL` or `ASK` to an Agent who has left writes chapter 19's `T1901` instead.
+- `T3304` A join after the Root Staging has ended: the agent is created, but joins no cast.
+
 ## Not decided here
 
 - The `regia_join` body fields, the kind's settings and Propensity values in the Root Director's file (`regia_kind`), and the `.jcm` names of starting Agents: chapter 36.

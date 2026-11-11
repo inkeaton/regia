@@ -164,6 +164,15 @@ Rows filled in or added in chapter 28's table:
 - The `regia_event` and `regia_fact` message types.
 - Internal actions: `regia.perceive`, `regia.add_percepts`, `regia.stop_phase`, `regia.end_body`, `regia.deliver`.
 
+
+## Trace entries
+
+**Warnings**
+
+- `T3001` A Giving or Mapping to a `?who` who was never in this Staging (such as an Agent named by a game Event's argument), dropped.
+
+A failed `EXITED` Plan writes chapter 20's `T2002`, and the transition carries on; a Giving or Mapping to an Agent who has left writes `T2001`.
+
 ## Not decided here
 
 - The Staging's identity (its Director's name), Director names, a Director's record of its children, starting a child Director with its cast, and the rest of `END PLOT`: chapter 31 (`31-jason-stagings.md`).

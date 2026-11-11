@@ -1,0 +1,18 @@
+#! case: giving a Playbook must fill every Role it declares
+#! rule: R1503
+
+EVENT food_served, insult_heard
+ACTION complain
+
+PLAYBOOK Chatting:
+    ROLE partner.
+    WHEN insult_heard FROM partner: DO complain.
+
+PLOT Banquet:
+    ROLE Host.
+    ROLE Guest.
+    PHASE reception INITIAL.
+
+    DURING reception:
+        WHEN food_served:
+            ASSIGN Chatting TO Guest.    #! error R1503

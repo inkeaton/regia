@@ -132,6 +132,14 @@ Rows filled in or added in chapter 28's table:
 | A Playbook in the Agent's files | Agent (initial beliefs of its Role file) | `regia_playbook(Playbook)` |
 | A Role's members | Director, and a copy in each Agent holding a Giving from that Staging | `regia_cast(Director, Role, Agent)` |
 
+
+## Trace entries
+
+**Warnings**
+
+- `T2901` A `regia_give` for a Playbook the Agent's files don't hold (a Transpiler bug), ignored.
+- `T2902` A Plan whose Trigger isn't a Goal, stopped because its Playbook was taken away.
+
 ## Not decided here
 
 - The Staging's identity (its Director's name), and taking a whole Staging's Givings away when it ends: chapter 31.

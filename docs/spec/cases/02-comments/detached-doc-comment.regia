@@ -1,0 +1,11 @@
+#! case: a doc comment set apart from the declaration below it by a blank line is detached
+#! rule: R0203
+
+EVENT insult_heard
+ACTION complain
+
+#@desc: how guests react to insults
+#!^ warning R0203
+
+PLAYBOOK Guest:
+    WHEN insult_heard: DO complain.

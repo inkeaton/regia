@@ -127,13 +127,26 @@ These follow the rules for `WAIT` (chapter 12) and `WEIGHT` (chapter 09).
 
 ## Transpiler checks
 
-- A Role name used in a Playbook outside a recipient or `FROM` position: error.
-- A Role used but not declared by the Playbook or Plot: error.
-- A receiving Role left unfilled by a giving Statement: error, naming the Role and suggesting a `MAPPING`.
-- Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare: error.
-- `MAPPING ?who TO …`: error.
-- A count or fraction outside an `ASSIGN` target or a `MAPPING`'s giver side: error.
-- A Playbook Statement that directs another Agent (`Role DO …`, `ASSIGN`, …): error. Director Statements are only for Directors (glossary).
+**Errors**
+
+- `R1501` A Role name outside a recipient or `FROM` position: as an argument, in a Context or in an Expression.
+- `R1502` A Role used but not declared by the Playbook or Plot.
+- `R1503` A receiving Role left unfilled by a giving Statement (the message names the Role and suggests a `MAPPING`).
+- `R1504` Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare.
+- `R1505` `MAPPING ?who TO …`.
+- `R1506` A count or fraction outside an `ASSIGN` target or a `MAPPING`'s giver side (`TELL 2 OF Guest …`).
+- `R1507` A Playbook Statement that directs another Agent (`ASSIGN`, `MAPPING`, …). Director Statements are only for Directors.
+
+## Trace entries
+
+**Failures**
+
+- `T1501` A count or fraction that isn't a Number.
+
+**Warnings**
+
+- `T1502` A count asking for more Agents than are left in the pool: it takes everyone left.
+- `T1503` A negative count, counted as 0.
 
 ## Reserved words
 

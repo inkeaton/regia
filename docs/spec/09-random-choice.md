@@ -73,6 +73,27 @@ WHEN attacked(?foe):
 
 `EITHER`, `WEIGHT`. `OR` is already reserved as a Context operator (chapter 06).
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0901` An `EITHER` with no `OR`.
+- `R0902` An `OR:` Block header that doesn't follow an `EITHER` or `OR` Option.
+- `R0903` A weight whose Placeholders aren't certainly filled before the Random choice.
+- `R0904` A Placeholder filled inside an Option reused outside it: after the Random choice, or anywhere else in the Plan but a sibling Option.
+
+## Trace entries
+
+**Failures**
+
+- `T0901` A weight that isn't a Number.
+
+**Warnings**
+
+- `T0902` A negative weight, counted as 0.
+- `T0903` Every weight is 0 (or negative): no Option runs.
+
 ## ASL mapping notes
 
 For *The full ASL mapping* to pick up:

@@ -147,6 +147,25 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 - At runtime, in a **Context**, a comparison that needs Numbers and doesn't get them is **false**: that match doesn't satisfy the Context.
 - At runtime, in a **Body**, arithmetic on something that isn't a Number, or a division by zero, makes the **Plan fail**. What failure does is in chapter 11 (`11-failure.md`).
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0401` A number written in a form Regia doesn't have: `.5`, an exponent, digit separators, another base.
+- `R0402` An Expression in a Trigger slot.
+- `R0403` A chained comparison, such as `0 < ?h < 20` (hint: `0 < ?h AND ?h < 20`).
+- `R0404` A comparison in a Context with a side that isn't filled yet (`=` never fills).
+- `R0405` Naming a Placeholder that is already filled (`?h = ?h - 1.`).
+- `R0406` Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`host + 1`, `"hi" < 3`).
+
+## Trace entries
+
+**Failures**
+
+- `T0401` Body arithmetic on something that isn't a Number.
+- `T0402` A division by zero.
+
 ## Not decided here
 
 - Changing a numeric Fact in one step (`CHANGE … TO`), and joining values for `PRINT`: decided in chapter 08 (`08-basic-actions.md`).

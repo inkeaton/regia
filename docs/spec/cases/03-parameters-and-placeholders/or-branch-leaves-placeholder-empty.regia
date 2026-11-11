@@ -1,0 +1,11 @@
+#! case: a Placeholder filled in only one branch of an OR can't be used in the Body
+#! rule: R0305
+
+FACT hates(person), is_drunk
+EVENT insult_heard
+ACTION glare_at(target)
+
+PLAYBOOK Guest:
+    WHEN insult_heard:
+        GIVEN hates(?x) OR is_drunk:
+            DO glare_at(?x).             #! error R0305

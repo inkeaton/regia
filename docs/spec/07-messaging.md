@@ -120,6 +120,24 @@ Agent cooperation (accepting and refusing requests, hearing back, negotiating) i
 
 `TELL`, `ASK`, `SIGNAL`, `EVERYONE`; the kind words `TOLD`, `AGREED`, `REFUSED`, `REACHED`, `FAILED`; `REFUSE`.
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0701` `TELL` with a Goal (hint: `ASK … TO`).
+- `R0702` `ASK … TO` with a Fact or an Event (hint: `TELL`).
+- `R0703` `SIGNAL` with something that isn't an Event.
+- `R0704` A Value in the recipient position (Regia never names an Agent).
+- `R0705` A trailing clause on a message Statement (none exist in 2.0).
+- `R0706` A reserved word used: the kind words `TOLD`, `AGREED`, `REFUSED`, `REACHED` (`FAILED` is chapter 11's), or `REFUSE`.
+
+## Trace entries
+
+**Failures**
+
+- `T0701` A recipient Placeholder that doesn't hold an Agent at runtime.
+
 ## ASL mapping notes
 
 For *The full ASL mapping* to pick up:

@@ -179,13 +179,12 @@ The `id` counter and the waiting intentions live in `regia.act`'s Java state, li
 
 ## Trace entries
 
-New Jason Target entries, numbered by *Number the checks and add exemplar cases*:
+**Warnings**
 
-- A `regia_action_result` with an unknown `id`, or after the final reply (warning).
-- An unknown message type at the Root Director's body (warning).
+- `T3701` A `regia_action_result` with an unknown `id`, or after the final reply, ignored.
+- `T3702` A message of an unknown type at the Root Director's body, ignored.
 
 ## Not decided here
 
 - Cancelling an Action when its Plan stops: post-2.0.
 - How Godot implements the protocol: out of scope (VEsNA/Godot internals).
-- Numbering the new Trace entries: *Number the checks and add exemplar cases*.

@@ -1,0 +1,10 @@
+#! case: a Label value lies between -1 and 1
+#! rule: R1404
+
+TRAIT bravery
+EVENT insult_heard
+ACTION complain, challenge
+
+PLAYBOOK Noble:
+    WHEN insult_heard, SUITS bravery AT -0.5: DO complain.
+    WHEN insult_heard, SUITS bravery AT 1.5: DO challenge.     #! error R1404

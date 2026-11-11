@@ -115,10 +115,18 @@ Nothing happens on its own when a Role empties:
 
 ## Transpiler checks
 
-- `JOINED`, `LEFT` or `EMPTIED` in a Playbook: error.
-- `JOINED`, `LEFT` or `EMPTIED` after something that isn't a Role of this Plot: error.
-- `?who` after `EMPTIED`: error.
-- A quantity on them (`WHEN ALL Guest LEFT`): error.
+**Errors**
+
+- `R1901` `JOINED`, `LEFT` or `EMPTIED` in a Playbook.
+- `R1902` `JOINED`, `LEFT` or `EMPTIED` after something that isn't a Role of this Plot.
+- `R1903` `?who` after `EMPTIED`.
+- `R1904` A quantity on them (`WHEN ALL Guest LEFT`).
+
+## Trace entries
+
+**Warnings**
+
+- `T1901` A `TELL` or `ASK` to an Agent that has left the Program, dropped.
 
 ## Reserved words
 

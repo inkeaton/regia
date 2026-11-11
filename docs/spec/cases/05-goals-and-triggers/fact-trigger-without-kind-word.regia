@@ -1,0 +1,9 @@
+#! case: a Fact Trigger always has a kind word
+#! rule: R0503
+
+FACT hates(person)
+ACTION glare_at(target)
+
+PLAYBOOK Guest:
+    WHEN hates(?h):                      #! error R0503
+        DO glare_at(?h).

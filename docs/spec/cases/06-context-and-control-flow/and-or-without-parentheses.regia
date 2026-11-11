@@ -1,0 +1,11 @@
+#! case: AND and OR mixed at one level need parentheses
+#! rule: R0601
+
+FACT is_hungry, is_drunk, hates(person)
+EVENT food_served
+ACTION eat_food
+
+PLAYBOOK Guest:
+    WHEN food_served:
+        GIVEN is_hungry OR is_drunk AND hates(?):     #! error R0601
+            DO eat_food.

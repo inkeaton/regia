@@ -105,6 +105,23 @@ The Body can only use a Placeholder that is filled on every way the Context can 
 
 When several matches satisfy the Context, the Agent uses **one**, and **the language does not say which**. A Plan must not rely on any particular order, even if one Target always gives the same answer. Choosing on purpose (`, AT RANDOM`, `, HIGHEST ?p`, `, LOWEST ?p`), running for every match (`FOR EACH`) and counting matches (`COUNT`) are in chapter 26 (`26-match-selection.md`).
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0301` A use with a different number of arguments from the declaration's parameters.
+- `R0302` A `?` in a declaration.
+- `R0303` A Role name used as a Value (hint: fill a Placeholder with `FROM Role ?x`).
+- `R0304` A Placeholder used in the Body that was never filled, or used before the Statement that names it.
+- `R0305` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR` (the message names the branch).
+- `R0306` A bare `?` in the Body.
+
+**Warnings**
+
+- `R0307` A named Placeholder that is filled but never used (hint: `?`).
+- `R0308` A named Placeholder that appears only under `NOT` (hint: `?`).
+
 ## Not decided here
 
 - Parameters of Goals and the Trigger kinds: chapter 05 (`05-goals-and-triggers.md`).

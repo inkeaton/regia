@@ -84,7 +84,14 @@ A key may repeat. Two `#@author:` lines give two authors. Values are plain text.
 
 `#%` (single line) and `#%[ … ]#` (multiline) mark Instancing comments. Like doc comments, they are part of the grammar, must start their own line, and their multiline form doesn't nest. They sit only at the top level of a file, after its Imports. What they carry, and the `.regin` Instancing file that holds the same content without the markers, are in chapter 21 (`21-instancing.md`).
 
-## Errors
 
-- An unclosed multiline comment is an error that points at its opener.
-- A doc or instancing comment that doesn't start its own line is an error.
+## Transpiler checks
+
+**Errors**
+
+- `R0201` An unclosed multiline comment (pointing at its opener).
+- `R0202` A doc comment or Instancing comment that doesn't start its own line.
+
+**Warnings**
+
+- `R0203` A detached doc comment: not directly above a declaration, and not a file's doc comment. It is ignored.

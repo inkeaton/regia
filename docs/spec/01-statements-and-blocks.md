@@ -106,3 +106,17 @@ Every construct can be parsed from its tokens alone, without knowing what any na
 ## Empty Blocks
 
 A Block header with no body is allowed, and the Transpiler warns about it. This supports sketching, for example in the Visual Editor. There is no placeholder keyword.
+
+## Transpiler checks
+
+**Errors**
+
+- `R0101` A Block header ending a line inside an Inline block, whose indented body has no valid parent (hint: put the header on its own line).
+- `R0102` A dotted name that contains a keyword, such as `complain.SIGNAL` (hint: `. SIGNAL`).
+- `R0103` Tabs and spaces mixed for indentation in one file.
+- `R0104` A line dedented to a level that was never opened.
+- `R0105` A continuation line not indented further than the first line of its logical line.
+
+**Warnings**
+
+- `R0106` A Block header with no body.

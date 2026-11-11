@@ -1,0 +1,13 @@
+#! case: TELL sends Facts and Events; a Goal is asked for with ASK … TO
+#! rule: R0701
+
+EVENT insult_heard(speaker)
+GOAL avenge(person)
+ACTION challenge(target)
+
+PLAYBOOK Guest:
+    WHEN insult_heard(?s) FROM ?who:
+        TELL ?who avenge(?s).            #! error R0701
+
+    TO avenge(?p):
+        DO challenge(?p).

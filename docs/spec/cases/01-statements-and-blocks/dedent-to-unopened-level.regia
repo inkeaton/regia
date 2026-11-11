@@ -1,0 +1,10 @@
+#! case: a line dedented to a level that was never opened
+#! rule: R0104
+
+EVENT insult_heard
+ACTION complain, frown
+
+PLAYBOOK Guest:
+    WHEN insult_heard:
+        DO complain.
+      DO frown.                          #! error R0104

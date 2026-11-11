@@ -122,14 +122,20 @@ A Plot may not start itself, directly or through other Plots (A starts B starts 
 
 ## Transpiler checks
 
-- `START SUBPLOT` Mappings: chapter 15's checks.
-- A cycle among `START SUBPLOT` Statements: error, naming the cycle.
-- A Statement after `END PLOT` in the same branch: error.
-- `END PLOT WITH` something other than one declared Event, or with unfilled arguments: error.
-- `END PLOT WITH` in a Plot never started as a Subplot: warning, `WITH` ignored.
-- `WHEN P ENDED` or `END SUBPLOT P` where this Plot never starts `P`: error.
-- `WHEN P ENDED WITH e` where `P` never ends with `e`: warning.
-- A plain `WHEN P ENDED` above a `WITH` block for the same Trigger: warning (shadowed).
+**Errors**
+
+- `R1701` A cycle among `START SUBPLOT` Statements (the message names the cycle).
+- `R1702` A Statement after `END PLOT` in the same branch.
+- `R1703` `END PLOT WITH` something other than one declared Event, or with unfilled arguments.
+- `R1704` `WHEN P ENDED` or `END SUBPLOT P` where this Plot never starts `P`.
+
+**Warnings**
+
+- `R1705` `END PLOT WITH` in a Plot never started as a Subplot: `WITH` is ignored.
+- `R1706` `WHEN P ENDED WITH e` where `P` never ends with `e`.
+- `R1707` A plain `WHEN P ENDED` above a `WITH` block for the same Trigger (shadowed).
+
+`START SUBPLOT` Mappings get chapter 15's checks.
 
 ## Reserved words
 

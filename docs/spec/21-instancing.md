@@ -126,22 +126,22 @@ Checks on Agent declarations run only when at least one exists.
 
 **Errors**
 
-- A `#%` comment inside a Block, or a `.regia` file importing a `.regin`.
-- A `.regin` declaring anything other than Imports and Instancing.
-- Two sibling files setting the same item differently, with no file above them settling it.
-- No Root Plot: no `ROOT`, and zero or several Plots are never started as a Subplot. Or a `ROOT` naming a Plot that is started as a Subplot.
-- A `PLAYS` Role that isn't a Role of the Root Plot.
-- A Propensity that isn't declared as `TRAIT` or `MOOD`.
-- A value, or a `RANDOM` bound, outside [-1, 1] or not a literal.
-- A `COUNT` that isn't a whole, non-negative literal.
-- The same kind declared twice in one file.
+- `R2101` A `#%` comment inside a Block, or a `.regia` file importing a `.regin`.
+- `R2102` A `.regin` declaring anything other than Imports and Instancing.
+- `R2103` Two sibling files setting the same item differently, with no file above them settling it.
+- `R2104` No Root Plot: no `ROOT`, and zero or several Plots are never started as a Subplot. Or a `ROOT` naming a Plot that is started as a Subplot.
+- `R2105` A `PLAYS` Role that isn't a Role of the Root Plot.
+- `R2106` A Propensity that isn't declared as `TRAIT` or `MOOD`.
+- `R2107` A value, or a `RANDOM` bound, outside [-1, 1] or not a literal.
+- `R2108` A `COUNT` that isn't a whole, non-negative literal.
+- `R2109` The same kind declared twice in one file.
 
 **Warnings**
 
-- A Root Plot Role that no kind plays.
-- A kind with no value for a Propensity that a `SUITS` Label mentions in a Playbook its Agents can hold.
-- A Plot the Root Plot never reaches.
-- An unknown key in the group of a known Target.
+- `R2110` A Root Plot Role that no kind plays.
+- `R2111` A kind with no value for a Propensity that a `SUITS` Label mentions in a Playbook its Agents can hold.
+- `R2112` A Plot the Root Plot never reaches.
+- `R2113` An unknown key in the group of a known Target.
 
 ## ASL mapping notes
 

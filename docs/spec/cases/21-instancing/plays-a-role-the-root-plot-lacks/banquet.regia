@@ -1,0 +1,3 @@
+PLOT Banquet:
+    ROLE Guest.
+    PHASE reception INITIAL.

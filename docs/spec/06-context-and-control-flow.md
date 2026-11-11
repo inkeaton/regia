@@ -103,6 +103,20 @@ WHEN insult_heard FROM ?speaker:
 
 There are no `WHILE` or counted loops in 2.0. Repetition comes from a Plan pursuing its Goal again, from reacting to Fact changes, or from `FOR EACH`, which runs a Block once for every match of a condition (chapter 26). Other loops are post-2.0.
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R0601` `AND` and `OR` mixed at one level without parentheses (hint: both groupings).
+- `R0602` An `ELSE` with no `GIVEN` before it, or a `GIVEN` after the `ELSE`.
+- `R0603` Statements before, between or after the `GIVEN` Blocks of a Trigger Block (the message explains that the Context is checked before any Statement runs).
+- `R0604` A Placeholder filled in an `IF` condition reused outside its branch: in a later `IF`, or as a Placeholder filled in the Trigger or Context (hint: a different name).
+
+**Warnings**
+
+- `R0605` A `GIVEN` that can never run, because an earlier `GIVEN` always catches it first.
+
 ## ASL mapping notes
 
 For *The full ASL mapping* to pick up:

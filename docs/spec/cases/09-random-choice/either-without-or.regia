@@ -1,0 +1,9 @@
+#! case: an EITHER with no OR isn't a choice
+#! rule: R0901
+
+EVENT bored
+ACTION wave
+
+PLAYBOOK Idler:
+    WHEN bored:
+        EITHER: DO wave.                 #! error R0901

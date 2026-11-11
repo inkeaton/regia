@@ -164,6 +164,11 @@ Rows added to chapter 28's table, and one retired:
 
 - Internal action `regia.start_staging(Plot, Name)`.
 
+
+## Trace entries
+
+None of its own. A failed `EXITED` during an ending writes chapter 20's `T2002`, and the ending carries on.
+
 ## Not decided here
 
 - The Root Director's `.jcm` entry: chapter 36. Its starting cast is chapter 33.

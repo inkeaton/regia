@@ -1,0 +1,10 @@
+#! case: CHANGE names the same Fact on both sides
+#! rule: R0804
+
+FACT health(points), score(points)
+EVENT hit(damage)
+
+PLAYBOOK Fighter:
+    WHEN hit(?d):
+        GIVEN health(?h):
+            CHANGE health(?h) TO score(?h - ?d).     #! error R0804

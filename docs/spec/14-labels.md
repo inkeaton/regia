@@ -99,19 +99,20 @@ A Target that doesn't support a Label **ignores** it, with **one warning per Pro
 
 **Errors**
 
-- An unknown Label keyword, or a Label repeated on one header.
-- A Propensity named twice in one Label, or in both a Trigger's `SHIFTS` and a `GIVEN`'s.
-- A name in `SUITS` that isn't a declared Propensity, or a name in `SHIFTS` that isn't a declared Mood.
-- A value that isn't a Number literal, or that lies outside [-1, 1].
-- `SUITS` on a `GIVEN` or `ELSE`. Any Label on a Director's Plan.
-- Mixing Trigger Blocks with and without `SUITS` for one Trigger in one Playbook (chapter 13).
-- A `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT`.
+- `R1401` An unknown Label keyword, or a Label repeated on one header.
+- `R1402` A Propensity named twice in one Label, or in both a Trigger's `SHIFTS` and a `GIVEN`'s.
+- `R1403` A name in `SUITS` that isn't a declared Propensity, or a name in `SHIFTS` that isn't a declared Mood.
+- `R1404` A value that isn't a Number literal, or that lies outside [-1, 1].
+- `R1405` `SUITS` on a `GIVEN` or `ELSE`.
+- `R1406` Any Label on a Director's Plan.
+- `R1407` A `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT`.
 
 **Warnings**
 
-- A Label the Target doesn't support (once per Program per Label).
-- A `TIES` pool mixing `SUITS` and unlabelled candidates (once per pool).
-- A declared Propensity that no Label names.
+- `R1408` A Label the Target doesn't support (once per Program per Label).
+- `R1409` A declared Propensity that no Label names.
+
+Mixing Trigger Blocks with and without `SUITS` (`R1304`) and a `TIES` pool mixing `SUITS` and unlabelled candidates (`R1309`) are chapter 13's.
 
 ## Reserved words
 

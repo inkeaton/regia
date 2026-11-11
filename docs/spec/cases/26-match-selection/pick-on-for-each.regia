@@ -1,0 +1,10 @@
+#! case: FOR EACH uses every Match, so a Pick on it is an error
+#! rule: R2603
+
+FACT hates(person)
+EVENT party_over
+
+PLAYBOOK Guest:
+    WHEN party_over:
+        FOR EACH hates(?x), AT RANDOM:   #! error R2603
+            FORGET hates(?x).

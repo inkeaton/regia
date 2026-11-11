@@ -17,7 +17,7 @@ The `.trace` format, the script of a run and how a Trace is matched are in chapt
 
 Every error, warning and note a language chapter defines has a stable **Diagnostic code**: `R`, the chapter's two digits, then two digits numbering the check within the chapter. Chapter 13's first error is `R1301`. The `code` field of a Diagnostic (chapter 23) carries it, and each code has a docs page.
 
-Codes are never reused. A check that is dropped keeps its number, marked retired in its chapter.
+Numbers run in order through a chapter's section, errors first, then warnings, then notes; a check added later takes the next free number, whatever its severity. Codes are never reused. A check that is dropped keeps its number, marked retired in its chapter.
 
 Every language chapter lists its checks in a `## Transpiler checks` section, grouped as **Errors**, **Warnings** and **Notes**, each with its code:
 
@@ -30,7 +30,7 @@ Every language chapter lists its checks in a `## Transpiler checks` section, gro
 
 **Warnings**
 
-- `R1310` A competition ordered only by name.
+- `R1305` A competition ordered only by name.
 ```
 
 A chapter may still explain a check in its prose; the section is where the check is listed and numbered.
@@ -87,9 +87,9 @@ On a line of its own, `#!^` points at the line above. Use it where a trailing co
 #!^ warning R0203
 ```
 
-(Codes in this chapter's examples are illustrative.)
+(The codes in these examples are the real ones: chapters 02 and 13.)
 
-Several Diagnostics on one line are written one after another: `#! error R1301, warning R1310`.
+Several Diagnostics on one line are written one after another: `#! error R1301, warning R1305`.
 
 **Matching.** A check case passes when the Transpiler reports exactly the annotated Diagnostics: same severity, same code, primary span starting on the same line. A Diagnostic with no annotation, or an annotation with no Diagnostic, fails the case. Message wording, labels, hints and quick fixes aren't checked, so they can improve without breaking cases. In a folder case, each annotation sits in the file the Diagnostic lands in.
 

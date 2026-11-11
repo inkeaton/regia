@@ -141,16 +141,27 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 - **A failing Director Plan stops there and writes a Trace entry.** The Phase and the Staging are untouched and nothing is undone. There is no Director reaction to it: with no Goals, `FAILED` has nothing to react to.
 - **Director Statements never fail.** `ASSIGN` to an empty Role does nothing. A Giving, Mapping or Message reaching an Agent that has left is dropped with a Trace warning.
 
-## Errors and warnings
+## Transpiler checks
 
-- `PURSUE`, `DROP` or `SIGNAL` in a Director: error.
-- `TO g:`, `WHEN g DROPPED:`, `WHEN g FAILED:` or `FROM DIRECTOR` in a Director: error.
-- Any Label on a Director's Plan: error (chapter 14).
-- `WAIT`, `TRANSITION` or `END PLOT` in an `EXITED` Plan: error.
-- A Statement after `TRANSITION` in the same branch: error.
-- `ENTERED`, `EXITED`, `JOINED`, `LEFT`, `EMPTIED` or `ENDED` in a Playbook: error (Director Trigger kinds only).
-- `Role DO …` or `WORLD DO …`: error (not part of the language).
-- `ASSIGN`, `MAPPING` or a recipient with an unfilled Placeholder: error (chapter 03).
+**Errors**
+
+- `R2001` `PURSUE`, `DROP` or `SIGNAL` in a Director.
+- `R2002` `TO g:`, `WHEN g DROPPED:`, `WHEN g FAILED:` or `FROM DIRECTOR` in a Director.
+- `R2003` `WAIT`, `TRANSITION` or `END PLOT` in an `EXITED` Plan.
+- `R2004` A Statement after `TRANSITION` in the same branch.
+- `R2005` `ENTERED`, `EXITED` or `ENDED` in a Playbook (Director Trigger kinds only).
+- `R2006` `Role DO …` or `WORLD DO …` (not part of the language).
+
+A Label on a Director's Plan is `R1406`; `JOINED`, `LEFT` and `EMPTIED` in a Playbook are `R1901`; an unfilled Placeholder in `ASSIGN`, `MAPPING` or a recipient is `R0304`/`R0305`.
+
+## Trace entries
+
+**Warnings**
+
+- `T2001` A Giving or a Mapping that reaches an Agent who has left, dropped.
+- `T2002` A Director Plan that failed: it stops, and the Phase and the Staging are untouched. It follows the failure entry of its cause.
+
+A Message to an Agent who has left is `T1901`.
 
 ## Reserved words
 

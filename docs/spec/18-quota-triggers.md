@@ -100,10 +100,12 @@ DURING reception:
 
 ## Transpiler checks
 
-- A quantity on a Trigger kind other than an Event: error.
-- A quantity in front of something that isn't a Role (`FROM ALL ?x`, `FROM ALL DIRECTOR`): error.
-- `?who` after a quantity: error.
-- A quantity that isn't a Number Value, isn't whole for `n OF`, is below 1 for `n OF`, or is outside (0, 100] for `PERCENT`: error.
+**Errors**
+
+- `R1801` A quantity on a Trigger kind other than an Event.
+- `R1802` A quantity in front of something that isn't a Role (`FROM ALL ?x`, `FROM ALL DIRECTOR`).
+- `R1803` `?who` after a quantity.
+- `R1804` A quantity that isn't a Number Value, isn't whole for `n OF`, is below 1 for `n OF`, or is outside (0, 100] for `PERCENT`.
 
 ## Reserved words
 

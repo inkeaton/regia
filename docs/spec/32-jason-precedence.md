@@ -136,6 +136,13 @@ Changed from chapter 31:
 | --- | --- | --- |
 | `achieve regia_start(Cast, Prefix)` | parent → new child | start the Staging with this cast, at this place in the tree |
 
+
+## Trace entries
+
+**Warnings**
+
+- `T3201` A ranked option whose Playbook has no `regia_given`, so its guard was bypassed: the option is dropped.
+
 ## Not decided here
 
 - The Trace entry for an option whose guard was bypassed: chapters 34 and 35.

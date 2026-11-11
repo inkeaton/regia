@@ -1,0 +1,16 @@
+#! case: a Director has no Goals
+#! rule: R2001
+
+EVENT alarm
+GOAL hide
+ACTION crouch
+
+PLAYBOOK Hiding:
+    TO hide: DO crouch.
+
+PLOT Watch:
+    PHASE calm INITIAL.
+
+    DURING calm:
+        WHEN alarm:
+            PURSUE hide.                 #! error R2001

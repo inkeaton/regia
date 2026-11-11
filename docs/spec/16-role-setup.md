@@ -74,12 +74,24 @@ The setup is undone only where the things it gave are undone anyway:
 
 ## Transpiler checks
 
-- A Role Block without `STARTS WITH`, or `STARTS WITH` on a Playbook's Role: error.
-- A Statement other than `ASSIGN`, `LEARN`, `PURSUE` in a setup: error.
-- `TO` on a setup `ASSIGN`, a counted target, or a counted `MAPPING`: error.
-- A Placeholder in a setup: error.
-- An unfilled Playbook Role, or another Mapping error from chapter 15: error.
-- A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it: warning.
+**Errors**
+
+- `R1601` A Role Block without `STARTS WITH`, or `STARTS WITH` on a Playbook's Role.
+- `R1602` A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup.
+- `R1603` `TO` on a setup `ASSIGN`, a counted target, or a counted `MAPPING`.
+- `R1604` A Placeholder in a setup.
+
+**Warnings**
+
+- `R1605` A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it.
+
+An unfilled Playbook Role, and the other Mapping errors, are chapter 15's (`R1503`–`R1506`).
+
+## Trace entries
+
+**Warnings**
+
+- `T1601` A setup Statement that can't be carried out, skipped.
 
 ## Reserved words
 

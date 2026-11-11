@@ -1,0 +1,11 @@
+#! case: naming a Placeholder the Context already filled is an error, not a reassignment
+#! rule: R0405
+
+FACT health(points)
+EVENT hit
+
+PLAYBOOK Fighter:
+    WHEN hit:
+        GIVEN health(?h):
+            ?h = ?h - 1.                 #! error R0405
+            PRINT("health", ?h).

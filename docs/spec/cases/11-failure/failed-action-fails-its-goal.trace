@@ -1,0 +1,8 @@
+> start
+> action fails chase(*)
+> event intruder_seen(thief_1)
+guard_1: GOAL catch(thief_1) PURSUED
+guard_1: DO chase(thief_1)
+guard_1: DO chase(thief_1) FAILED
+guard_1: FAILURE T1101 DO chase(thief_1) failed
+guard_1: FAILURE GOAL catch(thief_1) FAILED

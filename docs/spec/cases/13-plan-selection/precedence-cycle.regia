@@ -1,0 +1,21 @@
+#! case: two Playbooks ordered over each other form a cycle
+#! rule: R1301
+
+EVENT insult_heard
+ACTION punch, sing
+
+PLAYBOOK Brawling:
+    WHEN insult_heard: DO punch.
+
+PLAYBOOK Drunkard:
+    WHEN insult_heard: DO sing.
+
+PLOT Tavern:
+    ROLE Patron STARTS WITH:
+        ASSIGN Brawling.
+        ASSIGN Drunkard.
+    PHASE open INITIAL.
+
+    PRECEDENCE:
+        Brawling OVER Drunkard.
+        Drunkard OVER Brawling.          #! error R1301

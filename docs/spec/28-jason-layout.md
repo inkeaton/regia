@@ -90,11 +90,11 @@ Tickets that need a concept missing from this table add a row.
 
 ## Transpiler checks
 
-### Errors
+**Errors**
 
-- A Fact or Event External name that isn't a Jason atom, in a Jason Build.
+- `R2801` A Fact or Event External name that isn't a Jason atom, in a Jason Build.
 
-The names-related checks are in chapter 10. Codes are assigned by *Number the checks and add exemplar cases*.
+The names-related checks are in chapter 10 (`R1007`, `R1008`).
 
 ## Not decided here
 

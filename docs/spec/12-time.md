@@ -46,8 +46,24 @@ WHEN food_served:
 
 ## Transpiler checks
 
-- **Warning:** a negative Number written directly as the Duration (`WAIT -2 SECONDS.`).
-- **Error:** `WAIT` without a unit word, or with a unit word that isn't one of the four above.
+**Errors**
+
+- `R1201` `WAIT` without a unit word, or with a word that isn't `SECOND`, `SECONDS`, `MINUTE` or `MINUTES`.
+- `R1202` A Duration whose Placeholders aren't certainly filled before the `WAIT`.
+
+**Warnings**
+
+- `R1203` A negative Number written directly as the Duration (`WAIT -2 SECONDS.`).
+
+## Trace entries
+
+**Failures**
+
+- `T1201` A Duration that isn't a Number.
+
+**Warnings**
+
+- `T1202` A negative Duration, counted as 0.
 
 ## Not in 2.0
 

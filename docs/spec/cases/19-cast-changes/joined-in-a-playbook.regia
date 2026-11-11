@@ -1,0 +1,9 @@
+#! case: JOINED is a Director Trigger kind only
+#! rule: R1901
+
+ACTION wave
+
+PLAYBOOK Greeter:
+    ROLE guest.
+    WHEN guest JOINED:                   #! error R1901
+        DO wave.

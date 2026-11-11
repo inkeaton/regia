@@ -101,6 +101,26 @@ PLAYBOOK Greeter:
 
 `IMPORT`, `AS`.
 
+
+## Transpiler checks
+
+**Errors**
+
+- `R1001` An `IMPORT` that isn't at the top of the file, after its doc comment and before any declaration.
+- `R1002` An import path that leads to no file.
+- `R1003` An import cycle (the message names every file in the loop).
+- `R1004` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`).
+- `R1005` Two declarations of one name that don't agree on kind, parameter count or External name (the message names both).
+- `R1006` A Playbook or Plot declared twice.
+- `R1007` Two names that differ only in case, in the program-wide namespace or among one Plot's Roles or Phases.
+- `R1008` A name that starts with `regia_` or contains `__`.
+- `R1009` A dotted name without `AS`.
+- `R1010` `AS` on a `GOAL`, or on a local declaration.
+- `R1011` One External name given two Regia names.
+- `R1012` `EVENT` or `ACTION` declared inside a `PLAYBOOK` or `PLOT`.
+- `R1013` A local name that shadows a name the file can see.
+- `R1014` A local item sent with `TELL`, `ASK … TO` or `SIGNAL`.
+
 ## ASL mapping notes
 
 For *The full ASL mapping* to pick up:

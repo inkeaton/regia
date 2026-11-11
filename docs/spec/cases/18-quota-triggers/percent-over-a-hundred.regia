@@ -1,0 +1,13 @@
+#! case: a PERCENT quantity lies in (0, 100]
+#! rule: R1804
+
+EVENT toast_raised
+ACTION cheer
+
+PLOT Banquet:
+    ROLE Guest.
+    PHASE reception INITIAL.
+
+    DURING reception:
+        WHEN toast_raised FROM 150 PERCENT OF Guest:     #! error R1804
+            DO cheer.
