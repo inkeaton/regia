@@ -1,0 +1,48 @@
+IMPORT "../vocabulary".
+
+#@desc: A Guest's dinner: ordering, waiting for the Servants, eating.
+PLAYBOOK Dining:
+    ROLE waiter.
+
+    FACT on_plate(dish)
+
+    WHEN hungry LEARNED:
+        PURSUE have_dinner, WITHOUT WAITING.
+
+    WHEN hungry FORGOTTEN:
+        DROP have_dinner.
+
+    TO have_dinner:
+        GIVEN hungry AND seat(?place):           # hungry when the Plan is chosen
+            FOR EACH craves(?wish):
+                ASK waiter TO bring(?wish, ?place).
+            WAIT 1 MINUTE.                       # ASK never waits, so we give the Servants a minute
+            IF COUNT(on_plate(?)) = 0:
+                FAIL.
+            FOR EACH on_plate(?dish):
+                IF hungry:                       # still hungry, now that we get to this dish?
+                    DO eat(?dish).
+                ELSE:
+                    DO push_away(?dish).
+                FORGET on_plate(?dish).
+            SIGNAL finished_eating.
+        GIVEN NOT hungry:
+            SIGNAL finished_eating.
+        # no ELSE: hungry with no seat, have_dinner fails at once
+
+    WHEN have_dinner FAILED, SHIFTS sympathy BY -0.3:
+        DO complain.
+        SIGNAL finished_eating.
+
+    # Dropped because we are full: clear what is left.
+    WHEN have_dinner DROPPED:
+        FOR EACH on_plate(?dish):
+            DO push_away(?dish).
+            FORGET on_plate(?dish).
+        SIGNAL finished_eating.
+
+    WHEN served(?dish) FROM waiter:
+        LEARN on_plate(?dish).
+
+    WHEN sold_out(?dish) FROM waiter:
+        FORGET craves(?dish).

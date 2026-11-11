@@ -1,0 +1,12 @@
+IMPORT "../vocabulary".
+
+#@desc: A Guard's duty. A knight holds it next to NobleSocializing.
+PLAYBOOK Keeping_watch:
+
+    WHEN scandal(?) FROM ?speaker:
+        GIVEN on_duty:
+            DO watch(?speaker).
+
+    WHEN saw_pouring(?who):
+        DO seize(?who).
+        SIGNAL culprit_seized(?who).         # reaches every Director that gave us this Playbook

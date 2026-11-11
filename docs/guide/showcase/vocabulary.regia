@@ -1,0 +1,72 @@
+#@desc: The Vocabulary of the banquet: everything the game, the Agents and the Directors share.
+
+# ── Propensities ─────────────────────────────────────────────────────────────
+
+TRAIT bravery
+MOOD sympathy, aggressiveness
+
+# ── What the game tells us ───────────────────────────────────────────────────
+
+#@desc: The seat the game has laid for this Agent. Servants and Guards have none.
+FACT hall.seating.seat AS seat(place)
+#@desc: Kept up to date by the game: learned as the evening goes on, forgotten after enough food.
+FACT hall.needs.hungry AS hungry
+#@desc: The game seeds a few old grudges; Guests add their own.
+FACT hall.social.grudge AS grudge(person, size)
+
+#@desc: Sent by the game to an Agent with nothing to do.
+EVENT hall.clock.idle AS idle
+#@desc: Sent by the game to an Agent close enough to see a cup being tampered with.
+EVENT hall.senses.saw_pouring AS saw_pouring(person)
+
+# ── Facts the Agents keep ────────────────────────────────────────────────────
+
+FACT purse(gold), craves(dish), on_duty
+
+# ── Events Agents tell each other ────────────────────────────────────────────
+
+EVENT greeting, guest_arrived(person)
+EVENT insulted, scandal(person)
+EVENT served(dish), sold_out(dish)
+EVENT challenged, hit, yielded, duel_on
+
+# ── Signals to the Directors ─────────────────────────────────────────────────
+
+EVENT took_seat, toast_given, finished_eating
+EVENT insult_thrown(offender)
+EVENT duel_accepted, wagered(stake), cheered, duel_won
+EVENT poison_poured, culprit_seized(person)
+
+# ── Outcomes of the Subplots ─────────────────────────────────────────────────
+
+EVENT duel_settled(winner), duel_abandoned
+EVENT poisoner_caught(person), poison_taken
+
+# ── Goals ────────────────────────────────────────────────────────────────────
+
+GOAL take_seat, take_leave, open_feast, honour(person)
+GOAL vent, resent(person)
+GOAL have_dinner, bring(dish, place)
+GOAL issue_challenge, fight, give_signal
+
+# ── Custom Actions ───────────────────────────────────────────────────────────
+
+#@desc: Done when the Agent has arrived. Refused if the place can't be reached.
+ACTION walk_to(place)
+#@desc: Done at once. The game then removes the Agent: it Leaves the Program.
+ACTION leave_hall
+#@desc: Refused once the kitchen has run out of the dish.
+ACTION pick_up(dish)
+#@desc: Refused at the table. Done when the sword is out.
+ACTION draw_sword
+#@desc: Accepted at once; done only when the poison has dissolved.
+ACTION pour_poison
+ACTION hall.guards.seize AS seize(person)
+
+ACTION sit_down, stand_up, stand_by(place), bow_to(person), raise_cup, toast(person)
+ACTION chat, sip_wine, sneer_at(person), scowl_at(person), laugh, snigger, roll_eyes
+ACTION eat(dish), push_away(dish), complain, put_down(dish)
+ACTION throw_glove, pick_up_glove, lunge, drop_sword, salute, limber_up
+ACTION cheer, hush(person), drop_handkerchief
+ACTION slip_away, watch(person)
+ACTION open_doors, play_music, ring_bell

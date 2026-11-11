@@ -1,0 +1,47 @@
+IMPORT "../vocabulary".
+
+#@desc: How Guests pass the time with each other: small talk, insults, gossip.
+PLAYBOOK NobleSocializing:
+    ROLE peer.
+
+    # Small talk. The more grudges we hold, the likelier we are to vent one.
+    WHEN idle:
+        ?grudges = COUNT(grudge(?, ?)).
+        EITHER, WEIGHT 3: DO chat.
+        OR: DO sip_wine.
+        OR, WEIGHT ?grudges: PURSUE vent.
+
+    # We insult the Guest we resent the most.
+    TO vent:
+        GIVEN grudge(?foe, ?size), HIGHEST ?size, AT RANDOM:
+            DO sneer_at(?foe).
+            TELL ?foe insulted.
+            TELL peer scandal(?foe).
+
+    # Three ways to take an insult. The Selection function picks the one that suits us.
+    WHEN insulted FROM peer ?who, SUITS aggressiveness AT 0.8 AND bravery AT 0.8:
+        DO stand_up.
+        SIGNAL insult_thrown(?who).
+
+    WHEN insulted FROM peer ?who,
+            SUITS aggressiveness AT 0.2 AND sympathy AT -0.5,
+            SHIFTS aggressiveness BY 0.3:
+        DO scowl_at(?who).
+        PURSUE resent(?who).
+
+    WHEN insulted FROM peer ?who, SUITS sympathy AT 0.7, SHIFTS aggressiveness BY -0.1:
+        DO laugh.
+
+    TO resent(?who):
+        GIVEN grudge(?who, ?size):
+            CHANGE grudge(?who, ?size) TO grudge(?who, ?size + 1).
+        ELSE:
+            LEARN grudge(?who, 1).
+
+    # Gossip about someone else's insult.
+    WHEN scandal(?victim) FROM peer ?speaker:
+        GIVEN grudge(?victim, ?):
+            DO snigger.
+        GIVEN grudge(?speaker, ?), SHIFTS sympathy BY -0.1:
+            DO roll_eyes.
+        # no ELSE: gossip about strangers falls through to the next Playbook

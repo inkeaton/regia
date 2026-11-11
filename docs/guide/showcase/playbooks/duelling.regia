@@ -1,0 +1,44 @@
+IMPORT "../vocabulary".
+
+#@desc: One side of a duel. Both duellists hold it, each with the other as opponent.
+PLAYBOOK Duelling:
+    ROLE opponent.
+
+    FACT stamina(points)
+
+    TO issue_challenge FROM DIRECTOR:
+        DO throw_glove.
+        TELL opponent challenged.
+
+    WHEN challenged FROM opponent, SUITS bravery AT 0.7:
+        DO pick_up_glove.
+        SIGNAL duel_accepted.
+
+    WHEN challenged FROM opponent, SUITS bravery AT -0.5, SHIFTS sympathy BY -0.3:
+        DO walk_to(door).
+        DO leave_hall.
+
+    TO fight FROM DIRECTOR:
+        FOR EACH stamina(?old): FORGET stamina(?old).    # left over from an earlier duel
+        DO draw_sword.
+        LEARN stamina(3).
+
+    # Every change of stamina, the first included, is answered with a lunge.
+    WHEN stamina(?) LEARNED:
+        WAIT RANDOM(1, 3) SECONDS.
+        DO lunge.
+        TELL opponent hit.
+
+    WHEN hit FROM opponent, SHIFTS aggressiveness BY 0.1:
+        GIVEN stamina(?now) AND ?now > 1:
+            CHANGE stamina(?now) TO stamina(?now - 1).
+        ELSE:
+            DO drop_sword.
+            TELL opponent yielded.
+
+    WHEN yielded FROM opponent:
+        DO salute.
+        SIGNAL duel_won.
+
+    WHEN idle:
+        DO limber_up.

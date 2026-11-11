@@ -1,0 +1,53 @@
+IMPORT "../vocabulary".
+IMPORT "../playbooks/duelling".
+IMPORT "../playbooks/wagering".
+
+#@desc: One duel. Every insult taken badly starts a new Staging of it.
+PLOT HonorDuel:
+    ROLE Challenger STARTS WITH:
+        ASSIGN Duelling, MAPPING Defender TO opponent.
+    ROLE Defender STARTS WITH:
+        ASSIGN Duelling, MAPPING Challenger TO opponent.
+    ROLE Spectator STARTS WITH:
+        ASSIGN Wagering.
+
+    PHASE challenge INITIAL.
+    PHASE fighting.
+
+    FACT wager(person, stake)
+
+    PRECEDENCE:
+        PARENT OVER SELF ON scandal.         # gossip and guard duty come before hushing
+
+    DURING challenge:
+        WHEN ENTERED:
+            ASK Challenger TO issue_challenge.
+
+        WHEN duel_accepted FROM Defender:
+            TELL Spectator duel_on.
+
+        WHEN wagered(?stake) FROM Spectator ?who:
+            LEARN wager(?who, ?stake).
+
+        WHEN cheered FROM 3 OF Spectator:
+            GIVEN wager(?backer, ?stake), HIGHEST ?stake, AT RANDOM:
+                ASK ?backer TO give_signal.
+                TRANSITION TO fighting.
+            ELSE:
+                TRANSITION TO fighting.
+
+    DURING fighting:
+        WHEN ENTERED:
+            ASK Challenger TO fight.
+            ASK Defender TO fight.
+            WAIT 2 MINUTES.                  # a rough timeout: never reached if the duel ends first
+            END PLOT WITH duel_abandoned.
+
+        WHEN duel_won FROM ?winner:
+            END PLOT WITH duel_settled(?winner).
+
+    DURING PLOT:
+        WHEN Challenger EMPTIED:
+            END PLOT WITH duel_abandoned.
+        WHEN Defender EMPTIED:
+            END PLOT WITH duel_abandoned.

@@ -1,0 +1,14 @@
+IMPORT "../vocabulary".
+
+#@desc: The Poisoner's one job.
+PLAYBOOK Scheming:
+
+    FACT poured
+
+    WHEN idle:
+        GIVEN NOT poured:
+            DO pour_poison, WITHOUT WAITING.     # we don't stand there while it dissolves
+            LEARN poured.
+            DO slip_away.
+            SIGNAL poison_poured.
+        # no ELSE: once the poison is poured, idle falls through to small talk

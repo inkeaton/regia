@@ -13,12 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "first reasonings/5 - Plots.md",
+                "file": "file:/home/mari/Documenti/PhD Kit/5 Didattica/SDAI/2026 - Agentic AI con LLM locali/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "5 - Plots"
+              "title": "README"
+            }
+          },
+          {
+            "id": "dd69ddecdfb8339a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "file:/home/mari/Documenti/PhD Kit/1 Ricerca/Icaros (Jason in Python)/icarus (jason-python) - README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "icarus (jason-python) - README"
             }
           },
           {
@@ -27,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "first reasonings/6 - Transpiler.md",
+                "file": "primer/9 - The Rest and New Features.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "6 - Transpiler"
+              "title": "9 - The Rest and New Features"
             }
           }
         ],
@@ -70,7 +84,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#change",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -94,8 +108,7 @@
               "title": "Segnalibri"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -116,7 +129,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "first reasonings/6 - Transpiler.md",
+                "file": "file:/home/mari/Documenti/PhD Kit/5 Didattica/SDAI/2026 - Agentic AI con LLM locali/README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -135,7 +148,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "first reasonings/6 - Transpiler.md",
+                "file": "file:/home/mari/Documenti/PhD Kit/5 Didattica/SDAI/2026 - Agentic AI con LLM locali/README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -178,7 +191,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "first reasonings/6 - Transpiler.md",
+                "file": "file:/home/mari/Documenti/PhD Kit/5 Didattica/SDAI/2026 - Agentic AI con LLM locali/README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -205,17 +218,34 @@
       "bases:Crea nuova Base": false
     }
   },
-  "active": "9e766efa0403a6f4",
+  "active": "dd69ddecdfb8339a",
   "lastOpenFiles": [
-    "first reasonings/5 - Plots.md",
-    "first reasonings/6 - Transpiler.md",
-    "first reasonings/7 - Visual Editor.md",
-    "first reasonings/8 - Target Languages, ASL.md",
-    "first reasonings/9 - New Features.md",
-    "first reasonings/4 - Plans and Playbooks.md",
-    "first reasonings/3 - Vocabulary.md",
-    "first reasonings/2 - Language Architecture.md",
-    "first reasonings/0 - Introduction.md",
-    "agents"
+    "adr/0003-events-are-momentary-fact-changes-are-trigger-kinds.md",
+    "adr/0003-events-are-momentary-fact-changes-are-trigger-kinds.md.tmp.55449.0958d9ef09ac",
+    "spec/05-goals-and-triggers.md",
+    "spec/05-goals-and-triggers.md.tmp.55449.b80bbeb5f6a4",
+    "adr/0002-values-are-named-in-the-body.md",
+    "adr/0002-values-are-named-in-the-body.md.tmp.55449.10e0e8d7496d",
+    "spec/04-numbers-and-expressions.md",
+    "spec/04-numbers-and-expressions.md.tmp.55449.27eccb4f80b0",
+    "adr/0001-placeholders-are-filled-by-matching.md",
+    "adr/0001-placeholders-are-filled-by-matching.md.tmp.55449.1e5017634adf",
+    "adr",
+    "spec/03-parameters-and-placeholders.md",
+    "spec/03-parameters-and-placeholders.md.tmp.55449.a16570617f72",
+    "spec/01-statements-and-blocks.md.tmp.55449.d929d367f424",
+    "spec/02-comments.md",
+    "spec/02-comments.md.tmp.55449.af44d41d953d",
+    "spec/01-statements-and-blocks.md",
+    "spec/01-statements-and-blocks.md.tmp.55449.73903ce36fa3",
+    "primer/5 - Plots.md",
+    "primer/6 - Transpiler.md",
+    "primer/7 - Visual Editor.md",
+    "primer/9 - The Rest and New Features.md",
+    "primer/8 - Target Languages, ASL.md",
+    "primer/4 - Plans and Playbooks.md",
+    "primer/3 - Vocabulary.md",
+    "primer/2 - Language Architecture.md",
+    "primer/0 - Introduction.md"
   ]
 }

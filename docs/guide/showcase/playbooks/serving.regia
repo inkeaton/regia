@@ -1,0 +1,20 @@
+IMPORT "../vocabulary".
+
+#@desc: A Servant's work: fetching what the patrons ask for.
+PLAYBOOK Serving:
+    ROLE patron.
+
+    GOAL fetch(dish, place)
+
+    TO bring(?dish, ?place) FROM patron ?guest:
+        PURSUE fetch(?dish, ?place).         # PURSUE waits: if fetching fails, so does bringing
+        DO walk_to(?place).
+        DO put_down(?dish).
+        TELL ?guest served(?dish).
+
+    TO fetch(?dish, ?place):                 # ?place only keeps two orders of one dish apart
+        DO walk_to(kitchen).
+        DO pick_up(?dish).                   # refused once the dish has run out
+
+    WHEN bring(?dish, ?) FAILED FROM patron ?guest:
+        TELL ?guest sold_out(?dish).

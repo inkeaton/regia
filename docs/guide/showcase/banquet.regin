@@ -1,0 +1,37 @@
+# The full banquet.
+IMPORT "plots/royal_banquet".
+
+ROOT RoyalBanquet.
+
+AGENT king PLAYS Host:
+    COUNT 1.
+
+AGENT noble PLAYS Guest:
+    COUNT 6.
+    bravery AT RANDOM(-0.6, 0.6).
+    sympathy AT RANDOM(0, 0.8).
+    aggressiveness AT RANDOM(-0.4, 0.4).
+
+AGENT hothead PLAYS Guest:
+    COUNT 2.
+    bravery AT 0.9.
+    sympathy AT -0.4.
+    aggressiveness AT RANDOM(0.6, 1).
+
+AGENT knight PLAYS Guest AND Guard:
+    COUNT 2.
+    bravery AT 0.8.
+    sympathy AT 0.3.
+    aggressiveness AT 0.1.
+
+AGENT servant PLAYS Servant:
+    COUNT 3.
+
+# No COUNT: a latecomer only ever enters by Joining.
+AGENT latecomer PLAYS Guest:
+    bravery AT RANDOM(-0.6, 0.6).
+    sympathy AT RANDOM(0, 0.8).
+    aggressiveness AT RANDOM(-0.4, 0.4).
+
+TARGET JASON:
+    strategy = most_similar.

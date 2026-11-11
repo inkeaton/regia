@@ -1,0 +1,21 @@
+IMPORT "../vocabulary".
+
+#@desc: Watching a duel, with money on it.
+PLAYBOOK Wagering:
+
+    WHEN duel_on FROM DIRECTOR:
+        GIVEN purse(?gold) AND ?gold > 0:
+            ?stake = RANDOM(1, ?gold).
+            CHANGE purse(?gold) TO purse(?gold - ?stake).
+            SIGNAL wagered(?stake).
+            DO cheer.
+            SIGNAL cheered.
+        ELSE:
+            DO cheer.
+            SIGNAL cheered.
+
+    TO give_signal FROM DIRECTOR:
+        DO drop_handkerchief.
+
+    WHEN scandal(?) FROM ?speaker:
+        DO hush(?speaker).

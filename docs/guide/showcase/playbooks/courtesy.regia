@@ -1,0 +1,38 @@
+IMPORT "../vocabulary".
+
+#@desc: Manners everyone at the banquet has, whatever else they are doing.
+PLAYBOOK Courtesy:
+    ROLE host.
+
+    TO take_seat FROM DIRECTOR:
+        GIVEN seat(?place):
+            DO walk_to(?place).              # waits until we have arrived
+            DO sit_down.
+            TELL host greeting.
+            SIGNAL took_seat.
+        # no ELSE: with no seat laid for us, take_seat fails at once
+
+    WHEN take_seat FAILED FROM DIRECTOR:
+        DO stand_by(wall).
+        SIGNAL took_seat.                    # the Director is counting on it
+
+    WHEN greeting FROM ?who:
+        DO bow_to(?who).
+
+    TO take_leave FROM DIRECTOR:
+        TELL host greeting.
+        DO walk_to(door).
+        DO leave_hall.                       # the game removes us: we Leave the Program
+
+    # The Director only ever asks these of the Host.
+
+    TO open_feast FROM DIRECTOR:
+        DO stand_up.
+        DO raise_cup.
+        SIGNAL toast_given.
+
+    TO honour(?who) FROM DIRECTOR:
+        DO toast(?who).
+
+    WHEN guest_arrived(?who) FROM DIRECTOR:
+        DO bow_to(?who).

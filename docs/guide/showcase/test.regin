@@ -1,0 +1,20 @@
+# The small cast the walkthrough follows: one king, two nobles, one knight, one servant.
+# Every value is fixed, so a run reads the same each time.
+IMPORT "banquet.regin".
+
+AGENT noble PLAYS Guest:
+    COUNT 2.
+    bravery AT 0.8.
+    sympathy AT -0.2.
+    aggressiveness AT 0.7.
+
+AGENT hothead PLAYS Guest.           # a kind can't be removed, only emptied
+
+AGENT knight PLAYS Guest AND Guard:
+    COUNT 1.
+    bravery AT 0.8.
+    sympathy AT 0.3.
+    aggressiveness AT 0.1.
+
+AGENT servant PLAYS Servant:
+    COUNT 1.
