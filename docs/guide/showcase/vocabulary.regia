@@ -69,4 +69,4 @@ ACTION eat(dish), push_away(dish), complain, put_down(dish)
 ACTION throw_glove, pick_up_glove, lunge, drop_sword, salute, limber_up
 ACTION cheer, hush(person), drop_handkerchief
 ACTION slip_away, watch(person)
-ACTION open_doors, play_music, ring_bell
+ACTION open_doors, play_music, ring_bell, clear_tables

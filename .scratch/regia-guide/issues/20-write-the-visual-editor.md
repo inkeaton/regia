@@ -2,6 +2,7 @@
 
 Type: task
 Status: open
+Assignee: Edoardo Vassallo
 Blocked by: 03
 
 ## Task

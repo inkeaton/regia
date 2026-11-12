@@ -12,7 +12,7 @@ PLAYBOOK Serving:
         DO put_down(?dish).
         TELL ?guest served(?dish).
 
-    TO fetch(?dish, ?place):                 # ?place only keeps two orders of one dish apart
+    TO fetch(?dish, ?):                      # the place only keeps two orders of one dish apart
         DO walk_to(kitchen).
         DO pick_up(?dish).                   # refused once the dish has run out
 

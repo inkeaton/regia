@@ -7,7 +7,11 @@ IMPORT "../playbooks/keeping_watch".
 IMPORT "honor_duel".
 IMPORT "poisoning".
 
-#@desc: One evening at court, from the Guests arriving to the last one taking leave.
+#@version: 2.0
+#@desc[
+    One evening at court, from the Guests arriving to the last one taking leave.
+    HonorDuel and Poisoning are started during the feast, as its Subplots.
+]#
 PLOT RoyalBanquet:
     ROLE Host STARTS WITH:
         ASSIGN Courtesy, MAPPING Host TO host.
@@ -66,6 +70,9 @@ PLOT RoyalBanquet:
 
         WHEN finished_eating FROM 75 PERCENT OF Guest:
             TRANSITION TO farewell.
+
+        WHEN EXITED:                         # however the feast ends: the Quota above, or the poison
+            DO clear_tables.
 
     DURING farewell:
         WHEN ENTERED:
