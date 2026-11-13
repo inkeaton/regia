@@ -339,7 +339,7 @@ On Jason, every Staging is a Director agent, created when `START SUBPLOT` runs, 
 
 ### The Visual Editor
 
-In a Plot's Phase map, a Subplot is a dashed node with a "starts" edge from the Plan that starts it. Expanding it shows the Subplot's own Phase map, read-only. The `ENDED` Plans are cards like the others, so the way back from a Subplot is drawn only as far as their Triggers say. (*The Visual Editor*)
+In a Plot's Phase map, with the Subplots Layer on, a Subplot is a dashed node with a "starts" edge from the Phase that starts it. In the Nested Plans view the edge leaves the Plan, and expanding the node shows the Subplot's own Phase map, read-only. There the `ENDED` Plans are cards like the others, so the way back from a Subplot is drawn only as far as their Triggers say. (*The Visual Editor*)
 
 ## Since 1.0
 

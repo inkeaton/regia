@@ -109,7 +109,7 @@ The `↗` after a name is an import mark: the name is declared in a file that th
 
 A Plot with no Phases, such as `Poisoning`, is one unnamed node with the start dot and its endings.
 
-`#revise` The drawing above leaves out the second way into `farewell` and the second ending. `WHEN Poisoning ENDED WITH poison_taken: TRANSITION TO farewell.` and `WHEN Host EMPTIED: END PLOT.` are in `DURING PLOT`, and Plans of `DURING PLOT` are drawn only when a Layer is turned on. What we get by default is the evening on which nothing goes wrong.
+`#revise` The drawing above leaves out the second way into `farewell` and the second ending. `WHEN Poisoning ENDED WITH poison_taken: TRANSITION TO farewell.` and `WHEN Host EMPTIED: END PLOT.` are in `DURING PLOT`, and Plans of `DURING PLOT` are drawn only when a Layer is turned on. By default we see only the evening on which nothing goes wrong.
 
 `#revise` In `HonorDuel`, three cheers move the duel to `fighting`, through a `GIVEN` and an `ELSE` that differ only in an `ASK`. They are two Plans, so the map draws two arrows from `challenge` to `fighting`, one of them carrying `cheered FROM 3 OF Spectator · GIVEN wager(?backer, ?stake)`, the longest label on the drawing. The `ASK` that tells them apart is not drawn.
 
@@ -189,7 +189,7 @@ flowchart TB
 - A dashed `DURING PLOT` frame holds the `DURING PLOT` Plans and a box per Phase. A Plot with no Phases is the frame alone.
 - Each Plan is a card: its Trigger, then a summary of its Body as Custom Actions, Givings, Messages and `START SUBPLOT` lines.
 - `TRANSITION` and `END PLOT` are not lines on the card. They are the arrows that leave it, dotted for a timeout as in the Phase map.
-- A Subplot is a closed node with a "starts" arrow from the Plan that starts it. Opening it draws the Subplot's own Phase map inside, to read and not to edit. To change `HonorDuel` from `RoyalBanquet`'s drawing we choose "Open HonorDuel", which takes us to its file and its own tab.
+- A Subplot is a closed node with a "starts" arrow from the Plan that starts it. Opening it draws the Subplot's own Phase map inside, read-only. To change `HonorDuel` from `RoyalBanquet`'s drawing we choose "Open HonorDuel", which takes us to its file and its own tab.
 - This view has two Layers: Plans without a way out, which is on to begin with and can be turned off to leave only the cards with an arrow, and Plain comments.
 
 `#revise` The card of `WHEN wagered(?stake) FROM Spectator ?who` is a Trigger with nothing under it. Its whole Body is `LEARN wager(?who, ?stake).`, and a `LEARN` is not one of the things a card sums up. Two cards below, a Pick chooses among those `wager` Facts.
@@ -230,7 +230,7 @@ The arrangement is ours. The spec fixes what is there: the kind of the selection
 
 The key, `RoyalBanquet/feast`, is how the editor finds a construct again after the text has changed. It is built from the names around the construct each time the file is read, and nothing is kept between two readings. A Plan's key continues with its Trigger, as in `RoyalBanquet/feast/WHEN insult_thrown#0`.
 
-The Phase map says little about a Phase and leaves the rest to the Inspector. Whatever the Layers don't draw is read here, one selection at a time.
+Whatever the Phase map and its Layers don't draw about a Phase is read here, one selection at a time.
 
 Spec: chapter 25. For keys, chapter 22.
 
@@ -417,7 +417,7 @@ A Quota is part of the label, as written. The picker can make a cast change Trig
 
 ### Subplots and Stagings
 
-The graph is of a Plot and not of a run. Two duels fought at once are one `HonorDuel` node, and the editor has no view of Stagings. The way back from a Subplot is mostly out of sight too. Of the four `ENDED` Plans of `RoyalBanquet`, the Phase map can show the one that transitions, under the `DURING PLOT` Layer. The other three are cards in the Nested Plans view. (*Subplots and Stagings*)
+The graph draws a Plot, and the editor has no view of a run or of its Stagings: two duels fought at once are one `HonorDuel` node. The way back from a Subplot is mostly out of sight too. Of the four `ENDED` Plans of `RoyalBanquet`, the Phase map can show the one that transitions, under the `DURING PLOT` Layer. The other three are cards in the Nested Plans view. (*Subplots and Stagings*)
 
 ### Instancing
 
