@@ -181,7 +181,7 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 
 ## Reserved words
 
-`LET`, `BE`, `RANDOM` (only ever the function `RANDOM(a, b)`).
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Regia 1.5
 

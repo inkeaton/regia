@@ -139,7 +139,7 @@ A Target that doesn't support a Label **ignores** it, with **one warning per Pro
 
 ## Reserved words
 
-`TRAIT`, `MOOD`, `SUITS`, `SHIFTS`, `SHIFT`, `AT`, `BY`. `AND` belongs to Contexts only (chapter 06). `TEMPER`, `EFFECTS` and `PRIORITY` are not words of the language.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Not in 2.0
 

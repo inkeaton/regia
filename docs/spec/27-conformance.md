@@ -17,7 +17,7 @@ The `.trace` format, the script of a run and how a Trace is matched are in chapt
 
 Every error and warning a language chapter defines has a stable **Diagnostic code**: `R`, the chapter's two digits, then two digits numbering the check within the chapter. Chapter 13's first error is `R1301`. The `code` field of a Diagnostic (chapter 23) carries it, and each code has a docs page.
 
-Numbers run in order through a chapter's section, errors first, then warnings; a check added later takes the next free number, whatever its severity. Codes are never reused. A check that is dropped keeps its number, marked retired in its chapter. A check that changes severity keeps its number too, so the severity is printed beside a code and never read from it.
+Numbers run in order through a chapter's section, errors first, then warnings; a check added later takes the next free number, whatever its severity. Codes are never reused. A check that is dropped keeps its number, marked retired in its chapter. A check that changes severity keeps its number too, so the severity is printed beside a code and never read from it. A check that reports a retired spelling is never dropped: it lives in the chapter that owns the construct, and chapter 01 lists them all (*Retired spellings*).
 
 This shape is kept for 2.0 because codes must be stable and findable from the spec. It isn't readable or memorable: `R13` means Plan selection only to someone who knows the spec's table of contents. A better shape is deferred past 2.0, and will have to map every code already given.
 

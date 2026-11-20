@@ -142,7 +142,7 @@ The setup is undone only where the things it gave are undone anyway:
 - `R1602` A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup.
 - `R1603` `TO` on a setup `ASSIGN`, a counted target, or a counted `MAPPING`.
 - `R1604` A Placeholder in a setup, other than the Plot's parameters.
-- `R1606` A setup in `DURING PLOT`, a second setup for one Role (or for `CAST`) in one Phase or at Plot level, or `ROLE <name>.` with no Block inside a `DURING`.
+- `R1606` A setup in `DURING PLOT`, a second setup for one Role (or for `CAST`) in one Phase or at Plot level, or `ROLE <name>` with no Block inside a `DURING`.
 - `R1607` A Phase setup for a Role the Plot doesn't declare.
 - `R1608` The retired header `ROLE <name> STARTS WITH:` or `CAST STARTS WITH:`. The hint gives `ROLE <name>:` or `CAST:`.
 
@@ -160,7 +160,7 @@ An unfilled Playbook Role, and the other Mapping errors, are chapter 15's (`R150
 
 ## Reserved words
 
-None of its own: a setup is written with `ROLE` and `CAST` (chapter 15). `STARTS` stays reserved as a retired spelling, so `R1608` can give its hint; `WITH` is chapter 11's and 17's. The syntax review retired `STARTS WITH:` because `WITH` there ("begins by doing") failed chapter 01's one-meaning rule: everywhere else it introduces the Cue an ending carries.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## ASL mapping notes
 

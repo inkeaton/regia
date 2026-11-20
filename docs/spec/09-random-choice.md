@@ -93,8 +93,7 @@ WHEN wager_offered(?gold):
 
 ## Reserved words
 
-`RANDOMLY`, `OPTION`, `WEIGHT`. `EITHER` stays reserved as a retired spelling, so `R0906` can give its hint. `OR` is reserved as a Context operator (chapter 06) and is never a Block header.
-
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Transpiler checks
 

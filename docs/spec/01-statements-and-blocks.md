@@ -142,7 +142,7 @@ Every construct can be parsed from its tokens alone, without knowing what any na
 
 ## The principles of the syntax
 
-Every construct in the spec follows these rules, and a new construct is judged by them. They were set by the syntax review (ADR 0041). Chapters the review hasn't reached yet may still show older spellings. Until each one is brought in line, these rules decide.
+Every construct in the spec follows these rules, and a new construct is judged by them. They were set by the syntax review (ADR 0041).
 
 ### One meaning per word
 
@@ -180,12 +180,17 @@ The word after a written subject is what tells a condition item apart from a Fac
 ### Keywords
 
 - **Keywords are UPPERCASE, and case matters for them.** An all-caps word that is a keyword is always the keyword. `count` or `Wait` is an ordinary name.
-- **Every keyword is reserved.** A name spelled exactly like a keyword is an error (`R0110`). Names still compare ignoring case among themselves (chapter 10).
+- **Every keyword is reserved.** A name spelled exactly like a keyword is an error (`R0110`). Names still compare ignoring case among themselves (chapter 10). The keywords are listed in one place, *Reserved words* (below).
 - **A keyword is reused only if the new use passes *One meaning per word*.** Otherwise the new use gets a new word, even though the vocabulary grows. A plain English word is preferred to an invented compound.
 
 ### What syntax can be dropped
 
-A spelling is removed only when **all** of these hold: nobody writes it by hand, a generator gains nothing from it, and the Visual Editor doesn't need it. Two spellings of one thing become one. The exception is an explicit spelling of layout (`.` for a new line, `;` for a dedent), which stays because generated code uses it. A retired spelling becomes an error with a hint that names the new one, not a silent synonym (as `EVENT` became `CUE`, `R0513`).
+A spelling is removed only when **all** of these hold: nobody writes it by hand, a generator gains nothing from it, and the Visual Editor doesn't need it. Two spellings of one thing become one. The exception is an explicit spelling of layout (`.` for a new line, `;` for a dedent), which stays because generated code uses it. A retired spelling becomes an error with a hint that names the new one, not a silent synonym (as `EVENT` became `CUE`, `R0513`):
+
+- **The error lives in the chapter that owns the construct**, numbered like any other check of that chapter (chapter 27). *Retired spellings* (below) lists them all in one place.
+- **It stays for ever.** Its code is never marked retired, and its hint keeps naming the new spelling. Regia is generated as well as written, and a generator that learned from older text can produce an old spelling long after writers have stopped.
+- **A retired keyword stays reserved** for the same reason: the parser needs to recognise the old form so it can name the new one. Only the exact all-caps spelling is blocked as a name (`Change` and `change` are free), and the word is listed under *Reserved words*.
+- **Only a spelling that was once in this spec gets an error.** Words of Regia 1.0, of earlier drafts and of the primer get none and aren't reserved: 1.0 is a different language, and this spec is the only text a writer or a generator was told to follow.
 
 ## Empty Blocks
 
@@ -194,6 +199,49 @@ A Block header with no body is allowed, and the Transpiler warns about it: the B
 **`PASS`** is a Statement that does nothing. It goes anywhere a Statement goes, on its own line or inline, and says that the emptiness is meant, so a Block holding only `PASS` gets no warning: a Plan that deliberately ignores its Trigger, or an Option of a Random choice that means "otherwise nothing" (chapter 09). The Visual Editor writes `PASS` in the Blocks it creates empty. There is no keyword for "not written yet": that is a bare empty Block, which warns, or a comment.
 
 Every empty Block follows this one rule, an Option of a Random choice included.
+
+## Reserved words
+
+Every keyword of the language, in one list. All of them are reserved (*Keywords*, above), and a chapter that uses one points here. A word is listed once, under its first family; the chapter in brackets is the one that specifies it.
+
+- **Structure:** `IMPORT`, `AS` (10, and `MAPPING … AS`, 15), `PLAYBOOK`, `PLOT`, `ROLE`, `CAST` (15), `PHASE`, `INITIAL`, `DURING` (16, 20), `PRECEDENCE`, `OVER`, `TIES`, `ON`, `SELF`, `PARENT` (13; `PARENT` also in `EXITED, BY PARENT`, 20).
+- **Vocabulary:** `FACT`, `CUE`, `GOAL`, `ACTION` (05), `NAME` (03), `GAME` (10, and `FROM GAME`, 05), `TRAIT`, `MOOD` (14).
+- **Plan headers:** `WHEN`, `TO` (05; also the two closed exceptions `ASSIGN … TO` and `UPDATE … TO`), `AFTER` (12), `GIVEN`, `ELSE` (06).
+- **Trigger kind words:** `LEARNED`, `FORGOTTEN`, `REACHED`, `DROPPED`, `FAILED`, `ENDED` (05, 11), `FINISHED` (17), `ENTERED`, `EXITED` (20), `ASSIGNED`, `REMOVED` (15), `JOINED`, `LEFT`, `EMPTIED` (19). Reserved for later and not yet usable (`R0706`): `TOLD`, `AGREED`, `REFUSED` (07).
+- **Clauses and complements:** `FROM`, `BY` (05; `BY` also the amount of `SHIFT`, 14), `WITH` (11, 17), `WITHOUT`, `WAITING` (08), `UNTIL` (12, and `UNTIL EXITED`, 15), `SUITS`, `SHIFTS`, `AT` (14), `WEIGHT` (09, 26), `HIGHEST`, `LOWEST` (26), `MAPPING`, `EXCEPT`, `OF` (15), `ALL` (18).
+- **Values and units:** `ME` (03), `DIRECTOR` (05), `EVERYONE` (07), `SECOND`, `SECONDS`, `MINUTE`, `MINUTES` (12), `RANDOM` (04, only the function `RANDOM(a, b)`), `COUNT` (26, and the Instancing line `COUNT n`, 21).
+- **Conditions:** `NOT`, `AND`, `OR` (06; `OR` also in `FROM a OR b`, 05), `PURSUING` (06), `IN` (20), `RUNNING` (17), `PLAYS` (15, and Instancing, 21), `SENT` (18).
+- **Agent Statements:** `DO`, `LEARN`, `FORGET`, `UPDATE`, `PURSUE`, `DROP`, `PRINT`, `WAIT` (08), `TELL`, `ASK`, `SIGNAL` (07), `FAIL` (11), `SHIFT` (14), `LET`, `BE` (04), `PASS` (this chapter). Reserved for later (`R0706`): `REFUSE` (07).
+- **Control flow:** `IF` (06), `RANDOMLY`, `OPTION` (09; `RANDOMLY` also the Pick `, RANDOMLY`, 26), `FOR`, `EACH` (26).
+- **Director Statements:** `ASSIGN`, `REMOVE` (15), `START`, `SUBPLOT`, `END` (17), `ENTER` (20).
+- **Instancing (`.regin`, chapter 21):** `ROOT`, `KIND`, `AGENT`, `LIKE`, `NO`, `SEED`, `TARGET`.
+- **Retired keywords**, reserved for ever so their error can name the new spelling (*What syntax can be dropped*, above): `EVENT` (`R0513`, 05), `CHANGE` (`R0808`, 08), `EITHER` (`R0906`, 09), `UNASSIGN`, `UNASSIGNED` (`R1515`, 15), `PERCENT` (`R1516`, 15), `STARTS` (`R1608`, 16), `OUTCOME` (`R1715`, 17), `TRANSITION` (`R2016`, 20).
+
+`BELIEVE`, `ACHIEVE`, `PRIORITY`, `TEMPER`, `EFFECTS`, `ENDS`, `WORLD` and `GROUP` from Regia 1.0, earlier drafts and the primer are not words of the language and are not reserved.
+
+## Retired spellings
+
+Every spelling this spec once had and has since replaced, with the error that names the new one. Each error is specified in the chapter in brackets, and none of them is ever retired (*What syntax can be dropped*, above).
+
+| Retired spelling | Write instead | Code |
+|---|---|---|
+| `EVENT e` | `CUE e` | `R0513` (05) |
+| `?x = e` as a Statement | `LET ?x BE e` | `R0407` (04) |
+| `CHANGE f TO f2` | `UPDATE f TO f2` | `R0808` (08) |
+| `EITHER:` … `OR:` | `RANDOMLY:` with `OPTION:` Blocks | `R0906` (09) |
+| `SUITS a AT x AND b AT y`, `SHIFT m AND n …` | `,` between the items | `R1412` (14) |
+| `MAPPING a TO b` | `MAPPING a AS b` | `R1514` (15) |
+| `UNASSIGN`, `UNASSIGNED` | `REMOVE`, `REMOVED` | `R1515` (15) |
+| `n PERCENT OF Role` | `n% OF Role` | `R1516` (15) |
+| `ROLE r STARTS WITH:`, `CAST STARTS WITH:` | `ROLE r:`, `CAST:` | `R1608` (16) |
+| `ENDED WITH e`, `ENDED WITHOUT OUTCOME` | `FINISHED WITH e`, `FINISHED` | `R1715` (17) |
+| `END SUBPLOT P` | `DROP SUBPLOT P` | `R1717` (17) |
+| `TRANSITION TO p` | `ENTER p` | `R2016` (20) |
+| `key = value` in `.regin` | `key value` | `R2124` (21) |
+| `PLAYS a AND b` | `PLAYS a, b` | `R2125` (21) |
+| `, AT RANDOM` | `, RANDOMLY` | `R2606` (26) |
+
+A clause keyword written without its `,` (`WHEN e FROM DIRECTOR:`) is reported as `R0111` (this chapter). It isn't listed above, because it is a missing comma rather than an old word. Flat blocks were removed outright: `R0107` is retired, and a stray `;` is `R0108`.
 
 ## A word of Regia 2.0 in a 1.5 build
 
@@ -231,4 +279,4 @@ A construct reported with `R0109` gets no other Diagnostic: the checks of its ow
 
 All of this chapter is in 1.5 (ADR 0025). `R0109` is reported by a 1.5 build only, and is retired in 2.0 (*A word of Regia 2.0 in a 1.5 build*, above).
 
-Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R0111` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R0107` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`).
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R0111` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R0107` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`). *Retired spellings*, and the rules that retired spellings keep their error for ever, that retired keywords stay reserved, and that only this spec's own spellings get an error, were decided in the ticket *Retired spellings and their codes* (`.scratch/syntax-review/issues/13-retired-spellings.md`).

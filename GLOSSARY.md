@@ -319,7 +319,7 @@ _Avoid_: Director action, plot command, `Role DO` (1.0 order to a Role)
 ## Files and names
 
 **Import**:
-A line at the top of a file, `IMPORT "path".`, that makes another file's declarations visible, together with everything that file imports in turn.
+A line at the top of a file, `IMPORT "path"`, that makes another file's declarations visible, together with everything that file imports in turn.
 _Avoid_: Include, require, use
 
 **Entry file**:
@@ -333,6 +333,10 @@ _Avoid_: Current project, main file, default build
 **Program**:
 Every file reachable from its Entry file through Imports. A name means the same thing everywhere in a Program.
 _Avoid_: Project, package, module, build
+
+**Retired spelling**:
+A spelling the language once had and has replaced. Writing it is an error whose hint names the new spelling, and that stays true for ever. A retired keyword stays reserved. Words of Regia 1.0 and of earlier drafts are not retired spellings: they were never part of this language.
+_Avoid_: Deprecated syntax, legacy keyword, alias, synonym
 
 ## Comments
 

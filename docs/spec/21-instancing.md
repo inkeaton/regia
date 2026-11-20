@@ -91,8 +91,8 @@ KIND servant, PLAYS Servant         # only ever spawned by the game
 ```
 
 - **`KIND <kind>[, LIKE <kind>, …][, PLAYS <Role>, …]`** names the kind, the kinds it starts from, and its Roles **in the Root Plot**. Each list ends at the next clause keyword (`LIKE`, `PLAYS`) or at the `:` (chapter 01). Roles joined with `AND` are the retired spelling (`R2125`). Every Agent of the kind plays **every** Role the kind ends up with, from the start and when it joins. To mix (5 guests, 2 of them drunk), write two kinds. Instancing makes no random picks. Random casting belongs to the Plot (`n OF`, chapter 15).
-- **`COUNT <n>.`** is how many Agents of the kind exist when the Program starts. A whole, non-negative literal. Left out, it means 0: the kind only enters by **joining** (chapter 19). It is the same noun as the Expression `COUNT(…)` (chapter 26), "how many", here of the kind's Agents.
-- **`<propensity> AT <value>.`** gives a starting Propensity value (chapter 14), worded like `SUITS … AT`. The value is a literal or `RANDOM(a, b)` with literal bounds, in [0, 1] for a Trait and [-1, 1] for a Mood, drawn **once per Agent** when it is created, so a spawned Agent gets its own draw too. A Propensity roll is **always a decimal**, however its bounds are written: `bravery AT RANDOM(-1, 1)` is any bravery from -1 to 1, not one of three. This is the one place chapter 04's rule for a roll's kind doesn't apply, since a Propensity value is never meant to be whole. Traits and Moods are written the same way.
+- **`COUNT <n>`** is how many Agents of the kind exist when the Program starts. A whole, non-negative literal. Left out, it means 0: the kind only enters by **joining** (chapter 19). It is the same noun as the Expression `COUNT(…)` (chapter 26), "how many", here of the kind's Agents.
+- **`<propensity> AT <value>`** gives a starting Propensity value (chapter 14), worded like `SUITS … AT`. The value is a literal or `RANDOM(a, b)` with literal bounds, in [0, 1] for a Trait and [-1, 1] for a Mood, drawn **once per Agent** when it is created, so a spawned Agent gets its own draw too. A Propensity roll is **always a decimal**, however its bounds are written: `bravery AT RANDOM(-1, 1)` is any bravery from -1 to 1, not one of three. This is the one place chapter 04's rule for a roll's kind doesn't apply, since a Propensity value is never meant to be whole. Traits and Moods are written the same way.
 - **Setup lines**: `ASSIGN`, `LEARN` and `PURSUE`, under the rules of a Role setup (below, *Setup lines*).
 - The lines of the Body come in any order. With no Body, the header ends with `.`.
 - A Propensity no line gives is **neutral**: 0.5 for a Trait, 0 for a Mood (chapter 14, ADR 0033). No warning.
@@ -119,7 +119,7 @@ KIND hot_knight, LIKE knight, hothead:
 NO KIND hothead
 ```
 
-A later file removes a kind with `NO KIND <kind>.`. A removed kind has no Agents at the start and can't be spawned: the game naming it gets chapter 19's treatment of an unknown kind. Kinds and Agents built on it with `LIKE` still take its lines, so a kind can be kept as a template only. An importer may declare the kind again.
+A later file removes a kind with `NO KIND <kind>`. A removed kind has no Agents at the start and can't be spawned: the game naming it gets chapter 19's treatment of an unknown kind. Kinds and Agents built on it with `LIKE` still take its lines, so a kind can be kept as a template only. An importer may declare the kind again.
 
 ## Individual Agents
 
@@ -140,7 +140,7 @@ AGENT percival, LIKE knight, hothead:
 - **`AGENT <name>[, LIKE <kind>, …][, PLAYS <Role>, …]`** is written and resolved like a `KIND`: the same lines, the same `LIKE`, the same overriding, line by line.
 - An individual Agent has **no `COUNT`**. It is always one Agent, in the starting cast.
 - **Its name is its Agent name.** The Target uses it as it is, so the game's character `gawain` is this Agent (chapter 36 for Jason). The game can spawn a kind but never an individual Agent: after it leaves, it doesn't come back.
-- `NO AGENT <name>.` removes it in a later file.
+- `NO AGENT <name>` removes it in a later file.
 - An Agent of no kind is the common case for a part only one character plays: `AGENT king, PLAYS Host` says it once.
 
 The starting cast is every individual Agent plus, for each kind, its `COUNT` of Agents named by the Target.
@@ -174,7 +174,7 @@ The Body of a `KIND` or an `AGENT` may hold the three Statements of a Role setup
 SEED 42
 ```
 
-`SEED <n>.` sets the seed of every run of this Build (chapter 34: every random draw the language makes), so that a run can be played again. It is a whole, non-negative literal, and one item for overriding. A seed given when the run is started (`regia run --seed <n>`, chapter 23, or a behaviour case's header) beats it. With neither, each run picks its own seed and the Trace records it.
+`SEED <n>` sets the seed of every run of this Build (chapter 34: every random draw the language makes), so that a run can be played again. It is a whole, non-negative literal, and one item for overriding. A seed given when the run is started (`regia run --seed <n>`, chapter 23, or a behaviour case's header) beats it. With neither, each run picks its own seed and the Trace records it.
 
 ## Target settings
 

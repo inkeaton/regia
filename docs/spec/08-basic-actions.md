@@ -12,12 +12,12 @@ The Actions built into Regia: changing the Agent's own Facts and Goals, sending,
 | `PURSUE g` | starts a Pursuit of `g` and waits until it is reached | `TO g` |
 | `PURSUE g, WITHOUT WAITING` | starts a Pursuit of `g` and carries on | `TO g` |
 | `DROP g` | stops every Pursuit of `g` | `WHEN g DROPPED`, then `WHEN g ENDED` |
-| `TELL <recipient> <fact or event>.` | sends a Fact or Cue (chapter 07) | at the receiver |
-| `ASK <recipient> TO <goal>.` | asks for a Goal (chapter 07) | at the receiver |
-| `SIGNAL <event>.` | sends a Cue to the Directors (chapter 07) | at the Directors |
+| `TELL <recipient> <fact or event>` | sends a Fact or Cue (chapter 07) | at the receiver |
+| `ASK <recipient> TO <goal>` | asks for a Goal (chapter 07) | at the receiver |
+| `SIGNAL <event>` | sends a Cue to the Directors (chapter 07) | at the Directors |
 | `PRINT(e1, e2, …)` | prints Expressions, for debugging | nothing |
-| `WAIT <Duration>.` | pauses the Body | nothing |
-| `WAIT [<Duration>,] UNTIL <condition>.` | pauses the Body until the condition holds, or the Duration runs out (chapter 12) | nothing |
+| `WAIT <Duration>` | pauses the Body | nothing |
+| `WAIT [<Duration>,] UNTIL <condition>` | pauses the Body until the condition holds, or the Duration runs out (chapter 12) | nothing |
 | `FAIL` | fails the current Plan (chapter 11) | `WHEN g FAILED`, in a `TO g` Plan |
 | `SHIFT m BY n` | changes the Agent's Mood `m` by `n` (chapter 14) | nothing |
 | `PASS` | nothing: it fills a Block meant to be empty (chapter 01) | nothing |
@@ -169,8 +169,7 @@ WHEN intruder_seen(?x):
 
 ## Reserved words
 
-`LEARN`, `FORGET`, `UPDATE`, `PURSUE`, `DROP`, `PRINT`, `WAIT`, `FAIL` (chapter 11), `SHIFT` (chapter 14), `PASS` (chapter 01), and the clause `WITHOUT WAITING`; plus chapter 07's `TELL`, `ASK`, `SIGNAL`, `EVERYONE`. `BELIEVE` and `ACHIEVE` are no longer keywords.
-
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Transpiler checks
 

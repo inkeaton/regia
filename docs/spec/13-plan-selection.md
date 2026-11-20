@@ -221,7 +221,7 @@ warning: Guest, food_served: Feasting and Gossip are ordered by name only; add a
 
 ## Reserved words
 
-`PRECEDENCE`, `OVER`, `TIES`, `SELF`, `PARENT`. `ON` and `DURING` are shared with other constructs. `PRIORITY` is no longer a word of the language.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Not in 2.0
 

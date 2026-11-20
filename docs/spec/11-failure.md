@@ -93,7 +93,7 @@ WHEN bring(?dish) FAILED:                    # every other Failure of bring
     DO shrug
 ```
 
-- **`FAIL WITH <event>.`** takes exactly one Cue declared in the Vocabulary, with its arguments filled, as `END PLOT WITH` does (chapter 17). The Cue is not sent to anyone and triggers no `WHEN sold_out` Plan: it only rides on the Failure.
+- **`FAIL WITH <event>`** takes exactly one Cue declared in the Vocabulary, with its arguments filled, as `END PLOT WITH` does (chapter 17). The Cue is not sent to anyone and triggers no `WHEN sold_out` Plan: it only rides on the Failure.
 - **Only `FAIL WITH` gives a Reason.** A Failure from any other cause in the table above (a refused Action, arithmetic, no applicable `TO` Plan, a plain `FAIL`) has none. Those causes are in the Trace and are not words of the language.
 - **The Reason travels unchanged** up the chain of waiting Plans: every Goal that fails because of it fails with the same Reason, and so does the report to whoever asked (chapters 05, 07, 20). A Goal in the chain can't replace or drop it in 2.0.
 - **`WHEN g FAILED WITH <event>:`** matches a Failure with that Reason, filling Placeholders as any Trigger does (chapter 03). `WITH` comes straight after `FAILED`, before `FROM` or `BY` (chapter 05).
@@ -199,7 +199,7 @@ The other causes in the table above have their codes in their own chapters: `T04
 
 ## Reserved words
 
-`FAIL`, and the kind word `FAILED`. `WITH` is shared with chapter 17: it introduces the Cue an ending carries, a Reason here and an Outcome there.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## ASL mapping notes
 

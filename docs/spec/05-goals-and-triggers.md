@@ -313,7 +313,7 @@ A Trigger has no Context clause: the Context is a `GIVEN` Block under the Trigge
 - `R0510` `FROM ME` on a Cue Trigger (an Agent never sends to itself).
 - `R0511` A Placeholder or a quantity after `GAME` or `ME`, or anywhere in a `FROM … OR …` list.
 - `R0512` `GAME`, `ME` or `OR` after `BY`.
-- `R0513` The keyword `EVENT` (hint: renamed `CUE`).
+- `R0513` The retired keyword `EVENT` (hint: renamed `CUE`).
 
 `ME` in a Plot, `FROM ME` included, is `R0309` (chapter 03). A `PURSUE` or an `ASK` that no recipe's `FROM` admits is `R3805` or `R3806` (chapter 38).
 

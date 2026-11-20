@@ -162,7 +162,7 @@ A Challenger left alone stops telling `hit` because `Duelling` is taken from it,
 
 ## Reserved words
 
-`JOINED`, `LEFT`, `EMPTIED`.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## ASL mapping notes
 

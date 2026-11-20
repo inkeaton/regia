@@ -183,13 +183,13 @@ DURING PLOT:
         DROP SUBPLOT HonorDuel
 ```
 
-- `DROP SUBPLOT <Plot>.` ends **every** running Staging of that Plot started by this Staging, each with its own Subplots (as for `END PLOT`). It is the opposite of `START SUBPLOT`, and is worded like the Trigger it fires, as `DROP g` fires `DROPPED` (chapter 08).
+- `DROP SUBPLOT <Plot>` ends **every** running Staging of that Plot started by this Staging, each with its own Subplots (as for `END PLOT`). It is the opposite of `START SUBPLOT`, and is worded like the Trigger it fires, as `DROP g` fires `DROPPED` (chapter 08).
 - For a Plot with parameters, it ends every such Staging **whose arguments match**: `DROP SUBPLOT HonorDuel(?q)` with `?q` filled ends the duels over that quarrel, `DROP SUBPLOT HonorDuel(?)` ends them all. An unfilled Placeholder matches anything, as `?` does.
 - **The parent hears it**: `WHEN HonorDuel DROPPED`, then `WHEN HonorDuel ENDED`, once per Staging ended, with its arguments (above). The Plans run **after** the Body that ran `DROP SUBPLOT`, like any Trigger's: a Statement written after `DROP SUBPLOT` runs before them.
 - It doesn't stop the Body.
 - With no such Staging running, it does nothing, without a warning, like the other no-ops (chapter 08).
 - Naming a Plot this Plot never starts is a compile-time error (`R1704`).
-- `SUBPLOT` is required: `DROP HonorDuel` is an error whose hint gives `DROP SUBPLOT HonorDuel` (`R0802`, chapter 08). The retired spelling `END SUBPLOT <Plot>.` is an error with the same hint (`R1717`). `END` is left only in `END PLOT`, a Staging's own ending.
+- `SUBPLOT` is required: `DROP HonorDuel` is an error whose hint gives `DROP SUBPLOT HonorDuel` (`R0802`, chapter 08). The retired spelling `END SUBPLOT <Plot>` is an error with the same hint (`R1717`). `END` is left only in `END PLOT`, a Staging's own ending.
 
 ## Precedence
 
@@ -232,7 +232,7 @@ A Plot may not start itself, directly or through other Plots (A starts B starts 
 
 ## Reserved words
 
-`SUBPLOT` (in `START SUBPLOT` and `DROP SUBPLOT`), `END`, `FINISHED`, `ENDED`, `WITH` (shared with chapter 11: the Cue an ending carries, an Outcome here and a Reason there), `RUNNING`. `DROP`, `DROPPED` and `ENDED` are chapter 05's and 08's, shared with Goals. `OUTCOME` stays reserved as a retired spelling, so `R1715` can give its hint. `ENDS` from the primer is not a word of the language.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## ASL mapping notes
 

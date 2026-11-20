@@ -285,7 +285,7 @@ A Message to an Agent who has left is `T1901`. A Signal or a Subplot's ending th
 
 ## Reserved words
 
-`ENTER`, `ENTERED`, `EXITED`, `IN`. `AFTER` is chapter 12's. `PARENT` is chapter 13's, `BY` chapter 05's. `WORLD` from the primer is not a word of the language.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Notes for the ASL mapping
 

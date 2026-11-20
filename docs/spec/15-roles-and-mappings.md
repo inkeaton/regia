@@ -391,7 +391,7 @@ A Role is still not a Value: `hates(host)` stays an error, and `PLAYS` is the on
 
 ## Reserved words
 
-`ROLE` (already a Plot keyword), `MAPPING`, `AS` (also chapter 10's), `OF`, `PERCENT` (a retired spelling, so `R1516` can give its hint), `ASSIGNED`, `REMOVED`, `UNTIL`, `CAST`, `EXCEPT`, `PLAYS`. `EXITED` is chapter 20's. `PLAYS` is also Instancing's (chapter 21).
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Not in 2.0
 

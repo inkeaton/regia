@@ -171,7 +171,7 @@ A Quota also writes `count` entries, as each Signal is counted and when it becom
 
 ## Reserved words
 
-`ALL`, `SENT`. `OF` comes from chapter 15, and so does `%` before `OF` (ADR 0045).
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## ASL mapping notes
 

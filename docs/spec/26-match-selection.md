@@ -137,8 +137,7 @@ A Director's other conditions on its own Staging work the same way: `COUNT(Honor
 
 ## Reserved words
 
-`HIGHEST`, `LOWEST`, `FOR`, `EACH`, `COUNT`. `RANDOMLY` and `WEIGHT` are already reserved by chapter 09: the Pick `, RANDOMLY` is the same word as the Random choice, "chosen by chance". The Pick was `, AT RANDOM` until the syntax review, which kept `AT` for a level (`SUITS p AT n`, chapter 14) and left `RANDOM` only to the function `RANDOM(a, b)` (chapter 04).
-
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Transpiler checks
 

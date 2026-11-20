@@ -27,7 +27,7 @@ WAIT ?delay * 2 SECONDS
 
 ## `WAIT`
 
-`WAIT <Duration>.` is a Basic Action (chapter 08), written without `DO`.
+`WAIT <Duration>` is a Basic Action (chapter 08), written without `DO`.
 
 ```regia
 WHEN food_served:
@@ -62,7 +62,7 @@ WHEN door_opened:
     DO slip_out
 ```
 
-- **`WAIT <Duration>, UNTIL <condition>.`** waits until the condition holds, or until the Duration has run out, whichever comes first. **`WAIT UNTIL <condition>.`** has no limit.
+- **`WAIT <Duration>, UNTIL <condition>`** waits until the condition holds, or until the Duration has run out, whichever comes first. **`WAIT UNTIL <condition>`** has no limit.
 - **The condition is anything an `IF` can test** in that Block (chapter 06): the Agent's Facts, or in a Director its own Facts, `IN <phase>`, `PLAYS` and `RUNNING`. It is checked when the Body reaches the `WAIT`, and again whenever what it tests changes. If it already holds, the Body carries on at once.
 - **Running out of time is not a failure.** The Body carries on either way, and an `IF` after the `WAIT` tells the two endings apart. `WAIT … UNTIL` fails only as `WAIT` does, on a Duration that isn't a Number.
 - **The condition names no new Values.** Its Placeholders must be certainly filled before the `WAIT`, or be blanks (`?`), because after a timeout nothing would fill them. To use what was found, test it again with `IF` or `GIVEN`.
@@ -128,7 +128,7 @@ So in 2.0, nothing to do with time can fail a Plan except a Duration that isn't 
 
 ## Reserved words
 
-`WAIT` (chapter 08), `UNTIL` (also chapter 15's `UNTIL EXITED`), `AFTER`, `SECOND`, `SECONDS`, `MINUTE`, `MINUTES`.
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## ASL mapping notes
 

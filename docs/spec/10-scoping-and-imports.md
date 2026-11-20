@@ -14,7 +14,7 @@ PLAYBOOK Brawler:
     WHEN insult_heard(?s): DO punch(?s)
 ```
 
-- `IMPORT "<path>".` is a Statement of its own. Imports come **first in the file**, after the file's doc comment (chapter 02) and before any declaration. An `IMPORT` anywhere else is an error.
+- `IMPORT "<path>"` is a Statement of its own. Imports come **first in the file**, after the file's doc comment (chapter 02) and before any declaration. An `IMPORT` anywhere else is an error.
 - The path is a **string relative to the importing file**. The `.regia` extension may be left out. There are no project roots, search paths or packages in 2.0.
 - Imports are **transitive**: a file sees everything it declares, everything it imports, and everything those files import, all the way down. So a hub file that only imports others works as a single import.
 - A file is **loaded once**, however many import paths lead to it, so diamond dependencies are fine.
@@ -29,7 +29,7 @@ A name a file gets through another file's import breaks when that import is remo
 error: `hungry` is not declared
   --> brawl.regia:12
   hint: `hungry` is declared in `shared/food.regia`, which this file no longer reaches.
-        Add `IMPORT "shared/food".`
+        Add `IMPORT "shared/food"`.
 ```
 
 The Transpiler can only offer the hint when the declaring file is still part of the program (below). Showing, per file, which names it uses through other files is for the Visual Editor (*What the graph shows*).
@@ -148,8 +148,7 @@ A Cue that one Playbook both sends and reacts to may be declared inside it (ADR 
 
 ## Reserved words
 
-`IMPORT`, `AS` (also chapter 15's `MAPPING … AS`), `GAME` (also chapter 05's `FROM GAME`), and chapter 03's `NAME`.
-
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Transpiler checks
 

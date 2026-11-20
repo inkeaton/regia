@@ -6,9 +6,9 @@ How Agents send Facts, Cues and Goals to one another, how they Signal their Dire
 
 | Statement | Sends | To |
 |---|---|---|
-| `TELL <recipient> <fact or event>.` | a Fact or a Cue | an Agent, a Role, or `EVERYONE` |
-| `ASK <recipient> TO <goal>.` | a request to pursue a Goal | an Agent, a Role, or `EVERYONE` |
-| `SIGNAL <event>.` | a Cue | the Directors giving this Playbook |
+| `TELL <recipient> <fact or event>` | a Fact or a Cue | an Agent, a Role, or `EVERYONE` |
+| `ASK <recipient> TO <goal>` | a request to pursue a Goal | an Agent, a Role, or `EVERYONE` |
+| `SIGNAL <event>` | a Cue | the Directors giving this Playbook |
 
 ```regia
 WHEN insult_heard(?s), FROM Guest ?who:
@@ -163,7 +163,7 @@ Messages between Agents use the `FROM` forms of chapter 05 and add none: `FROM R
 
 Agent cooperation (accepting and refusing requests, hearing back, negotiating) is not part of 2.0. These choices keep it an addition, not a redesign:
 
-- **`ASK` is a request, not a command.** In 2.0 the receiver always takes the Goal on, but that is 2.0's behaviour, not the meaning of `ASK`. Declining is written `FAIL WITH <reason>.` in a `TO …, FROM ?who` Plan, and the asker hears `FAILED WITH <reason>`. A later version may add a `REFUSE` Statement that declines before the Goal is taken on, without changing any `ASK` already written.
+- **`ASK` is a request, not a command.** In 2.0 the receiver always takes the Goal on, but that is 2.0's behaviour, not the meaning of `ASK`. Declining is written `FAIL WITH <reason>` in a `TO …, FROM ?who` Plan, and the asker hears `FAILED WITH <reason>`. A later version may add a `REFUSE` Statement that declines before the Goal is taken on, without changing any `ASK` already written.
 - **Replies are Trigger kinds on the Goal, with `BY` for the replier.** The four endings are heard in 2.0 (above). `AGREED` and `REFUSED` would be two more, in the same shape: `WHEN find_sword REFUSED, BY ?who`. These two kind words are **reserved** now and do nothing in 2.0.
 - **Message Statements may later take trailing clauses**, `,`-separated like Labels on a Trigger: `ASK ?g TO find_sword, AND WAIT`, `…, WITHIN 30 SECONDS` (timeouts are not in 2.0, chapter 12). 2.0 defines none, and any clause is an error. Waiting on an `ASK` is put off because it ties two Agents together: the asker would fail when the other fails, a drop would spread from one Agent to another, a Role recipient would mean waiting on many, and the asked Agent may leave.
 - **No conversation ids.** A request is identified by its Goal *with its arguments* plus `FROM`, which tells `find_sword` asked of Bob from the same Goal asked of Carl. If cooperation later needs more ("this auction, not that one"), a Goal argument carries it.
@@ -171,8 +171,7 @@ Agent cooperation (accepting and refusing requests, hearing back, negotiating) i
 
 ## Reserved words
 
-`TELL`, `ASK`, `SIGNAL`, `EVERYONE`; the kind words `TOLD`, `AGREED`, `REFUSED`; `REFUSE`. `REACHED` and `FAILED` are Trigger kinds (chapters 05, 11), and `BY` is chapter 05's.
-
+Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-blocks.md`).
 
 ## Transpiler checks
 
