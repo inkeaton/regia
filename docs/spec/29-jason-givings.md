@@ -27,7 +27,7 @@ Every plan generated from Playbook P starts its context with a test that P is gi
 ```
 
 - It covers **every** plan of P: the designer's Plans, its ending Plans and the plans of P's Local Goals. Nothing a designer wrote in a Playbook that isn't given can run.
-- **Two exceptions, both for closing** (*Taking a Playbook away*, below). P's `DROPPED` and `ENDED` plans are guarded by `( regia_given(p, _, _, _, _, _) | regia_closing(Closing, p, _, _, _, _, _) )`, where `Closing` is the ending goal's own argument (chapter 40): they also run for the drops of a closing of P, and for nothing else. P's `REMOVED` plans have no Givings guard, since only a closing posts `regia_unassigned`.
+- **Two exceptions, both for closing** (*Taking a Playbook away*, below). P's `DROPPED` and `ENDED` plans are guarded by `( regia_given(p, _, _, _, _, _) | regia_closing(Closing, p, _, _, _, _, _) )`, where `Closing` is the ending goal's own argument (chapter 40): they also run for the drops of a closing of P, and for nothing else. P's `REMOVED` plans have no Givings guard, since only a closing posts `regia_removed`.
 - **The generated `-!g` plans are not guarded** (chapter 40). They live in `goals.asl`, one per Goal, not in a Playbook, and a `-!g` whose context is false would drop the whole intention, waiting Plans of still-given Playbooks included.
 - It comes first, so the designer's Context isn't evaluated for a Playbook that isn't given.
 - Selection (chapter 13) still happens in `selectOption`. It reads the same beliefs for the rank, so the guard and the rank never disagree about what is given.
@@ -207,7 +207,7 @@ A whole-Role binding always carries a list: `live(Role, Except)`, which is `[]` 
 - **P was neither held nor closing**: after adding the belief, the atomic plan posts **`!!regia_assigned(P)`**, which runs on a new intention once the atomic plan ends. From `dining.regia:10`, `Dining` given at the start of `feast` runs `WHEN ASSIGNED` there, and `PURSUE have_dinner, WITHOUT WAITING` starts yet another intention.
 - **P was closing** (below): nothing is posted. The closing runs `ASSIGNED` as its last step, after its `REMOVED` Plans. A re-entered Phase therefore fires `REMOVED`, then `ASSIGNED` (chapter 15). P's other Plans run as soon as the new Giving is in, next to the closing Plans: only `ASSIGNED` waits.
 
-P's `WHEN ASSIGNED:` plans are plans for `+!regia_assigned(p)`, with the Givings guard and chapter 32's annotation with the Item `assigned`. `agent.asl` holds a `regia_noop` plan for `regia_assigned(_)` and for `regia_unassigned(_)`, so a Playbook with neither Plan needs nothing, and a `-!` catcher for each, which writes the failing Plan's `failure` entry and succeeds, as for the ending goals (chapter 40).
+P's `WHEN ASSIGNED:` plans are plans for `+!regia_assigned(p)`, with the Givings guard and chapter 32's annotation with the Item `assigned`. `agent.asl` holds a `regia_noop` plan for `regia_assigned(_)` and for `regia_removed(_)`, so a Playbook with neither Plan needs nothing, and a `-!` catcher for each, which writes the failing Plan's `failure` entry and succeeds, as for the ending goals (chapter 40).
 
 ## Taking a Playbook away
 
@@ -244,7 +244,7 @@ Goals started `WITHOUT WAITING` from a Plan of P run on their own intention. If 
 `regia_close(C, Ps, Steps)` is an Infrastructure plan of `agent.asl`. It runs, in order, on one intention:
 
 1. the endings handed back by `regia.stop_playbook`;
-2. `regia_unassigned(P)` for each P in `Ps`, in name order;
+2. `regia_removed(P)` for each P in `Ps`, in name order;
 3. removing every `regia_closing(C, …)`;
 4. `regia_assigned(P)` for each P in `Ps` that is held again (*Opening*, above), in name order.
 

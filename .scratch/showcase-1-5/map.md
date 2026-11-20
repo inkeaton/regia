@@ -51,7 +51,7 @@ Nothing left: every ticket is closed. The way to the hand-off (the two guides an
 
 ## Out of scope
 
-- Rewriting guide chapters 0–17 and 20: a later effort, which uses this map's showcase and Jason files as reference.
+- Rewriting guide chapters 0–17 and 20: a later effort, which uses this map's showcase and Jason files as reference. Taken up by [*The Regia 1.5 showcase and guide, after the syntax review*](../regia-1-5-guide/map.md), which also brings the showcase to the post-review syntax.
 - Editing the old `docs/guide/showcase/` and guide chapters 18 and 19.
 - Writing the two guides' prose and the reference Build's files: handed off once the way is clear.
 - Anything only in 2.0.

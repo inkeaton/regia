@@ -47,6 +47,6 @@ Nothing left: every patch has graduated into a ticket.
 
 ## Out of scope
 
-- **Updating the 1.5 showcase** (`docs/showcase/`) and its reference Build to the new syntax. It's a later effort, and the user will run it after this map. It starts from [The hand-off to the showcase](issues/14-showcase-hand-off.md).
+- **Updating the 1.5 showcase** (`docs/showcase/`) and its reference Build to the new syntax. It's a later effort, and the user will run it after this map. It starts from [The hand-off to the showcase](issues/14-showcase-hand-off.md), and is charted as [*The Regia 1.5 showcase and guide, after the syntax review*](../regia-1-5-guide/map.md).
 - **The 2.0 guide** (`docs/guide/`). It's derived and never normative, and it follows the spec in its own effort.
 - **Constructs that only 2.0 has**, except where a 1.5 rename forces their spelling (*Notes*, *Scope*).

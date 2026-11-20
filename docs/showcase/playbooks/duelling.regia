@@ -1,57 +1,57 @@
-IMPORT "../vocabulary".
+IMPORT "../vocabulary"
 
 #@desc: One side of a duel. Both duellists hold it, each with the other as opponent.
 PLAYBOOK Duelling:
-    ROLE opponent.
+    ROLE opponent
 
-    FACT stamina(points).
-    GOAL strike.
-    CUE challenged, hit, yielded.            # what two duellists say to each other
+    FACT stamina(points)
+    GOAL strike
+    CUE challenged, hit, yielded             # what two duellists say to each other
 
-    TO issue_challenge FROM DIRECTOR:
-        DO throw_glove.
-        TELL opponent challenged.
+    TO issue_challenge, FROM DIRECTOR:
+        DO throw_glove
+        TELL opponent challenged
 
     # Two ways to answer a challenge.
-    WHEN challenged FROM opponent, SUITS bravery AT 0.7:
-        DO stand_up.
-        DO pick_up_glove.
-        SIGNAL duel_accepted.
+    WHEN challenged, FROM opponent, SUITS bravery AT 0.7:
+        DO stand_up
+        DO pick_up_glove
+        SIGNAL duel_accepted
 
-    WHEN challenged FROM opponent, SUITS bravery AT 0.1, SHIFTS sympathy BY -0.3:
-        DO walk_to(door).
-        DO leave_hall.                       # out of the banquet, and out of the Program
+    WHEN challenged, FROM opponent, SUITS bravery AT 0.1, SHIFTS sympathy BY -0.3:
+        DO walk_to(door)
+        DO leave_hall                        # out of the banquet, and out of the Program
 
-    TO fight FROM DIRECTOR:
-        DO draw_sword.
-        LEARN stamina(3).
-        PURSUE strike, WITHOUT WAITING.
+    TO fight, FROM DIRECTOR:
+        DO draw_sword
+        LEARN stamina(3)
+        PURSUE strike, WITHOUT WAITING
 
     # One lunge, then the next.
     TO strike:
         GIVEN stamina(?):                    # chosen while we can still fight …
-            WAIT RANDOM(1, 3) SECONDS.
+            WAIT RANDOM(1, 3) SECONDS
             IF stamina(?):                   # … and still able, now that the wait is over?
-                DO lunge.
-                TELL opponent hit.
-                PURSUE strike, WITHOUT WAITING.
+                DO lunge
+                TELL opponent hit
+                PURSUE strike, WITHOUT WAITING
 
-    WHEN hit FROM opponent, SHIFTS aggressiveness BY 0.1:
+    WHEN hit, FROM opponent, SHIFTS aggressiveness BY 0.1:
         GIVEN stamina(?now) AND ?now > 1:
-            CHANGE stamina(?now) TO stamina(?now - 1).
+            UPDATE stamina(?now) TO stamina(?now - 1)
         GIVEN stamina(?now):
-            FORGET stamina(?now).
-            DO drop_sword.
-            TELL opponent yielded.
+            FORGET stamina(?now)
+            DO drop_sword
+            TELL opponent yielded
         # no ELSE: a hit after we have yielded changes nothing
 
-    WHEN yielded FROM opponent:
-        DROP strike.                         # no more lunges at a beaten opponent
-        DO salute.
-        SIGNAL duel_won.
+    WHEN yielded, FROM opponent:
+        DROP strike                          # no more lunges at a beaten opponent
+        DO salute
+        SIGNAL duel_won
 
     WHEN idle:
-        DO limber_up.
+        DO limber_up
 
-    WHEN UNASSIGNED:
-        FOR EACH stamina(?left): FORGET stamina(?left).
+    WHEN REMOVED:
+        FOR EACH stamina(?left): FORGET stamina(?left)

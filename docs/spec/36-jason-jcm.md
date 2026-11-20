@@ -176,7 +176,7 @@ regia_kind(drunk_noble, [drunkard, guest], "roles/Drunkard__Guest.asl",
 The Root Director's file carries one plan per kind and per individual Agent that has setup lines (chapter 21), `regia_instance_setup(kind(hothead), A)` or `regia_instance_setup(agent(percival), A)`, with a catch-all that does nothing. Chapter 30 (*Setup lines of kinds and individual Agents*) holds what the plan sends, and when `regia_begin` runs it.
 
 - **`LIKE` is resolved by the Transpiler.** Each plan holds the lines the kind or Agent ends up with, its bases' lines in `LIKE` order and then its own (chapter 21). Nothing is inherited at runtime.
-- In the showcase, only `hothead` has a plan (`LEARN grudge(percival, 2)`, `banquet.regin:19`). `percival LIKE knight` takes `knight`'s lines, which are none.
+- In the showcase, only `hothead` has a plan (`LEARN grudge(percival, 2)`, `banquet.regin:19`). `AGENT percival, LIKE knight` takes `knight`'s lines, which are none.
 - Which plan a starting Agent runs is the `Source` of its `regia_start_cast` entry (chapter 33). A joiner runs its kind's.
 - `Settings` is a list of `key(value)` terms, not fixed arguments, so a new `TARGET jason` key adds an entry instead of changing the belief.
 - This keeps chapter 28's rule: the Infrastructure's state is beliefs, and `regia-jason` keeps none of its own.

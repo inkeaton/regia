@@ -105,7 +105,7 @@ A Block with no `AFTER` has no line. The plan, from `honor_duel.regia:37`:
 
 ### `ENTER`
 
-`ENTER x.` calls `!regia_transition(x)`, an `[atomic]` plan in `regia/director.asl`. It follows chapter 20's six steps, plus a last one that ends the Body:
+`ENTER x.` calls `!regia_enter(x)`, an `[atomic]` plan in `regia/director.asl`. It follows chapter 20's six steps, plus a last one that ends the Body:
 
 1. **Stop the old Phase's Plans.** `regia.stop_phase(Old)`, a `regia-jason` internal action like `regia.stop_playbook` (chapter 29), drops every intention running a plan annotated `regia_phase(Old)`. It drops them silently: Directors have no Goals, so nothing fires and nothing is traced. It **skips the intention running the `ENTER`**, which ends at step 7. It also drops the Phase's **queued entry events**, `+!regia_entered(phase(Old))` and `+!regia_after(phase(Old), _)`, the way `.drop_desire` removes queued events. An `ENTERED` Plan that transitions at once would otherwise leave its Phase's `AFTER` events queued, and on a re-entry they would find `regia_phase(Old)` true again and start a second count. The Phase's queued Trigger events (Signals, Cues, `LEFT`) are left in the queue, so the new Phase hears them.
 2. **Run `EXITED` to completion**, as the subgoal `!regia_exited(phase(Old))`, inside the atomic plan. If it fails, a `-!regia_exited` plan writes the Trace entry (chapter 20) and the transition carries on: a Director Statement never fails. A `DO` in it waits for the game's reply, and the transition with it (*A `DO` in `EXITED`*, below).
@@ -196,7 +196,7 @@ The setup lines of a `KIND` or an `AGENT` (chapter 21) are run by the Root Direc
    <- regia.send(A, tell, grudge(percival, 2)).   // banquet.regin:19
 ```
 
-- **`LIKE` is resolved at compile time.** A plan holds every line the kind or Agent ends up with: its bases' lines in `LIKE` order, then its own, with a line of its own replacing what it took (chapter 21). `percival LIKE knight` gets `knight`'s lines, which are none, so it has no plan; it is not a `hothead` and holds no grudge.
+- **`LIKE` is resolved at compile time.** A plan holds every line the kind or Agent ends up with: its bases' lines in `LIKE` order, then its own, with a line of its own replacing what it took (chapter 21). `AGENT percival, LIKE knight` gets `knight`'s lines, which are none, so it has no plan; it is not a `hothead` and holds no grudge.
 - A catch-all plan that does nothing covers a kind or Agent with no lines.
 - The lines are sent as a Role setup's are (*Setups*, above), with one difference: an `ASSIGN` is a Giving to that Agent, `regia_give(p, agent(a), Rank, Bindings, staging)`. Only `REMOVE P FROM ?who`, `FROM CAST ?who` and the Staging's ending take it away (chapter 29). It is not standing either.
 - The plan is per kind, not per Agent, because a line's `RANDOM` is rolled for each Agent, inside the plan. A joiner (chapter 33) runs the same `!regia_instance_setup(kind(K), A)` after its Role setups.
@@ -307,7 +307,7 @@ For each Cue some Agent can Signal to this Plot, the Director file has one catch
    <- regia.trace(unheard, info, "T3801", [cue(took_seat), sender(S), plot(royalBanquet), phase(Ph)]).
 ```
 
-- It writes the entry when no plan of the current Phase or of `DURING PLOT` runs, including when every `GIVEN` fails: `finished_eating` arriving in `farewell` from `Dining`'s closing Plans (`dining.regia:48`), or `insult_thrown` outside `feast` (`noble_socializing.regia:28`).
+- It writes the entry when no plan of the current Phase or of `DURING PLOT` runs, including when every `GIVEN` fails: `finished_eating` arriving in `farewell` from `Dining`'s closing Plans (`dining.regia:48`), or `insult_thrown` outside `feast` (`noble_socializing.regia:29`).
 - A Director that is ending has no `regia_phase` and hears nothing, so a Signal reaching it is dropped with no entry.
 - A game Cue no plan takes is dropped silently.
 

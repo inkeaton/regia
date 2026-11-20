@@ -163,7 +163,7 @@ A Trigger's Sender is the trigger's `source(S)` annotation. A told Cue or Fact c
 The Role files are shared by every Agent of a kind (chapter 28), so an Agent's name isn't known at build.
 
 - **As a Value**, `ME` is a generated variable bound once at the start of the Body, only when the Plan uses it: `.my_name(Regia_me); …; regia.send(…, tell, wronged(Regia_me, Speaker))`.
-- **In a Trigger's pattern**, `ME` is a fresh generated variable in the trigger, tested right after the Givings guard. From `noble_socializing.regia:47`:
+- **In a Trigger's pattern**, `ME` is a fresh generated variable in the trigger, tested right after the Givings guard. From `noble_socializing.regia:48`:
 
   ```
   +scandal(Regia_me__1)[source(Speaker)] : regia_given(nobleSocializing, _, _, _, _, _) & .my_name(Regia_me__1) & <Speaker in peer> <- …
@@ -181,7 +181,7 @@ A told Cue that no Plan of the Agent's given Playbooks runs for writes an `unhea
    <- regia.trace(unheard, info, "T0702", [cue(scandal(Regia_a__1)), sender(S)]).
 ```
 
-- **"No Plan ran", not "no Plan exists".** Gossip about a stranger, which falls through every `GIVEN` of `WHEN scandal(?victim)` with no `ELSE` (`noble_socializing.regia:53`), writes `T0702`. So does a Cue told to an Agent whose Playbooks never name it, such as `scandal` told to a Servant (`noble_socializing.regia:23`), and a Cue for a Playbook taken away.
+- **"No Plan ran", not "no Plan exists".** Gossip about a stranger, which falls through every `GIVEN` of `WHEN scandal(?victim)` with no `ELSE` (`noble_socializing.regia:54`), writes `T0702`. So does a Cue told to an Agent whose Playbooks never name it, such as `scandal` told to a Servant (`noble_socializing.regia:24`), and a Cue for a Playbook taken away.
 - `selectOption` chooses a `regia_unheard` plan only when it is the only option (chapter 32), so it never competes with a Playbook's plan and never reaches `Temper`.
 - A catch-all on a variable trigger (`+C[source(S)]`) wouldn't do. Jason tries such a plan only when **no** plan is relevant, so it would miss a Cue whose Plans are all inapplicable.
 - A game Cue no Plan takes is dropped silently, as before.

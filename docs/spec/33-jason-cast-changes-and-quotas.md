@@ -141,7 +141,7 @@ regia_quota(Owner, Cue, Quantity, Role, Args, Sender)
 | --- | --- |
 | `Owner` | the Playbook's Jason name in an Agent; `plot` in a Director. A Playbook Role belongs to its Playbook (chapter 15), so two Playbooks' `neighbour` are two Triggers |
 | `Cue` | the Cue's Jason name |
-| `Quantity` | `all`, `of(3)` or `percent(50)` |
+| `Quantity` | `all`, `of(3)` or `share(50)` |
 | `Role` | the Plot Role (Director) or Playbook Role (Agent) |
 | `Args` | the Cue's arguments, as a list. Counts are kept per argument value (chapter 18) |
 | `Sender` | the Agent counted |
@@ -212,7 +212,7 @@ For a Trigger and an `Args` value, with `n` counted senders that are still membe
 | --- | --- |
 | `all` | `m > 0` and `n = m` |
 | `of(k)` | `n ≥ k` |
-| `percent(p)` | `m > 0` and `n × 100 ≥ p × m` (at least that share, no rounding, chapter 18) |
+| `share(p)` | `m > 0` and `n × 100 ≥ p × m` (at least that share, no rounding, chapter 18) |
 
 When it is met, remove every `regia_quota(Owner, Cue, Quantity, Role, Args, _)`, so that value's count starts again from zero (chapter 18). Then post `!!regia_quota_met(Owner, Cue, Quantity, Role, Args)`.
 

@@ -1,14 +1,14 @@
-IMPORT "../vocabulary".
+IMPORT "../vocabulary"
 
 #@desc: What only the Host does: opening the feast and honouring a duel's winner.
 PLAYBOOK Hosting:
 
-    TO open_feast FROM DIRECTOR:
-        DO stand_up.
-        DO play_fanfare.                     # the Target's own code: Regia doesn't wait on the game
-        DO raise_cup.
+    TO open_feast, FROM DIRECTOR:
+        DO stand_up
+        DO play_fanfare                      # the Target's own code: Regia doesn't wait on the game
+        DO raise_cup
 
-    WHEN open_feast ENDED: SIGNAL toast_given.
+    WHEN open_feast ENDED: SIGNAL toast_given
 
-    TO honour(?who) FROM DIRECTOR:
-        DO toast(?who).
+    TO honour(?who), FROM DIRECTOR:
+        DO toast(?who)

@@ -58,13 +58,13 @@ Jason's failure events carry the **ASL** location (`code_src`, `code_line`). To 
 
 ```json
 {
-  "lines": { "agents/noble.asl": { "41": "playbooks/dining.regia:56:5" } },
+  "lines": { "agents/noble.asl": { "41": "playbooks/dining.regia:62:9" } },
   "names": { "regia_director__royalBanquet": "director:RoyalBanquet",
              "regia_director__honorDuel": "director:HonorDuel",
              "regia_when__insult": null },
-  "plans": { "regia_plan__42": { "owner": "Dining", "trigger": "WHEN finished_eating",
-                                 "given": "hungry", "at": "playbooks/dining.regia:56:5",
-                                 "vars": { "Who": "?who", "Regia_a__1": "?_" } } }
+  "plans": { "regia_plan__42": { "owner": "Dining", "trigger": "WHEN served(?dish), FROM waiter",
+                                 "given": "sated", "at": "playbooks/dining.regia:62:9",
+                                 "vars": { "Dish": "?dish" } } }
 }
 ```
 

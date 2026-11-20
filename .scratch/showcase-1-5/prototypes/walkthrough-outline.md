@@ -2,6 +2,8 @@
 
 The decided outline of the guide that walks through the 1.5 showcase, from *The walkthrough's shape* (`issues/04-walkthrough-shape.md`). It started as a prototype to react to, and every proposal below was accepted on 2026-11-18. The **Alternative** lines record the shapes that were not chosen. Writing the guide and the four cases is hand-off work.
 
+*Refreshed on 2026-11-20* by *Refresh the two decided outlines* (`.scratch/regia-1-5-guide/issues/03-refresh-decided-outlines.md`): the 1.5 syntax of the syntax review, the game link of *Directors and the game, without a gateway* (`.scratch/director-game-link/map.md`), and the glossary's words. No decision changed.
+
 ---
 
 ## Decisions at a glance
@@ -17,7 +19,7 @@ The decided outline of the guide that walks through the 1.5 showcase, from *The 
 | `.regin` constructs | `SEED` and overrides in every cast; `NO KIND` in `grudges` and `two_duels`. |
 | Interfaces | Two are printed: `Keeping_watch` (in *evening*, at the seizure) and `HonorDuel` (in *two_duels*, at the first challenge). |
 
-**Blocker found:** a `.trace` script can't address one Agent. `> cue idle` and `> fact +hungry` name no Agent, but `regia_cue` and `regia_fact` go to one body (chapters 30 and 35), and every run here needs "`idle` to `noble_2` only". The old guide's *How this combines with… The Transpiler* hit the same wall. Ticketed as *Scripting the game for one Agent* (`issues/09-scripting-one-agent.md`), which must be decided before any run is written as a case. *Resolved:* steps name their receiver (`> cue noble_2 idle`), and `*` reaches every body that uses the item.
+**Blocker found:** a `.trace` script can't address one Agent. `> cue idle` and `> fact +hungry` name no Agent, but `regia_cue` and `regia_fact` go to one body (chapters 30 and 35), and every run here needs "`idle` to `noble_2` only". The old guide's *How this combines with… The Transpiler* hit the same wall. Ticketed as *Scripting the game for one Agent* (`issues/09-scripting-one-agent.md`), which must be decided before any run is written as a case. *Resolved:* steps name their receiver (`> cue noble_2 idle`), and `*` reaches every body that uses the item, plus the game link (`link`, last) when a Director's Plot uses it. A Cue for the Directors is scripted once, as `> cue link …` (chapter 34); the game never names a Director.
 
 ---
 
@@ -55,19 +57,19 @@ Exact values, seeds and beats are fixed when the cases are written.
 
 The main path, arrival to farewell. Sections follow the Phases.
 
-1. **Before the doors open.** `CAST STARTS WITH`, Role setups, `ASSIGN` before `PURSUE`, `TEMPER` lines. The knight has no seat: `take_seat` fails (`T1104`), then `stand_by(wall)`.
-   > **In 2.0** (first done-Signal, `WHEN take_seat ENDED: SIGNAL took_seat.`): the Director would hear the Goal's ending itself, `BY` (chapter 05).
-2. **Arrival.** The hand count. `took_seat FROM Host` starts the music.
+1. **Before the doors open.** `CAST:`, Role setups (`ROLE Guest:`), `ASSIGN` before `PURSUE`, the kinds' Propensity values (`bravery AT …`). The knight has no seat: `take_seat` fails (`T1104`), then `stand_by(wall)`.
+   > **In 2.0** (first done-Signal, `WHEN take_seat ENDED: SIGNAL took_seat`): the Director would hear the Goal's ending itself, `BY` (chapter 05).
+2. **Arrival.** The hand count. `WHEN took_seat, FROM Host` starts the music.
    > **In 2.0** (the `#[ … ]#` block): a Quota Trigger (chapter 18).
-3. **Reception.** `NobleSocializing` given; small talk (`EITHER`, `PASS`, the roll in a condition); `AFTER 2 MINUTES`; the toast with `play_fanfare` (the dotted Action); `WHEN open_feast ENDED` → `toast_given`.
+3. **Reception.** `NobleSocializing` given; small talk (`RANDOMLY` with weighted `OPTION`s, `PASS`, the roll in a condition); `AFTER 2 MINUTES`; the toast with `play_fanfare` (the one Action whose External name has a dot); `WHEN open_feast ENDED` → `toast_given`.
 4. **The feast.** Phase setups (`Dining`, `Serving`); `Poisoning` started `UNTIL EXITED` (`1 OF Guest`). Failure climbing: pie is out, so `fetch` fails `WITH sold_out(pie)`, `bring` fails with it, and the Guest is told `sold_out` (interaction 3, first half).
    > **In 2.0** (the Reason told back by hand in `Serving`): the asking Guest hears `bring FAILED WITH …` itself (chapters 07 and 11).
-5. **An insult and a duel.** `vent` with a weighted Pick; the knight on duty watches the gossip (Precedence, interaction 2); `HonorDuel(noble_2)` starts with `Guest EXCEPT ?offended, ?offender` (a Giving and a recipient with `EXCEPT` go to *Variations*); `betting` with a Pick in the timeout (interaction 1); `strike` repeating, `GIVEN` against `IF` (interaction 6); `duel_settled`.
+5. **An insult and a duel.** `vent` with a weighted Pick; the knight on duty watches the gossip (Precedence, interaction 2); `HonorDuel(noble_2)` starts with `MAPPING Guest EXCEPT ?offended, ?offender AS Spectator` (a Giving and a recipient with `EXCEPT` go to *Variations*); `betting` with a Pick in the timeout (interaction 1); `strike` repeating, `GIVEN` against `IF` (interaction 6); `duel_settled`.
 6. **Honours and poison.** The winner is given `Keeping_watch`, a third Giving; `pour_poison` with `LOWEST`; `saw_pouring` → `seize`; `culprit_seized` reaches two Directors.
    - *Interface printed here:* `regia explain evening.regin interface Keeping_watch`, to show why `RoyalBanquet` needs its `ring_bell` Plan (`R3801`).
-   - `UNASSIGN NobleSocializing FROM Guest ?culprit`, then `take_leave`.
+   - `REMOVE NobleSocializing FROM Guest ?culprit`, then `take_leave`.
 7. **The feast ends.** The 75% hand count; `WHEN EXITED: DO clear_tables`; `Dining` taken away, so `have_dinner` is `DROPPED` (interaction 7, first half).
-8. **Farewell.** `END SUBPLOT HonorDuel(?)` (nothing running here); `Guest EMPTIED`; bare `END PLOT`.
+8. **Farewell.** `DROP SUBPLOT HonorDuel(?)` (nothing running here); `Guest EMPTIED`; bare `END PLOT`.
 
 Reaches: interactions 1, 2, 3 (`sold_out`), 6, 7 (in part).
 
@@ -77,10 +79,10 @@ Short. It runs from `reception` into the first minute of `feast`, and the case s
 
 - A hothead `vent`s at `percival` (a Name from Instancing).
 - Three ways to take an insult, one per Guest: stand up, **scowl** (`GIVEN grudge`, then `PURSUE resent`, the `IF` that fills `?size`), and **laugh** (`?_who`, a "don't care" named so the three ways read alike; *What counts as using a Placeholder* moved `#@allow` to *Variations*).
-- Both gossip Plans: `scandal(ME)` (`SHIFT`, `TELL 50 PERCENT OF peer wronged(…)`), and `scandal(?victim)` with snigger and eye-roll, plus the fall-through when neither `GIVEN` holds.
-- `wronged … LEARNED FROM peer` → `bow_to`.
+- Both gossip Plans: `scandal(ME)` (`SHIFT`, `TELL 50% OF peer wronged(…)`), and `scandal(?victim)` with snigger and eye-roll, plus the fall-through when neither `GIVEN` holds.
+- `wronged … LEARNED, FROM peer` → `bow_to`.
 - In `feast`: `Dining TIES NobleSocializing ON insulted`, so a mild Guest at dinner just sips wine.
-- An insult thrown in `reception` shows as `unheard` at the Director (only `feast` takes `insult_thrown`).
+- An insult thrown in `reception` shows as `unheard` at the Director (`T3801`: only `feast` takes the Signal `insult_thrown`).
 
 ### 5. Run 3: *A short evening*, `short_evening.regin`
 
@@ -89,7 +91,7 @@ The other endings of the Root Plot.
 - A Guest leaves during `arrival` before sitting; the `LEFT` Plan forgets and recounts, and the count passes (interaction 5, `IN`, `ELSE IF`).
 - A dinner eaten to the end: `WAIT … UNTIL` met, `eat`, `REACHED` → `sated`; a late `served(roast)` eaten anyway, any other dish pushed away.
 - A Guest with no food: `WAIT` runs out → `FAIL WITH no_food` → `make_do` (interaction 3, second half). Also the refused `pick_up`: Failure with no Reason, and the Servant only bows.
-- No Guard, so nobody sees the pouring: the game sends `poison_drunk` straight to the Director → `poison_taken` → `farewell`.
+- No Guard, so nobody sees the pouring: the game sends `poison_drunk` on the game link (`> cue link poison_drunk`), only the `Poisoning` Director hears it, and it ends with `poison_taken` → `farewell`.
 - `Poisoning` *not* reached by `DROPPED` here; see run 1 vs run 4.
 
 ### 6. Run 4: *Two duels*, `two_duels.regin`
@@ -100,7 +102,7 @@ Subplots under strain.
 - `GIVEN NOT HonorDuel(?offender) RUNNING` stops a second duel for the same offender.
    - *Interface printed here:* `regia explain two_duels.regin interface HonorDuel`, with its parameter, Phases, Signals by Phase, and Outcomes.
 - Duel A: nobody bets, so the `ELSE` goes straight to `fighting`; the Defender walks out → `Defender EMPTIED` → `duel_abandoned` → `play_music` (interaction 4). A Spectator leaving forgets its wagers (`FOR EACH`).
-- Duel B: the backer never drops the handkerchief (`> action holds drop_handkerchief(*)`), so `AFTER 1 MINUTE` fires; then it is still running when `feast` ends: `Poisoning` `DROPPED` (`PRINT`, `discard_cup`, `EXITED BY PARENT`) while the duel outlives its Phase, until `farewell`'s `END SUBPLOT` calls it off (`ring_bell`) (interaction 7, second half).
+- Duel B: the backer never drops the handkerchief (`> action holds drop_handkerchief(*)`), so `AFTER 1 MINUTE` fires; then it is still running when `feast` ends: `Poisoning` `DROPPED` (`PRINT`, `discard_cup`, `EXITED, BY PARENT`) while the duel outlives its Phase, until `farewell`'s `DROP SUBPLOT` calls it off (`ring_bell`) (interaction 7, second half).
 - `Host EMPTIED`: the king leaves, and the Plot ends.
 
 ### 7. Variations
@@ -132,5 +134,5 @@ Each `<run>.regin` imports `../../banquet.regin` and overrides it. Each `case.tr
 
 ## Depends on
 
-- *Scripting the game for one Agent* (`issues/09-scripting-one-agent.md`): the script syntax every case uses.
+- *Scripting the game for one Agent* (`issues/09-scripting-one-agent.md`): the script syntax every case uses, with `link` steps for the Directors since *ScriptedGame and the Trace on the game link* (`.scratch/director-game-link/issues/06-scripted-game-and-the-trace.md`, chapter 34).
 - *What counts as using a Placeholder* is decided: the laughing alternative that runs 1 and 2 quote writes `?_who`. (*Leaving two Agents out of one Role* is decided: the Spectators are mapped with one `EXCEPT` list.)

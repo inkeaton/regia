@@ -4,47 +4,47 @@
     arriving to the last one taking leave.
 ]#
 
-IMPORT "../vocabulary".
-IMPORT "../playbooks/courtesy".
-IMPORT "../playbooks/hosting".
-IMPORT "../playbooks/noble_socializing".
-IMPORT "../playbooks/dining".
-IMPORT "../playbooks/serving".
-IMPORT "../playbooks/keeping_watch".
-IMPORT "honor_duel".
-IMPORT "poisoning".
+IMPORT "../vocabulary"
+IMPORT "../playbooks/courtesy"
+IMPORT "../playbooks/hosting"
+IMPORT "../playbooks/noble_socializing"
+IMPORT "../playbooks/dining"
+IMPORT "../playbooks/serving"
+IMPORT "../playbooks/keeping_watch"
+IMPORT "honor_duel"
+IMPORT "poisoning"
 
 #@desc: One evening at court. HonorDuel and Poisoning are started during the feast, as its Subplots.
 PLOT RoyalBanquet:
-    CAST STARTS WITH:
-        ASSIGN Courtesy.                     # its `host` is the Plot's Host, by name
+    CAST:
+        ASSIGN Courtesy                      # its `host` is the Plot's Host, by name
 
-    ROLE Host STARTS WITH:
-        ASSIGN Hosting.
-        PURSUE take_seat.
+    ROLE Host:
+        ASSIGN Hosting
+        PURSUE take_seat
     #@desc: Everyone invited to the table. A knight is a Guest and a Guard at once.
-    ROLE Guest STARTS WITH:
-        LEARN purse(RANDOM(5, 20)).          # rolled for each Guest
-        LEARN craves(roast).
-        LEARN craves(pie).
-        PURSUE take_seat.
-    ROLE Servant.
-    ROLE Guard STARTS WITH:
-        ASSIGN Keeping_watch.
-        LEARN on_duty.
+    ROLE Guest:
+        LEARN purse(RANDOM(5, 20))           # rolled for each Guest
+        LEARN craves(roast)
+        LEARN craves(pie)
+        PURSUE take_seat
+    ROLE Servant
+    ROLE Guard:
+        ASSIGN Keeping_watch
+        LEARN on_duty
 
-    PHASE arrival INITIAL.
-    PHASE reception.
+    PHASE arrival INITIAL
+    PHASE reception
     #@desc: Dinner is served. Insults start duels, and someone at the table means harm.
-    PHASE feast.
-    PHASE farewell.
+    PHASE feast
+    PHASE farewell
 
-    FACT seated(person), finished(person).
+    FACT seated(person), finished(person)
 
     PRECEDENCE:
-        Keeping_watch OVER NobleSocializing ON scandal.  # a knight on duty is a Guard first
-        Dining TIES NobleSocializing ON insulted.        # over dinner, temper decides
-        HonorDuel OVER Poisoning.
+        Keeping_watch OVER NobleSocializing ON scandal   # a knight on duty is a Guard first
+        Dining TIES NobleSocializing ON insulted         # over dinner, temper decides
+        HonorDuel OVER Poisoning
 
     #[
         Counting by hand. The Director learns `seated` and `finished` from the
@@ -55,86 +55,86 @@ PLOT RoyalBanquet:
 
     DURING arrival:
         WHEN ENTERED:
-            DO open_doors.
+            DO open_doors
 
-        WHEN took_seat FROM Guest ?g:
-            LEARN seated(?g).
+        WHEN took_seat, FROM Guest ?g:
+            LEARN seated(?g)
             IF COUNT(seated(?)) >= COUNT(? PLAYS Guest):
-                TRANSITION TO reception.
+                ENTER reception
 
-        WHEN took_seat FROM Host:            # the king is seated: music
-            DO play_music.
+        WHEN took_seat, FROM Host:           # the king is seated: music
+            DO play_music
 
     DURING reception:
         WHEN ENTERED:
-            ASSIGN NobleSocializing TO Guest, MAPPING Guest TO peer.
+            ASSIGN NobleSocializing TO Guest, MAPPING Guest AS peer
 
         AFTER 2 MINUTES:
-            ASK Host TO open_feast.
+            ASK Host TO open_feast
 
-        WHEN toast_given FROM Host:
-            TRANSITION TO feast.
+        WHEN toast_given, FROM Host:
+            ENTER feast
 
     DURING feast:
-        ROLE Guest STARTS WITH:
-            ASSIGN Dining, MAPPING Servant TO waiter.
-        ROLE Servant STARTS WITH:
-            ASSIGN Serving, MAPPING Guest TO patron.
+        ROLE Guest:
+            ASSIGN Dining, MAPPING Servant AS waiter
+        ROLE Servant:
+            ASSIGN Serving, MAPPING Guest AS patron
 
         WHEN ENTERED:
             START SUBPLOT Poisoning,
-                MAPPING 1 OF Guest TO Poisoner,
-                MAPPING Guard TO Watchman,
-                UNTIL EXITED.
+                MAPPING 1 OF Guest AS Poisoner,
+                MAPPING Guard AS Watchman,
+                UNTIL EXITED
 
-        WHEN insult_thrown(?offender) FROM Guest ?offended:
+        WHEN insult_thrown(?offender), FROM Guest ?offended:
             GIVEN NOT HonorDuel(?offender) RUNNING:  # one duel per offender at a time
                 START SUBPLOT HonorDuel(?offender),
-                    MAPPING ?offended TO Challenger,
-                    MAPPING ?offender TO Defender,
-                    MAPPING Guest EXCEPT ?offended, ?offender TO Spectator.
+                    MAPPING ?offended AS Challenger,
+                    MAPPING ?offender AS Defender,
+                    MAPPING Guest EXCEPT ?offended, ?offender AS Spectator
 
-        WHEN finished_eating FROM Guest ?g:
-            LEARN finished(?g).
+        WHEN finished_eating, FROM Guest ?g:
+            LEARN finished(?g)
             IF COUNT(finished(?)) * 4 >= COUNT(? PLAYS Guest) * 3:     # three Guests in four
-                TRANSITION TO farewell.
+                ENTER farewell
 
         WHEN EXITED:                         # however the feast ends
-            DO clear_tables.
+            DO clear_tables
 
     DURING farewell:
         WHEN ENTERED:
-            END SUBPLOT HonorDuel(?).
-            UNASSIGN NobleSocializing FROM Guest.
-            ASK Guest TO take_leave.
+            DROP SUBPLOT HonorDuel(?)
+            REMOVE NobleSocializing FROM Guest
+            ASK Guest TO take_leave
 
     DURING PLOT:
         WHEN Guest ?g LEFT:
-            FORGET seated(?g).
-            FORGET finished(?g).
+            FORGET seated(?g)
+            FORGET finished(?g)
             IF IN arrival AND COUNT(seated(?)) >= COUNT(? PLAYS Guest):
-                TRANSITION TO reception.
+                ENTER reception
             ELSE IF IN feast AND COUNT(finished(?)) * 4 >= COUNT(? PLAYS Guest) * 3:
-                TRANSITION TO farewell.
+                ENTER farewell
 
         WHEN Guest EMPTIED:
-            END PLOT.
+            END PLOT
         WHEN Host EMPTIED:
-            END PLOT.
+            END PLOT
 
-        WHEN HonorDuel(?) ENDED WITH duel_settled(?winner):
-            ASK Host TO honour(?winner).
-            ASSIGN Keeping_watch TO ?winner. # the winner stands guard of honour
-            TELL ?winner on_duty.
+        WHEN HonorDuel(?) FINISHED WITH duel_settled(?winner):
+            ASK Host TO honour(?winner)
+            ASSIGN Keeping_watch TO ?winner  # the winner stands guard of honour
+            TELL ?winner on_duty
         WHEN HonorDuel(?) ENDED:             # however the duel ended
-            DO play_music.
+            DO play_music
 
         WHEN culprit_seized(?):              # any Guard's report: sound the alarm
-            DO ring_bell.
-        WHEN Poisoning ENDED WITH poisoner_caught(?culprit):
-            UNASSIGN NobleSocializing FROM Guest ?culprit.
-            ASK ?culprit TO take_leave.      # led out of the hall
-        WHEN Poisoning ENDED WITH poison_taken:
-            TRANSITION TO farewell.          # the evening is cut short
+            DO ring_bell
+        WHEN Poisoning FINISHED WITH poisoner_caught(?culprit):
+            REMOVE NobleSocializing FROM Guest ?culprit
+            ASK ?culprit TO take_leave       # led out of the hall
+        WHEN Poisoning FINISHED WITH poison_taken:
+            ENTER farewell                   # the evening is cut short
         WHEN Poisoning DROPPED:
-            PRINT("The feast is over, and the poisoner was never found.").
+            PRINT("The feast is over, and the poisoner was never found.")

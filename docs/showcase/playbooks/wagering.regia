@@ -1,21 +1,21 @@
-IMPORT "../vocabulary".
+IMPORT "../vocabulary"
 
 #@desc: Watching a duel, with money on it.
 PLAYBOOK Wagering:
 
-    WHEN duel_on FROM DIRECTOR:
+    WHEN duel_on, FROM DIRECTOR:
         GIVEN purse(?gold) AND ?gold >= 2:
-            ?stake = RANDOM(1, ?gold / 2).   # a whole roll, up to half the purse
-            CHANGE purse(?gold) TO purse(?gold - ?stake).
-            SIGNAL wagered(?stake).
-            DO cheer.
+            LET ?stake BE RANDOM(1, ?gold / 2)   # a whole roll, up to half the purse
+            UPDATE purse(?gold) TO purse(?gold - ?stake)
+            SIGNAL wagered(?stake)
+            DO cheer
         ELSE:
-            DO cheer.
+            DO cheer
 
-    TO give_signal FROM DIRECTOR:
-        DO drop_handkerchief.
+    TO give_signal, FROM DIRECTOR:
+        DO drop_handkerchief
 
-    WHEN give_signal ENDED: SIGNAL handkerchief_dropped.
+    WHEN give_signal ENDED: SIGNAL handkerchief_dropped
 
-    WHEN scandal(?) FROM ?speaker:
-        DO hush(?speaker).
+    WHEN scandal(?), FROM ?speaker:
+        DO hush(?speaker)

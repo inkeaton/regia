@@ -1,73 +1,73 @@
-IMPORT "../vocabulary".
+IMPORT "../vocabulary"
 
 #@desc: A Guest's dinner: ordering, waiting for the Servants, eating.
 PLAYBOOK Dining:
-    ROLE waiter.
+    ROLE waiter
 
-    FACT on_plate(dish), sated.
-    GOAL make_do.
+    FACT on_plate(dish), sated
+    GOAL make_do
 
     WHEN ASSIGNED:
         IF hungry:
-            PURSUE have_dinner, WITHOUT WAITING.
+            PURSUE have_dinner, WITHOUT WAITING
         ELSE:
-            SIGNAL finished_eating.          # not hungry tonight: nothing to count on
+            SIGNAL finished_eating           # not hungry tonight: nothing to count on
 
     WHEN hungry LEARNED:
         GIVEN NOT sated AND NOT PURSUING have_dinner:
-            PURSUE have_dinner, WITHOUT WAITING.
+            PURSUE have_dinner, WITHOUT WAITING
 
     WHEN hungry FORGOTTEN:
-        DROP have_dinner.                    # stops the recipe, even while it waits
+        DROP have_dinner                     # stops the recipe, even while it waits
 
     TO have_dinner:
         GIVEN seat(?place):
             FOR EACH craves(?dish):
-                ASK 1 OF waiter TO bring(?dish, ?place).
-            WAIT 1 MINUTE, UNTIL on_plate(?).
+                ASK 1 OF waiter TO bring(?dish, ?place)
+            WAIT 1 MINUTE, UNTIL on_plate(?)
             IF NOT on_plate(?):
-                FAIL WITH no_food.
+                FAIL WITH no_food
             FOR EACH on_plate(?dish):
-                DO eat(?dish).
-                FORGET on_plate(?dish).
+                DO eat(?dish)
+                FORGET on_plate(?dish)
         # no ELSE: hungry with no seat, have_dinner fails at once
 
-    WHEN have_dinner REACHED: LEARN sated.
+    WHEN have_dinner REACHED: LEARN sated
 
     # Full before the plate is empty: push away what is left.
     WHEN have_dinner DROPPED:
         FOR EACH on_plate(?dish):
-            DO push_away(?dish).
-            FORGET on_plate(?dish).
+            DO push_away(?dish)
+            FORGET on_plate(?dish)
 
     WHEN have_dinner FAILED WITH no_food:
-        PURSUE make_do, WITHOUT WAITING.     # the fallback
+        PURSUE make_do, WITHOUT WAITING      # the fallback
     WHEN have_dinner FAILED, SHIFTS sympathy BY -0.3:
-        DO complain.
+        DO complain
 
-    WHEN have_dinner ENDED: SIGNAL finished_eating.
+    WHEN have_dinner ENDED: SIGNAL finished_eating
 
     # Nothing came: fetch some bread ourselves.
     TO make_do:
-        DO walk_to(kitchen).
-        DO pick_up(bread).
-        DO eat(bread).
+        DO walk_to(kitchen)
+        DO pick_up(bread)
+        DO eat(bread)
 
-    WHEN served(roast) FROM waiter:
+    WHEN served(roast), FROM waiter:
         GIVEN sated:                         # full, but nobody turns away the roast
-            DO eat(roast).
+            DO eat(roast)
         # no ELSE: otherwise the roast is served like any dish, below
 
-    WHEN served(?dish) FROM waiter:
+    WHEN served(?dish), FROM waiter:
         GIVEN sated:
-            DO push_away(?dish).
+            DO push_away(?dish)
         ELSE:
-            LEARN on_plate(?dish).
+            LEARN on_plate(?dish)
 
-    WHEN sold_out(?dish) FROM waiter:
-        FORGET craves(?dish).
+    WHEN sold_out(?dish), FROM waiter:
+        FORGET craves(?dish)
 
     # An insult over dinner. RoyalBanquet ties this with NobleSocializing: a mild Guest may just keep eating.
     WHEN insulted, SUITS aggressiveness AT -0.5:
         GIVEN PURSUING have_dinner:
-            DO sip_wine.
+            DO sip_wine
