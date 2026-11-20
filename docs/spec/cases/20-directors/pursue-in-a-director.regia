@@ -1,7 +1,7 @@
 #! case: a Director has no Goals
 #! rule: R2001
 
-EVENT alarm
+CUE alarm
 GOAL hide
 ACTION crouch
 

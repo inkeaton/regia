@@ -1,0 +1,10 @@
+#! case: EITHER and OR headers are the retired spelling of a Random choice
+#! rule: R0906
+
+CUE bored
+ACTION wave, yawn
+
+PLAYBOOK Idler:
+    WHEN bored:
+        EITHER: DO wave.                 #! error R0906
+        OR: DO yawn.                     #! error R0906

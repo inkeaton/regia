@@ -9,22 +9,22 @@ The source text is the only model. The syntax tree is rebuilt from it and is a r
 1. The user does something on the graph, for example adds a Phase.
 2. The Visual Editor calls an **edit operation** in the Transpiler core (running as WASM), passing the current tree.
 3. The core returns a list of **text edits per file**: replace this range with this text. One graph action may touch several files.
-4. The Visual Editor applies them to Monaco with `pushEditOperations`, followed by `pushUndoStop`, so one graph action is one undo step.
+4. The Visual Editor applies them to Monaco with `pushEditOperations`, followed by `pushUndoStop`, so one graph action is one undo step, in every file it touches (chapter 24).
 5. The changed files are parsed again in full, and the graph is redrawn from the new tree.
 
 Text edits typed in Monaco take the same path from step 5.
 
 ## Edit operations
 
-The edit API is made of domain operations, such as adding a Phase to a Plot, adding a transition, renaming, deleting a construct, or moving a construct under another parent at a position. Each operation returns text edits.
+The edit API is made of domain operations, such as adding a Phase to a Plot, adding a transition, renaming, or deleting a construct. Each operation returns text edits. Moving a construct under another parent is not a 2.0 operation; the Extent and indentation rules below are written so that it can be added later without changing them.
 
 The Visual Editor reads node spans to highlight a construct, reveal it in the text, or keep a selection. It never builds edits out of spans itself. All editing logic lives in the core, in Rust, and is tested as *source before, operation, expected source after*.
 
-Which operations exist, and where a new declaration lands (for example a new Event a transition needs), are in chapter 25 (`25-graph-view.md`).
+Which operations exist, and where a new declaration lands (for example a new Cue a transition needs), are in chapter 25 (`25-graph-view.md`).
 
 ## Extent: what moves with a construct
 
-A construct's **extent** is the construct plus the comments that belong to it. Moving or deleting a construct moves or deletes its extent. The rules:
+A construct's **extent** is the construct plus the comments that belong to it. Deleting a construct deletes its extent, and a later move operation moves it. The rules:
 
 1. Comment lines directly above the construct, with no blank line in between, belong to it. This is the same rule that attaches doc comments (chapter 2).
 2. A comment on the same line, after the construct's last token, belongs to it.
@@ -67,7 +67,7 @@ PLAYBOOK Guest:
 - Indentation stays as written (absolute columns).
 - Each file has an **indent unit**: the indentation of its first indented line, or 4 spaces if no line is indented yet. Tabs or spaces follow the file, which can't mix them (chapter 1).
 - A new construct is indented at its parent's body column, and its own body one indent unit deeper.
-- A moved extent is shifted line by line by the difference in columns. Continuation lines and the inside of `#[ … ]#` comments shift with it. `#@key[ … ]#` values don't need to, since their text is dedented anyway.
+- A moved extent (once a move operation exists) is shifted line by line by the difference in columns. Continuation lines and the inside of `#[ … ]#` comments shift with it. `#@key[ … ]#` values don't need to, since their text is dedented anyway.
 
 ## Edits on broken source
 
@@ -94,3 +94,7 @@ These requirements on the tree follow from the rules above. Chapter 1 and ADR 00
 ## Later: editing the tree itself
 
 The tree could later become the edit model: change the tree, print it, and turn the printed difference into text edits, in the style of Roslyn's and rust-analyzer's `SyntaxEditor`. That would replace only the code inside the core that computes text edits. The edit operations, the extent, style and indentation rules, the per-file text edits handed to Monaco, and the before/operation/after tests all stay the same. See ADR 0011.
+
+## Regia 1.5
+
+All of this chapter is in 1.5 (ADR 0025). Revised in the ticket *The Visual Editor* (`.scratch/regia-revision/issues/18-visual-editor.md`).

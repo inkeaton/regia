@@ -2,7 +2,7 @@
 #! rule: R0305
 
 FACT hates(person), is_drunk
-EVENT insult_heard
+CUE insult_heard
 ACTION glare_at(target)
 
 PLAYBOOK Guest:

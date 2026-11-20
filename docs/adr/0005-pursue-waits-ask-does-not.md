@@ -1,8 +1,8 @@
 # PURSUE waits; ASK does not
 
-`PURSUE g.` gives the Agent a Goal and waits until it is reached before the Body goes on. Carrying on at once is written with a trailing clause: `PURSUE g, WITHOUT WAITING.` `ASK <recipient> TO g.`, which gives a Goal to another Agent, never waits.
+`PURSUE g` gives the Agent a Goal and waits until it is reached before the Body goes on. Carrying on at once is written with a trailing clause: `PURSUE g, WITHOUT WAITING` `ASK <recipient> TO g`, which gives a Goal to another Agent, never waits.
 
-Designers read a Body as a list of steps, each one finished before the next starts, as `DO` already behaves. A recipe like `PURSUE find_food. DO eat_food.` only reads correctly if the first line finishes first. 1.0's `ACHIEVE` already compiled to Jason's waiting `!g`. Sending is a different act from doing something yourself, so `ASK` stays non-waiting, as messaging decided. Both use the same `,` trailing-clause shape for options.
+Designers read a Body as a list of steps, each one finished before the next starts, as `DO` already behaves. A recipe like `PURSUE find_food. DO eat_food` only reads correctly if the first line finishes first. 1.0's `ACHIEVE` already compiled to Jason's waiting `!g`. Sending is a different act from doing something yourself, so `ASK` stays non-waiting, as messaging decided. Both use the same `,` trailing-clause shape for options.
 
 ## Considered Options
 

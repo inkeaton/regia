@@ -1,0 +1,10 @@
+#! case: a clause keyword after the core needs its comma; the hint adds it
+#! rule: R0111
+#! regia: 1.5
+
+CUE insult_heard(speaker)
+ACTION complain
+
+PLAYBOOK Guest:
+    WHEN insult_heard(?s) FROM DIRECTOR:     #! error R0111
+        DO complain.

@@ -1,54 +1,88 @@
 # The Trace in Jason
 
-How the Jason Target writes the Trace of chapter 34: the writer, the source map that turns ASL back into designer names, the file and the console, and the test mode that runs behaviour cases. Decided in the ticket *Trace and logging* (`.scratch/regia-2/issues/40-trace-and-logging.md`). It builds on chapter 28's layout and on the Trace sources of chapters 29–33. Running behaviour cases against a scripted game is recorded in `docs/adr/0014-behaviour-cases-run-against-a-scripted-game.md`.
+How the Jason Target writes the Trace of chapter 34: the writer, the source map that turns ASL back into designer names, the file and the console, and the test mode that runs behaviour cases. Decided in the ticket *Trace and logging* (`.scratch/regia-2/issues/40-trace-and-logging.md`). It builds on chapter 28's layout and on the Trace sources of chapters 29–33. Running behaviour cases against a scripted game is recorded in `docs/adr/0014-behaviour-cases-run-against-a-scripted-game.md`. How `ScriptedGame` plays the game's side of the game link, its state replies and `> lose link`, in the ticket *ScriptedGame and the Trace on the game link* (`.scratch/director-game-link/issues/06-scripted-game-and-the-trace.md`). The `regia.trace` call's fields, the `plan` entry written at selection, the Staging numbers and `sourcemap.json`, in *The Trace's fields and entries* (`.scratch/showcase-1-5/issues/22-trace-pieces.md`).
 
 ## The writer
 
 Every Trace entry goes through **one writer** in `regia-jason`. The Jason Target runs every agent in one JVM (centralised infrastructure), so the writer is a single shared object. It hands out `seq` numbers in one order for the whole Program, and writes each entry to **both**:
 
 - **the Trace file**, as one JSON object per line (JSON Lines), and
-- **Jason's console**, as the console line of chapter 34, through **the writing agent's own logger** (`ts.getLogger()`), the channel `.print` uses. Lines show up under `[guard_1]` or `[regia_director__watch]` in the MAS console, mixed in with any `.print` a developer adds while debugging.
+- **Jason's console**, as the console line of chapter 34, through a logger named with the entry's `agent`, so lines show up under `[guard_1]`, `[director:Watch]` or `[director:HonorDuel#2]`, the one name chapter 34 gives each Director, never under a Generated name such as `regia_director__watch`. They are mixed in with any `.print` a developer adds while debugging, which still shows under the Jason agent's own name.
 
 ASL code reaches it through the internal action **`regia.trace(Kind, Level, Code, Fields)`**. The `regia-jason` internal actions that already write Trace entries (`regia.stop_playbook`, `regia.send`, `selectOption`'s bypassed guard, and so on, chapters 29–33) call the writer directly.
 
+- `Code` is a string, `""` when the entry has none. `Fields` is a list of `key(Value)` terms, with chapter 34's field names for the kind: `regia.trace(unheard, info, "T3801", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)])`. Java callers pass the same keys.
+- The writer adds `seq`, `t`, `agent`, `kind`, `level` and `code`. It turns atoms and structures into their Regia text, lists into arrays and numbers into numbers, and every Generated name into its designer name through the source map.
+- **`at` comes from the caller's frame**: the ASL file and line of the instruction running on the current intention, through the source map's `lines`. A frame the source map doesn't map (an Infrastructure plan) gives no `at`.
+- **`agent`** is the source map's name for the Jason agent. A Subplot Director's `#<n>` is added by the writer (*Staging numbers*, below).
+
 | Kind | Written by |
 | --- | --- |
-| `run` | the writer itself, at start-up and shutdown |
-| `action` | `regia.act` when it sends, and the reply intake of `regia.RegiaAgent` and `regia.DirectorAgent` when the outcome comes back (chapter 37) |
-| `message` | `regia.send` (chapter 33), which every generated and Infrastructure send goes through |
-| `plan` | a `regia.trace` call first in every generated plan Body for a designer's Plan |
-| `goal` | `regia.trace` calls in the generated `+!`/`-!` plans and `DROPPED` events (chapter 11) |
-| `fact` | `regia.trace` after each `REMEMBER`/`FORGET`/`CHANGE`, and in the Infrastructure plan that takes in a told Fact |
-| `phase`, `staging`, `giving`, `cast` | the Infrastructure plans of chapters 29–33 that do these things |
-| `failure` | the generated `-!g` plans (chapter 11), with `because` from the failure's root |
+| `run` | the writer itself: `RUN STARTED` at start-up; `RUN ENDED` when the Root ends the story (`regia.end_story`, chapter 37), or from a JVM shutdown hook, `how: stopped`, if the run stops first (Ctrl-C, or the MAS is closed). In test mode, `RunCase` (below) |
+| `action` | `regia.act` when it sends, and the reply intake of `regia.RegiaAgent` and `regia.DirectorAgent` when the outcome comes back; the game link for a detached Director's call-offs and late outcomes, and for Actions failed when it is lost (chapter 37) |
+| `message` | `regia.send` (chapter 33), which every generated and Infrastructure send goes through: a `TELL`, an `ASK`, a `SIGNAL` (one entry for the Statement, listing every Director it went to, and in `ended` those whose Staging had ended, which `regia.send` finds when the delivery fails: `info`, not `T3303`), and a setup's `LEARN` and `PURSUE` sent by the Director (chapter 30) |
+| `plan` | `RegiaAgent.selectOption` and `DirectorAgent.selectOption`, when they choose the option (*The `plan` entry*, below); a stopped one by the walker and `regia.stop_playbook` (chapters 29 and 40), a failed one by `regia.pass_failure` (chapter 40) |
+| `goal` | `regia.pursue` and `RegiaAgent.socAcc` (`PURSUED`), `regia.reached`, `regia.goal_failed` in the generated `-!g` (`FAILED`, at `error`), and the drop walker (chapter 40) |
+| `fact` | `regia.trace` after each `REMEMBER`/`FORGET`/`UPDATE`, in the Infrastructure plan that takes in a told Fact, in the Java intake of a game Fact, Agents' and Directors' alike, and, for a Director's starting game Facts, in `regia_begin` (chapter 30) |
+| `phase`, `staging`, `cast` | the Infrastructure plans of chapters 30–33 that do these things. `regia_begin` writes `STAGING … STARTED`, then the initial `phase` entry, then the starting game Facts, before the setups (chapter 30) |
+| `giving` | the receiving Agent: `regia_give` and `regia_restore` write `GIVE`, each take step and `regia_set_aside` write `TAKE`, one entry per Giving (chapter 29) |
+| `failure` | the cause entry only: the Statement that knows its cause, else the catcher (the generated `-!g`, the `-!regia_<kind>` catchers of ending Plans, and `RegiaAgent`'s hook for a `WHEN` Plan failing on its own), chapter 40 |
 | `warning` | wherever chapters 09–33 say "a trace warning" |
+| `unheard` | the `regia_unheard` catch-all plans of a Director (chapter 30) and of an Agent for a told Cue (chapter 39), the dispatchers' failure plans and the Quota check (chapter 33) |
+| `mood` | `regia.shift` for the Statement, and `RegiaAgent.selectOption` when it applies a `SHIFTS` Label (chapters 14 and 32) |
+| `count` | the Quota check (chapter 33) |
 
-- Generated control-flow plans (`regia_if__N`, `regia_either__N`) write no entries of their own; their failure is the designer's Plan's failure (chapter 11).
+- Generated helper plans write no entries of their own, and their failure is the designer's Plan's failure (chapter 11). A Failure's cause entry is written exactly once (chapter 40, *The cause entry*). Jason emits no control-flow plans: `IF`, `RANDOMLY` and `FOR EACH` stay inside the Plan's body (chapter 39).
 - `regia.trace` never fails. A writer error (a full disk, say) is reported once on the console and the run carries on.
+
+### The `plan` entry
+
+A designer's Plan writes its `plan` entry **when it is chosen**, not from its Body. Only the agent class sees the rivals, so `by`, `over` and `fits` are known there and nowhere else, and a `SHIFTS` Label's `mood` entries, written in the same call, come after the entry they belong to.
+
+- `RegiaAgent.selectOption` writes it at step 6 of chapter 32, and `DirectorAgent.selectOption` after its `[Level, Pos]` comparison. Each does so for any chosen option whose plan label is in the source map's `plans`, contested or not, since Jason calls `selectOption` for every event once it is overridden.
+- `block` and `at` come from `plans`. `values` comes from the option's unifier, after the trigger and the Context are unified, read through that plan's `vars`.
+- Generated plan Bodies hold no `regia.trace(plan, …)` call (chapters 39 and 40).
+
+### Staging numbers
+
+A Subplot Director's Jason name is only unique (chapter 31), and no agent reads `#<n>` or `ALSO IN`. They exist only in the Trace, so **the writer** works them out from the entries it has already written, and from nothing else:
+
+- When it writes a Director's first entry, its `STAGING … STARTED`, it gives that Director the next number for its Plot in this run, and from then on names it `director:<Plot>#<n>` in every entry, on the console too.
+- For each Agent of that cast, `also_in` lists the numbers of the Stagings of the same Plot that have a `STARTED` entry naming it and no `ENDED` entry yet, and of which it hasn't `LEFT`.
+
+These are names for the output, worked out from the output. The writer holds no Program state (chapter 28, *the game link*).
 
 ## The source map
 
-Jason's failure events carry the **ASL** location (`code_src`, `code_line`). To name designer items and `.regia` locations, every Build includes a **source map**, `asl/regia/sourcemap.json`, written by the Transpiler:
+Jason's failure events carry the **ASL** location (`code_src`, `code_line`). To name designer items and `.regia` locations, every Build includes a **source map**, `asl/regia/sourcemap.json`, written by the Transpiler. It is one JSON object with three maps:
 
-- ASL file and line → the `.regia` file, line and column of the Statement or Plan it came from;
-- every Generated name (`regia_if__3`, `regia_director__watch`, `regia_when__insult`) → the designer item it stands for, or "fold away" for frames that never appear in the Trace.
+```json
+{
+  "lines": { "agents/noble.asl": { "41": "playbooks/dining.regia:56:5" } },
+  "names": { "regia_director__royalBanquet": "director:RoyalBanquet",
+             "regia_director__honorDuel": "director:HonorDuel",
+             "regia_when__insult": null },
+  "plans": { "regia_plan__42": { "owner": "Dining", "trigger": "WHEN finished_eating",
+                                 "given": "hungry", "at": "playbooks/dining.regia:56:5",
+                                 "vars": { "Who": "?who", "Regia_a__1": "?_" } } }
+}
+```
 
-The writer reads it once at start-up. Every entry's `at` and names go through it, so chapter 11's rule (Trace entries never show Generated names) is kept in one place, and the ASL stays free of location annotations.
+- **`lines`**: each ASL file, and each of its lines that comes from a Statement or a Plan → the `.regia` file, line and column.
+- **`names`**: every Generated name → the designer name it stands for, or `null` to fold it away (frames that never appear in the Trace). A Subplot Director's name has no number here: the writer adds it.
+- **`plans`**: every plan label of a designer's Block → the Block as a `plan` entry names it (`owner`, `trigger`, `given` or `else`), its `at`, and the map from the plan's ASL variables to its Placeholders.
+
+The writer reads it once at start-up. Nothing in it changes at run time. Every entry's `at` and names go through it, so chapter 11's rule (Trace entries never show Generated names) is kept in one place, and the ASL stays free of location annotations.
 
 ## The file
 
-- Each run writes **`traces/<YYYYMMDD-HHMMSS>.jsonl`** under the Build folder (`build/<entry>/traces/`). Runs are kept, so two runs of the same Build can be compared.
+- Each run writes **`traces/<YYYYMMDD-HHMMSS>.jsonl`** under the Build folder (`build/<Entry path>/traces/`). Runs are kept, so two runs of the same Build can be compared.
 - The path is printed on the console when the run starts.
 - The file always gets **every** entry. Nothing turns it off in 2.0.
 
-## The console setting
+## The console
 
-A `TARGET JASON:` setting in Instancing (chapter 21) filters the console, never the file:
-
-```regia
-TARGET JASON:
-    trace_console = warnings.
-```
+`regia run --console <level>` (chapter 23) filters the console, never the file. How much the console shows changes nothing in the run, so it is not a Target setting and isn't in the Build: `regia run` passes it to the JVM as the system property `regia.trace_console`, which the Trace writer reads at start-up.
 
 | Value | The console shows |
 | --- | --- |
@@ -56,33 +90,56 @@ TARGET JASON:
 | `warnings` | `warning` and `failure` entries only |
 | `off` | nothing |
 
+## Starting a run
+
+`regia run <entry>` (chapter 23) builds, then starts the MAS from the Build's `.jcm` with the `regia-jason` jar the CLI carries and, after it, every jar in the Project's `lib/` folder (chapter 28), so the writer never writes a class path. It gives the run's seed (`--seed`, else the Build's `SEED`, else one it picks) to `regia-jason`'s one random source as the system property `regia.seed`, and the console level as `regia.trace_console`. The `run` entry records the seed (chapter 34). The game connects as it always does.
+
+`regia test` (chapter 23) runs behaviour cases through `RunCase`, below, and matches their Traces.
+
 ## Time
 
-`WAIT d SECONDS.` compiles to **`regia.wait(D)`**, not `.wait(D)` (chapter 12). In a normal run it waits on the wall clock, exactly like `.wait`. In test mode it waits on the virtual clock. Dropping the intention during the wait removes it, as before.
+`WAIT d SECONDS.` compiles to **`regia.wait(D)`**, not `.wait(D)`, and `WAIT … UNTIL` to `regia.wait(Cond[, D])` (chapters 12 and 39). In a normal run it waits on the wall clock, exactly like `.wait`. In test mode it waits on the virtual clock. Dropping the intention during the wait removes it, as before.
 
 ## Test mode
 
 Behaviour cases (chapter 34) run in **test mode**, launched by `regia.testing.RunCase`:
 
 ```
-java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
+java -cp regia-jason.jar:lib/*:… regia.testing.RunCase build/<Entry path> case.trace
 ```
 
-1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (`regia_event`, `regia_fact`, `regia_join`, `regia_leave`, chapters 30 and 33, and `regia_action`, `regia_action_result` and `regia_story_ended`, chapter 37).
-2. It starts the MAS from the Build's `.jcm`, in the same JVM, with **Jason's synchronous execution control**, so agents step in lockstep reasoning cycles, and with the case's **seed** given to every random source `regia-jason` controls: `EITHER`, Picks `AT RANDOM`, and `RANDOM` Propensity values (drawn by `regia.RegiaAgent`, chapter 36). Starting Agents are named `<kind>_<n>` (chapter 36). The Root Director and the Agents connect their bodies to `ScriptedGame` exactly as they would to Godot.
+`regia test` puts the Project's `lib/` jars on the class path as `regia run` does, so a case runs the project's own Java (dotted Actions) for real (chapter 37, *Test mode*).
+
+1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (chapter 37's table). It tells the connections apart **by port**: the port of the `.jcm`'s `platform: regia.GameLink(address, base_port)` line is the game link's (chapter 28), and every other port is the body of the Agent the `.jcm` gives it. It never looks at `sender` to tell them apart. With `#! game link: none` (chapter 34), it doesn't serve the link's port, so the link writes `T2802` at start.
+2. It starts the MAS from the Build's `.jcm`, in the same JVM, with **Jason's synchronous execution control**, so agents step in lockstep reasoning cycles, and with the case's **seed** given to `regia-jason`'s one random source. Every draw chapter 34 lists goes through it: generated code calls `regia.random`, the Infrastructure's `n OF` and `n% OF` draws call it directly, and `regia.RegiaAgent` uses it for `RANDOM` Propensity values (chapter 36). Agents have chapter 34's names, which chapter 36 gives the Jason agents. The game link and the Agents' bodies connect to `ScriptedGame` exactly as they would to Godot.
 3. For each `>` step of the `.trace` file, it waits for the run to **settle**, plays the step through `ScriptedGame`, and writes a `script` entry.
-4. **Settled** means: for every agent, no intention is running except ones paused in `regia.wait` or waiting in `regia.act` on an Action `ScriptedGame` holds, the mailbox and event queue are empty, and `ScriptedGame` has nothing left to send, for one whole cycle. If the run has settled and something is paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of the next step.
+   - A `cue` or `fact` step to an Agent goes out as one `regia_cue` or `regia_fact`, on the WebSocket of the body the step names, with `receiver` set to that body. Its `name` is the item's External name, which `ScriptedGame` reads from that receiver's `regia_game` beliefs (chapter 28). If the receiver has no entry for the item, the Regia name is sent as it is, and the receiver writes `T2801`.
+   - A `link` step goes out once on the link's connection, with `receiver: "regia_game_link"`. Its External name comes from the `regia_game` beliefs of the Build's Director files (`asl/directors/`, Subplots' included); if none lists the item, the Regia name is sent. The link delivers it to every attached Director that hears it, and drops it with no entry if none does (chapter 30).
+   - A `*` step sends one message to each body whose `regia_game` beliefs list the item, in Trace order, then one on the link if any Director file lists it, all before the run is next checked for settling. The `script` entry lists the receivers reached, `link` last.
+   - A receiver with no connected body (an Agent the run never had, or one that has left), and a `link` step (or a `*` step that would reach the link) after `> lose link` or under `#! game link: none`, is a case error. `RunCase` sends nothing, writes `RUN ENDED`, stops the MAS, and exits with a non-zero status naming the step. The Conformance suite fails the case without matching it.
+   - `> lose link` closes the link's connection from `ScriptedGame`'s side. The link writes `T2803` and fails what it has in flight (chapter 37).
+4. **Settled** means: for every agent, no intention is running except ones paused in `regia.wait` or waiting in `regia.act` on an Action `ScriptedGame` holds, the mailbox and event queue are empty, `ScriptedGame` has nothing left to send, and nothing it sent is still on its way on any connection, the link's included, for one whole cycle. A Director waiting for its state reply needs no rule of its own: `ScriptedGame` answers every `regia_state` at once (*The game's state*, below), so it is never settled while one is unanswered. If the run has settled and something is paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of the next step.
 5. `ScriptedGame` answers each Action with a single **`done`**, unless a standing rule (`> action fails`, `refused`, `holds`) matches it (chapter 37).
 6. After the last step, and once the run has settled, `RunCase` writes `RUN ENDED`, stops the MAS and exits. The Trace file is the only output.
 
+### The game's state
+
+`ScriptedGame` answers each `regia_state` (chapter 37) at once, in order with everything else it sends, from the smallest record a game would keep:
+
+- **Facts**: the instances that `link` steps (and `*` steps that reached the link) have made true and not since made false. `fact` steps to Agents' bodies don't count: they say what one body perceives. `> fact link +…` steps written before `> start` set the record without sending anything, so the Root's reply carries them.
+- **Left**: every Agent named by a `> leave` step.
+
+A case can't hold a state reply or send a second one, so `T3305` and `T3703`, which only a misbehaving game causes, aren't scriptable.
+
 **Matching is done in Rust**, in the Transpiler's Conformance suite, which builds the case, runs `RunCase`, reads the `.jsonl` and applies chapter 34's matching. `RunCase` itself never reads the expected lines.
 
-- Starting Agents have bodies, as in a real run, so `ScriptedGame` serves the ports the `.jcm` assigns them as well.
-- Random sources inside Jason or VEsNA-Pro that `regia-jason` can't seed (such as `.random`) are not used by generated code. If one turns out to matter, it's a gap for the development effort to close.
+- Starting Agents have bodies, as in a real run, so `ScriptedGame` serves the ports the `.jcm` assigns them, as well as the link's.
+- Random sources inside Jason or VEsNA-Pro that `regia-jason` can't seed (such as `.random` and `math.random`) are not used by generated code. If one turns out to matter (VEsNA-Pro's own choices, chapter 14), it's a gap for the development effort to close.
+- **One source per run.** `regia.random(T, R)` gives `R`, a real number from 0 up to, but not including, `T`. `regia.random(A, B, whole, R)` gives a whole roll from `A` to `B` (bounds in either order, rounded inward) and fails when there is no whole number between them, which `RANDOM` in a Body turns into `T0403` (chapter 04). `regia.random(A, B, decimal, R)` gives a decimal roll. The Transpiler picks `whole` or `decimal` from how the bounds are written. Outside a case the source is seeded from the run's seed: the one given when the run starts, else the Build's `SEED` (chapter 21), else one the run picks. The `run` entry records it.
 
 ## `regia-jason` additions
 
-- The Trace writer, and the internal actions `regia.trace(Kind, Level, Code, Fields)` and `regia.wait(D)`.
+- The Trace writer, and the internal actions `regia.trace(Kind, Level, Code, Fields)`, `regia.wait(D)`, `regia.wait(Cond[, D])` (chapter 39), `regia.random` (above), `regia.weighted_pick(L, M)` (chapter 26) and `regia.pick(count(N) | share(S), Pool, Picked)` (chapter 39), the one draw behind every `n OF` and `n% OF`.
 - The `regia.testing` package: `RunCase` and `ScriptedGame`.
 - Reading `asl/regia/sourcemap.json`.
 
@@ -90,7 +147,13 @@ java -cp regia-jason.jar:… regia.testing.RunCase build/<entry> case.trace
 
 **Warnings**
 
-- `R3501` An unknown value for `trace_console` (as for an unknown key in a known Target's group, `R2113`).
+- `R3501` Retired: the console level is an option of `regia run`, not a Target setting.
+
+## Regia 1.5
+
+In 1.5 (ADR 0025), except the `count` entries and the Quota check's `unheard` entries, which are later.
+
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 
 ## Not decided here
 

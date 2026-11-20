@@ -1,6 +1,6 @@
 # Values are named in the Body, never in the Context
 
-A Plan's Body can name a computed value with `?name = Expression.`, filling a Placeholder once and never reassigning it. In a Context, `=` only compares and never fills anything. We chose this so that a Context stays a list of conditions on the world, and calculations happen as steps in the Body, where a designer expects things to be done. It also gives `=` one meaning in each place, so a reader never has to scan back to tell whether it compares or fills. The main need it covers is reusing one random roll (`?dmg = RANDOM(1, 6).`), which inline Expressions can't do.
+A Plan's Body can name a computed value with `?name = Expression`, filling a Placeholder once and never reassigning it. In a Context, `=` only compares and never fills anything. We chose this so that a Context stays a list of conditions on the world, and calculations happen as steps in the Body, where a designer expects things to be done. It also gives `=` one meaning in each place, so a reader never has to scan back to tell whether it compares or fills. The main need it covers is reusing one random roll (`?dmg = RANDOM(1, 6)`), which inline Expressions can't do.
 
 ## Considered Options
 
@@ -14,3 +14,4 @@ A Plan's Body can name a computed value with `?name = Expression.`, filling a Pl
 - This amends ADR 0001: Placeholders are filled by matching in the Trigger and Context, **or** by naming in the Body. They are still filled once and never reassigned.
 - Naming an already-filled Placeholder is an error. A name can be used only after its Statement, and after an `IF` only if every branch names it.
 - If repeated Expressions in Contexts turn out to hurt, Context-side naming could be added later without breaking existing code.
+- Amended by ADR 0042 (`0042-let-fills-a-placeholder-and-equals-only-compares.md`): the spelling is now `LET ?dmg BE RANDOM(1, 6)`, and `=` only compares.

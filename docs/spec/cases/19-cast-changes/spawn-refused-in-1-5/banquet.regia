@@ -1,0 +1,11 @@
+CUE toast_raised
+ACTION cheer
+
+PLAYBOOK Toasting:
+    WHEN toast_raised:
+        DO cheer.
+
+PLOT Banquet:
+    ROLE Guest:
+        ASSIGN Toasting.
+    PHASE feast INITIAL.

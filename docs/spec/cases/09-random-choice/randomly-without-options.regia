@@ -1,0 +1,10 @@
+#! case: a RANDOMLY with no OPTION has nothing to run
+#! rule: R0901
+
+CUE bored
+ACTION wave
+
+PLAYBOOK Idler:
+    WHEN bored:
+        RANDOMLY:                        #! error R0901
+        DO wave.

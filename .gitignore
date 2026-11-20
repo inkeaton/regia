@@ -1,5 +1,6 @@
 # Antigravity IDE Agent Skills & Configs
 .agents/
+references/
 .venv/
 .pytest_cache/
 .vscode/

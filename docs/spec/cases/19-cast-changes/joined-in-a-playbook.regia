@@ -1,5 +1,6 @@
 #! case: JOINED is a Director Trigger kind only
 #! rule: R1901
+#! regia: 2.0
 
 ACTION wave
 

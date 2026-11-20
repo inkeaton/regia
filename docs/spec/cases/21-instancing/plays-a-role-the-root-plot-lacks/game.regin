@@ -3,5 +3,7 @@
 
 IMPORT "banquet".
 
-AGENT noble PLAYS Guest AND Drunkard:   #! error R2105
+ROOT Banquet.
+
+KIND noble, PLAYS Guest, Drunkard:   #! error R2105
     COUNT 1.

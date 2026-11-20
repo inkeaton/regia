@@ -1,0 +1,9 @@
+#! case: a setup is a Role's Block; STARTS WITH is a retired spelling
+#! rule: R1608
+
+PLOT Banquet:
+    ROLE Guest STARTS WITH:              #! error R1608
+        LEARN invited.
+    CAST STARTS WITH:                    #! error R1608
+        LEARN banquet_tonight.
+    PHASE reception INITIAL.

@@ -2,7 +2,7 @@
 #! rule: R1404
 
 TRAIT bravery
-EVENT insult_heard
+CUE insult_heard
 ACTION complain, challenge
 
 PLAYBOOK Noble:

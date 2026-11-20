@@ -1,7 +1,8 @@
-#! case: a PERCENT quantity lies in (0, 100]
+#! case: a % quantity lies in (0, 100]
 #! rule: R1804
+#! regia: 2.0
 
-EVENT toast_raised
+CUE toast_raised
 ACTION cheer
 
 PLOT Banquet:
@@ -9,5 +10,5 @@ PLOT Banquet:
     PHASE reception INITIAL.
 
     DURING reception:
-        WHEN toast_raised FROM 150 PERCENT OF Guest:     #! error R1804
+        WHEN toast_raised, FROM 150% OF Guest:     #! error R1804
             DO cheer.

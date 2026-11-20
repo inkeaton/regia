@@ -1,12 +1,12 @@
-#! case: TELL sends Facts and Events; a Goal is asked for with ASK … TO
+#! case: TELL sends Facts and Cues; a Goal is asked for with ASK … TO
 #! rule: R0701
 
-EVENT insult_heard(speaker)
+CUE insult_heard(speaker)
 GOAL avenge(person)
 ACTION challenge(target)
 
 PLAYBOOK Guest:
-    WHEN insult_heard(?s) FROM ?who:
+    WHEN insult_heard(?s), FROM ?who:
         TELL ?who avenge(?s).            #! error R0701
 
     TO avenge(?p):

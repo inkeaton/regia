@@ -1,0 +1,15 @@
+CUE intruder_seen(who)
+ACTION chase(who)
+GOAL catch(who)
+
+PLAYBOOK Watching:
+    WHEN intruder_seen(?x):
+        PURSUE catch(?x), WITHOUT WAITING.
+
+    TO catch(?x):
+        DO chase(?x).
+
+PLOT Watch:
+    ROLE Guard:
+        ASSIGN Watching.
+    PHASE calm INITIAL.

@@ -1,7 +1,7 @@
 #! case: a line dedented to a level that was never opened
 #! rule: R0104
 
-EVENT insult_heard
+CUE insult_heard
 ACTION complain, frown
 
 PLAYBOOK Guest:

@@ -16,8 +16,8 @@ A Director's own Plans get a third, smaller table (*Directors*, below).
 Each table is worked out **once for every Trigger item** named in an `ON` relation of that table, and once for every other item:
 
 1. Collect the relations that apply to the item: those without `ON`, plus those `ON` that item.
-2. Add the defaults of chapter 13 as relations: every Subplot `OVER SELF`, unless a relation says otherwise.
-3. Fold in each Subplot's `PARENT` relations, rewritten from the parent's side (`PARENT OVER SELF` in HonorDuel is `SELF OVER HonorDuel` here). Where they contradict the parent's own relations, the parent's win and the Transpiler notes the dropped relation (chapter 13).
+2. Fold in each Subplot's `PARENT` relations, rewritten from the parent's side (`PARENT OVER SELF` in HonorDuel is `SELF OVER HonorDuel` here). Where they contradict the parent's own relations, the parent's win and the Transpiler warns about the dropped relation (`R1311`, chapter 13). A cycle among the relations collected so far is `R1301`.
+3. Add the defaults of chapter 13, every Subplot `OVER SELF`, one at a time, each only if the relations already placed don't put `SELF` above that Subplot, directly or through a chain. A default left out is a line of the conflict report. Defaults never close a cycle: each one only adds an edge between two members not yet ordered the other way.
 4. Merge `TIES` pairs into one member. If the item has no `SUITS` on either side, the pair isn't really tied: the members stay separate, ordered by name, and chapter 13's warning applies.
 5. **Topological sort**: repeatedly take the members nothing unplaced is above; when several are free, take the **alphabetically first** name. The position at which a member is placed is its level. Merged `TIES` members share one level.
 
@@ -60,13 +60,13 @@ Every path starts at the Root and goes down through the same tables. Wherever tw
 ### The prefix
 
 - The Root Director's file holds the initial belief `regia_rank_prefix([])`.
-- When a parent starts a Subplot, it sends the child its prefix: `regia_start(Cast, Prefix)` (replacing chapter 31's `regia_start(Cast)`), where `Prefix` is the parent's own prefix plus one step, the child Plot's level in the parent's Staging table. The child stores it as `regia_rank_prefix(Prefix)`.
+- When a parent starts a Subplot, it sends the child its prefix: `regia_start(Cast, Prefix, Args)` (replacing chapter 31's `regia_start(Cast)`; `Args` is the Plot's arguments, chapter 31), where `Prefix` is the parent's own prefix plus one step, the child Plot's level in the parent's Staging table. The child stores it as `regia_rank_prefix(Prefix)`.
 - Every `ASSIGN`, Role setup `ASSIGN` and standing Giving of a Plot appends the same constant pair of steps for its Playbook, generated inline. The Director builds the Rank with `.concat(Prefix, Suffix, Rank)`.
 - Stagings of one Plot under one parent get equal prefixes (chapter 17). A Plot started from two parents gets a different prefix in each Staging, so its Givings carry different Ranks. Which is better is decided per item at selection time (below). Nothing about the second parent is worked out ahead of time.
 
 ### A Playbook given several times
 
-The Agent keeps every `regia_given` belief (chapter 29) and **never stores a merged Rank**. For each item it competes on, a Playbook's Rank is the **best** of its Givings' Ranks for that item. Since `ON` relations make steps item-dependent, the best Giving for one item may not be the best for another. This is chapter 13's "a Playbook given twice keeps its best key".
+The Agent keeps every `regia_given` belief (chapter 29) and **never stores a merged Rank**. Ranks are read through `regia_holds`, so a closing Playbook's ending plans rank by the Givings in its snapshot (chapter 29, *The closing*). For each item it competes on, a Playbook's Rank is the **best** of its Givings' Ranks for that item. Since `ON` relations make steps item-dependent, the best Giving for one item may not be the best for another. This is chapter 13's "a Playbook given twice keeps its best key".
 
 ## The plan annotation
 
@@ -81,23 +81,26 @@ Every plan compiled from a Playbook's Trigger Block carries one annotation in it
 | Argument | Holds |
 | --- | --- |
 | `Playbook` | the Playbook's Jason name |
-| `Item` | the plan's Trigger item, as written in `ON`: `when(e)`, `learned(f)`, `forgotten(f)`, `to(g)`, `dropped(g)`, `failed(g)` (Jason names). A Quota Trigger on `e` is `when(e)` |
+| `Item` | the plan's Trigger item, as written in `ON`: `when(e)`, `learned(f)`, `forgotten(f)`, `to(g)`, `reached(g)`, `dropped(g)`, `failed(g)`, `ended(g)` (Jason names; the ending Items are chapter 40's). A Quota Trigger on `e` is `when(e)` |
 | `Pos` | the Trigger Block's place among the Playbook's Trigger Blocks with the same Trigger, from 0 in text order |
 
 - **Suits alternatives share one `Pos`**, so they all reach temper selection (chapter 13).
 - **`GIVEN` siblings share their Trigger Block's `Pos`**. They already exclude each other through negated Contexts (chapter 06).
 - Writing the item out means the Java never has to know how each Trigger kind is lowered to ASL.
 - It replaces chapter 13's `playbook(Name)` annotation, which is retired. `regia.stop_playbook` (chapter 29) finds a Playbook's plans by `regia_rank`'s first argument.
-- `temper` and `effects` (chapter 14) are emitted next to it unchanged.
+- `temper` and `effects` (chapter 14) are emitted next to it unchanged, including the neutral `temper` of an unlabelled candidate whose competition has a `SUITS`.
 
 ## `selectOption` in Agents
 
-The `regia-jason` Agents' class overrides `selectOption(options)`. Jason passes it only **applicable** options: the `regia_given` guard (chapter 29) has already removed the plans of Playbooks the Agent doesn't hold, and a Trigger Block whose `GIVEN`s all fail isn't there, which is chapter 13's fall-through.
+The `regia-jason` Agents' class overrides `selectOption(options)`. Jason passes it only **applicable** options: the `regia_given` guard (chapter 29) has already removed the plans of Playbooks the Agent doesn't hold, apart from a closing Playbook's ending plans, and a Trigger Block whose `GIVEN`s all fail isn't there, which is chapter 13's fall-through.
 
+0. **A catch-all last.** An option annotated `regia_unheard` (chapters 30 and 39) or `regia_noop` (an ending nobody listens to, chapter 40) is chosen only when it is the only option. Otherwise it is left out before the steps below.
 1. **Infrastructure first.** If no option carries `regia_rank`, call `super.selectOption(options)` unchanged. Infrastructure triggers all start with `regia_`, which designer names can't (chapter 28), so an Infrastructure plan never competes with a Playbook plan.
 2. **Best Rank.** For each option, read its Playbook's Rank for the option's `Item`: the best over that Playbook's `regia_given` beliefs. Keep only the options with the best Rank. An option with `regia_rank` but no `regia_given` for its Playbook means the guard was bypassed: drop it and leave a Trace entry.
 3. **Best position inside each Playbook.** Among the options of one Playbook, keep only those with the lowest `Pos`. This is chapter 13's "first in the text wins", and it keeps a Playbook's later Trigger Blocks out of a `TIES` pool (chapter 13: each side brings its winning unlabelled Trigger Block).
 4. **Hand over.** Sort what remains by Playbook name and call `VesnaAgent.selectOption` on that new list. VEsNA-Pro uses temper selection if at least one option carries `temper` (Suits alternatives, or a `TIES` pool); otherwise it takes the first, which is name order.
+5. **Fits and Shifts.** Before handing over, when the list carries a `temper`, compute each option's fit with `Temper.computeWeight` for the winner's `fits`. After VEsNA-Pro picks, apply the chosen plan's `effects` through `Temper.shift`. This runs for every chosen Playbook plan, contested or not, since Jason calls `selectOption` for every event once it is overridden.
+6. **Write the Trace.** Write the chosen plan's `plan` entry (chapter 35, *The `plan` entry*): its Block, from its label through the source map; its Placeholder values, from the option's unifier; and, when options were removed, `over` and `by`. `by` is the step that removed the last rival: `PRECEDENCE` at step 2 (`DEFAULT` when the loser was a default giving way, chapter 13), `NAME` at step 4 without temper selection, `SUITS` with it, with `fits`. Then write one `mood` entry per Mood shifted, `plan:` that entry (chapter 14). This runs after step 1's `super` call too: what decides whether an entry is written is whether the chosen plan's label stands for a designer's Block in the source map, and a catch-all or Infrastructure plan doesn't.
 
 After step 2, options from different Playbooks remain only for a `TIES` pool, because step 4 of *Levels* gives every other pair different levels. So the name sort in step 4 only sets the order temper selection sees, and the fallback for a pool with no `temper`.
 
@@ -116,7 +119,7 @@ A Director's competing plans all come from one Plot, and each plan has one fixed
 - `Level` is the plan's level in the Plot's Director table for the plan's item: by default a Phase's plans are 0 and `DURING PLOT`'s are 1, and `DURING PLOT OVER DURING feast ON assassin_spotted` swaps them for that item (chapter 13). Only one Phase is current at a time, so the table has two members: the Phases together, and `DURING PLOT`.
 - `Pos` is the Trigger Block's place in its `DURING` Block among those with the same Trigger, as for Playbooks.
 
-`regia.DirectorAgent.selectOption` calls `super` if no option has `regia_rank`, else compares `[Level, Pos]` step by step and takes the first best. There is no runtime part, no prefix, and no temper: Directors have no Propensities (chapter 20) and no Labels (chapter 14).
+`regia.DirectorAgent.selectOption` leaves out a `regia_unheard` option first, as step 0 above does, then calls `super` if no option has `regia_rank`, else compares `[Level, Pos]` step by step and takes the first best. Whichever way it chose, it then writes the chosen plan's `plan` entry as step 6 above does, with `by: PRECEDENCE` (or `DEFAULT`) when a lower `Level` lost. There is no runtime part, no prefix, and no temper: Directors have no Propensities (chapter 20) and no Labels (chapter 14).
 
 The **ranking helper** shared by both classes (chapters 28 and 30) resolves a path for an item and compares two lists of numbers.
 
@@ -134,7 +137,7 @@ Changed from chapter 31:
 
 | Message | From → to | Meaning |
 | --- | --- | --- |
-| `achieve regia_start(Cast, Prefix)` | parent → new child | start the Staging with this cast, at this place in the tree |
+| `achieve regia_start(Cast, Prefix, Args)` | parent → new child | start the Staging with this cast and these arguments, at this place in the tree |
 
 
 ## Trace entries
@@ -142,6 +145,12 @@ Changed from chapter 31:
 **Warnings**
 
 - `T3201` A ranked option whose Playbook has no `regia_given`, so its guard was bypassed: the option is dropped.
+
+## Regia 1.5
+
+All of this chapter is in 1.5 (ADR 0025).
+
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 
 ## Not decided here
 

@@ -1,0 +1,33 @@
+# The full banquet. The test casts the walkthrough follows import this file.
+IMPORT "plots/royal_banquet".
+
+ROOT RoyalBanquet.
+
+AGENT king PLAYS Host.
+
+KIND noble PLAYS Guest:
+    COUNT 6.
+    bravery AT RANDOM(0.2, 0.8).
+    sympathy AT RANDOM(0, 0.8).
+    aggressiveness AT RANDOM(-0.4, 0.4).
+
+KIND hothead LIKE noble:
+    COUNT 2.
+    bravery AT 0.9.
+    sympathy AT -0.4.
+    aggressiveness AT RANDOM(0.6, 1).
+    LEARN grudge(percival, 2).               # every hothead has a score to settle with Sir Percival
+
+KIND knight PLAYS Guest AND Guard:
+    COUNT 1.
+    bravery AT 0.8.
+    sympathy AT 0.3.
+    aggressiveness AT 0.1.
+
+AGENT percival LIKE knight.                  # the second knight, named so that a grudge can name him
+
+KIND servant PLAYS Servant:
+    COUNT 3.
+
+TARGET jason:
+    strategy = most_similar.                 # the default, written out

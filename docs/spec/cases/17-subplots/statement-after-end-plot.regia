@@ -1,7 +1,7 @@
 #! case: END PLOT ends its Body
 #! rule: R1702
 
-EVENT guards_arrived
+CUE guards_arrived
 ACTION stop_music
 
 PLOT Banquet:

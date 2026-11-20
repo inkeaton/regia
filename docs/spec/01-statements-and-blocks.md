@@ -1,13 +1,17 @@
 # Statements and blocks
 
-How Regia source is split into Statements and Blocks. Decided in the ticket *Statement and block syntax* (`.scratch/regia-2/issues/01-statement-and-block-syntax.md`). This chapter replaces the syntax part of primer ch.1. Comments are covered in *Comments* (`02-comments.md`).
+How Regia source is split into Statements and Blocks. Decided in the ticket *Statement and block syntax* (`.scratch/regia-2/issues/01-statement-and-block-syntax.md`). This chapter replaces the syntax part of primer ch.1. `PASS` was added in the ticket *Words that do several jobs, and syntax nobody used* (`.scratch/regia-revision/issues/20-words-and-syntax.md`), which also added Flat blocks; the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`) removed them and set the two styles below. Comments are covered in *Comments* (`02-comments.md`). The principles every construct follows (*The principles of the syntax*, below) were set in the ticket *The principles of the 1.5 syntax* (`.scratch/syntax-review/issues/01-principles.md`, ADR 0041).
 
 ## Two styles
 
 There are two ways to structure code, and they can be mixed freely:
 
 - **Indentation style** (the default): one line is one Statement. A line ending in `:` is a Block header, and its body is the lines indented under it.
-- **Explicit style**: `.` ends a Statement and `;` closes a Block. This lets you put several Statements, or a whole Block, on one line.
+- **Explicit style**: the same layout written on one line. A body starting on its header's line after `:` stands for an indent, `.` stands for a new line, and `;` stands for a dedent. This lets you put several Statements, or a whole Block, on one line.
+
+The three marks are the one-line spellings of indent, new line and dedent, and nothing more: the explicit style never spans lines. A Block whose body is on later lines is always indented under its header.
+
+**Indentation is the default**, for code written by hand and for code a tool generates: one Statement per line, Blocks by indentation, no trailing `.`. The Visual Editor and any formatter write this style. The explicit marks are never required. They are there for code that has to fit on one line (a short Inline block, `IF x: DO a; ELSE: DO b`, or a generator that emits single lines), and for writers who prefer not to indent, as a matter of style: such a writer puts each Block on one line.
 
 ```regia
 PLAYBOOK NobleSocializing:
@@ -20,10 +24,10 @@ PLAYBOOK NobleSocializing:
             DO toast(host)
 
     WHEN digestion_check:
-        IF is_hungry: DO eat_food. FORGET(is_hungry). PRINT("A guest finishes their meal.")
+        IF is_hungry: DO eat_food. FORGET is_hungry. PRINT("A guest finishes their meal.")
 
     WHEN food_served:
-        DO PRINT("A guest notices food arriving.")
+        PRINT("A guest notices food arriving.")
         IF is_hungry: DO eat_food; ELSE: DO complain
 ```
 
@@ -42,7 +46,8 @@ A line that doesn't end in `:` (or open an Inline block, see below) never opens 
 ## Where a Block's body starts decides its style
 
 - **Body on the next line, indented further**: an indentation Block. It ends at the first line indented less than its body or as much as its header.
-- **Body on the same line as the `:`**: an **Inline block**. Its Statements are separated by `.`, and it ends at a `;` or at the end of the line, whichever comes first. An Inline block never spans several lines; to go multi-line, use indentation.
+- **Body on the same line as the `:`**: an **Inline block**. Its Statements are separated by `.`, and it ends at a `;` or at the end of the line, whichever comes first. An Inline block never spans several lines.
+- **Header ending its line, with no line indented further after it**: an empty Block (below, *Empty Blocks*). The next line, at the header's indentation or less, is not inside it.
 
 Consequences:
 
@@ -56,6 +61,37 @@ Consequences:
 | `IF a: IF b: DO c;; DO d` | Nested Inline blocks. Each `;` closes one Block. |
 
 A whole program on one line (as in primer ch.1) is valid. Any trailing `;` at the end of the line can be left out.
+
+Styles mix freely. Here a Trigger's body is indented, its first `GIVEN` is an Inline block, and its second holds two Statements on one line:
+
+```regia
+WHEN hit, FROM opponent, SHIFTS aggressiveness BY 0.1:
+    GIVEN stamina(?now) AND ?now > 1: UPDATE stamina(?now) TO stamina(?now - 1)
+    GIVEN stamina(?now):
+        FORGET stamina(?now). DO drop_sword
+        TELL opponent yielded
+```
+
+The same Plan written by someone who doesn't indent goes on one line:
+
+```regia
+WHEN hit, FROM opponent: GIVEN stamina(?now): FORGET stamina(?now). DO drop_sword. TELL opponent yielded
+```
+
+### No Block without indentation across lines
+
+A `;` closes only an Inline block. Taking the indentation out of a multi-line Block doesn't make it an explicit Block:
+
+```regia
+WHEN hit, FROM opponent:          # an empty Block: the next line isn't indented further
+GIVEN stamina(?now):              # a sibling of the WHEN, not its body
+...
+;                                 # error R0108: no Inline block is open
+```
+
+Earlier drafts had **Flat blocks**, closed by `;` across lines. They were removed: a Block header whose body was forgotten swallowed the rest of the file, and a generator gets the same result from indentation or from Inline blocks. A `;` that would have closed one is `R0108`, and its hint says so.
+
+### Headers inside an Inline block
 
 **Error:** a Block header that ends a line must not sit inside an Inline block:
 
@@ -74,7 +110,7 @@ So `DO complain.SIGNAL insult_thrown` reads as one dotted name and is an error; 
 
 ## Redundant terminators
 
-A `.` at the end of a line, or a `;` closing an Inline block right at the end of a line, does nothing and is allowed without a warning. This keeps most pasted 1.0 code parsing. The Visual Editor keeps it when it writes edits back: it never normalises text an edit doesn't touch (chapter 22, `22-bidirectional-editing.md`).
+A `.` at the end of a line, or a `;` closing an Inline block right at the end of a line, does nothing and is allowed without a warning. The Visual Editor and formatters never write either. A `;` at the end of a line that isn't inside an Inline block is not redundant: it closes nothing, and is an error (`R0108`). This keeps most pasted 1.0 code parsing. The Visual Editor keeps it when it writes edits back: it never normalises text an edit doesn't touch (chapter 22, `22-bidirectional-editing.md`).
 
 ## Indentation rules
 
@@ -86,26 +122,91 @@ A `.` at the end of a line, or a `;` closing an Inline block right at the end of
 
 A physical line continues onto the next one, forming one logical line, when:
 
-- it ends with `,`, or
+- it ends with `,`: a `,` always says that something more follows (*Clauses and the comma*, below), so it never ends a logical line; or
 - it has a `(` that isn't closed yet.
 
 Continuation lines must be indented further than the logical line's first line. Physical lines are joined into logical lines before any of the rules above apply, so an Inline block can continue this way too.
 
 ```regia
-DO eat_food,
-    FORGET(is_hungry),
-    PRINT("A guest finishes their meal.")
+WHEN hates(?h) LEARNED, FROM ?teller,
+        SUITS sympathy AT -0.5, bravery AT 0.8,
+        SHIFTS aggressiveness BY 0.2:
+    ...
 ```
 
-A Trigger with many Labels wraps after any of the `,` that separate them (chapter 14, `14-labels.md`).
+A `,` never joins two Statements: Statements are separated by a new line or by `.`.
 
 ## Parsing never depends on declarations
 
 Every construct can be parsed from its tokens alone, without knowing what any name is declared as or in which file. Keywords carry the shape (`DO`, `LEARN`, `PURSUE`, …), and names are only names. This is what lets each file be parsed on its own and its imports be found before any name is resolved (chapter 23). A syntax that would need to know a name's kind to be parsed is rejected.
 
+## The principles of the syntax
+
+Every construct in the spec follows these rules, and a new construct is judged by them. They were set by the syntax review (ADR 0041). Chapters the review hasn't reached yet may still show older spellings. Until each one is brought in line, these rules decide.
+
+### One meaning per word
+
+A keyword or symbol may appear in several constructs only if a reader who knows one use can predict the others:
+
+- **One sense.** A single one-line gloss covers every use ("`FROM` introduces where something comes from or leaves": the Sender in `, FROM Guest ?who`, the holders in `REMOVE P FROM Guest ?who`). Two glosses mean two meanings, even if English allows both: `TO` before a Goal (`TO g:`, `ASK x TO g`) and `TO` before a destination are two words.
+- **The exceptions** are closed, and no other construct may cite them as a precedent:
+  - `TO` as a destination in `ASSIGN P TO Role` and `UPDATE f TO f2`. Everywhere else `TO` introduces a Goal. The two Statements keep the English idiom ("assign X to Y", "update X to Y") because no other word reads as well (ADR 0043).
+  - `BY` as an amount in `SHIFT m BY n` and the Label `SHIFTS m BY n` (chapter 14). Everywhere else `BY` names who did it: `WHEN EXITED, BY PARENT:` (chapter 20), and in 2.0 whose Pursuit ended (`, BY waiter ?s`, chapter 05). "Shift by 0.1" is the idiom, and nothing else read as well (ADR 0044).
+  - `RANDOMLY` in two jobs: the head of a Random choice (`RANDOMLY:`, chapter 09) and the Pick clause `, RANDOMLY` (chapter 26). The sense is the same, "chosen by chance", among Options or among Matches (ADR 0044).
+- **One job.** The word does the same structural job in every use: always the head keyword of a construct, always a connector that introduces a complement, or always an operator. What it introduces may be of different kinds: a Role, a Phase and a Fact can all be "where something ends up".
+- **A noun naming a kind of thing** passes on its sense alone, when every use refers to that kind of thing, whether it heads a declaration or names one (`PLOT Dinner:`, `DURING PLOT:`, `END PLOT`; `PARENT`).
+- **Fixed phrases** (`ELSE IF`, `WITHOUT WAITING`) get no exemption: each word in them still fits its own gloss. That is why the idiom `AT RANDOM` was retired: `AT` introduces a level (`SUITS p AT n`).
+- **A symbol that keeps its usual programming meaning** passes even with several jobs: `( )` for calls, grouping and arguments, `"…"` for any string literal (a String or an `IMPORT` path), `-` for minus and a number's sign. The test applies to the symbols Regia gives meanings of its own: `,`, `.`, `:`, `;`, `=`, `%`. `%` is the everyday percent sign, written only before `OF` (`50% OF Guest`, chapter 15), and never the programmer's remainder (ADR 0045). Text inside a comment (the `:` of a doc comment) isn't code and isn't tested.
+
+### Clauses and the comma
+
+A Block header or a Statement has a **core** and, after it, optional **clauses**:
+
+- The **core** is the head keyword, the item it requires, and that item's **complements**. A complement finishes a single word and is never preceded by `,`: `FAILED WITH r`, `SHIFT m BY n`, `UPDATE f TO f2`. The kind word after a Trigger's item is part of the core.
+- A **clause** is an optional part that applies to the whole header or Statement. It is always written **`, KEYWORD …`**: `WHEN e, FROM DIRECTOR:`, `, SUITS …`, `, RANDOMLY`, `PURSUE g, WITHOUT WAITING`, `WAIT d, UNTIL c`, `, MAPPING …`.
+- A **list** separates its items with `,` too: arguments, a Multi-definition, `EXCEPT ?a, ?b`, `LIKE a, b`. A list ends at the first token that can't be one of its items: a clause keyword after a `,`, or the next word of the core (`MAPPING Guest EXCEPT ?a, ?b AS Spectator`).
+- So **`,` means "something more follows"**: either a clause or the next item of a list. The token after the `,` tells which: a clause keyword starts a clause, anything else is the next item. No list item may start with a clause keyword.
+- **Clauses come in any order.** Each appears at most once unless its chapter allows several (Labels). The Visual Editor and any formatter write them in the order their chapter lists them.
+- **A clause keyword without its `,`** after the core is an error, `R0111`, whose hint adds the `,`: `WHEN e FROM DIRECTOR:` is `WHEN e, FROM DIRECTOR:`. The same word may introduce the required item itself, as part of the core: `WAIT UNTIL c` (the condition is what `WAIT` waits for) next to `WAIT d, UNTIL c` (a limit added to a Duration).
+- **A `,` never joins conditions.** Two conditions that must both hold are joined with `AND`: `GIVEN gold(?g) AND price(?item, ?p):`. Alternatives, either of which may hold, are joined with `OR`, also in `FROM a OR b` (chapter 05).
+- **`AND` and `OR` are only the condition operators.** They never join the items of a list: the Propensities of a Label (`SUITS sympathy AT -0.5, bravery AT 0.8`), the Moods of a `SHIFT`, the Roles after `PLAYS` (`PLAYS Guest, Drunkard`). `OR` is never a Block header: a Random choice is `RANDOMLY:` with `OPTION:` Blocks (chapter 09).
+
+### Where condition words go
+
+A condition word **follows its subject** when the subject is written: `?x PLAYS Role`, `P(args) RUNNING`, a Trigger's item before its kind word. When the subject is implicit, the Agent itself or the running Plot, the word **comes first**: `PURSUING g` ("I am pursuing g"), `IN phase` ("this Plot is in phase"). `NOT` is an operator, not a condition word.
+
+The word after a written subject is what tells a condition item apart from a Fact, so a condition parses without knowing what its names are (*Parsing never depends on declarations*, above): `Poisoning RUNNING` is a Subplot condition and `is_hungry` a Fact. A condition word binds to its subject more tightly than `NOT`: `NOT ?x PLAYS Guard` is `NOT (?x PLAYS Guard)` (chapter 06, *Conditions*).
+
+### Keywords
+
+- **Keywords are UPPERCASE, and case matters for them.** An all-caps word that is a keyword is always the keyword. `count` or `Wait` is an ordinary name.
+- **Every keyword is reserved.** A name spelled exactly like a keyword is an error (`R0110`). Names still compare ignoring case among themselves (chapter 10).
+- **A keyword is reused only if the new use passes *One meaning per word*.** Otherwise the new use gets a new word, even though the vocabulary grows. A plain English word is preferred to an invented compound.
+
+### What syntax can be dropped
+
+A spelling is removed only when **all** of these hold: nobody writes it by hand, a generator gains nothing from it, and the Visual Editor doesn't need it. Two spellings of one thing become one. The exception is an explicit spelling of layout (`.` for a new line, `;` for a dedent), which stays because generated code uses it. A retired spelling becomes an error with a hint that names the new one, not a silent synonym (as `EVENT` became `CUE`, `R0513`).
+
 ## Empty Blocks
 
-A Block header with no body is allowed, and the Transpiler warns about it. This supports sketching, for example in the Visual Editor. There is no placeholder keyword.
+A Block header with no body is allowed, and the Transpiler warns about it: the Block may not be written yet. An empty Block is a header followed by a dedent or the end of the file, or an Inline block with nothing in it (`: ;`).
+
+**`PASS`** is a Statement that does nothing. It goes anywhere a Statement goes, on its own line or inline, and says that the emptiness is meant, so a Block holding only `PASS` gets no warning: a Plan that deliberately ignores its Trigger, or an Option of a Random choice that means "otherwise nothing" (chapter 09). The Visual Editor writes `PASS` in the Blocks it creates empty. There is no keyword for "not written yet": that is a bare empty Block, which warns, or a comment.
+
+Every empty Block follows this one rule, an Option of a Random choice included.
+
+## A word of Regia 2.0 in a 1.5 build
+
+A Transpiler built for Regia 1.5 (ADR 0025) still parses every construct of 2.0. If a Program uses one from a system that 1.5 leaves out, the build reports **`R0109`**. The error names the construct and says it is Regia 2.0, so a writer doesn't get a parse error for it. The constructs are:
+
+- `FROM GAME`, `FROM ME`, and `FROM` with `OR` alternatives (chapter 05);
+- `BY` on a Goal's ending (chapter 05), and a Goal's ending in a Plot, with or without `BY` (chapter 20): in 1.5 nobody hears how a Goal it asked ended;
+- a quantity after `FROM` or `BY` (`FROM ALL Guest`, `BY 2 OF waiter`), which makes a Quota Trigger, and `SENT` (chapter 18);
+- `JOINED` (chapter 19).
+
+`WHEN EXITED, BY PARENT:` (chapter 20) and the `BY` of `SHIFT` and `SHIFTS` (chapter 14) are not a Goal's ending, and are in 1.5.
+
+A construct reported with `R0109` gets no other Diagnostic: the checks of its own chapter aren't run on it. A 2.0 build never reports `R0109`. The code is retired there, and keeps its number. A Program that builds in 1.5 builds in 2.0 and does the same thing there.
 
 ## Transpiler checks
 
@@ -116,7 +217,18 @@ A Block header with no body is allowed, and the Transpiler warns about it. This 
 - `R0103` Tabs and spaces mixed for indentation in one file.
 - `R0104` A line dedented to a level that was never opened.
 - `R0105` A continuation line not indented further than the first line of its logical line.
+- `R0107` Retired with Flat blocks; the number is not reused.
+- `R0108` A `;` that closes no Inline block (hint: a Block's body on later lines is indented under its header; Flat blocks closed by `;` no longer exist).
+- `R0109` A construct of a system Regia 1.5 leaves out, in a 1.5 build (the message names it and says it is Regia 2.0). Reported by a 1.5 build only; retired in 2.0.
+- `R0110` A name spelled exactly like a keyword (the message says the word is a keyword; hint: change its case or its spelling).
+- `R0111` A clause keyword after the core of a header or Statement with no `,` before it, such as `WHEN e FROM DIRECTOR:` (the message names the clause; hint: `WHEN e, FROM DIRECTOR:`).
 
 **Warnings**
 
-- `R0106` A Block header with no body.
+- `R0106` A Block header with no body. A Block holding only `PASS` has a body.
+
+## Regia 1.5
+
+All of this chapter is in 1.5 (ADR 0025). `R0109` is reported by a 1.5 build only, and is retired in 2.0 (*A word of Regia 2.0 in a 1.5 build*, above).
+
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R0111` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R0107` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`).

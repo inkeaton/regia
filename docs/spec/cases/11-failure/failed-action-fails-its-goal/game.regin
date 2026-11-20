@@ -1,0 +1,10 @@
+#! case: a Custom Action the game reports as failed fails its Plan and the Goal the Plan was for
+#! rule: T1101
+#! rule: 11 How failure spreads
+
+IMPORT "watch".
+
+ROOT Watch.
+
+KIND guard, PLAYS Guard:
+    COUNT 1.

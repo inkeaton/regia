@@ -1,13 +1,13 @@
 # Jason Build layout
 
-What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging* and *.jcm generation* (chapter 36, `36-jason-jcm.md`). It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`); how precedence is enforced is chapter 32 (`32-jason-precedence.md`); how the Cast changes and Quota Triggers are counted is chapter 33 (`33-jason-cast-changes-and-quotas.md`); how the Trace is written is chapter 35 (`35-jason-trace.md`).
+What a Build for the Jason Target looks like as a set of files, how its Infrastructure is shared, where the Infrastructure keeps its state, and how Regia names become Jason names. Decided in the ticket *ASL infrastructure layout* (`.scratch/regia-2/issues/34-asl-infrastructure-layout.md`). It is the first chapter of the full ASL mapping, and the others build on its layout: *Giving and taking Playbooks at runtime*, *Director runtime in ASL*, *Stagings and Subplots runtime in ASL*, *Precedence encoding in ASL*, *Quota counts and cast changes in ASL*, *Trace and logging*, *.jcm generation* (chapter 36, `36-jason-jcm.md`) and *A Plan's Statements in ASL* (chapter 39, `39-jason-plan-bodies.md`). It builds on chapter 10 (names), 12 (time), 13 (plan selection), 21 (Instancing) and 23 (Targets emit files). It replaces the file layout of primer ch.8. How Playbooks are given and taken away at runtime is chapter 29 (`29-jason-givings.md`); how Directors run is chapter 30 (`30-jason-directors.md`); how Stagings start and end is chapter 31 (`31-jason-stagings.md`); how precedence is enforced is chapter 32 (`32-jason-precedence.md`); how the Cast changes and Quota Triggers are counted is chapter 33 (`33-jason-cast-changes-and-quotas.md`); how the Trace is written is chapter 35 (`35-jason-trace.md`); how a Plan's Contexts and Statements are written is chapter 39 (`39-jason-plan-bodies.md`).
 
 ## Files
 
-A Build of Entry `<entry>` is written to `build/<entry>/` (chapter 24):
+A Build of Entry `<entry>` is written to its Build folder, `build/<Entry path>/` (chapter 23), where `<entry>` is the Entry's name without its extension:
 
 ```
-build/<entry>/
+build/<Entry path>/
     <entry>.jcm                        only when Instancing declares Agents (chapter 21)
     asl/regia/agent.asl                Infrastructure, fixed
     asl/regia/director.asl             Infrastructure, fixed
@@ -15,6 +15,8 @@ build/<entry>/
     asl/directors/RoyalBanquet.asl     one per Plot
     asl/roles/Guest.asl                one per Role of the Root Plot
     asl/roles/Drunkard__Guest.asl      one per Role set of a kind playing several Roles (chapter 36)
+    asl/unheard.asl                    the Agents' catch-alls for told Cues no Plan takes (chapter 39)
+    asl/goals.asl                      the generated `-!g` plan of every Goal (chapter 40)
     cast.json                          the starting cast for the game, with the `.jcm` (chapter 36)
     asl/regia/sourcemap.json           ASL locations and Generated names back to the designer's (chapter 35)
     traces/<timestamp>.jsonl           one Trace per run, written at run time (chapter 35)
@@ -23,6 +25,7 @@ build/<entry>/
 - **Playbook files** hold the Plans of one Playbook and nothing else. Which Playbooks a Role file includes, and the `regia_playbook` beliefs that list them, are in chapter 29. They never include any file.
 - **Director files** hold one Plot's Director. Every Staging of that Plot runs the same file (chapter 17). A Director file includes `regia/director.asl`.
 - **Role files** exist only for the **Root Plot's Roles**, because only they start Agents (chapter 21). A Role file includes `regia/agent.asl` and every Playbook file the Role can be given in its lifetime, following Subplot Mappings down the Plot tree. A Subplot Role such as `Challenger` gets no file: the Playbooks it brings are included in the Root Plot Role files that map to it. An Agent kind that plays several Roles runs a generated combination file, `roles/<RoleA>__<RoleB>.asl` (chapter 36).
+- **`unheard.asl`** is generated, one per Build, and every Role file (or combination file) includes it once. It depends on the Program, since it lists every Cue some `TELL` sends, so it isn't Infrastructure. **`goals.asl`** is the same kind of file, holding one unguarded `-!g` plan for every Goal of the Program (chapter 40).
 - **File names** are the Regia names exactly as written. Names are unique ignoring case (chapter 10), so this is safe on file systems that ignore case.
 - Every generated file starts with a comment naming the Transpiler version and the source file, and saying it is generated.
 - Include paths are relative to `asl/`, which the `.jcm` sets as the ASL source path.
@@ -39,14 +42,43 @@ Some of the Infrastructure has to be Java. Jason picks among the applicable plan
 
 - The Java code lives in **`regia-jason`**, a small library released and versioned with the Transpiler. It is never generated.
 - The Agents' class **extends VEsNA-Pro's** agent class and follows VEsNA's approach: plans carry annotations, and `selectOption` reads them. Regia adds a ranking annotation. `selectOption` keeps the options with the best rank, hands those to VEsNA's temper selection when they are Suits alternatives or a `TIES` pool, and breaks what remains by Playbook name. The annotation's shape and how ranks compare are decided in chapter 32. A plan annotation can hold only the fixed part of a rank (the Playbook, and the Trigger Block's position in it). The part that depends on who gave the Playbook is runtime state (below).
-- Directors run on a separate class, `regia.DirectorAgent`, which extends Jason's `Agent`: Directors have no Temper, and a Subplot Director has no VEsNA body, without which `VesnaAgent` can't start (chapter 30). The ranking code is a helper shared by both classes.
+- **Temper only chooses among a Trigger's alternatives.** `regia.RegiaAgent.selectOption` also applies the chosen plan's `effects` (a `SHIFTS` Label), once, when it is chosen. `regia.RegiaAgent.selectIntention` overrides VEsNA's with Jason's default round-robin, so Moods never decide which running intention steps next, and VEsNA never applies `effects` itself (chapter 14, *ASL mapping notes*).
+- **Platform versions.** Regia runs on **JaCaMo 1.3.1, so Jason 3.3.2** (CArtAgO 3.1), on JDK 21 or later. VEsNA-Pro itself pins JaCaMo 1.2 (Jason 3.2.1), and it runs unchanged on 1.3.1. Moving it, along with the small `Temper` additions Regia needs, is collected in *Changes to VEsNA-Pro for Regia* (`.scratch/implementation/vesna-pro-for-regia.md`). Decided in the ticket *Moods and Labels on VEsNA-Pro* (`.scratch/showcase-1-5/issues/20-moods-on-vesna.md`).
+- Directors run on a separate class, `regia.DirectorAgent`, which extends Jason's `Agent`: Directors have no Temper, and no Director has a VEsNA body, without which `VesnaAgent` can't start (chapter 30). The ranking code is a helper shared by both classes.
+- The **game link** is `regia.GameLink`, a class of `regia-jason` (below).
 - The `.jcm` points at these classes by default (chapter 21: `ag-class` never has to be written). The Agents' class is `regia.RegiaAgent` (chapter 36).
 - `regia-jason` is also the home for any other Java the Jason Target needs, such as a trace writer or internal actions.
 - A Build contains ASL files and the `.jcm`, and no Java.
+- **The project's own Java** (the classes of dotted Actions, chapter 10) is built by the writer, with any tool, into jars in the Project's **`lib/`** folder, beside `build/` in the current directory (chapter 23). `regia run` and `RunCase` put every `lib/*.jar` on the class path after `regia-jason` (chapter 35), so the writer still never writes a class path. Decided in the ticket *The Target's own code in a Build* (`.scratch/showcase-1-5/issues/21-target-code.md`).
+- Rejected: a `java/` source folder that the CLI compiles (the CLI would need `javac` and report compile errors, and a Build would hold Java); a `TARGET jason` key naming a class path.
+
+## The game link
+
+Directors reach the game through **one shared game link** for the whole run. Each Director **attaches** to it, hears the game for itself and sends its own Actions; no Director passes a game message on, or performs an Action, for another Staging. The game stays unaware of Stagings. "Body" stays the word for an Agent's own VEsNA connection, which is unchanged.
+
+- Program-wide messages: `regia_join` goes to the Root Director, `regia_leave` to every attached Director, and the link itself kills a leaver and stops and starts the clock (chapters 33 and 37).
+
+Its shape was decided in the ticket *The game link's shape* (`.scratch/director-game-link/issues/02-game-link-shape.md`), with ADR 0040.
+
+- **What it is.** `regia.GameLink` wraps **one VEsNA `WsClient`**. It reads each message the game sends, sorts it out to the attached Directors that should have it, and delivers it into each one's mailbox with `LocalAgArch.receiveMsg`, so it arrives in order with the Director's other messages and wakes it. A Director sends to the game by calling the link directly. `WsClient` reads on one thread, in arrival order, and its `send` is thread-safe.
+- **Where it lives.** It is a JaCaMo **platform**, one `.jcm` line (chapter 36):
+
+  ```
+  platform: regia.GameLink("localhost", "9080")
+  ```
+
+  JaCaMo builds every platform and calls its `init` before it creates any agent. The link connects to `address`:`base_port` in `init`, waiting a bounded time for the connection, so no Director starts, attaches or sends before the link is up. It lives as long as the MAS, not as long as any Director: it outlives the Root (chapter 31), and it closes in the platform's `stop`. Directors reach it through a static accessor, since a run has one.
+- **Its name in the envelope** is **`regia_game_link`**. The game writes it as `receiver` on every message it sends the link. The link writes it as `sender` on every message it sends the game, a Director's Actions and `regia_story_ended` included. A Director's name never reaches the game. The link doesn't route on `receiver`: it routes on the message's `type` and, for Facts and Cues, the item's name. The Trace still records which Director sent what.
+- **What it holds** is plumbing only (*Infrastructure state*, below): the connection, which Directors are attached, what each hears and whether its state reply has gone through, the state requests in flight, the Actions in flight, and the clock. It keeps **no game information**: a Fact the game reported lives in the game and in the beliefs of the Directors that heard it, never in the link. When the link needs a Regia-shaped answer, it reads it from Jason at that moment instead of keeping it: whether a leaver is an Agent of the Program (`T3302`) is asked of the runtime, and whether the Root Staging has ended (`T3304`) is whether a Root is still attached. The Root attaches *as* the Root, which is all that sets it apart.
+- **A link that fails.** If the connection never opens, or closes mid-run, **the run goes on**: Directors stay attached and keep running their Plans, Signals, `WAIT`s and Staging tree, and simply hear nothing more from the game. Every Director's game Action fails at once as if refused, with the reason `no game link` (chapter 37). A paused clock is started again, with a `CLOCK RESUMED` entry, since no `regia_resume` can come any more. The Trace gets `T2802` or `T2803`. There is no reconnecting in 2.0, and the link never kills a Director (VEsNA's own handler kills its agent on an error).
+- **Rejected:** a **Jason `Environment`**. JaCaMo 1.2 never creates one and sends every action to CArtAgO (chapter 37), and an `Environment`'s percepts are beliefs, so it can't carry a Cue. **A gateway Root Director**, which forwarded percepts down the Staging tree and relayed Actions: it ran ASL on behalf of other Stagings. **A body per Director**: the game would have to learn about Stagings.
+- **Attaching and hearing.** A Director attaches when it gets its start, registering its name, what its own Plot hears and whether it is the Root. The link asks the game for that Director's starting state (`regia_state`, chapter 37) and delivers it nothing until the reply has gone through. An ending Director stops hearing Facts and Cues at the first step of its walk and detaches when its agent stops. Decided in the ticket *A Director hearing the game for itself* (`.scratch/director-game-link/issues/03-hearing-the-game.md`), in chapter 30, *Hearing the game*.
+- **Acting.** Every Director sends its own Actions through the link. Their `id`s come from the link's one counter, shared with `regia_state`. Replies are routed by `id` into the requesting Director's mailbox. The link calls off a detaching Director's waiting Actions and fails every in-flight Action when it is lost. Decided in the ticket *A Director doing its own Actions* (`.scratch/director-game-link/issues/04-doing-its-own-actions.md`), in chapter 37, *Custom Actions in a Director*.
 
 ## Infrastructure state
 
-- Everything the Infrastructure knows about an Agent or a Director is held as **beliefs**: which Playbooks it was given, by which Staging and with which rank, which Roles it plays, its Directors, quota counts and Phase. There is no state on the Java side. Jason's mind inspector shows it all, and a Build has no hidden state.
+- Everything the Infrastructure knows about an Agent or a Director is held as **beliefs**: which Playbooks it was given, by which Staging and with which rank, which Roles it plays, its Directors, quota counts and Phase. Jason's mind inspector shows it all, and a Build has no hidden state.
+- **Java holds only plumbing**: the game link's connection and routing, the Actions in flight, the run's clock, and the intentions suspended in `regia.wait` and `regia.act`. Nothing a Regia program could read or act on (Facts, casts, Phases, Givings) is kept in Java, and game information lives in the game or in agents' beliefs, never in Java.
 - Each concept has **one Generated name** for its functor. The arguments of each are decided by the ticket that owns the concept.
 
 | Concept | Held by | Functor | Owning ticket |
@@ -67,9 +99,10 @@ Tickets that need a concept missing from this table add a row.
 
 ### Generated names
 
-- A Generated name always **starts with `regia_`** and **separates its parts with `__`**: `regia_if__1`, `regia_given`, `regia_local__nobleSocializing__already_greeted`.
+- A Generated name always **starts with `regia_`** and **separates its parts with `__`**: `regia_when__ready`, `regia_given`, `regia_local__nobleSocializing__already_greeted`.
 - Designer names can do neither (chapter 10), so a Generated name can't collide with a designer's name, and the parts of a Generated name split one way only.
 - **Local Vocabulary** (chapter 10) is emitted as `regia_local__<Playbook or Plot>__<name>`. Two Playbooks with the same local name get two different Jason names.
+- A **generated variable** is a Generated name with its first letter uppercased (`Regia_total`, `Regia_each__1`), and a Placeholder becomes a variable with its first letter uppercased (`?speaker` → `Speaker`): chapter 39.
 - Trace entries name the designer's items, never Generated names (chapter 11).
 
 ### Regia names in Jason
@@ -79,22 +112,40 @@ Tickets that need a concept missing from this table add a row.
 
 ### External names
 
-- External names (chapter 10) are emitted **exactly as written**, with no lowercasing or renaming.
-- An Action's External name with dots (`engine.security.summon_guards`) is a **Java internal action**: Jason looks for a Java class by that name. One without dots is a **game Action**, compiled to `regia.act(A)`, which sends it to the game through the agent's body and waits for the game's reply (chapter 37).
-- A Fact's or Event's External name must be a valid **Jason atom** (a lowercase letter, then letters, digits and `_`), because beliefs and percepts can't contain dots. Anything else is an error for the Jason Target.
+Revised in the ticket *The Vocabulary and the game* (`.scratch/regia-revision/issues/07-vocabulary-and-the-game.md`), with ADR 0026.
+
+- **A game item's External name never appears in ASL.** Its beliefs and events always use the Regia name. Every Agent's and Director's files carry one initial belief per game item they use, `regia_game(fact, "world.time.is_night", night).` or `regia_game(cue, "engine.combat.hit", hit_by).`, and `regia-jason` translates the `name` of each `regia_cue` and `regia_fact` through them (chapter 30). So an External name may hold dots or any other character.
+- A game message to an Agent whose name has no `regia_game` entry is dropped with a Trace warning (`T2801`): it is either not a game item, or one this Agent never uses. On the game link, a message no attached Director hears is dropped with no entry (chapter 30).
+- An Action's External name **with dots** (`engine.security.summon_guards`) is a **Java internal action**, the Jason form of the Target's own code (chapter 10). It is compiled to `regia.act(N, A)` like a game Action, with `N` the External name exactly as written, and `regia.act` runs the Java class of that name instead of sending anything (chapter 37).
+- One **without dots** is a **game Action**, compiled to `regia.act(N, A)`, which sends it to the game through the agent's body and waits for the game's reply (chapter 37). `A` uses the Regia name; `N`, the External name, is a string that travels in the message.
 
 ## The clock
 
-- The Jason Target measures Durations with the **wall clock**: `WAIT` maps to `.wait` in milliseconds (chapter 12). 2.0 has no setting to choose a clock.
-- Cost: Agents keep waiting while the game is paused, and ignore the game's time scale. A game clock (VEsNA sending a generated wake-up Event after some game time) is post-2.0.
+- The Jason Target measures Durations with the **wall clock, stopped while the game is paused**: `WAIT` maps to `regia.wait` in milliseconds (chapter 12), and the game's `regia_pause` and `regia_resume` stop and start the run's clock (chapter 37). 2.0 has no setting to choose a clock.
+- Cost: Durations ignore the game's time scale. A clock that follows it (VEsNA sending a generated wake-up Cue after some game time) is post-2.0.
 
 ## Transpiler checks
 
-**Errors**
-
-- `R2801` A Fact or Event External name that isn't a Jason atom, in a Jason Build.
+None of its own. `R2801` (a Fact or Cue External name that isn't a Jason atom) is no longer given: External names never reach ASL as beliefs.
 
 The names-related checks are in chapter 10 (`R1007`, `R1008`).
+
+## Trace entries
+
+**Errors**
+
+- `T2802` The game link couldn't connect to the game at start. The entry names the address and port. The run starts anyway (*The game link*).
+- `T2803` The game link's connection was lost mid-run. The entry names the address and port. The run goes on.
+
+**Warnings**
+
+- `T2801` A `regia_cue` or `regia_fact` whose name matches no `regia_game` entry of the receiving Agent. The entry names the message's name and the receiver. Nothing else happens. A Director never writes it: the game link delivers a Director only what its `regia_hears` lists, and drops a message no attached Director hears with no entry (chapter 30).
+
+## Regia 1.5
+
+In 1.5 (ADR 0025), except the `regia_quota` belief, which is later with Quota Triggers. `regia_kind` is kept for what it carries at start (chapter 36), and creating joiners from it is later.
+
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 
 ## Not decided here
 

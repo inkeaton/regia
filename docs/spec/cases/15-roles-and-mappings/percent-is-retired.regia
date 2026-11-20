@@ -1,0 +1,16 @@
+#! case: n PERCENT OF Role is a retired spelling of n% OF Role
+#! rule: R1516
+
+CUE food_served
+ACTION brawl
+
+PLAYBOOK Brawling:
+    WHEN food_served: DO brawl.
+
+PLOT Banquet:
+    ROLE Guest.
+    PHASE reception INITIAL.
+
+    DURING reception:
+        WHEN food_served:
+            ASSIGN Brawling TO 30 PERCENT OF Guest.    #! error R1516

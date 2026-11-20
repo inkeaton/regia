@@ -1,0 +1,20 @@
+IMPORT "../vocabulary".
+IMPORT "../playbooks/scheming".
+IMPORT "../playbooks/keeping_watch".
+
+#@desc: Someone at the table means harm. No Phases: it runs until the poison is drunk, the Poisoner is caught, or the feast ends.
+PLOT Poisoning:
+    ROLE Poisoner STARTS WITH:
+        ASSIGN Scheming.
+    ROLE Watchman STARTS WITH:
+        ASSIGN Keeping_watch.                # a second Giving: the Watchmen's Signals reach this Director too
+
+    DURING PLOT:
+        WHEN culprit_seized(?who) FROM Watchman:
+            END PLOT WITH poisoner_caught(?who).
+
+        WHEN poison_drunk:                   # a game Cue, straight to the Director
+            END PLOT WITH poison_taken.
+
+        WHEN EXITED BY PARENT:               # the feast ended first
+            DO discard_cup.

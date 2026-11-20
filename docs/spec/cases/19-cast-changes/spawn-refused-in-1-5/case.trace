@@ -1,0 +1,5 @@
+> start
+> join noble noble_7
+director:Banquet: WARNING T1902 noble_7 refused: joining is Regia 2.0
+> cue noble_1 toast_raised
+noble_1: DO cheer

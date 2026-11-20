@@ -1,0 +1,19 @@
+IMPORT "../vocabulary".
+
+#@desc: A Guard's duty. A knight holds it next to NobleSocializing, and a duel's winner is given it too.
+PLAYBOOK Keeping_watch:
+
+    WHEN on_duty LEARNED FROM DIRECTOR:
+        DO salute.
+
+    WHEN scandal(?) FROM ?speaker:
+        GIVEN on_duty AND (NOT seat(?) OR NOT hungry):   # standing guard, or seated and not thinking of food
+            DO watch(?speaker).
+        # no ELSE: a hungry knight at the table leaves gossip to NobleSocializing
+
+    WHEN saw_pouring(?who):
+        DO seize(?who).
+        SIGNAL culprit_seized(?who).         # reaches every Director that gave us this Playbook
+
+    WHEN UNASSIGNED:
+        FORGET on_duty.                      # the last Giving is gone, and the duty with it

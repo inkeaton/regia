@@ -1,7 +1,7 @@
 #! case: a doc comment set apart from the declaration below it by a blank line is detached
 #! rule: R0203
 
-EVENT insult_heard
+CUE insult_heard
 ACTION complain
 
 #@desc: how guests react to insults

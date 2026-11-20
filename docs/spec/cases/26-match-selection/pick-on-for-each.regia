@@ -2,9 +2,9 @@
 #! rule: R2603
 
 FACT hates(person)
-EVENT party_over
+CUE party_over
 
 PLAYBOOK Guest:
     WHEN party_over:
-        FOR EACH hates(?x), AT RANDOM:   #! error R2603
+        FOR EACH hates(?x), RANDOMLY:   #! error R2603
             FORGET hates(?x).

@@ -4,6 +4,6 @@
 ACTION wave
 
 PLOT Banquet:
-    ROLE Guest STARTS WITH:
+    ROLE Guest:
         DO wave.                         #! error R1602
     PHASE reception INITIAL.

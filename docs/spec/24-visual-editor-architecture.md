@@ -8,7 +8,7 @@ How the Visual Editor is put together around the WASM Workspace: where the platf
 - The graph is laid out with elkjs, top to bottom (chapter 25).
 - The look follows **Material 3**, through its design tokens rather than a component library (below).
 - The Workspace runs in a **Web Worker**. The UI reaches it through an async client (Comlink). The client also debounces rebuilds and drops results that a newer change has made stale, so typing never waits on a Model rebuild.
-- A desktop wrapper (Tauri) is not part of 2.0. It could be added later as one more project store backend (below), without changing anything else.
+- A desktop wrapper (Tauri) is not part of 2.0. It is the planned fix for browsers that can't open a disk folder (below), added past 2.0 as one more project store backend, without changing anything else.
 
 ## Design system: Material 3
 
@@ -30,7 +30,7 @@ A **Project** is a folder of files. Every file access goes through one small **p
 | Browser project | The Origin Private File System (OPFS). | All, including Firefox and Safari |
 
 - Both backends can **import and export a Project as a `.zip`**. That's how a browser project moves to disk or into git.
-- The editor offers only the backends the browser supports. Where "Open folder" is missing, a note explains why.
+- The editor offers only the backends the browser supports. Where "Open folder" is missing, a note explains why: only Chromium lets a web page open a disk folder, so in Firefox and Safari the Project is a copy that moves in and out as a zip, apart from the copy in git. The note names the command line (chapter 23), which works on the git copy, and the desktop wrapper planned past 2.0. This limit is kept for 2.0.
 - There are **no import roots or search paths**: imports stay relative to the importing file (chapter 10). The Project only bounds which files the Workspace holds. Roots can be added later without breaking anything, since a relative path stays valid.
 
 ### What the Workspace is given
@@ -58,21 +58,30 @@ A **Project** is a folder of files. Every file access goes through one small **p
 ```
 
 - **Text tabs, one per open file.**
-- The **graph pane** follows the active `.regia` tab and has **its own tabs, one per Plot** in that file. A file with no Plot shows an empty pane with a short note.
+- The **graph pane** follows the active `.regia` tab and has **its own tabs, one per Plot** in that file. A file with no Plot shows only the side panel's Docs page (chapter 25).
 - `.regin` tabs show no graph.
+
+### The Active Entry
+
+A `.regia` file may be reached by several `.regin` Entries, each its own Program (chapter 21), with different Diagnostics, name origins and Interfaces. The editor shows one of them, the **Active Entry**:
+
+- The status bar names it. Markers, semantic tokens, the graph's name origins, the Docs page and the Interfaces all come from its Program (`setActiveEntry`, chapter 23).
+- It defaults to the last `.regin` the designer opened or built that reaches the active file. When the active file is outside the Active Entry's Program, it switches to such a `.regin`.
+- When other Entries reach the file, the status bar says so ("also in 2 other Entries") and offers to switch.
+- A `.regia` file that no `.regin` reaches is checked alone, with no Root Plot (chapter 21).
 
 ### Monaco models and undo
 
 - When a Project loads, every `.regia` and `.regin` file gets its own **Monaco model**. Opening a tab only shows that model.
 - Every edit, typed or from the core, lands in a model through `pushEditOperations` (chapter 22) and is autosaved like typing. This includes edits to files that aren't open: graph edits that add a declaration to another file, and `moveFile` (below).
-- **Undo is per file**, as in Monaco. After an edit that touches several files, the editor shows a toast with one "Undo all" for that operation.
+- **Undo follows the operation, not the file.** The editor keeps its own undo stack across Monaco models. A typed edit is undone in its file, as in Monaco. An edit that touched several files (a rename, a new declaration in another file, `moveFile`) is undone **whole**, by undo in any of those files, as long as it is still the latest edit in each of them. If a file has been edited since, undo there takes back that file's part only, and a notice names the files that keep the edit. There is no "Undo all" toast.
 
 ## Highlighting
 
 Highlighting has two layers:
 
-1. **A Monarch grammar** gives instant lexical colours: keywords, plain comments including nested `#[ ]#`, doc comments, Instancing comments, strings, numbers and `?variables`. It knows nothing about meaning, so it can't drift from the parser on what a name means.
-2. **Semantic tokens** from the Workspace (`semanticTokens(path)`, chapter 23) colour each name by what it resolves to after a rebuild: Event, Fact, Goal, Playbook, Role, Plot. That shows a designer whether a name is the thing they meant.
+1. **A Monarch grammar** gives instant lexical colours: keywords, plain comments including nested `#[ ]#`, doc comments, strings, numbers and `?variables`. It knows nothing about meaning, so it can't drift from the parser on what a name means.
+2. **Semantic tokens** from the Workspace (`semanticTokens(path)`, chapter 23) colour each name by what it resolves to after a rebuild: Cue, Fact, Goal, Playbook, Role, Plot. That shows a designer whether a name is the thing they meant.
 
 There is no tree-sitter grammar (ADR 0010).
 
@@ -86,12 +95,14 @@ Renaming or moving a file breaks every `IMPORT` that points at it, and the moved
 
 ## Instancing and builds
 
-- `.regin` files and `#%` Instancing comments are **edited as text** in 2.0, with the same highlighting and diagnostics as `.regia` files. A form editor for Agents, counts and Propensities comes later.
-- The **Build menu** lists every Entry the Workspace checks: every `.regin` file, plus every `.regia` file that no `.regin` reaches (chapter 23). A `.regia` file that some `.regin` reaches isn't listed, because building it alone would ignore that `.regin`'s overrides (chapter 21). Each `.regin` tab also has a Build button.
+- `.regin` files are **edited as text** in 2.0, with the same highlighting and diagnostics as `.regia` files. A form editor for Agents, counts and Propensities comes later.
+- The **Build menu** lists every `.regin` file: only a `.regin` Entry names a Root Plot and can be built (chapter 21). Each `.regin` tab also has a Build button. A `.regia` file that no `.regin` reaches is still checked as its own Entry, but isn't listed.
+- The **Target** is a project setting, `jason` by default, as `--target` is on the command line (chapter 23).
 - A build runs only with **zero errors** (chapter 23). Otherwise the editor shows the diagnostics and builds nothing.
 - **Output** is the `(path, text)` list from `build(entry)`:
-  - **Disk folder:** written to `build/<entry name>/` in the Project. The folder is cleared first, so files for renamed or removed Playbooks don't linger. "Download as zip" is offered too.
+  - **Disk folder:** written to the Build folder, `build/<Entry path>/` in the Project (chapter 23). Everything in it except `traces/` is replaced, so files for renamed or removed Playbooks don't linger and past Traces are kept. "Download as zip" is offered too.
   - **Browser project:** downloaded as `<entry name>.zip`.
+- An allowed warning (`#@allow`, chapter 02) is shown faded, and every warning offers the quick fix *Allow here*, which adds `#@allow: <code>` to the innermost declaration holding it.
 
 ## Packages
 
@@ -124,6 +135,10 @@ A VS Code extension that shows the graph next to VS Code's own text editor is a 
 - **The graph moves as is.** In VS Code, `regia-graph` runs in a webview and its host messages travel through `postMessage`.
 - **Parts that are rewritten, on purpose:**
   - **Lexical highlighting:** VS Code uses a TextMate grammar instead of Monarch. Sharing one TextMate grammar now would need an Oniguruma loader in the web app, so the duplication is accepted. Semantic tokens are shared.
-  - **Applying edits:** VS Code applies a workspace edit with its own undo across files, and file renames reach `moveFile` through LSP's `workspace/willRenameFiles`. The "Undo all" toast is web-only.
+  - **Applying edits:** VS Code applies a workspace edit with its own undo across files, and file renames reach `moveFile` through LSP's `workspace/willRenameFiles`. The cross-model undo stack is web-only.
   - **Files:** the VS Code workspace replaces the project store.
 - Whether the language server is a native Rust binary or the WASM build running in Node is left to that effort. Both work because the core does no I/O.
+
+## Regia 1.5
+
+All of this chapter is in 1.5 (ADR 0025). Revised in the ticket *The Visual Editor* (`.scratch/regia-revision/issues/18-visual-editor.md`).

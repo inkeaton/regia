@@ -1,0 +1,10 @@
+#! case: the Propensities of a Label are listed with a comma, not AND
+#! rule: R1412
+
+TRAIT bravery
+MOOD sympathy
+CUE insult_heard
+ACTION challenge
+
+PLAYBOOK Noble:
+    WHEN insult_heard, SUITS sympathy AT -0.5 AND bravery AT 0.8: DO challenge.     #! error R1412

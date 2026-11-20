@@ -1,7 +1,7 @@
 #! case: a name declared in a file this one doesn't reach is not declared
 #! rule: R1004
 
-EVENT insult_heard(speaker)
+CUE insult_heard(speaker)
 ACTION punch(target)
 
 PLAYBOOK Brawler:

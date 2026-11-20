@@ -1,7 +1,7 @@
 #! case: a Duration always has its unit word
 #! rule: R1201
 
-EVENT bored
+CUE bored
 
 PLAYBOOK Idler:
     WHEN bored:

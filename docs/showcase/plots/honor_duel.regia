@@ -1,0 +1,73 @@
+IMPORT "../vocabulary".
+IMPORT "../playbooks/duelling".
+IMPORT "../playbooks/wagering".
+
+#@desc: One duel over one insult. The offender is the Defender; it also tells this duel from the others.
+PLOT HonorDuel(offender):
+    ROLE Challenger STARTS WITH:
+        ASSIGN Duelling, MAPPING Defender TO opponent.
+    ROLE Defender STARTS WITH:
+        ASSIGN Duelling, MAPPING Challenger TO opponent.
+    ROLE Spectator.
+
+    PHASE challenge INITIAL.
+    #@desc: Bets are taken, then the biggest backer drops the handkerchief.
+    PHASE betting.
+    PHASE fighting.
+
+    FACT wager(person, stake).
+
+    PRECEDENCE:
+        PARENT OVER SELF ON scandal.         # gossip and guard duty come before hushing
+
+    DURING challenge:
+        WHEN ENTERED:
+            ASK Challenger TO issue_challenge.
+
+        WHEN duel_accepted FROM Defender:
+            TRANSITION TO betting.
+
+    DURING betting:
+        WHEN ENTERED:
+            TELL Spectator duel_on.
+
+        WHEN wagered(?stake) FROM Spectator ?who:
+            LEARN wager(?who, ?stake).
+
+        AFTER 20 SECONDS:                    # betting closes
+            GIVEN wager(?backer, ?stake), HIGHEST ?stake, AT RANDOM:
+                ASK ?backer TO give_signal.
+            ELSE:
+                TRANSITION TO fighting.      # nobody bet: no handkerchief to wait for
+
+        AFTER 1 MINUTE:                      # the handkerchief never fell
+            TRANSITION TO fighting.
+
+        WHEN handkerchief_dropped FROM Spectator:
+            TRANSITION TO fighting.
+
+    DURING fighting:
+        WHEN ENTERED:
+            ASK Challenger TO fight.
+            ASK Defender TO fight.
+
+        AFTER 2 MINUTES:                     # nobody yielded
+            END PLOT WITH duel_abandoned.
+
+        WHEN duel_won FROM ?winner:
+            END PLOT WITH duel_settled(?winner).
+
+    DURING PLOT:
+        WHEN ENTERED:
+            ASSIGN Wagering TO Spectator.
+
+        WHEN Challenger EMPTIED:
+            END PLOT WITH duel_abandoned.
+        WHEN Defender EMPTIED:
+            END PLOT WITH duel_abandoned.
+
+        WHEN Spectator ?who LEFT:
+            FOR EACH wager(?who, ?stake): FORGET wager(?who, ?stake).
+
+        WHEN EXITED BY PARENT:               # the banquet called the duel off
+            DO ring_bell.
