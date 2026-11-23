@@ -31,12 +31,11 @@ Each component has its own README with install and run instructions:
 
 ### 1. Python Environment (shared by `language/` and `qscores/`)
 
+Dependencies are declared in a [uv](https://docs.astral.sh/uv/) workspace (`pyproject.toml`, `uv.lock`, `.python-version`). From the repository root:
+
 ```bash
-python3 -m venv .venv
+uv sync --all-packages --all-extras   # creates .venv: Python 3.14, the transpiler with every extra, qscores' dependencies
 source .venv/bin/activate
-pip install -e language/              # transpiler core
-pip install -e language/[dev]         # + test dependencies
-pip install -e language/[benchmarks]  # + benchmark dependencies
 ```
 
 ### 2. Compile a Regia File

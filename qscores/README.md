@@ -4,14 +4,16 @@ A Python pipeline that computes every evaluation metric reported in the research
 
 ## Prerequisites
 
-- **Python ≥ 3.11**
+- **[uv](https://docs.astral.sh/uv/)**
 - The shared virtual environment (`.venv` at the repository root)
 
 ### Python Dependencies
 
+The dependencies (numpy, pandas, scipy, openpyxl, matplotlib, tabulate) are declared in `qscores/pyproject.toml` and locked in the root `uv.lock`. pandas is held below 3.1, which changes the last digit of a float in `respondents.csv`. From the repository root:
+
 ```bash
+uv sync --package regia-qscores
 source .venv/bin/activate
-pip install numpy pandas scipy openpyxl matplotlib
 ```
 
 ## Input Data

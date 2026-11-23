@@ -5,29 +5,27 @@ It implements the full pipeline: preprocessing, parsing (via a Lark grammar), AS
 
 ## Prerequisites
 
-- **Python ≥ 3.11**
+- **[uv](https://docs.astral.sh/uv/)** (it installs the pinned Python itself; the package supports Python ≥ 3.11)
 
 ## Installation
 
-From the repository root:
+The transpiler is a member of the uv workspace at the repository root. From the repository root:
 
 ```bash
-python3 -m venv .venv
+uv sync --package regia                  # the regia CLI and its core dependencies (click, lark)
+uv sync --all-packages --all-extras      # everything, including the extras below
 source .venv/bin/activate
-pip install -e language/
 ```
-
-This installs the `regia` CLI and all runtime dependencies (`click`, `lark`, `fastapi`, `pydantic`, `uvicorn`).
 
 ### Optional Dependencies
 
-```bash
-# Test suite (pytest + syrupy for snapshot testing)
-pip install -e language/[dev]
+| Extra | Packages | Needed for |
+|---|---|---|
+| `server` | fastapi, pydantic, uvicorn | the editor's API server (`server.py`) |
+| `benchmarks` | pandas, numpy, scipy, matplotlib, psutil | the benchmark suite and its plots |
+| `dev` | pytest, syrupy | the test suite |
 
-# Benchmark visualisation (pandas, matplotlib)
-pip install -e language/[benchmarks]
-```
+Install a single extra with `uv sync --package regia --extra <name>`. Versions are locked in `uv.lock`.
 
 ## CLI Usage
 

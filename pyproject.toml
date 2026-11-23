@@ -1,0 +1,7 @@
+# uv workspace for the Python parts of the artifact: the transpiler
+# (language/) and the questionnaire pipeline (qscores/) share one lockfile.
+#
+#   uv sync --all-packages --all-extras
+
+[tool.uv.workspace]
+members = ["language", "qscores"]

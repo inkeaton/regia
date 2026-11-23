@@ -22,10 +22,12 @@ The suite is operated via a standard command-line interface.
 
 ### Dependencies
 
-To use the visualization tools (`plot` command), you need to install the optional dependencies:
+The suite needs the transpiler's `benchmarks` extra. From the repository root:
 
 ```bash
-pip install -e .[benchmarks]
+uv sync --package regia --extra benchmarks
+source .venv/bin/activate
+cd language
 ```
 
 ### List Experiments
