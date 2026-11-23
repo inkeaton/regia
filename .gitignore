@@ -10,3 +10,4 @@ language/automated_tests/__pycache__/
 language/benchmarks/__pycache__/
 # Claude Code agent worktrees
 .claude/worktrees/
+docs/.obsidian/
