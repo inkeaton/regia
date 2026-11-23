@@ -11,3 +11,5 @@ language/benchmarks/__pycache__/
 # Claude Code agent worktrees
 .claude/worktrees/
 docs/.obsidian/
+# Paper artifact: branch 1.0, checked out here as a git worktree
+/1.0/
