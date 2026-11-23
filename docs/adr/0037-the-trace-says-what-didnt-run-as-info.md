@@ -1,6 +1,6 @@
 # The Trace says what didn't run, as info
 
-The Trace recorded what a run did and nothing else. A Signal with no Plan, a Quota met with no candidate, a Plan that lost to another Playbook, and a Mood shifted by a Label left no entry, or a warning only for some of them. "Why did nothing happen" was the question most often asked of a run (Review List, N12). Two Blocks with the same Trigger wrote the same `PLAN` line, and a Director had a different name depending on what else was running and on where you looked.
+The Trace recorded what a run did and nothing else. A Signal with no Plan, a Quota met with no candidate, a Plan that lost to another Playbook, and a Mood shifted by a Label left no entry, or a warning only for some of them. "Why did nothing happen" was the question most often asked of a run (the old guide's Review List, N12, at commit `c30d1d4`). Two Blocks with the same Trigger wrote the same `PLAN` line, and a Director had a different name depending on what else was running and on where you looked.
 
 We decided that what arrives with a Sender, or a count that is reached, and finds no Plan writes an `unheard` entry at level **info**, with a Trace code. `T3801` and `T3802` (a Signal or a Subplot's ending with no Plan), which were warnings, become `unheard` entries. A `plan` entry with rivals says how it won and over whom. It names its owner (Playbook, Phase or `DURING PLOT`) and its `GIVEN` or `ELSE`. Mood changes and Quota counts get entries of their own. A Subplot's Director is always numbered.
 

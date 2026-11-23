@@ -1,6 +1,6 @@
 # The showcase: a royal banquet in Regia 1.5
 
-Every example in the guides comes from this one world. This file is its outline: what the world is, who is in it, and where each part of Regia 1.5 has its place. The Program sits beside this file:
+Every example in the guides comes from this one world, starting with the [guide to Regia 1.5](../guide/README.md). This file is its outline: what the world is, who is in it, and where each part of Regia 1.5 has its place. The Program sits beside this file:
 
 | File | Holds |
 |---|---|
@@ -13,7 +13,7 @@ The walkthrough follows four runs, each a test cast and a behaviour case in `run
 
 The Jason reference Build is `jason/banquet/`: the Build of `banquet.regin`, written by hand and laid out as chapter 28's Build folder. The guide that goes from each construct to its ASL is `jason/README.md`, and the coverage table below will gain a **Jason** column linking each row to its section. Decided in *The Jason showcase's shape* (`.scratch/showcase-1-5/issues/06-jason-showcase-shape.md`).
 
-The Program uses only Regia 1.5 (ADR 0025). Where a 1.5 pattern stands in for a 2.0 construct, the guide adds an "In 2.0" note. The outline is derived from the spec, never the other way round: where they disagree, the spec wins and this file is fixed. It replaces the 2.0 showcase in `docs/guide/showcase/`, which is kept as it was.
+The Program uses only Regia 1.5 (ADR 0025). Where a 1.5 pattern stands in for a 2.0 construct, the guide adds an "In 2.0" note. The outline is derived from the spec, never the other way round: where they disagree, the spec wins and this file is fixed. It replaces the 2.0 showcase that lived in `docs/guide/showcase/` until commit `c30d1d4`.
 
 ## The world
 
@@ -121,7 +121,7 @@ Guide: [Syntax](../guide/02-syntax.md)
 
 ### 03 Parameters and placeholders
 
-Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
+Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md), [Placeholders and Expressions](../guide/05-placeholders-and-expressions.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -138,6 +138,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 
 ### 04 Numbers and expressions
 
+Guide: [Placeholders and Expressions](../guide/05-placeholders-and-expressions.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | Numbers | whole and decimal | `banquet.regin` Propensity values; Labels |
@@ -149,7 +151,7 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 
 ### 05 Goals and triggers
 
-Guide: [Plans](../guide/04-plans.md)
+Guide: [The logic of Regia](../guide/01-the-logic-of-regia.md), [Plans](../guide/04-plans.md), [Goals and Failure](../guide/09-goals-and-failure.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -201,6 +203,8 @@ Guide: [Messages](../guide/10-messages.md)
 
 ### 08 Basic actions
 
+Guide: [Actions and time](../guide/07-actions-and-time.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | Facts; Updating a Fact | `LEARN`, `FORGET`, `UPDATE` | `pb/wagering` `UPDATE purse(…)`; `pb/duelling` |
@@ -212,6 +216,8 @@ Guide: [Messages](../guide/10-messages.md)
 | Custom Actions | waiting game Action; dotted Target Action; `, WITHOUT WAITING`; a called-off Action | `pb/courtesy` `walk_to`; `pb/hosting` `play_fanfare`; `pb/scheming` `pour_poison`; `pb/dining` `eat` when dinner is dropped |
 
 ### 09 Random choice
+
+Guide: [Randomness](../guide/08-randomness.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -234,6 +240,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 
 ### 11 Failure
 
+Guide: [Goals and Failure](../guide/09-goals-and-failure.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | When a Plan fails; What it leaves behind | refused Action | `pb/serving` `pick_up` refused |
@@ -248,7 +256,7 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 
 ### 12 Time
 
-Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
+Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md), [Actions and time](../guide/07-actions-and-time.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -258,6 +266,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 | `AFTER` | one and several in a Block | `pl/royal_banquet` `reception`; `pl/honor_duel` `betting` (20 s and 1 min) and `fighting` (2 min, `duel_abandoned`) |
 
 ### 13 Plan selection
+
+Guide: [Precedence and Labels](../guide/16-precedence-and-labels.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -270,6 +280,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 
 ### 14 Labels
 
+Guide: [Precedence and Labels](../guide/16-precedence-and-labels.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | Propensities; Writing Labels; The Labels | Traits, Moods, `SUITS`, `SHIFTS` | `voc`; `pb/noble_socializing`; `pb/duelling`; `pb/dining` |
@@ -278,6 +290,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 | Targets without Labels | | — |
 
 ### 15 Roles and mappings
+
+Guide: [The logic of Regia](../guide/01-the-logic-of-regia.md), [Playbooks and Roles](../guide/11-playbooks-and-roles.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -297,6 +311,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 
 ### 16 Role setup
 
+Guide: [The logic of Regia](../guide/01-the-logic-of-regia.md), [Plots and Directors](../guide/12-plots-and-directors.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | A Role's Block; What it means; Sender | `ROLE r:` | `pl/royal_banquet` Role setups; `TO take_seat, FROM DIRECTOR` in `pb/courtesy` |
@@ -307,6 +323,8 @@ Guide: [Vocabulary and files](../guide/03-vocabulary-and-files.md)
 | When the Agent stops playing the Role | | — |
 
 ### 17 Subplots
+
+Guide: [Subplots and Stagings](../guide/13-subplots-and-stagings.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -328,6 +346,8 @@ All of it: 2.0. Stand-in: the hand counts of `arrival` and `feast`, with an "In 
 
 ### 19 Cast changes
 
+Guide: [When an Agent leaves](../guide/14-when-an-agent-leaves.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | Who changes the Cast | | — |
@@ -338,6 +358,8 @@ All of it: 2.0. Stand-in: the hand counts of `arrival` and `feast`, with an "In 
 | Order when leaving; An empty Role; What the Agents hear | | — |
 
 ### 20 Directors
+
+Guide: [The logic of Regia](../guide/01-the-logic-of-regia.md), [Plots and Directors](../guide/12-plots-and-directors.md)
 
 | Section | Construct | Place |
 |---|---|---|
@@ -355,6 +377,8 @@ All of it: 2.0. Stand-in: the hand counts of `arrival` and `feast`, with an "In 
 
 ### 21 Instancing
 
+Guide: [The logic of Regia](../guide/01-the-logic-of-regia.md), [Randomness](../guide/08-randomness.md), [Instancing](../guide/17-instancing.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | Who says what; Instancing files; Overriding | `.regin`, layering | `banquet.regin`; layering in the test casts |
@@ -369,6 +393,8 @@ All of it: 2.0. Stand-in: the hand counts of `arrival` and `feast`, with an "In 
 
 ### 26 Match selection
 
+Guide: [Matching](../guide/06-matching.md)
+
 | Section | Construct | Place |
 |---|---|---|
 | Matches; The default | | — |
@@ -379,6 +405,8 @@ All of it: 2.0. Stand-in: the hand counts of `arrival` and `feast`, with an "In 
 | `COUNT` | | `pl/royal_banquet` hand counts; `pb/noble_socializing` `?grudges` |
 
 ### 38 Interfaces
+
+Guide: [Interfaces](../guide/15-interfaces.md)
 
 | Section | Construct | Place |
 |---|---|---|

@@ -96,7 +96,7 @@ The last can't be caught at build. `grudge(person, size)` promises a person only
 - A recipient Placeholder not filled, or not certainly filled → `R0304`, `R0305`
 - A Role the Playbook or Plot doesn't declare → `R1502`
 - A count on `EVERYONE`, `EXCEPT` in a Playbook → `R1506`, `R1510`
-- A count asking for more Agents than the Role has left → `T1502` (Trace warning); a negative count → `T1503`
+- A count asking for more Agents than the Role has left → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
 - A recipient that has left the Program → `T1901` (Trace warning)
 - A recipient that isn't an Agent at runtime → `T0701` (Trace, Failure)
 

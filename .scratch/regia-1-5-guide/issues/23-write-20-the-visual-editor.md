@@ -1,8 +1,8 @@
 # Write guide chapter 20, The Visual Editor
 
 Type: task
-Status: open
-Assignee:
+Status: closed
+Assignee: Edoardo Vassallo (claude session)
 Blocked by: 05
 
 ## Question
@@ -24,3 +24,14 @@ Then:
 - anything the spec gets wrong goes to `findings.md`.
 
 Done when the chapter is in `docs/guide/` and the checks above pass.
+
+## Resolution
+
+Written: [`docs/guide/20-the-visual-editor.md`](../../../docs/guide/20-the-visual-editor.md).
+
+- Sections: a Project; the window (Active Entry, undo); highlighting and quick fixes; building; the Phase map with timeouts; layers (with `DURING PLOT` in some Phases, and what the map leaves out); the Nested Plans view (`HonorDuel`); names from other files; the Inspector (with the Interface check); the Docs page (`Courtesy`); editing from the graph (the text as source of truth, operations, what an edit writes, broken text); adding a transition (a new Cue landing in `vocabulary.regia`'s Signals section); renaming (`HonorDuel` → `Duel`, a throwaway name-order flip); deleting and Extents (deleting `reception`); how it is built (packages, host interface, graph view, Material 3, VS Code).
+- One "In 2.0" note, against the ticket's "none expected": the picker's `FROM GAME`, `OR` and quantity field.
+- Throwaways: `short_evening.regin` (a second Entry), the transitive `↗↗` mark, the Extent rules' `Guest` Playbook (spec 22), the banquet after a drop.
+- No `Guide:` line: the showcase README has no *Coverage* heading for chapters 22, 24 or 25.
+- Snippets checked verbatim against the showcase; no retired spellings; humanizer pass done.
+- Eleven non-blocking findings. The largest: chapter 25 predates `AFTER`; the guide draws `AFTER` Plans as dotted edges labelled with their Trigger.

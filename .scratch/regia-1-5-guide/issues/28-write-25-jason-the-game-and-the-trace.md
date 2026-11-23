@@ -1,8 +1,8 @@
 # Write guide chapter 25, Jason: the game and the Trace
 
 Type: task
-Status: open
-Assignee:
+Status: closed
+Assignee: Edoardo Vassallo (claude session)
 Blocked by: 05
 
 ## Question
@@ -24,3 +24,14 @@ Then:
 - anything the spec gets wrong goes to `findings.md`.
 
 Done when the chapter is in `docs/guide/` and the checks above pass.
+
+## Resolution
+
+`docs/guide/25-jason-the-game-and-the-trace.md` written (2026-11-23).
+
+- Shape: the envelope; a game Action (`take_seat`'s `walk_to`) with its replies, calling off (`eat` under `DROP have_dinner`), the Target's own code (`play_fanfare`) and its two Trace entries; game messages in an Agent (`seat`, `saw_pouring`) and on the game link (`poison_drunk`), the starting state, a Director's Actions (`Poisoning`'s `discard_cup`); pausing; the end of the story (the banquet's bare `END PLOT`, `outcome: null`); the Trace writer with a who-writes-what table and Staging numbers; the source map for `TO take_seat`; file and console; starting a run and the one random source; test mode (`RunCase`, steps as messages, Action rules, the state in a case, settling).
+- The banquet's own `regia_state` asks for no Facts (no Plot of the showcase names a game Fact), so a Fact in the reply is shown as a throwaway `in_stock(pie)`. The source map's ASL line numbers are made up and say so; its `.regia` locations are the showcase's.
+- No "In 2.0" notes: `regia_join` in 1.5 is a bullet pointing at *Jason: the Build*.
+- No `Guide:` line: the showcase README has no *Coverage* heading for chapter 35 or 37.
+- Re-read against chapters 35, 37, 30, 34 and 23; no retired spellings; humanizer pass done.
+- Two non-blocking findings: chapter 35's writer table has no `time` row and says `REMEMBER`; no `agent` is given for the game link's own entries (`CLOCK …`, `T2802`/`T2803`).

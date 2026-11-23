@@ -7,7 +7,7 @@ We decided that the Vocabulary item is a **Cue**, declared with `CUE` (`GAME CUE
 ## Considered options
 
 - **Keep `EVENT` and find another word for the wide idea** (*Trigger kind* alone, or *happening*): the Target and the BDI literature already say *event* for the wide idea, so every Jason chapter would keep translating.
-- **Accept `EVENT` as a synonym of `CUE`**: two spellings of one declaration is what *A few words do many jobs* (Review List, D1) asks to avoid.
+- **Accept `EVENT` as a synonym of `CUE`**: two spellings of one declaration is what *A few words do many jobs* (the old guide's Review List, D1, at commit `c30d1d4`) asks to avoid.
 - **Another word for the item** (*Percept*, *Happening*, *Stimulus*): a percept also covers Facts from the game, and the others don't fit the theatre vocabulary.
 
 ## Consequences

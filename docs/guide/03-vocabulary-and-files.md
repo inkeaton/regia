@@ -295,7 +295,7 @@ A Program starts from one Entry file and is every file reachable from it through
 
 ### A name that came through another file
 
-Because imports are transitive, a file can use a name that reaches it only through another file. `honor_duel.regia` doesn't need its own `IMPORT "../vocabulary"`, since `Duelling` and `Wagering` both import the vocabulary. Suppose it left that line out, and both Playbook files were later changed to declare what they use themselves, dropping their import. The errors show up in `honor_duel.regia`, a file nobody edited, so the Transpiler says where each name used to come from:
+Because imports are transitive, a file can use a name that reaches it only through another file. `honor_duel.regia` doesn't need its own `IMPORT "../vocabulary"`, since `Duelling` and `Wagering` both import `vocabulary.regia`. Suppose it left that line out, and both Playbook files were later changed to declare what they use themselves, dropping their import. The errors show up in `honor_duel.regia`, a file nobody edited, so the Transpiler says where each name used to come from:
 
 ```
 error: `scandal` is not declared

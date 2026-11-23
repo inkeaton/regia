@@ -1,8 +1,8 @@
 # Write the guide's README, the introduction
 
 Type: task
-Status: open
-Assignee:
+Status: closed
+Assignee: Edoardo Vassallo (claude session)
 Blocked by: 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
 
 ## Question
@@ -23,3 +23,13 @@ Then:
 - anything the spec gets wrong goes to `findings.md`.
 
 Done when the chapter is in `docs/guide/` and the checks above pass.
+
+## Resolution
+
+Written: [`docs/guide/README.md`](../../../docs/guide/README.md), resolved on 2026-11-23.
+
+- Sections: *What Regia is* (the `take_seat` Plans from `courtesy.regia` and `arrival` from `royal_banquet.regia`), *From a Program to a running game* (pipeline mermaid with the Visual Editor beside it), *Regia 1.5* (the four left-out systems, each with its showcase stand-in and the chapters that carry its "In 2.0" note; one sample note; `R0109` and `T1902` in *Checks*), *The banquet* (`banquet.regin`'s opening; how snippets and throwaway variations read), *How a chapter reads*, *The chapters* (the five parts as tables of chapter, spec chapters and coverage, with the outline's reading-order mermaid).
+- The opening table maps each kind of file and tool to the chapter that covers it, in place of the old introduction's `#revise`/*Since 1.0* parts.
+- The showcase `README.md`'s opening now links the guide.
+- Examples re-read against chapters 05, 15, 20, 21, 23 and 27; no retired spellings; all chapter links resolve; humanizer pass done.
+- No findings.
