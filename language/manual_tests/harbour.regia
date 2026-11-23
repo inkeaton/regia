@@ -1,0 +1,145 @@
+# Vocabulary
+
+# Actions used by Playbooks
+ACTION point_to_warehouse.
+ACTION shrug.
+ACTION run_away.
+ACTION resist.
+ACTION surrender.
+
+# Actions used by the Director
+ACTION search_crates.
+ACTION ring_bell.
+ACTION lock_gates.
+
+# Events
+EVENT briefing_done.
+EVENT questioned.
+EVENT clue_found.
+EVENT dead_end.
+EVENT accuses_suspect.
+EVENT suspect_spotted.
+EVENT chased.
+EVENT suspect_cornered.
+EVENT cornered.
+EVENT suspect_lost.
+EVENT accomplice_appears.
+EVENT suspect_surrenders.
+EVENT smoke_bomb.
+EVENT guards_arrive.
+EVENT evidence_checked.
+EVENT case_closed.
+EVENT storm_hits.
+
+# Facts
+FACT saw_suspect.
+FACT armed.
+FACT has_proof.
+
+# Playbooks
+
+#@desc: A witness answers the Inspector, pointing to the warehouse if they saw the thief.
+PLAYBOOK WitnessTestimony:
+
+    WHEN questioned:
+        IF saw_suspect:
+            DO point_to_warehouse.
+            SIGNAL clue_found.
+        ELSE:
+            DO shrug.
+
+#@desc: The suspect runs when chased, and resists or surrenders when cornered.
+PLAYBOOK Fleeing:
+
+    WHEN chased:
+        DO run_away.
+
+    WHEN cornered:
+        IF armed:
+            DO resist.
+        ELSE:
+            DO surrender.
+            SIGNAL suspect_surrenders.
+
+# Plots
+
+#@desc: An inspector investigates a theft at the harbour, which ends in an arrest or an escape.
+PLOT HarbourMystery.
+
+    PHASE arrival INITIAL.
+    PHASE interviews.
+    PHASE search_warehouse.
+    PHASE accusation.
+    PHASE chase.
+    PHASE confrontation.
+    PHASE resolution.
+    PHASE escape.
+
+    ROLE Inspector.
+    ROLE Witness.
+    ROLE Suspect.
+
+    DURING PLOT:
+        WHEN storm_hits:
+            WORLD DO PRINT("A storm closes the harbour. The case goes cold.").
+            END PLOT.
+
+    DURING arrival:
+        ON ENTER:
+            WORLD DO PRINT("The Inspector arrives at the harbour.").
+        WHEN briefing_done:
+            TRANSITION TO interviews.
+
+    DURING interviews:
+        ON ENTER:
+            ASSIGN WitnessTestimony TO Witness.
+        ON EXIT:
+            UNASSIGN WitnessTestimony FROM Witness.
+        WHEN clue_found:
+            TRANSITION TO search_warehouse.
+        WHEN ROLE Inspector SIGNALS accuses_suspect:
+            TRANSITION TO accusation.
+
+    DURING search_warehouse:
+        ON ENTER:
+            Inspector DO search_crates.
+        WHEN suspect_spotted:
+            TRANSITION TO chase.
+        WHEN dead_end:
+            TRANSITION TO interviews.
+
+    DURING accusation:
+        WHEN evidence_checked:
+            IF has_proof:
+                TRANSITION TO resolution.
+            ELSE:
+                TRANSITION TO interviews.
+
+    DURING chase:
+        ON ENTER:
+            ASSIGN Fleeing TO Suspect.
+            WORLD DO ring_bell.
+        WHEN suspect_cornered:
+            TRANSITION TO confrontation.
+        WHEN suspect_lost:
+            TRANSITION TO escape.
+
+    DURING confrontation:
+        WHEN suspect_surrenders:
+            TRANSITION TO resolution.
+        WHEN accomplice_appears:
+            TRANSITION TO escape.
+
+    DURING resolution:
+        ON ENTER:
+            UNASSIGN Fleeing FROM Suspect.
+            WORLD DO PRINT("The thief is arrested.").
+        WHEN case_closed:
+            END PLOT.
+
+    DURING escape:
+        ON ENTER:
+            UNASSIGN Fleeing FROM Suspect.
+            WORLD DO PRINT("The thief slips away into the night.").
+        WHEN case_closed:
+            END PLOT.

@@ -1,0 +1,33 @@
+/* =============================================================================
+   App.module.css
+   Layout for the two-column editor shell.
+   ============================================================================= */
+
+/* The root container: a full-viewport horizontal split */
+.appShell {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ===== Left column: Code Editor panel ===== */
+.editorPanel {
+    width: 40%;
+    height: 100%;
+    background-color: var(--color-bg-editor);
+    border-right: 1px solid var(--color-divider);
+
+    /* Prevent the panel from shrinking below its content */
+    flex-shrink: 0;
+}
+
+/* ===== Right column: Graph Canvas panel ===== */
+.canvasPanel {
+    /* Takes all remaining width */
+    flex: 1;
+    height: 100%;
+    background-color: var(--color-bg-canvas);
+
+    /* Required for React Flow to position itself correctly */
+    position: relative;
+}

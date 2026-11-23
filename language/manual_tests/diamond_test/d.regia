@@ -1,0 +1,9 @@
+IMPORT "b.regia".
+IMPORT "c.regia".
+
+PLOT TestDiamond.
+    PHASE start INITIAL.
+
+    DURING start:
+        ON ENTER:
+            WORLD DO PRINT("Diamond Test").

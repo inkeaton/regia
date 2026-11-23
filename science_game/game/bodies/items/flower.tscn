@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://d3g4vjy4lrtga"]
+
+[ext_resource type="PackedScene" uid="uid://le7n3mdn6upa" path="res://bodies/items/pickup_item.tscn" id="1_ocreb"]
+[ext_resource type="Texture2D" uid="uid://dfxxj8wlcpdyq" path="res://resources/images/flower.png" id="2_35pc3"]
+
+[node name="PickupItem" unique_id=578275695 instance=ExtResource("1_ocreb")]
+item_name = "flower"
+
+[node name="Sprite2D" parent="CollisionShape2D" parent_id_path=PackedInt32Array(820798002) index="0" unique_id=549646332]
+position = Vector2(-3, 2)
+scale = Vector2(0.10254989, 0.10254989)
+texture = ExtResource("2_35pc3")

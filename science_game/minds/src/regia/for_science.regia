@@ -1,0 +1,109 @@
+IMPORT "vocabulary.regia".
+IMPORT "missing_donut.regia".
+IMPORT "cop_pb.regia".
+IMPORT "dog_pb.regia".
+IMPORT "sci_pb.regia".
+
+# --- MAIN PLOT: FOR SCIENCE ---
+PLOT ForScience.
+    PHASE flower INITIAL.
+    PHASE bone.
+    PHASE corpse.
+
+    ROLE Scientist.
+    ROLE Cop.
+    ROLE Dog.
+
+    # Global Handlers
+    DURING PLOT:
+        WHEN ROLE Scientist SIGNALS scientist_asked_flower:
+            Cop DO BELIEVE(flower_requested).
+
+        WHEN garden_door_opened:
+            WORLD DO BELIEVE(door_open).
+
+        WHEN item_in_potion:
+            Scientist DO utter("The potion violently explodes!").
+            Scientist DO trigger_game_over("Explosion").
+            END PLOT.
+
+    # Phase 1: Flower
+    DURING flower:
+        ON ENTER:
+            ASSIGN ScientistIntroPlaybook TO Scientist.
+            ASSIGN CopFlowerPlaybook TO Cop.
+            ASSIGN DogMainPlaybook TO Dog.
+            Scientist DO spawn_item("flower", "garden").
+            Dog DO start_wandering(800).
+
+        WHEN ROLE Scientist SIGNALS start_moving_to_lab:
+            Scientist DO move_to("lab").
+
+        WHEN ROLE Scientist SIGNALS reached_lab:
+            UNASSIGN ScientistIntroPlaybook FROM Scientist.
+            ASSIGN ScientistFlowerPlaybook TO Scientist.
+
+        WHEN give_flower:
+            IF door_open:
+                UNASSIGN CopFlowerPlaybook FROM Cop.
+                UNASSIGN DogMainPlaybook FROM Dog.
+                START SUBPLOT MissingDonut MAPPING Cop TO Cop, Dog TO Dog.
+                TRANSITION TO bone.
+            ELSE:
+                ASSIGN CopBonePlaybook TO Cop.
+                Dog DO BELIEVE(has_bone).
+                TRANSITION TO bone.
+
+        ON EXIT:
+            UNASSIGN ScientistFlowerPlaybook FROM Scientist.
+            UNASSIGN CopFlowerPlaybook FROM Cop.
+
+
+    # Phase 2: Bone
+    DURING bone:
+        ON ENTER:
+            ASSIGN ScientistBonePlaybook TO Scientist.
+
+        WHEN SUBPLOT MissingDonut ENDS:
+            Scientist DO BELIEVE(player_has_bone).
+            ASSIGN CopBonePlaybook TO Cop.
+            ASSIGN DogMainPlaybook TO Dog.
+
+        WHEN ROLE Dog SIGNALS bone_acquired:
+            Scientist DO BELIEVE(player_has_bone).
+
+        WHEN give_bone:
+            TRANSITION TO corpse.
+
+        ON EXIT:
+            UNASSIGN ScientistBonePlaybook FROM Scientist.
+            UNASSIGN CopBonePlaybook FROM Cop.
+            UNASSIGN DogMainPlaybook FROM Dog.
+
+
+    # Phase 3: Corpse
+    DURING corpse:
+        ON ENTER:
+            ASSIGN ScientistCorpsePlaybook TO Scientist.
+            ASSIGN CopCorpsePlaybook TO Cop.
+            ASSIGN DogMainPlaybook TO Dog.
+
+        WHEN ROLE Cop SIGNALS player_arrested:
+            Cop DO trigger_game_over("Arrested by Cop").
+            END PLOT.
+
+        WHEN ROLE Cop SIGNALS cop_killed:
+            Scientist DO BELIEVE(player_has_corpse).
+
+        WHEN ROLE Cop SIGNALS scientist_arrested:
+            Cop DO trigger_game_over("Scientist Arrested").
+            END PLOT.
+
+        WHEN ROLE Scientist SIGNALS game_won:
+            Scientist DO trigger_game_over("Victory").
+            END PLOT.
+
+        ON EXIT:
+            UNASSIGN ScientistCorpsePlaybook FROM Scientist.
+            UNASSIGN CopCorpsePlaybook FROM Cop.
+            UNASSIGN DogMainPlaybook FROM Dog.

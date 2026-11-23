@@ -1,0 +1,21 @@
+PLAYBOOK PbExplore:
+    WHEN start_scene:
+        DO PRINT("Exploration started").
+        DO BELIEVE(has_weapon).
+
+    WHEN danger_spotted PRIORITY 8:
+        DO hide.
+        IF has_weapon AND NOT (health_low):
+            DO speak(threat).
+            SIGNAL timer_ticked.
+        IF health_low OR NOT (is_daytime):
+            DO PRINT("Too weak to fight").
+            SIGNAL safe_again.
+        ELSE:
+            DO FORGET(has_weapon).
+
+PLAYBOOK PbCombat:
+    WHEN timer_ticked:
+        DO speak(attack_cry, "Charge!").
+        IF has_weapon:
+            DO walk(forward).

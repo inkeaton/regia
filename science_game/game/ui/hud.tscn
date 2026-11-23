@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dvyid5qdscqk"]
+
+[ext_resource type="Script" uid="uid://mvqhjl7p7i3r" path="res://ui/hud.gd" id="1_37p78"]
+
+[node name="hud" type="CanvasLayer" unique_id=1625562617 node_paths=PackedStringArray("diary_container", "inventory_container")]
+script = ExtResource("1_37p78")
+diary_container = NodePath("diary_container")
+inventory_container = NodePath("inventory_container")
+
+[node name="diary_container" type="VBoxContainer" parent="." unique_id=663868884]
+offset_right = 113.0
+offset_bottom = 47.0
+
+[node name="inventory_container" type="HBoxContainer" parent="." unique_id=408871277]
+offset_left = 956.0
+offset_right = 1277.0
+offset_bottom = 35.0

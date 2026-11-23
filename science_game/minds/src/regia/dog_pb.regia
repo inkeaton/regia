@@ -1,0 +1,53 @@
+IMPORT "vocabulary.regia".
+
+# --- DOG PLAYBOOKS ---
+PLAYBOOK DogMainPlaybook:
+    WHEN sighted_player:
+        DO utter("*Woof!*").
+    WHEN player_greet:
+        IF has_bone:
+            DO set_dialogue_text("*Woof*").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_ask_bone", "Give me the bone.", "ask_dog_bone", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("*Woof*").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN ask_dog_bone:
+        IF has_bone:
+            DO utter("*Woof!* (Drops bone)").
+            DO FORGET(has_bone).
+            DO remove_dialogue_option("opt_ask_bone").
+            DO add_item("bone").
+            SIGNAL bone_acquired.
+        ELSE:
+            DO utter("*Whines confusedly* (I don't have it!)").
+
+PLAYBOOK DogSubplotPlaybook:
+    WHEN sighted_player:
+        DO utter("*Wags tail hopefully*").
+        IF has_donut:
+            DO utter("*Wags tail happily* (Mmm, donut!)").
+
+    WHEN player_greet:
+        IF has_donut:
+            DO set_dialogue_text("*Woof!* (Chews donut loudly)").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_donut", "Drop the donut!", "ask_dog_donut", "false").
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+        ELSE:
+            DO set_dialogue_text("*Woof!*").
+            DO clear_dialogue_options.
+            DO add_dialogue_option("opt_exit", "Goodbye.", "exit_dialogue", "true").
+
+    WHEN ask_dog_donut:
+        IF has_donut:
+            DO utter("*Happy barks* (Drops donut)").
+            DO FORGET(has_donut).
+            DO remove_dialogue_option("opt_donut").
+            DO add_item("donut").
+            SIGNAL player_got_donut.
+        ELSE:
+            DO utter("*Whines* (I don't have it)").

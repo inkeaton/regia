@@ -1,0 +1,43 @@
+# A script to test multiple roles and playbooks.
+
+ACTION patrol.
+ACTION attack.
+ACTION defend.
+
+EVENT battle_starts.
+EVENT battle_ends.
+
+PLAYBOOK Defender:
+    WHEN battle_starts:
+        DO defend.
+
+PLAYBOOK Attacker:
+    WHEN battle_starts:
+        DO attack.
+
+PLOT EpicBattle.
+    PHASE peace INITIAL.
+    PHASE war.
+    
+    ROLE Hero.
+    ROLE Villain.
+
+    DURING peace:
+        ON ENTER:
+            WORLD DO PRINT("Peace in the kingdom.").
+            ASSIGN Defender TO Hero.
+        
+        WHEN battle_starts:
+            TRANSITION TO war.
+
+    DURING war:
+        ON ENTER:
+            WORLD DO PRINT("The war has begun!").
+            ASSIGN Attacker TO Villain.
+            Hero DO patrol.
+            Villain DO attack.
+            
+        WHEN battle_ends:
+            WORLD DO PRINT("The war is over.").
+            UNASSIGN Attacker FROM Villain.
+            END PLOT.
