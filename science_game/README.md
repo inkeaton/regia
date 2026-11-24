@@ -20,10 +20,7 @@ The game scenario, _"Everything for Science"_, features a scientist, a cop, and 
 
 ## Prerequisites
 
-| Component | Requirement |
-|---|---|
-| Game | [Godot 4.7](https://godotengine.org/download) |
-| Agent Minds | A JDK ≥ 17 to run Gradle. The build compiles and runs on JDK 21: it uses an installed JDK 21, or downloads one. Gradle 9.9.2 comes with the wrapper (`gradlew`), so you don't need to install it. The build also needs [uv](https://docs.astral.sh/uv/), which runs the Regia transpiler. |
+Godot 4.7 for the game; uv and a JDK ≥ 17 for the agents. See [Requirements](../README.md#requirements) in the root README.
 
 ## Project Structure
 
@@ -37,8 +34,9 @@ science_game/
 │   │   └── items/
 │   ├── libraries/                Core GDScript modules
 │   │   ├── GameManager.gd        Game state management (autoload)
-│   │   ├── vesnaManager.gd       WebSocket client to JaCaMo
+│   │   ├── vesnaManager.gd       WebSocket server for one agent
 │   │   └── messages.gd           Message protocol definitions
+│   ├── test_scene.tscn           The demo scene
 │   ├── ui/                       User interface scenes
 │   └── resources/                Game assets
 │
@@ -63,22 +61,33 @@ science_game/
 
 ## Running the Demo
 
-Both the agent system and the game must be running simultaneously.
+The game is the WebSocket server and the agents are its clients, so **start the game first**. An agent that can't connect stops.
 
-### 1. Start the Agent Minds
+### 1. Start the Godot Game
+
+Open `science_game/game/project.godot` in Godot 4.7, open `test_scene.tscn`, and press **F6** (Run Current Scene). F5 runs `main.tscn`, which is empty.
+
+Or from the repository root (the first command is only needed once):
+
+```bash
+godot --path science_game/game --import
+godot --path science_game/game res://test_scene.tscn
+```
+
+The game listens on ports 9001–9004, one per agent.
+
+### 2. Start the Agent Minds
+
+With the game running:
 
 ```bash
 cd science_game/minds
 ./gradlew          # Windows: gradlew.bat
 ```
 
-`./gradlew` runs the default `run` task. To only compile, run `make minds` from the repository root (or `./gradlew classes` here); `make gen` only transpiles the `.regia` files. The first run downloads Gradle 9.9.2 and, if no JDK 21 is installed, a JDK 21 (into `~/.gradle`). The build compiles the `.regia` files in `src/regia/` to AgentSpeak in `src/agt/gen/` (again whenever they or the transpiler change) and the Java sources. The `run` task then launches the JaCaMo platform, loading the agent configuration from `science.jcm`. Each agent opens a WebSocket server on its configured port (9001–9004).
+`./gradlew` runs the default `run` task. It compiles the `.regia` files in `src/regia/` to AgentSpeak in `src/agt/gen/` (again whenever they or the transpiler change) and the Java sources, then launches the JaCaMo platform with the agents in `science.jcm`. Each agent connects to the game on its configured port, and the NPCs begin executing their plans. The first run downloads Gradle 9.9.2 and, if no JDK 21 is installed, a JDK 21 (into `~/.gradle`).
 
-### 2. Start the Godot Game
-
-Open `science_game/game/project.godot` in Godot 4.7, then press **F5** (or the Play button) to run the project.
-
-The game's `vesnaManager.gd` connects to the agent WebSocket servers automatically. Once both systems are running, the NPCs begin executing their AgentSpeak plans.
+To only compile, run `make minds` from the repository root; `make gen` only transpiles the `.regia` files.
 
 ## Changing Ports
 
@@ -89,11 +98,11 @@ Each agent communicates with its Godot NPC body over a dedicated WebSocket conne
 | Scientist | `9001` | `science.jcm` → `port` field | Scene Inspector → VesnaManager → `PORT` property |
 | Cop | `9002` | `science.jcm` → `port` field | Scene Inspector → VesnaManager → `PORT` property |
 | Dog | `9003` | `science.jcm` → `port` field | Scene Inspector → VesnaManager → `PORT` property |
-| Director | `9004` | `science.jcm` → `port` field | _(no Godot body)_ |
+| Director | `9004` | `science.jcm` → `port` field | `game/ui/debug_ui.gd` → `v_manager.PORT` |
 
 **JaCaMo side** — edit [`minds/science.jcm`](minds/science.jcm) and change the `port:` value for the relevant agent.
 
-**Godot side** — each NPC node has a `VesnaManager` child with an exported `PORT` property. Change it either:
+**Godot side** — the director has no body: it connects to the debug UI, which forwards story events and spawns items. Each NPC node has a `VesnaManager` child with an exported `PORT` property. Change it either:
 - In the **Godot Inspector** panel (select the NPC node → VesnaManager → PORT), or
 - Directly in the `.tscn` scene file (e.g. `PORT = 9001`).
 

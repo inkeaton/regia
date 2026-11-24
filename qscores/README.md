@@ -34,11 +34,12 @@ From the repository root, `make qscores` runs steps 2 and 4 below, and `make fig
 
 ### 1. Expand Evaluation Sheets (when new responses arrive)
 
-When new respondents appear in `data.xlsx`, run this to add blank rows for them in all coding sheets:
+When new respondents appear in `data.xlsx`, run this to list the rows missing from the coding sheets, then again with `--write` to add them as blank rows:
 
 ```bash
 cd qscores
-python expand_data.py [DATA_DIR]
+python expand_data.py [DATA_DIR]           # report only
+python expand_data.py [DATA_DIR] --write   # add the rows (keeps .bak copies)
 ```
 
 This never modifies already-coded rows — it only appends new ones.
@@ -71,7 +72,7 @@ cd qscores
 python compare_reference.py [RESULTS_DIR] [REFERENCE_DIR]
 ```
 
-Compares the regenerated CSVs with the paper's, in `reference/results`. They must match exactly, except for line endings; any difference is printed and the script exits with status 1. The figures are not compared: PNG bytes depend on the fonts and libraries installed, so check them by eye against `reference/figures`..
+Compares the regenerated CSVs with the paper's, in `reference/results`. They must match exactly, except for line endings; any difference is printed and the script exits with status 1. The figures are not compared: PNG bytes depend on the fonts and libraries installed, so check them by eye against `reference/figures`.
 
 ## Output Files
 

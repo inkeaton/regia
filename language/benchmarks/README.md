@@ -9,26 +9,19 @@ It systematically varies structural parameters of the Regia language (roles, pha
 
 ## Prerequisites
 
-Ensure you are using the virtual environment for the `language` package.
-
-```bash
-cd language
-source ../.venv/bin/activate
-```
-
-## CLI Usage
-
-The suite is operated via a standard command-line interface.
-
-### Dependencies
-
-The suite needs the transpiler's `benchmarks` extra. From the repository root:
+[uv](https://docs.astral.sh/uv/), and the transpiler's `benchmarks` extra. From the repository root:
 
 ```bash
 uv sync --package regia --extra benchmarks
 source .venv/bin/activate
 cd language
 ```
+
+The runtime benchmarks also need a JDK ≥ 17. See [Requirements](../../README.md#requirements) in the root README.
+
+## CLI Usage
+
+The suite is operated via a standard command-line interface, from `language/`.
 
 ### List Experiments
 
@@ -52,7 +45,7 @@ python -m benchmarks validate --all
 
 ### Run Benchmarks
 
-To run all suites (about 5 minutes), from the repository root:
+To run all suites (a few minutes), from the repository root:
 
 ```bash
 make bench          # REPS=1 for a quick pass
@@ -67,6 +60,10 @@ python -m benchmarks run scale_roles
 **Options:**
 - `--output / -o <dir>`: Change the output directory (default: `benchmarks/results`).
 - `--reps / -r <int>`: Override the number of timed repetitions per configuration (useful for quick smoke tests).
+
+### Runtime Benchmarks
+
+`make bench-runtime`, from the repository root, measures generated agents running on JaCaMo and writes to `benchmarks/results/runtime/`. It is not part of `make all`. **It kills other running Gradle and JaCaMo processes**, so close them first.
 
 ### Plot Results
 
@@ -156,8 +153,6 @@ For a rerun, `RESULTS_DIR` is `benchmarks/results`. To recompute the paper's fit
 | `sweeps_vs_input.{pdf,png}` | Pooled sweeps on log axes with the power-law fit |
 | `realistic_project.{pdf,png}` | Scenario with its fit and a linear reference |
 | `construct_mix.{pdf,png}` | Cost per thousand lines of the two construct mixes |
-
-**Extra dependencies:** `numpy`, `scipy` (on top of the `[benchmarks]` extras).
 
 ## Internal Modules
 
