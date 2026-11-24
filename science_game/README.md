@@ -65,13 +65,13 @@ The game is the WebSocket server and the agents are its clients, so **start the 
 
 ### 1. Start the Godot Game
 
-Open `science_game/game/project.godot` in Godot 4.7, open `test_scene.tscn`, and press **F6** (Run Current Scene). F5 runs `main.tscn`, which is empty.
+Open `science_game/game/project.godot` in Godot 4.7, and press **F5** (Run Project). The main scene is the demo, `test_scene.tscn`.
 
 Or from the repository root (the first command is only needed once):
 
 ```bash
 godot --path science_game/game --import
-godot --path science_game/game res://test_scene.tscn
+godot --path science_game/game
 ```
 
 The game listens on ports 9001–9004, one per agent.

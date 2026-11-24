@@ -1,6 +1,6 @@
 # Questionnaire Evaluation Pipeline
 
-A Python pipeline that computes every evaluation metric reported in the research questionnaire study (Section 8.3). It processes raw survey data, applies rubric-based coding, and produces descriptive statistics, per-item breakdowns, and publication-ready figures.
+A Python pipeline that computes every evaluation metric reported in the research questionnaire study (Section 6 of the paper and Section 4.3 of the supplementary material). It processes raw survey data, applies rubric-based coding, and produces descriptive statistics, per-item breakdowns, and publication-ready figures.
 
 ## Prerequisites
 

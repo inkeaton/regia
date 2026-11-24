@@ -217,7 +217,7 @@ def plot_cmd(experiment: str | None, plot_all: bool, output: str) -> None:
     """
     Generate plots from previously generated CSV results.
     
-    Requires pandas and matplotlib: `pip install -e .[benchmarks]`
+    Requires pandas and matplotlib: run `make setup` from the repository root.
     """
     from .visualize import plot_experiment
     

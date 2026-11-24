@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Draws the Section 8.3 figures from the CSVs written by compute_metrics.py.
+Draws the questionnaire figures (Section 6 of the paper and Section 4.3 of the
+supplementary material) from the CSVs written by compute_metrics.py.
 
     comprehension_by_item.png   every respondent's score on the seven comprehension
                                 items, in questionnaire order, split Playbook / Plot

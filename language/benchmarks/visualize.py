@@ -60,7 +60,7 @@ def plot_experiment(csv_path: Path) -> None:
     if pd is None or plt is None:
         raise ImportError(
             "Visualization dependencies are missing. "
-            "Please install them via: pip install -e .[benchmarks]"
+            "Run `make setup` from the repository root."
         )
 
     if not csv_path.exists():

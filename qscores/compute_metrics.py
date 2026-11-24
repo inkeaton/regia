@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Computes every questionnaire metric reported in Section 8.3.
+Computes every questionnaire metric reported in Section 6 of the paper and
+Section 4.3 of the supplementary material.
 
 Inputs, read from DATA_DIR:
     data.xlsx            raw form export (backgrounds, closed and open answers, Likert)

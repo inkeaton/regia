@@ -1,5 +1,6 @@
 """
-Scaling fits and figures for Section 7.2 of the thesis.
+Scaling fits and figures for Section 5 of the paper and Section 3.2 of the
+supplementary material.
 
 Reads the CSVs written by `python -m benchmarks run` (one directory per suite,
 <results>/<suite>/<suite>.csv, several timed runs per configuration), averages
@@ -22,7 +23,7 @@ against size S, both by ordinary least squares:
 Both models are fitted against Regia source size (input_loc) and against
 generated AgentSpeak size (output_loc_total), so the two can be compared.
 
-Analyses, matching Section 7.2:
+Analyses, matching those sections:
   - the eight single-dimension sweeps, pooled and one by one (SWEEPS);
   - the realistic-project scenario (SCENARIOS);
   - the construct-mix comparison (MIX): cost per thousand source lines of the

@@ -185,8 +185,7 @@ def serve(host: str, port: int) -> None:
             raise
         raise click.ClickException(
             f"'regia serve' needs the 'server' extra, but {missing} is not installed.\n"
-            "Install it from the repository root with:  uv sync --all-packages --all-extras\n"
-            "or with pip:  pip install 'regia[server]'"
+            "Install it from the repository root with:  make setup"
         ) from exc
 
     server.run(host=host, port=port)

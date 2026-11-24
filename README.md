@@ -74,7 +74,7 @@ Not part of `make all`:
 - `make editor` builds the visual editor.
 - The demo game is played by hand: see [`science_game/README.md`](science_game/README.md).
 
-[CI](.github/workflows/ci.yml) runs the setup, the tests, the minds build, the scores comparison, a quick benchmark pass and the editor build on Ubuntu.
+[CI](.github/workflows/ci.yml) runs the setup, the tests, the minds build, the scores and figures comparisons, a quick benchmark pass and the editor build on Ubuntu.
 
 ## Quick Start
 
