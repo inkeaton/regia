@@ -23,7 +23,7 @@ The game scenario, _"Everything for Science"_, features a scientist, a cop, and 
 | Component | Requirement |
 |---|---|
 | Game | [Godot 4.7](https://godotengine.org/download) |
-| Agent Minds | [JDK ≥ 21](https://adoptium.net/) + [Gradle](https://gradle.org/install/) (wrapper included) |
+| Agent Minds | A JDK ≥ 17 to run Gradle. The build compiles and runs on JDK 21: it uses an installed JDK 21, or downloads one. Gradle 9.9.2 comes with the wrapper (`gradlew`), so you don't need to install it. |
 
 ## Project Structure
 
@@ -44,7 +44,9 @@ science_game/
 │
 └── minds/                        JaCaMo multi-agent system
     ├── science.jcm               JaCaMo project configuration
-    ├── build.gradle              Gradle build file
+    ├── build.gradle.kts          Gradle build (Java 21 toolchain, `run` task)
+    ├── settings.gradle.kts       Gradle settings (JDK auto-download)
+    ├── gradlew, gradlew.bat      Gradle wrapper (pinned 9.9.2)
     └── src/
         ├── agt/                  Agent source files
         │   ├── scientist.asl     Scientist role agent
@@ -67,10 +69,10 @@ Both the agent system and the game must be running simultaneously.
 
 ```bash
 cd science_game/minds
-./gradlew
+./gradlew          # Windows: gradlew.bat
 ```
 
-This compiles the Java sources and launches the JaCaMo platform, loading the agent configuration from `science.jcm`. Each agent opens a WebSocket server on its configured port (9001–9004).
+`./gradlew` runs the default `run` task. To only compile, use `./gradlew classes`. The first run downloads Gradle 9.9.2 and, if no JDK 21 is installed, a JDK 21 (into `~/.gradle`). This compiles the Java sources and launches the JaCaMo platform, loading the agent configuration from `science.jcm`. Each agent opens a WebSocket server on its configured port (9001–9004).
 
 ### 2. Start the Godot Game
 
