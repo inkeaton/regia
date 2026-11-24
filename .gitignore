@@ -28,6 +28,9 @@ __pycache__/
 # Backups written by qscores/expand_data.py --write
 *.bak
 
+# Editor backups
+*~
+
 # Regenerated results (the paper's own are in the reference/ directories)
 /qscores/results/
 /qscores/figures/
