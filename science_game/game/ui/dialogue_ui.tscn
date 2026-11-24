@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://cakyqfxceapn5" path="res://ui/dialogue_ui.gd" id="1_njptv"]
 [ext_resource type="PackedScene" uid="uid://8tthfdhfsk7k" path="res://ui/test_button.tscn" id="2_v6amk"]
-[ext_resource type="Texture2D" uid="uid://4km6j8a1y43v" path="res://resources/images/portraits/sci.png" id="3_avx40"]
+[ext_resource type="Texture2D" uid="uid://4km6j8a1y43v" path="res://resources/images/portraits/sci.webp" id="3_avx40"]
 [ext_resource type="Shader" uid="uid://drlu5r0oc73qh" path="res://bodies/player/lineboil.gdshader" id="3_lk7ga"]
-[ext_resource type="Texture2D" uid="uid://cvesna8khcsr3" path="res://resources/images/portraits/player.png" id="4_lk7ga"]
-[ext_resource type="Texture2D" uid="uid://dd16cdp85eil1" path="res://resources/images/box.png" id="5_buuna"]
+[ext_resource type="Texture2D" uid="uid://cvesna8khcsr3" path="res://resources/images/portraits/player.webp" id="4_lk7ga"]
+[ext_resource type="Texture2D" uid="uid://dd16cdp85eil1" path="res://resources/images/box.webp" id="5_buuna"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_lk7ga"]
 noise_type = 3

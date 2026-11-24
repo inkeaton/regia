@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ys63gsi2me5u" path="res://bodies/npcs/NPC.gd" id="1_yief8"]
 [ext_resource type="Shader" uid="uid://bwlwtw04misxp" path="res://bodies/npcs/walk_distort.gdshader" id="2_d8j02"]
-[ext_resource type="Texture2D" uid="uid://21p4djv5h3vg" path="res://resources/images/portraits/cop.png" id="2_yief8"]
+[ext_resource type="Texture2D" uid="uid://21p4djv5h3vg" path="res://resources/images/portraits/cop.webp" id="2_yief8"]
 [ext_resource type="Script" uid="uid://dvhqleqa5i43d" path="res://libraries/vesnaManager.gd" id="3_jsqdi"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hjrdo"]

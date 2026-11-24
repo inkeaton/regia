@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ck5g66iimnqo4" path="res://bodies/player/src/player.gd" id="2_atwkx"]
 [ext_resource type="Material" uid="uid://cyutonnakdbcg" path="res://bodies/player/res/lineboil.tres" id="2_r2oif"]
-[ext_resource type="Texture2D" uid="uid://cvesna8khcsr3" path="res://resources/images/portraits/player.png" id="3_ku522"]
+[ext_resource type="Texture2D" uid="uid://cvesna8khcsr3" path="res://resources/images/portraits/player.webp" id="3_ku522"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_naond"]
 radius = 7.4587407
