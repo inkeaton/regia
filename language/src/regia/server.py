@@ -1,3 +1,8 @@
+"""
+The visual editor's API server: POST /parse compiles Regia source and
+returns the AST as JSON. Needs the `server` extra. Start it with `regia serve`.
+"""
+
 import json
 import dataclasses
 from fastapi import FastAPI, HTTPException
@@ -6,8 +11,7 @@ from pydantic import BaseModel
 import uvicorn
 
 # Import the compiler pipeline
-from language.src.regia.compiler import compile_source
-from language.src.regia.ast_nodes import Program
+from regia.compiler import compile_source
 
 # ==============================================================================
 # SERVER CONFIGURATION
@@ -77,6 +81,16 @@ def parse_code(payload: CodePayload):
     
     return ast_dict
 
+# The editor expects the server at http://127.0.0.1:8000
+# (HTTP_API_BASE_URL in editor/src/services/transport.ts).
+DEFAULT_HOST = "127.0.0.1"
+DEFAULT_PORT = 8000
+
+
+def run(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> None:
+    """Serve the API with uvicorn until interrupted."""
+    uvicorn.run(app, host=host, port=port)
+
+
 if __name__ == "__main__":
-    # Runs the server on http://127.0.0.1:8000
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    run()

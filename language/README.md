@@ -21,7 +21,7 @@ source .venv/bin/activate
 
 | Extra | Packages | Needed for |
 |---|---|---|
-| `server` | fastapi, pydantic, uvicorn | the editor's API server (`server.py`) |
+| `server` | fastapi, pydantic, uvicorn | the editor's API server (`regia serve`) |
 | `benchmarks` | pandas, numpy, scipy, matplotlib, psutil | the benchmark suite and its plots |
 | `dev` | pytest, syrupy | the test suite |
 
@@ -49,6 +49,17 @@ Validate a source file without emitting code:
 ```bash
 regia check <file.regia>
 ```
+
+### Serve
+
+Start the visual editor's API server (needs the `server` extra):
+
+```bash
+regia serve [--host <host>] [--port <port>]
+```
+
+- Defaults to `127.0.0.1:8000`, the address the [editor](../editor/README.md) expects. It exposes `POST /parse`, which compiles Regia source and returns the AST as JSON.
+- Without the `server` extra it stops with a message saying how to install it.
 
 ### Global Options
 
@@ -81,6 +92,7 @@ language/
 │   ├── emitter.py             Stage 4 – AgentSpeak code generation
 │   ├── compiler.py            Pipeline orchestration
 │   ├── cli.py                 Click CLI interface
+│   ├── server.py              The editor's API server (regia serve)
 │   ├── errors.py              Diagnostic message types
 │   └── syntax_errors.py       Human-readable syntax error formatting
 ├── automated_tests/           pytest test suite

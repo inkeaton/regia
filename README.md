@@ -8,9 +8,8 @@ The Regia compiler transpiles `.regia` source files into [AgentSpeak](https://en
 
 ```text
 regia/
-├── language/           Regia-to-AgentSpeak transpiler (Python)
+├── language/           Regia-to-AgentSpeak transpiler (Python), with the editor's API server
 ├── editor/             Visual AST editor (React + Vite + TypeScript)
-├── server.py           FastAPI bridge between the editor and the transpiler
 ├── science_game/
 │   ├── game/           "Everything for Science" – Godot 4.7 demo game
 │   └── minds/          JaCaMo agent system (Java + AgentSpeak)
@@ -47,8 +46,8 @@ regia compile language/manual_tests/example.regia -o out/
 ### 3. Launch the Visual Editor
 
 ```bash
-# Terminal 1 – API server
-python server.py
+# Terminal 1 – API server (http://127.0.0.1:8000)
+regia serve
 
 # Terminal 2 – Frontend
 cd editor && npm install && npm run dev

@@ -5,7 +5,7 @@ A browser-based visual editor for the Regia language. It combines a Monaco code 
 ## Prerequisites
 
 - **Node.js ≥ 18** (with npm)
-- **Python backend** – the editor calls the transpiler through a FastAPI server (`server.py` at the repository root).
+- **Python backend** – the editor calls the transpiler through a FastAPI server, started with `regia serve` (the `regia` package with its `server` extra; see [`language/README.md`](../language/README.md)).
 
 ## Installation
 
@@ -20,11 +20,11 @@ The editor requires two processes running simultaneously:
 
 ### 1. Start the API Server
 
-From the repository root (with the Python virtual environment activated):
+With the Python virtual environment activated (any working directory):
 
 ```bash
-source .venv/bin/activate
-python server.py
+source .venv/bin/activate   # from the repository root
+regia serve
 ```
 
 The server starts at `http://127.0.0.1:8000` and exposes a `/parse` endpoint that compiles Regia source code and returns the AST as JSON.
@@ -59,7 +59,7 @@ The editor and its API server communicate over HTTP. If you need to change the d
 
 | What | Default | Where to change |
 |---|---|---|
-| API server | `127.0.0.1:8000` | `server.py` line 82 — change the `port` argument in `uvicorn.run()` |
+| API server | `127.0.0.1:8000` | `regia serve --host <host> --port <number>` |
 | Frontend → API URL | `http://127.0.0.1:8000` | `src/services/transport.ts` — update the `HTTP_API_BASE_URL` constant |
 | Vite dev server | `localhost:5173` | `vite.config.ts` — add a `server: { port: <number> }` block |
 

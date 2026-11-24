@@ -1,9 +1,10 @@
 """
 Command-line interface for the Regia compiler.
 
-Exposes two public commands:
+Exposes three public commands:
     regia compile <file.regia> [-o <output_dir>] [--dry-run]
     regia check   <file.regia>
+    regia serve   [--host <host>] [--port <port>]  (needs the `server` extra)
 
 Hidden debug command:
     regia dump-ast <file.regia>  (pretty-prints the validated AST)
@@ -162,6 +163,33 @@ def check(ctx: click.Context, source_file: Path) -> None:
 
     _print_diagnostics(result, state.quiet)
     _print_summary(result, state.quiet, action_name="Check")
+
+
+# The packages of the `server` extra (fastapi pulls in starlette).
+_SERVER_EXTRA_MODULES = {"fastapi", "pydantic", "starlette", "uvicorn"}
+
+
+@main.command()
+@click.option("--host", default="127.0.0.1", show_default=True, help="Interface to bind to.")
+@click.option(
+    "--port", default=8000, show_default=True, type=int,
+    help="Port to listen on. The editor expects 8000.",
+)
+def serve(host: str, port: int) -> None:
+    """Start the visual editor's API server."""
+    try:
+        from regia import server
+    except ImportError as exc:
+        missing = (exc.name or "").partition(".")[0]
+        if missing not in _SERVER_EXTRA_MODULES:
+            raise
+        raise click.ClickException(
+            f"'regia serve' needs the 'server' extra, but {missing} is not installed.\n"
+            "Install it from the repository root with:  uv sync --all-packages --all-extras\n"
+            "or with pip:  pip install 'regia[server]'"
+        ) from exc
+
+    server.run(host=host, port=port)
 
 
 @main.command(name="dump-ast", hidden=True)
