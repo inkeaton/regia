@@ -6,7 +6,7 @@ Usage:
     python -m benchmarks.runtime run scale_roles
     python -m benchmarks.runtime run --all
     python -m benchmarks.runtime run scale_agents --duration 15 --interval 0.25
-    python -m benchmarks.runtime run scale_agents --out results/my_run.csv
+    python -m benchmarks.runtime run scale_agents --out my_run.csv
 """
 
 import argparse
@@ -19,6 +19,8 @@ from typing import List
 
 from .runtime_experiments import RUNTIME_EXPERIMENTS
 from .runtime_runner import RuntimeRecord, RUNTIME_CSV_FIELDNAMES, run_runtime_experiment
+
+DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "results" / "runtime"
 
 
 # ==============================================================
@@ -73,7 +75,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--out", type=Path, default=None,
-        help="Output CSV path. Defaults to runtime_<experiment>_<timestamp>.csv",
+        help="Output CSV path. Defaults to benchmarks/results/runtime/runtime_<experiment>_<timestamp>.csv",
     )
 
     args = parser.parse_args()
@@ -123,7 +125,7 @@ def main() -> None:
     else:
         exp_label = "_".join(to_run) if len(to_run) <= 2 else "all"
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        csv_path = Path(f"runtime_{exp_label}_{ts}.csv")
+        csv_path = DEFAULT_OUTPUT / f"runtime_{exp_label}_{ts}.csv"
 
     save_csv(all_records, csv_path)
 

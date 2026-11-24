@@ -7,7 +7,7 @@ Usage:
     python -m benchmarks list
 
 Output layout:
-    <output_dir>/
+    <output_dir>/                      (default: benchmarks/results, not tracked)
         <experiment_name>/
             <experiment_name>.csv        <- performance data
             sources/
@@ -21,6 +21,9 @@ import click
 
 from .experiments import BASELINE, EXPERIMENTS
 from .runner import run_experiment, save_csv
+
+# Reruns go here, whatever the cwd. The paper's runs are in reference/.
+DEFAULT_OUTPUT = Path(__file__).resolve().parent / "results"
 
 
 # ======================================================
@@ -45,8 +48,8 @@ def main() -> None:
 )
 @click.option(
     "--output", "-o",
-    default="results",
-    show_default=True,
+    default=DEFAULT_OUTPUT,
+    show_default="benchmarks/results",
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     help="Root directory for CSV results and source files.",
 )
@@ -205,8 +208,8 @@ def validate_cmd(experiment: str | None, validate_all: bool) -> None:
 @click.option("--all", "plot_all", is_flag=True, help="Plot all suites.")
 @click.option(
     "--output", "-o",
-    default="results",
-    show_default=True,
+    default=DEFAULT_OUTPUT,
+    show_default="benchmarks/results",
     type=click.Path(file_okay=False, dir_okay=True),
     help="Root directory where CSV results are stored.",
 )

@@ -18,7 +18,7 @@ source .venv/bin/activate
 
 ## Input Data
 
-All input files are read from the data directory (defaults to the current directory):
+All input files are read from the data directory (defaults to `qscores/data`):
 
 | File | Description |
 |---|---|
@@ -48,8 +48,8 @@ cd qscores
 python compute_metrics.py [DATA_DIR] [OUT_DIR] [--exclude ID ...]
 ```
 
-- `DATA_DIR` — Directory containing the input files (defaults to `.`).
-- `OUT_DIR` — Directory for output CSVs (defaults to `results`).
+- `DATA_DIR` — Directory containing the input files (defaults to `qscores/data`).
+- `OUT_DIR` — Directory for output CSVs (defaults to `qscores/results`).
 - `--exclude ID ...` — Drop specific respondent IDs before computing (for sensitivity analysis).
 
 ### 3. Generate Figures
@@ -59,10 +59,21 @@ cd qscores
 python make_figures.py [RESULTS_DIR] [FIG_DIR]
 ```
 
-- `RESULTS_DIR` — Directory containing the CSVs from step 2 (defaults to `results`).
-- `FIG_DIR` — Directory for output PNG figures (defaults to `fig`).
+- `RESULTS_DIR` — Directory containing the CSVs from step 2 (defaults to `qscores/results`).
+- `FIG_DIR` — Directory for output PNG figures (defaults to `qscores/figures`)
+
+### 4. Compare with the Paper
+
+```bash
+cd qscores
+python compare_reference.py [RESULTS_DIR] [REFERENCE_DIR]
+```
+
+Compares the regenerated CSVs with the paper's, in `reference/results`. They must match exactly, except for line endings; any difference is printed and the script exits with status 1. The figures are not compared: PNG bytes depend on the fonts and libraries installed, so check them by eye against `reference/figures`..
 
 ## Output Files
+
+`results/` and `figures/` are regenerated and not tracked. The paper's own outputs (N = 32) are in `reference/`.
 
 ### Metrics (`results/`)
 
@@ -81,7 +92,7 @@ python make_figures.py [RESULTS_DIR] [FIG_DIR]
 | `likert_characteristics.csv` | Per characteristic: pooled net agreement |
 | `summary.md` | Headline figures in readable form |
 
-### Figures (`fig/`)
+### Figures (`figures/`)
 
 | Figure | Description |
 |---|---|
@@ -100,7 +111,11 @@ qscores/
 ├── form_data.py          Data loading and row parsing
 ├── expand_data.py        Expand coding sheets for new respondents
 ├── make_figures.py       Publication figure generation
+├── compare_reference.py  Check the regenerated CSVs against the paper's
 ├── data/                 Input data files (xlsx, csv)
-├── out/                  Computed output CSVs
-└── fig/                  Generated figures (PNG)
+├── reference/            The paper's outputs
+│   ├── results/          CSVs and summary
+│   └── figures/          Figures (PNG)
+├── results/              Regenerated CSVs (not tracked)
+└── figures/              Regenerated figures (not tracked)
 ```

@@ -36,6 +36,8 @@ Usage:
     python3 expand_data.py [DATA_DIR] --write --sort
                                                  also sort each file by key
 
+DATA_DIR defaults to data/ next to this script.
+
 Then fill the blank cells and rerun compute_metrics.py, which reports any
 units still uncoded under "Data gaps".
 """
@@ -57,8 +59,10 @@ COL_GENERATION = 15
 
 RATER_DEFAULT = "A"
 
+HERE = Path(__file__).resolve().parent
+
 parser = argparse.ArgumentParser(description="Expand the evaluation sheets for new respondents.")
-parser.add_argument("data_dir", nargs="?", default=".")
+parser.add_argument("data_dir", nargs="?", default=HERE / "data")
 parser.add_argument("--write", action="store_true", help="append the rows; without it, only report")
 parser.add_argument("--sort", action="store_true", help="sort each file by its key after appending")
 args = parser.parse_args()
@@ -184,6 +188,6 @@ if changed:
 
 if pending:
     print("\nNext: fill the blank cells in the appended rows, then rerun\n"
-          "  python3 compute_metrics.py <data_dir> results\n"
-          "  python3 make_figures.py results figures\n"
+          "  python3 compute_metrics.py\n"
+          "  python3 make_figures.py\n"
           "compute_metrics.py lists any units still uncoded under \"Data gaps\".")

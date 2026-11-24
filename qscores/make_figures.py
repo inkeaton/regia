@@ -14,6 +14,8 @@ Draws the Section 8.3 figures from the CSVs written by compute_metrics.py.
 Styling matches plot_scaling.py and plot_interactions.py.
 
 Usage:  python3 make_figures.py [RESULTS_DIR] [FIG_DIR]
+
+    RESULTS_DIR defaults to results/ and FIG_DIR to figures/, both next to this script.
 """
 
 import sys
@@ -27,8 +29,9 @@ from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
 
-RES = Path(sys.argv[1] if len(sys.argv) > 1 else "results")
-FIG = Path(sys.argv[2] if len(sys.argv) > 2 else "figures")
+HERE = Path(__file__).resolve().parent
+RES = Path(sys.argv[1] if len(sys.argv) > 1 else HERE / "results")
+FIG = Path(sys.argv[2] if len(sys.argv) > 2 else HERE / "figures")
 FIG.mkdir(parents=True, exist_ok=True)
 
 C = plt.get_cmap("tab10").colors

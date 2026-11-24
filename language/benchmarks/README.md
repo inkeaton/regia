@@ -63,7 +63,7 @@ python -m benchmarks run --all
 ```
 
 **Options:**
-- `--output / -o <dir>`: Change the output directory (default: `results`).
+- `--output / -o <dir>`: Change the output directory (default: `benchmarks/results`).
 - `--reps / -r <int>`: Override the number of timed repetitions per configuration (useful for quick smoke tests).
 
 ### Plot Results
@@ -79,9 +79,11 @@ python -m benchmarks plot --all
 ```
 
 **Options:**
-- `--output / -o <dir>`: Read from a different results directory (default: `results`).
+- `--output / -o <dir>`: Read from a different results directory (default: `benchmarks/results`).
 
 ## Output Layout
+
+Reruns are written to `benchmarks/results/`, which is not tracked. The paper's own runs are in `benchmarks/reference/`, with the same layout plus the fits (`fits/`). Timings and RAM depend on the machine, so a rerun reproduces the trends and won't match the reference numbers exactly.
 
 For each executed experiment suite, the runner produces a CSV containing performance metrics and the exact Regia source files that were generated. This ensures every benchmark run is completely reproducible.
 
@@ -138,8 +140,10 @@ Produces the regression analysis and figures for Section 7.2 of the thesis. For 
 Both models are fitted against Regia source size and against generated AgentSpeak size.
 
 ```bash
-python bench_fits.py RESULTS_DIR [--out OUT_DIR] [--format pdf|png|both] [--dpi N] [--include-io]
+python benchmarks/bench_fits.py RESULTS_DIR [--out OUT_DIR] [--format pdf|png|both] [--dpi N] [--include-io]
 ```
+
+For a rerun, `RESULTS_DIR` is `benchmarks/results`. To recompute the paper's fits from its own runs without overwriting the committed ones, pass `benchmarks/reference --out benchmarks/results/reference_fits`.
 
 **Outputs** (in `OUT_DIR`, default `RESULTS_DIR/fits`):
 

@@ -24,11 +24,14 @@ Outputs, written to OUT_DIR:
     likert_characteristics.csv per AgentDSM-Eval characteristic: pooled net agreement
     summary.md               the headline figures, in readable form
 
-All figures are descriptive. With N = 21, a ceiling effect on the comprehension
+All figures are descriptive. With N = 32, a ceiling effect on the comprehension
 items, and a population that is mostly computer scientists, no significance
 test is computed; correlations are reported as coefficients only.
 
 Usage:  python3 compute_metrics.py [DATA_DIR] [OUT_DIR] [--exclude ID ...]
+
+    DATA_DIR defaults to data/ and OUT_DIR to results/, both next to this script.
+    compare_reference.py checks OUT_DIR against the paper's CSVs.
 
     --exclude drops the given respondent IDs before any metric is computed, for
     sensitivity analysis. Report which respondents were excluded and why; an
@@ -45,9 +48,11 @@ from scipy.stats import spearmanr
 
 from form_data import load_form_rows
 
+HERE = Path(__file__).resolve().parent
+
 parser = argparse.ArgumentParser(description="Compute the Regia questionnaire metrics.")
-parser.add_argument("data_dir", nargs="?", default=".")
-parser.add_argument("out_dir", nargs="?", default="results")
+parser.add_argument("data_dir", nargs="?", default=HERE / "data")
+parser.add_argument("out_dir", nargs="?", default=HERE / "results")
 parser.add_argument("--exclude", type=int, nargs="*", default=[], metavar="ID",
                     help="respondent IDs to drop, for sensitivity analysis")
 args = parser.parse_args()

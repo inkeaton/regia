@@ -98,7 +98,7 @@ language/
 ├── automated_tests/           pytest test suite
 ├── manual_tests/              Example .regia files for manual testing
 ├── benchmarks/                Scalability benchmark suite (see its own README)
-├── results/                   Benchmark output (CSV + generated sources)
+│   └── reference/             The paper's benchmark runs (CSV + generated sources)
 └── vscode-extension/          VS Code syntax highlighting (.vsix)
 ```
 
