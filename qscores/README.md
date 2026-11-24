@@ -30,6 +30,8 @@ All input files are read from the data directory (defaults to `qscores/data`):
 
 ## Usage
 
+From the repository root, `make qscores` runs steps 2 and 4 below, and `make figures` runs step 3 too. The scripts can also be run one by one:
+
 ### 1. Expand Evaluation Sheets (when new responses arrive)
 
 When new respondents appear in `data.xlsx`, run this to add blank rows for them in all coding sheets:

@@ -4,14 +4,14 @@ A browser-based visual editor for the Regia language. It combines a Monaco code 
 
 ## Prerequisites
 
-- **Node.js ≥ 18** (with npm)
+- **Node.js 24** (with npm), pinned in `.nvmrc`
 - **Python backend** – the editor calls the transpiler through a FastAPI server, started with `regia serve` (the `regia` package with its `server` extra; see [`language/README.md`](../language/README.md)).
 
 ## Installation
 
 ```bash
 cd editor
-npm install
+npm ci
 ```
 
 ## Running
@@ -20,11 +20,10 @@ The editor requires two processes running simultaneously:
 
 ### 1. Start the API Server
 
-With the Python virtual environment activated (any working directory):
+From the repository root:
 
 ```bash
-source .venv/bin/activate   # from the repository root
-regia serve
+make serve
 ```
 
 The server starts at `http://127.0.0.1:8000` and exposes a `/parse` endpoint that compiles Regia source code and returns the AST as JSON.
@@ -47,11 +46,13 @@ Open http://localhost:5173 in your browser.
 
 ## Build for Production
 
+From the repository root:
+
 ```bash
-npm run build
+make editor
 ```
 
-The output is placed in `dist/` and can be served by any static file server.
+This installs the locked dependencies and builds. The output is placed in `dist/` and can be served by any static file server.
 
 ## Changing Ports
 

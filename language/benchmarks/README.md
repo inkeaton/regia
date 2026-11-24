@@ -52,14 +52,16 @@ python -m benchmarks validate --all
 
 ### Run Benchmarks
 
-To execute an experiment and collect metrics:
+To run all suites (about 5 minutes), from the repository root:
 
 ```bash
-# Run a specific suite
-python -m benchmarks run scale_roles
+make bench          # REPS=1 for a quick pass
+```
 
-# Run all suites sequentially (takes ~5 minutes)
-python -m benchmarks run --all
+To run a specific suite:
+
+```bash
+python -m benchmarks run scale_roles
 ```
 
 **Options:**
@@ -73,10 +75,9 @@ Once you have generated CSV results, you can visualize them as PNG plots (requir
 ```bash
 # Plot a specific suite
 python -m benchmarks plot scale_roles
-
-# Plot all suites in the results directory
-python -m benchmarks plot --all
 ```
+
+`make figures`, from the repository root, plots all suites and computes the fits below, for the rerun and for the paper's own runs.
 
 **Options:**
 - `--output / -o <dir>`: Read from a different results directory (default: `benchmarks/results`).

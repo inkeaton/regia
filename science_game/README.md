@@ -72,7 +72,7 @@ cd science_game/minds
 ./gradlew          # Windows: gradlew.bat
 ```
 
-`./gradlew` runs the default `run` task. To only compile, use `./gradlew classes`. The first run downloads Gradle 9.9.2 and, if no JDK 21 is installed, a JDK 21 (into `~/.gradle`). The build compiles the `.regia` files in `src/regia/` to AgentSpeak in `src/agt/gen/` (again whenever they or the transpiler change) and the Java sources. The `run` task then launches the JaCaMo platform, loading the agent configuration from `science.jcm`. Each agent opens a WebSocket server on its configured port (9001–9004).
+`./gradlew` runs the default `run` task. To only compile, run `make minds` from the repository root (or `./gradlew classes` here); `make gen` only transpiles the `.regia` files. The first run downloads Gradle 9.9.2 and, if no JDK 21 is installed, a JDK 21 (into `~/.gradle`). The build compiles the `.regia` files in `src/regia/` to AgentSpeak in `src/agt/gen/` (again whenever they or the transpiler change) and the Java sources. The `run` task then launches the JaCaMo platform, loading the agent configuration from `science.jcm`. Each agent opens a WebSocket server on its configured port (9001–9004).
 
 ### 2. Start the Godot Game
 

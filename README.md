@@ -26,6 +26,15 @@ Each component has its own README with install and run instructions:
 | Science Game | `science_game/` | [`science_game/README.md`](science_game/README.md) |
 | Questionnaire Scores | `qscores/` | [`qscores/README.md`](qscores/README.md) |
 
+## Reproduce Everything
+
+The root `Makefile` is the entry point (`make help` lists its targets):
+
+```bash
+make check-env   # check the required tools
+make all         # set up, transpile the game, test, build the minds, run the benchmarks, recompute the scores, draw the figures
+```
+
 ## Quick Start
 
 ### 1. Python Environment (shared by `language/` and `qscores/`)
@@ -33,7 +42,7 @@ Each component has its own README with install and run instructions:
 Dependencies are declared in a [uv](https://docs.astral.sh/uv/) workspace (`pyproject.toml`, `uv.lock`, `.python-version`). From the repository root:
 
 ```bash
-uv sync --all-packages --all-extras   # creates .venv: Python 3.14, the transpiler with every extra, qscores' dependencies
+make setup   # creates .venv: Python 3.14, the transpiler with every extra, qscores' dependencies
 source .venv/bin/activate
 ```
 
@@ -47,10 +56,10 @@ regia compile language/manual_tests/example.regia -o out/
 
 ```bash
 # Terminal 1 – API server (http://127.0.0.1:8000)
-regia serve
+make serve
 
 # Terminal 2 – Frontend
-cd editor && npm install && npm run dev
+cd editor && npm ci && npm run dev
 ```
 
 Open http://localhost:5173 in your browser.

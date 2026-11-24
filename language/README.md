@@ -70,9 +70,10 @@ regia --quiet      # Suppress warnings, print errors only
 
 ## Running Tests
 
+From the repository root:
+
 ```bash
-cd language
-pytest
+make test
 ```
 
 The test suite covers the grammar, AST builder, validator, emitter, and CLI. Snapshot tests use [syrupy](https://github.com/syrupy-project/syrupy).
