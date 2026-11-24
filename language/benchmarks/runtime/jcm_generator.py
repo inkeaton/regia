@@ -1,8 +1,10 @@
 """
-jcm_generator.py -- Generate .jcm and build.gradle for Jason runtime benchmarks.
+jcm_generator.py -- Generate the .jcm and Gradle build for Jason runtime benchmarks.
 
 Given the output files of the Regia compiler, generates a self-contained
-JaCaMo Multi-Agent System descriptor (.jcm) and a minimal build.gradle.
+JaCaMo Multi-Agent System descriptor (.jcm) and a minimal Kotlin Gradle build.
+The build runs on the same JDK 21 toolchain as science_game/minds and is
+launched with that project's Gradle wrapper (see runtime_runner.py).
 No Vesna/WebSocket infrastructure is required -- agents run in Jason's
 standard centralised runtime.
 """
@@ -78,7 +80,7 @@ def generate_jcm(
     Args:
         output_files: Compiler output dict (filename -> asl content).
         n_agents_per_role: How many agent instances to spawn per role.
-        asl_subdir: Subdirectory prefix for .asl paths in the .jcm.
+        asl_subdir: Directory holding the .asl files, listed as the asl-path.
 
     Returns:
         The .jcm file content as a string.
@@ -90,15 +92,13 @@ def generate_jcm(
 
     # Role agent declarations
     for role_name, role_file in roles:
-        asl_path = f"{asl_subdir}/{role_file}" if asl_subdir else role_file
         for i in range(n_agents_per_role):
             agent_id = f"{role_name}_{i}"
-            lines.append(f"    agent {agent_id}:{asl_path} {{}}")
+            lines.append(f"    agent {agent_id}:{role_file} {{}}")
         lines.append("")
 
     # Director declaration with start_plot goal
-    director_path = f"{asl_subdir}/{director_file}" if asl_subdir else director_file
-    lines.append(f"    agent director:{director_path} {{")
+    lines.append(f"    agent director:{director_file} {{")
 
     # Build the start_plot bindings: map(role0, [role0_0, role0_1, ...])
     bindings: List[str] = []
@@ -109,60 +109,92 @@ def generate_jcm(
     bindings_str = ", ".join(bindings)
     lines.append(f"        goals: start_plot([{bindings_str}])")
     lines.append("    }")
+    lines.append("")
+
+    # asl-path must come after the agents (JaCaMo 1.2 parser). It also lets
+    # .create_agent find subplot directors by bare name.
+    lines.append(f'    asl-path: "{asl_subdir}"')
     lines.append("}")
 
     return "\n".join(lines) + "\n"
 
 
 # ==============================================================
-# build.gradle generation
+# Gradle build generation
 # ==============================================================
 
-_BUILD_GRADLE_TEMPLATE = """\
-defaultTasks 'run'
-apply plugin: 'java'
+_SETTINGS_GRADLE: str = """\
+plugins {
+    // Downloads the JDK 21 toolchain when no matching JDK is installed.
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
-repositories {{
-    maven {{ url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }}
+rootProject.name = "regia-benchmark"
+"""
+
+_BUILD_GRADLE_TEMPLATE: str = """\
+plugins {
+    java
+}
+
+defaultTasks("run")
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    maven { url = uri("https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master") }
+    maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
     mavenCentral()
-}}
+}
 
-dependencies {{
-    implementation('org.jacamo:jacamo:1.2')
-}}
+dependencies {
+    implementation("org.jacamo:jacamo:1.2")
+}
 
-task run(type: JavaExec, dependsOn: 'classes') {{
-    description 'Jason runtime benchmark'
-    group 'Benchmark'
-    mainClass = 'jacamo.infra.JaCaMoLauncher'
-    args '{jcm_name}'
-    classpath sourceSets.main.runtimeClasspath
+tasks.register<JavaExec>("run") {
+    description = "Jason runtime benchmark"
+    group = "Benchmark"
+    dependsOn("classes")
+    mainClass = "jacamo.infra.JaCaMoLauncher"
+    args("@JCM_NAME@")
+    classpath = sourceSets.main.get().runtimeClasspath
+    javaLauncher = javaToolchains.launcherFor(java.toolchain)
     standardOutput = System.out
-    errorOutput    = System.err
-    jvmArgs '-Xss8m'       // Prevent stack overflow on deep subplot hierarchies
-    jvmArgs '-Xms64m'      // Small initial heap so RSS reflects actual usage
-    jvmArgs '-Xmx512m'     // Cap max heap so growth is visible in RSS measurements
-}}
+    errorOutput = System.err
+    jvmArgs("-Xss8m")       // Prevent stack overflow on deep subplot hierarchies
+    jvmArgs("-Xms64m")      // Small initial heap so RSS reflects actual usage
+    jvmArgs("-Xmx512m")     // Cap max heap so growth is visible in RSS measurements
+}
 
-sourceSets {{
-    main {{
-        java {{ srcDir 'src/' }}
-    }}
-}}
+// Downloads everything `run` needs, so that no download is ever measured.
+tasks.register("prepare") {
+    description = "Resolves the JDK toolchain and the runtime classpath"
+    group = "Benchmark"
+    val launcher = javaToolchains.launcherFor(java.toolchain)
+    val runtime = sourceSets.main.get().runtimeClasspath
+    doLast {
+        launcher.get()
+        runtime.files
+    }
+}
 """
 
 
 def generate_build_gradle(jcm_name: str = "benchmark.jcm") -> str:
     """
-    Generate a minimal build.gradle for running Jason without Vesna.
+    Generate a minimal build.gradle.kts for running Jason without Vesna.
 
     Args:
         jcm_name: Filename of the .jcm file to pass to JaCaMoLauncher.
 
     Returns:
-        The build.gradle content as a string.
+        The build.gradle.kts content as a string.
     """
-    return _BUILD_GRADLE_TEMPLATE.format(jcm_name=jcm_name)
+    return _BUILD_GRADLE_TEMPLATE.replace("@JCM_NAME@", jcm_name)
 
 
 # ==============================================================
@@ -181,8 +213,8 @@ def write_benchmark_project(
     Creates:
         <target_dir>/gen/<all .asl files>
         <target_dir>/benchmark.jcm
-        <target_dir>/build.gradle
-        <target_dir>/src/  (empty, required by Gradle java plugin)
+        <target_dir>/build.gradle.kts
+        <target_dir>/settings.gradle.kts
 
     Args:
         output_files: Compiler output dict (filename -> content).
@@ -192,7 +224,6 @@ def write_benchmark_project(
     """
     gen_dir = target_dir / "gen"
     gen_dir.mkdir(parents=True, exist_ok=True)
-    (target_dir / "src").mkdir(exist_ok=True)
 
     # Write all .asl files into gen/
     for fname, content in output_files.items():
@@ -206,6 +237,7 @@ def write_benchmark_project(
     )
     (target_dir / jcm_name).write_text(jcm_content, encoding="utf-8")
 
-    # Write build.gradle
+    # Write the Gradle build
     gradle_content = generate_build_gradle(jcm_name=jcm_name)
-    (target_dir / "build.gradle").write_text(gradle_content, encoding="utf-8")
+    (target_dir / "build.gradle.kts").write_text(gradle_content, encoding="utf-8")
+    (target_dir / "settings.gradle.kts").write_text(_SETTINGS_GRADLE, encoding="utf-8")

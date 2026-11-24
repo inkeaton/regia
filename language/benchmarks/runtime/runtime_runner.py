@@ -5,11 +5,13 @@ For each (GeneratorConfig, n_agents_per_role) pair:
   1. Generates Regia source via the benchmark generator.
   2. Compiles it to AgentSpeak (.asl) files.
   3. Writes a self-contained Gradle/Jason project to a temp directory.
-  4. Launches 'gradle run --no-daemon' and waits for the JVM.
+  4. Launches it with the Gradle wrapper of science_game/minds
+     ('gradlew -p <dir> run --no-daemon') and waits for the JVM.
   5. Samples RSS and CPU for a fixed measurement window.
   6. Terminates the process and returns a RuntimeRecord.
 """
 
+import os
 import subprocess
 import tempfile
 import time
@@ -100,6 +102,48 @@ class RuntimeRecord:
 
 
 RUNTIME_CSV_FIELDNAMES: List[str] = list(RuntimeRecord.__dataclass_fields__.keys())
+
+
+# ==============================================================
+# Gradle wrapper
+# ==============================================================
+
+# The pinned wrapper of the game's minds (Gradle version, checksum).
+_MINDS_DIR: Path = Path(__file__).resolve().parents[3] / "science_game" / "minds"
+GRADLEW: Path = _MINDS_DIR / ("gradlew.bat" if os.name == "nt" else "gradlew")
+
+
+def gradle_command(project_dir: Path, task: str) -> List[str]:
+    """
+    Build the command that runs a task of a generated project.
+
+    Args:
+        project_dir: Directory of the generated Gradle project.
+        task: Gradle task to run.
+
+    Returns:
+        The command as an argument list.
+    """
+    return [str(GRADLEW), "-p", str(project_dir), task, "--no-daemon"]
+
+
+def prepare_gradle(cfg: GeneratorConfig) -> None:
+    """
+    Download Gradle, the JDK toolchain and JaCaMo before any measurement.
+
+    On a fresh machine these downloads would otherwise fall inside the
+    first run's measurement window.
+
+    Args:
+        cfg: Any GeneratorConfig; the project only has to be well formed.
+
+    Raises:
+        subprocess.CalledProcessError: If the Gradle build fails.
+    """
+    with tempfile.TemporaryDirectory(prefix="regia_bench_") as tmpdir:
+        result = compile_source(generate(cfg), emit=True)
+        write_benchmark_project(result.outputs, Path(tmpdir))
+        subprocess.run(gradle_command(Path(tmpdir), "prepare"), check=True)
 
 
 # ==============================================================
@@ -239,7 +283,7 @@ def run_runtime_benchmark(
 
         launch_start = time.monotonic()
         proc = subprocess.Popen(
-            ["gradle", "run", "--no-daemon"],
+            gradle_command(tmp_path, "run"),
             cwd=str(tmp_path),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -358,6 +402,8 @@ def run_runtime_experiment(
     Returns:
         List of RuntimeRecord instances, one per run.
     """
+    prepare_gradle(configs_and_counts[0][0])
+
     records: List[RuntimeRecord] = []
     for run_id, (cfg, n_agents) in enumerate(configs_and_counts):
         n_total = cfg.n_roles * n_agents + 1
