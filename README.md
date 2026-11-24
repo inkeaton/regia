@@ -76,6 +76,8 @@ Not part of `make all`:
 
 [CI](.github/workflows/ci.yml) runs the setup, the tests, the minds build, the scores and figures comparisons, a quick benchmark pass and the editor build on Ubuntu.
 
+What has changed since the submitted artifact (tag `artifact-submitted`) is in [`CHANGES.md`](CHANGES.md).
+
 ## Quick Start
 
 ### 1. Python Environment (shared by `language/` and `qscores/`)
