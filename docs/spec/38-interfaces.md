@@ -9,14 +9,14 @@ A Playbook declares its Roles and a Plot its Roles and Phases. Neither declares 
 ```regia
 PLAYBOOK Keeping_watch:
     WHEN saw_pouring(?who):
-        DO seize(?who).
-        SIGNAL culprit_seized(?who).       # part of the Interface: a Signal
+        DO seize(?who)
+        SIGNAL culprit_seized(?who)        # part of the Interface: a Signal
 
 PLOT RoyalBanquet:
-    ROLE Guard.
+    ROLE Guard
     DURING PLOT:
         WHEN ENTERED:
-            ASSIGN Keeping_watch TO Guard.     # warning R3801: `culprit_seized` has no Plan here
+            ASSIGN Keeping_watch TO Guard      # warning R3801: `culprit_seized` has no Plan here
 ```
 
 - There is no `SIGNALS`, `ANSWERS` or `OUTCOMES` line, and no marker on a `CUE` declaration that says which part of the Program sends it. The one marker is `GAME` (chapter 10), which says the game produces it: the Transpiler can't see the game, so that can't be inferred.
@@ -78,7 +78,7 @@ There is **no build check**. Telling which Givings stand in which Phase would ne
 
 ### A Director Plan no Signal can reach
 
-`WHEN e, FROM <Role>:` in a Plot, where no Playbook the Plot gives sends `e` as a Signal, can never run: nothing from the game has a Sender (chapter 05). The Transpiler warns on the Trigger.
+`WHEN e, FROM <Role>:` or `WHEN e, FROM ?who:` in a Plot, where no Playbook the Plot gives sends `e` as a Signal, can never run: nothing from the game has a Sender (chapter 05). The Transpiler warns on the Trigger.
 
 A Trigger with no `FROM` is not checked here, since the Cue may come from the game. A Cue that nothing sends at all, the game included, is the next check.
 
@@ -91,8 +91,8 @@ A Trigger with no `FROM` is not checked here, since the Cue may come from the ga
 ```regia
 DURING feast:
     WHEN ENTERED:
-        ASSIGN Dining TO Guest, MAPPING Servant AS waiter.
-        ASSIGN Serving TO Servant, MAPPING Host AS patron.     # warning R3803
+        ASSIGN Dining TO Guest, MAPPING Servant AS waiter
+        ASSIGN Serving TO Servant, MAPPING Host AS patron      # warning R3803
 ```
 
 `Dining` writes `ASK waiter TO bring(…)`, and `Serving` answers `TO bring(…), FROM patron`. With `patron` mapped to `Host`, no Guest's request is ever admitted.
@@ -119,7 +119,7 @@ PLAYBOOK Seating:
 
 PLAYBOOK Mingling:
     WHEN tired:
-        PURSUE take_seat.          # warning R3805
+        PURSUE take_seat           # warning R3805
 ```
 
 An Agent's own `PURSUE` is `FROM ME` and never takes the Sender of the Plan it is written in (chapter 05). When the Program holds recipes for `g` and **none admits `ME`** (each has a `FROM`, and `ME` is not among its alternatives), a `PURSUE g` can only fail at once, and the Transpiler warns on it. The hint is `FROM … OR ME`.
@@ -134,7 +134,7 @@ An Agent's own `PURSUE` is `FROM ME` and never takes the Sender of the Plan it i
 **Warnings**
 
 - `R3801` A Plot gives a Playbook that sends a Signal the Plot has no Plan for, in any Phase.
-- `R3802` `WHEN e, FROM <Role>` in a Plot where no Playbook the Plot gives Signals `e`.
+- `R3802` `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e`.
 - `R3803` A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role.
 - `R3804` `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r`.
 - `R3805` A `PURSUE g` where no recipe of `g` in the Program admits `ME` (hint: `FROM … OR ME`).

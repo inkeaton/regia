@@ -128,7 +128,7 @@ WHEN insulted(?who):
 - It counts distinct Matches over **every blank**, `?` included. `COUNT(hates(?))` is the number of Agents the Agent hates. `COUNT(hates(?x, ?))` counts `hates` Facts, so an Agent hated for two reasons counts twice.
 - A condition with no blanks counts **1 or 0**: `COUNT(is_drunk)`.
 - Placeholders filled inside `COUNT(…)` are **never filled outside it**. Certainly-filled Placeholders from outside can be used inside it as fixed values (`?who` above). A named Placeholder used only inside a `COUNT` gets no "never used" warning, since naming it there only documents the slot.
-- `n OF` stays a Quota form (chapter 18). There is no `GIVEN 3 OF …`.
+- `n OF` stays a Quota form (chapter 18). There is no `GIVEN 3 OF …` (`R2607`): write `GIVEN COUNT(…) >= 3`.
 - `COUNT` is a noun, "how many", here and in the `.regin` line `COUNT 2` (chapter 21), which says how many Agents of a kind start the Program.
 
 `COUNT` counts a Role's Agents through `PLAYS` (chapter 15): `COUNT(? PLAYS Guest)` in a Plot, `COUNT(? PLAYS waiter)` in a Playbook, the Agent itself included if it plays the Role. `EMPTIED` (chapter 19) stays the Trigger for a Role losing its last Agent; a condition is only read when something else fires. A Director still never reads Agents' Facts (chapter 20).
@@ -149,6 +149,7 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 - `R2604` A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block.
 - `R2605` A Weight using a Placeholder that is neither filled by the condition nor certainly filled before it.
 - `R2606` The retired Pick `, AT RANDOM` (hint: `, RANDOMLY`).
+- `R2607` `n OF` in a Context: a Quota form only (chapter 18; hint: `COUNT(…) >= n`).
 
 A blank in a Basic Action, whose message suggests `FOR EACH`, is chapter 08's `R0801`.
 

@@ -456,7 +456,7 @@ Spec: chapter 34, *The script*. For the stand-in game and the Target's entries, 
 
 Three things a real run leaves to chance are fixed in a case:
 
-- Time is virtual. The clock moves only when the run has settled and something is waiting, and then it jumps straight to the next wake-up. `> wait` moves it on by hand. A long `WAIT` costs nothing, and wake-ups always come in the same order. While the case has paused the clock it doesn't jump, and a run settled with only paused waits goes on to the next step.
+- Time is virtual. The clock moves only when the run has settled and something is waiting, and then it jumps straight to the next wake-up. `> wait` moves it on by hand. A long `WAIT` costs nothing, and wake-ups always come in the same order. While the case has paused the clock it doesn't jump, and a run settled with only those waits goes on to the next step.
 - Randomness is seeded: `#! seed: <n>` in the header, else the Build's `SEED`, else 1. The seed covers every draw the language makes: `RANDOM`, `RANDOMLY`, every Pick that draws, the Agents drawn by `n OF` and `n% OF`, and starting Propensity values. The same seed draws the same way every run.
 - Agents step together, one reasoning step each at a time, so the order inside one Agent doesn't depend on thread timing.
 

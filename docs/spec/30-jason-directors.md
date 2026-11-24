@@ -80,7 +80,7 @@ Every Director file lists them, so fixed Infrastructure can post them:
 
 ```
 regia_afters(phase(betting), [1, 2]).
-regia_afters(phase(fight), [1]).
+regia_afters(phase(fighting), [1]).
 ```
 
 A Block with no `AFTER` has no line. The plan, from `honor_duel.regia:37`:
@@ -105,7 +105,7 @@ A Block with no `AFTER` has no line. The plan, from `honor_duel.regia:37`:
 
 ### `ENTER`
 
-`ENTER x.` calls `!regia_enter(x)`, an `[atomic]` plan in `regia/director.asl`. It follows chapter 20's six steps, plus a last one that ends the Body:
+`ENTER x` calls `!regia_enter(x)`, an `[atomic]` plan in `regia/director.asl`. It follows chapter 20's six steps, plus a last one that ends the Body:
 
 1. **Stop the old Phase's Plans.** `regia.stop_phase(Old)`, a `regia-jason` internal action like `regia.stop_playbook` (chapter 29), drops every intention running a plan annotated `regia_phase(Old)`. It drops them silently: Directors have no Goals, so nothing fires and nothing is traced. It **skips the intention running the `ENTER`**, which ends at step 7. It also drops the Phase's **queued entry events**, `+!regia_entered(phase(Old))` and `+!regia_after(phase(Old), _)`, the way `.drop_desire` removes queued events. An `ENTERED` Plan that transitions at once would otherwise leave its Phase's `AFTER` events queued, and on a re-entry they would find `regia_phase(Old)` true again and start a second count. The Phase's queued Trigger events (Signals, Cues, `LEFT`) are left in the queue, so the new Phase hears them.
 2. **Run `EXITED` to completion**, as the subgoal `!regia_exited(phase(Old))`, inside the atomic plan. If it fails, a `-!regia_exited` plan writes the Trace entry (chapter 20) and the transition carries on: a Director Statement never fails. A `DO` in it waits for the game's reply, and the transition with it (*A `DO` in `EXITED`*, below).
@@ -125,7 +125,7 @@ The order of events after a transition from `feast` to `farewell` (`royal_banque
 
 ### A `DO` in `EXITED`
 
-An `EXITED` Plan may `DO` an Action and wait for it (`DO clear_tables.`, `royal_banquet.regia:103`). `WAIT` there is still `R2003`: a `DO` is the game's time, not the Plot's.
+An `EXITED` Plan may `DO` an Action and wait for it (`DO clear_tables`, `royal_banquet.regia:103`). `WAIT` there is still `R2003`: a `DO` is the game's time, not the Plot's.
 
 - **While it waits, the Director runs nothing else.** A suspended `[atomic]` intention holds back every other intention and event (research note *How Jason behaves where the translation waits*, branch `research/jason-facts`). Messages and the game's Cues and Facts are still read, and their events queue. They are heard after the transition, by the new Phase.
 - **Every Director's `DO` resumes from Java.** The game link delivers `regia_action_result` into the mailbox of the Director that sent the Action (chapter 37, *Custom Actions in a Director*). `regia.DirectorAgent`'s Java intake takes it there and resumes `regia.act`, with no ASL plan involved. A suspended atomic intention still wakes on a message (`TransitionSystem.java:1620`), so the reply is read and the `DO` wakes inside the atomic plan. The Root and a Subplot's Director behave the same.
@@ -156,7 +156,7 @@ Once the Director has its cast (from `regia_start` or `regia_start_cast`, chapte
 
 This is chapter 16's order (`CAST` setup, Role setups, the initial Phase's setups), then chapter 21's lines, then chapter 19's `EMPTIED` and chapter 20's entry Plans. Every setup is in place before any start-up Trigger runs.
 
-Jason picks events in the order they were posted, so the `EMPTIED` Plans **start** first, then `DURING PLOT`'s `ENTERED`, then the Phase's. "Before" in chapters 19 and 20 means it starts first, not that it finishes first: a `WAIT` in one doesn't hold up the next. An `EMPTIED` Plan that ends the Plot (`WHEN Defender EMPTIED: END PLOT WITH duel_abandoned.`, `honor_duel.regia:66`) may therefore find an entry Plan already begun. The ending stops it and takes away what it gave (chapter 31), and an entry Plan not yet started finds no `regia_phase` and runs its catch-all.
+Jason picks events in the order they were posted, so the `EMPTIED` Plans **start** first, then `DURING PLOT`'s `ENTERED`, then the Phase's. "Before" in chapters 19 and 20 means it starts first, not that it finishes first: a `WAIT` in one doesn't hold up the next. An `EMPTIED` Plan that ends the Plot (`WHEN Defender EMPTIED: END PLOT WITH duel_abandoned`, `honor_duel.regia:66`) may therefore find an entry Plan already begun. The ending stops it and takes away what it gave (chapter 31), and an entry Plan not yet started finds no `regia_phase` and runs its catch-all.
 
 Running the `EMPTIED` Plans to completion before posting `ENTERED` was rejected: a `WAIT` in an `EMPTIED` Plan would hold up the Staging's start, and `EMPTIED` on a leave doesn't hold anything up either.
 
@@ -249,7 +249,7 @@ What each Statement does to the record:
 
 `ASSIGN P TO ?who`, `REMOVE P FROM ?who` and `MAPPING ?who AS r` first check `regia_cast(Me, _, Who)`: is that Agent in this Staging's cast **now**?
 
-- **If it is**, the Giving is `regia_give(p, agent(who), Rank, Bindings)` (chapter 29), or the Mapping is `bind(r, fixed([who]))`.
+- **If it is**, the Giving is `regia_give(p, agent(who), Rank, Bindings, Until)` (chapter 29), or the Mapping is `bind(r, fixed([who]))`.
 - **If it isn't**, the Giving or Mapping is dropped with a Trace warning. That covers an Agent that has left (chapter 20) **and** an Agent that was never in this Staging, such as one named by a game Cue's argument. A Director directs its own cast. Since every cast Agent already has the cast copy, nothing more needs tracking.
 
 ## Who plays a Role here
@@ -327,7 +327,7 @@ For each Cue some Agent can Signal to this Plot, the Director file has one catch
 
 ## Custom Actions in a Director
 
-**Every Director sends its own Actions** through the game link, the Root included. `DO play_music.` is `regia.act("play_music", play_music)` as in an Agent. It waits, fails and is called off as anywhere else (chapter 37, *Custom Actions in a Director*). No Director performs an Action for another, and an ending Root plays no part in its children's `EXITED, BY PARENT` Actions. Decided in the ticket *A Director doing its own Actions* (`.scratch/director-game-link/issues/04-doing-its-own-actions.md`).
+**Every Director sends its own Actions** through the game link, the Root included. `DO play_music` is `regia.act("play_music", play_music)` as in an Agent. It waits, fails and is called off as anywhere else (chapter 37, *Custom Actions in a Director*). No Director performs an Action for another, and an ending Root plays no part in its children's `EXITED, BY PARENT` Actions. Decided in the ticket *A Director doing its own Actions* (`.scratch/director-game-link/issues/04-doing-its-own-actions.md`).
 
 - **Rejected:** the Root's **Action relay**, where a Subplot Director sent `achieve regia_act(N, A, ReqId)` to the Root and got `tell regia_act_result(…)` back. The Root ran ASL and kept `regia_relay` records for other Stagings, and its relay plans had to stay unguarded while it ended.
 

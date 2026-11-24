@@ -32,9 +32,9 @@ Both views are drawn from the same graph view data (below). Neither stores anyth
 | Transitions | An edge per Plan of `DURING <phase>` that runs `ENTER`, labelled with the Trigger as written: `food_served`, `insult_thrown, FROM Guest ?who`, `HonorDuel FINISHED WITH apology`. A Plan under a `GIVEN` adds its Context to the label (`food_served · GIVEN hungry`). A Plan whose `IF` branches go to two different Phases gives one edge to each. |
 | Timeouts | A `WHEN ENTERED` Plan that transitions is drawn dotted, labelled `after <Duration>` when a `WAIT` comes before the `ENTER` (chapter 20), otherwise `on entry`. |
 | Endings | An `END PLOT` node per Outcome (`END PLOT · ruined`, plus a plain one for a bare `END PLOT`), with an edge from each Plan that ends the Plot. Endings are drawn because they are where a transition goes. |
+| Import marks | On every name in a label (below). |
 
 A Plot with no Phases (chapter 20) draws a single unnamed node for the whole Plot, with the start dot and its endings.
-| Import marks | On every name in a label (below). |
 
 A Phase node shows nothing else unless a layer is on. Everything else about a Phase is in the Inspector.
 
@@ -42,7 +42,7 @@ A Phase node shows nothing else unless a layer is on. Everything else about a Ph
 
 Layers are toggles in the pane's toolbar. **DURING PLOT is on by default**, so the default map shows every way the Plot can move, not only the evening on which nothing goes wrong; the other layers are off by default. The editor remembers them per user, not in the source.
 
-The layers that write lines on Phase nodes (Entry and exit, Givings, Messages, Knowledge, Plain comments) write the lines of `DURING PLOT` Plans on the "any phase" node, so `ASSIGN Keeping_watch TO ?winner.` in a `DURING PLOT` Plan has a place. With the DURING PLOT layer off, those lines aren't drawn.
+The layers that write lines on Phase nodes (Entry and exit, Givings, Messages, Knowledge, Plain comments) write the lines of `DURING PLOT` Plans on the "any phase" node, so `ASSIGN Keeping_watch TO ?winner` in a `DURING PLOT` Plan has a place. With the DURING PLOT layer off, those lines aren't drawn.
 
 | Layer | Adds |
 | --- | --- |
@@ -104,11 +104,11 @@ Every name in a label, a node line or the Inspector carries its origin. Names de
 
 ## Edit operations
 
-Every edit is a domain operation sent with `requestEdit` and addressed by structural key (chapters 22, 24). The core returns text edits, possibly across files, applied as one undo step ("Undo all" when several files change, chapter 24). The graph never edits text itself, and it never redraws from its own guess: it waits for the reparse.
+Every edit is a domain operation sent with `requestEdit` and addressed by structural key (chapters 22, 24). The core returns text edits, possibly across files, applied as one undo step, across files too (chapter 24). The graph never edits text itself, and it never redraws from its own guess: it waits for the reparse.
 
 | Operation | From | Text edit |
 | --- | --- | --- |
-| `addPhase(plot, name)` | "+ Phase", or double-click on empty canvas | A `PHASE name.` line after the last `PHASE`. The Phase has no `DURING` Block yet and is drawn with no incoming edge until a transition reaches it. |
+| `addPhase(plot, name)` | "+ Phase", or double-click on empty canvas | A `PHASE name` line after the last `PHASE`. The Phase has no `DURING` Block yet and is drawn with no incoming edge until a transition reaches it. |
 | `rename(key, name)` | Inspector | Every reference in every file (a Model-level rename), and what the preview below keeps ticked. |
 | `delete(key)` | Inspector | The construct's Extent. Deleting a Phase deletes its `PHASE` line and its `DURING` Block. References to it elsewhere are **left in place** and become errors for the user to fix. A Phase is deleted only after a confirmation (below). |
 | `setInitial(phase)` | Inspector | Moves `INITIAL` from the old initial Phase to this one. |
@@ -199,9 +199,9 @@ Spans are LSP ranges and keys are structural keys, as everywhere at the WASM bou
 - Writing documentation files for a Project (a "Generate docs" command): post-2.0.
 - A drawing of a Playbook: post-2.0. In 2.0 a Playbook has a Docs page.
 - An operation that moves an Extent (dragging a Plan card to another Phase box): post-2.0.
+- A form editor for Instancing: post-2.0 (chapter 24).
+- Edit operations beyond this list (Givings, Messages and Plan Bodies from the graph) are added during development as they are needed. Each is a core operation tested as *source before, operation, expected source after* (chapter 22).
 
 ## Regia 1.5
 
 All of this chapter is in 1.5 (ADR 0025), except what follows systems that 1.5 leaves out: the picker's quantity field (Quota Triggers), and its `FROM GAME` and `OR` sender choices. The 1.5 picker is the 2.0 picker with fewer choices, so nothing is rewritten later.
-- A form editor for Instancing: post-2.0 (chapter 24).
-- Edit operations beyond this list (Givings, Messages and Plan Bodies from the graph) are added during development as they are needed. Each is a core operation tested as *source before, operation, expected source after* (chapter 22).

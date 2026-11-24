@@ -75,7 +75,7 @@ FACT       on_duty                  # learned and told by Agents
 - A `FACT` or `CUE` declared with **`GAME`** in front is a **game item**: the game produces it. Every other Fact and Cue is produced only by the Program itself: `LEARN`, `UPDATE`, `TELL`, `SIGNAL`, `END PLOT WITH` and `FAIL WITH`.
 - `GAME` says where an item comes from and nothing else. Plans test, react to and tell a game item like any other: `GIVEN hungry`, `WHEN food_served:`, `TELL Guest food_served` (a told game Cue is the same Cue, chapter 07).
 - **Only a game item comes from the game.** A game message for a Fact or Cue not declared `GAME` is dropped by the Target, with a Trace warning.
-- `GAME` goes on `FACT` and `CUE` only. A `GOAL` never comes from the game. An `ACTION` is split by its External name instead (below).
+- `GAME` goes on `FACT` and `CUE` only (`R1016`). A `GOAL` never comes from the game. An `ACTION` is split by its External name instead (below).
 - **A local item is never `GAME`** (below): local Facts and Cues never come from the game.
 - In a Multi-definition `GAME` covers every item of the line, like the kind word.
 - A re-declaration merges only if both say `GAME` or neither does (`R1005`).
@@ -142,7 +142,7 @@ A Cue that one Playbook both sends and reacts to may be declared inside it (ADR 
 
 - A local Cue is sent with **`TELL`, to any recipient** `TELL` accepts (chapter 07): a Role of the Playbook, a Placeholder that holds an Agent, or `EVERYONE`.
 - A receiver that holds the Playbook reacts with the Playbook's `WHEN` Plans, with `FROM` as for any told Cue. A receiver that doesn't hold it has no Plan for the Cue, and nothing happens, as with any told Cue nobody reacts to.
-- A local Cue **can't be Signalled** and **can't be an Outcome**: a Director is outside the Playbook and couldn't name it.
+- A local Cue **can't be Signalled** (`R1014`) and **can't be an Outcome** (`R1004`): a Director is outside the Playbook and couldn't name it.
 - A local Cue **can be a Reason** (`FAIL WITH`, chapter 11). Only Plans of the same Playbook can match it with `FAILED WITH`; an asker outside the Playbook hears the Failure and matches it with plain `FAILED`.
 - It follows the other rules of local items: no External name, no shadowing, not importable, and two Playbooks may each declare the same local name as two different Cues.
 
@@ -158,7 +158,7 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 - `R1002` An import path that leads to no file.
 - `R1003` An import cycle (the message names every file in the loop).
 - `R1004` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`).
-- `R1005` Two declarations of one name that don't agree on kind, parameter count or External name (the message names both).
+- `R1005` Two declarations of one name that don't agree on kind, parameter count, External name or `GAME` (the message names both).
 - `R1006` A Playbook or Plot declared twice.
 - `R1007` Two names that differ only in case, in the program-wide namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders.
 - `R1008` A name, a Placeholder's included, that starts with `regia_` or contains `__`.
@@ -167,9 +167,9 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 - `R1011` One External name given two Regia names.
 - `R1012` `ACTION` declared inside a `PLAYBOOK` or `PLOT`, or `CUE` declared inside a `PLOT`.
 - `R1013` A local name that shadows a name the file can see.
-- `R1014` A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL`, or a local Cue sent with `SIGNAL` or `END PLOT WITH`.
+- `R1014` A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL`, or a local Cue sent with `SIGNAL`.
 - `R1015` `GOAL` declared inside a `PLOT` (hint: declare it at file level to `ASK` for it).
-- `R1016` `GAME` on a `GOAL`, an `ACTION`, a `NAME` or a local declaration.
+- `R1016` `GAME` on anything but a `FACT` or a `CUE`, or on a local declaration (a `NAME` line is `R0311`).
 
 ## ASL mapping notes
 

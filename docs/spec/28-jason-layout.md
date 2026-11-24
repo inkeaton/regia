@@ -14,7 +14,7 @@ build/<Entry path>/
     asl/playbooks/NobleSocializing.asl one per Playbook
     asl/directors/RoyalBanquet.asl     one per Plot
     asl/roles/Guest.asl                one per Role of the Root Plot
-    asl/roles/Drunkard__Guest.asl      one per Role set of a kind playing several Roles (chapter 36)
+    asl/roles/Guard__Guest.asl         one per Role set of a kind playing several Roles (chapter 36)
     asl/unheard.asl                    the Agents' catch-alls for told Cues no Plan takes (chapter 39)
     asl/goals.asl                      the generated `-!g` plan of every Goal (chapter 40)
     cast.json                          the starting cast for the game, with the `.jcm` (chapter 36)

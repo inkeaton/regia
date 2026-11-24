@@ -45,7 +45,7 @@ Each weight is worked out into a generated variable, a negative one is clamped t
 - Constant weights are folded by the Transpiler: there is no clamp and no Trace code when they are fixed and non-negative.
 - A weight that isn't a Number makes the Jason arithmetic fail, which fails the Plan as required.
 - Generated code never uses `math.random` or `.random`, only `regia.random`.
-- A Placeholder filled in every Option stays bound after the chain, since Jason keeps it. One filled in only some Options is never seen by a later Statement (chapter 09). `LET ?x BE e.` maps to `X = e`, and `?a != ?b` to `A \== B`.
+- A Placeholder filled in every Option stays bound after the chain, since Jason keeps it. One filled in only some Options is never seen by a later Statement (chapter 09). `LET ?x BE e` maps to `X = e`, and `?a != ?b` to `A \== B`.
 - Jason never emits `regia_randomly__N`.
 
 ## Picks, `FOR EACH` and `COUNT`
@@ -91,8 +91,8 @@ Every `?` in these templates becomes a fresh generated variable, so that Matches
 
 ## `WAIT`
 
-- **`WAIT d SECONDS.`** maps to `regia.wait(D)` (chapter 35), where `D` is the Duration in milliseconds (`d * 1000`, or `d * 60000` for minutes). Like `.wait`, it suspends only its own intention. A constant Duration is folded by the Transpiler. Otherwise the Body works it out into a generated variable, clamps a negative value to 0 with `T1202`, and calls `regia.wait` on the result.
-- **`WAIT d, UNTIL c.`** maps to `regia.wait(Cond, D)`, and **`WAIT UNTIL c.`** to `regia.wait(Cond)`. `Cond` is the condition compiled as a Jason logical formula, as for an `IF`. From `dining.regia:27`:
+- **`WAIT d SECONDS`** maps to `regia.wait(D)` (chapter 35), where `D` is the Duration in milliseconds (`d * 1000`, or `d * 60000` for minutes). Like `.wait`, it suspends only its own intention. A constant Duration is folded by the Transpiler. Otherwise the Body works it out into a generated variable, clamps a negative value to 0 with `T1202`, and calls `regia.wait` on the result.
+- **`WAIT d, UNTIL c`** maps to `regia.wait(Cond, D)`, and **`WAIT UNTIL c`** to `regia.wait(Cond)`. `Cond` is the condition compiled as a Jason logical formula, as for an `IF`. From `dining.regia:27`:
 
   ```
   regia.wait(on_plate(_), 60000);
@@ -193,11 +193,11 @@ How a Goal Statement is written in ASL. What each internal action does, and how 
 
 | Statement | ASL |
 | --- | --- |
-| `PURSUE g.` | `regia.pursue(g, Regia_pursuit__N); !g[regia_pursuit(Regia_pursuit__N)]` |
-| `PURSUE g, WITHOUT WAITING.` | `regia.pursue(g, Regia_pursuit__N); !!g[regia_pursuit(Regia_pursuit__N)]` |
-| `DROP g.` | `regia.drop(g)` |
-| `FAIL.` | `.fail(regia_fail)` |
-| `FAIL WITH r.` | `.fail(regia_fail, regia_reason(r))` |
+| `PURSUE g` | `regia.pursue(g, Regia_pursuit__N); !g[regia_pursuit(Regia_pursuit__N)]` |
+| `PURSUE g, WITHOUT WAITING` | `regia.pursue(g, Regia_pursuit__N); !!g[regia_pursuit(Regia_pursuit__N)]` |
+| `DROP g` | `regia.drop(g)` |
+| `FAIL` | `.fail(regia_fail)` |
+| `FAIL WITH r` | `.fail(regia_fail, regia_reason(r))` |
 | `PURSUING g`, in a `TO g` Plan | `regia.pursuing(g, Regia_pursuit)`, the trigger's own `Id` |
 | `PURSUING g`, anywhere else | `regia.pursuing(g, none)` |
 

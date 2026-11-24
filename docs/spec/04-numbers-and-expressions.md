@@ -122,7 +122,7 @@ A Placeholder filled by `LET` follows the same rules as any other (chapter 03): 
 - **`LET` goes only in a Body**, as a Statement of its own, one-line Options included (`OPTION: LET ?stake BE ?gold / 2`, chapter 09). It is an error in a Context or an `IF` condition.
 - **The spelling without `LET`**, `?x = e` as a Statement, is retired: it is an error, with the hint `LET ?x BE e`.
 - **Order matters.** A Placeholder filled by `LET` can be used only by the Statements after it.
-- **Branches.** A Placeholder filled inside a Body `IF` branch can be used after the `IF` only if every branch fills it, just as with `OR` in a Context. The same holds for the Options of a Random choice (chapter 09): a Placeholder filled in every Option outlives the choice.
+- **Branches.** A Placeholder filled inside a Body `IF` branch can be used after the `IF` only if every branch fills it, just as with `OR` in a Context. The same holds for the Options of a Random choice (chapter 09): a Placeholder filled in every Option outlives the choice. Using one that some branch or Option leaves unfilled is `R0305` (chapter 03).
 
 ```regia
 WHEN gift_received(?giver):
@@ -165,7 +165,7 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 - `R0401` A number written in a form Regia doesn't have: `.5`, an exponent, digit separators, another base.
 - `R0402` An Expression in a Trigger slot.
 - `R0403` A chained comparison, such as `0 < ?h < 20` or `?a = ?b != ?c` (hint: `0 < ?h AND ?h < 20`).
-- `R0404` A comparison in a Context with a side that isn't filled yet (a comparison never fills).
+- `R0404` A comparison in a Context or an `IF` condition with a side that isn't filled yet (a comparison never fills).
 - `R0405` `LET` on a Placeholder that is already filled (`LET ?h BE ?h - 1`; hint: `LET ?new BE ?h - 1`).
 - `R0406` Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`host + 1`, `"hi" < 3`).
 - `R0407` The retired spelling `?x = e` as a Body Statement (hint: `LET ?x BE e`).

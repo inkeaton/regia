@@ -146,6 +146,8 @@ Every chapter opens with a moment at the banquet and a short table of what the c
 
 The guide is derived from `docs/spec/`, `GLOSSARY.md` and `docs/adr/`. Where the guide disagrees with them, they are right and the guide is fixed. It doesn't list every check either: each spec chapter's *Transpiler checks* section does.
 
+In some places the spec leaves a detail open, and the guide fills it in without saying so each time. Treat these as one way it could be done, not as the spec's rule: the ASL in the Jason chapters beyond what the spec writes out (plan names, Items, the order of lines in a file), the Visual Editor's edge labels and file names, and the console texts the Trace gives only by example. When the spec settles one of them, the guide follows.
+
 Spec: chapter 27, *Diagnostic codes*. For Trace codes, chapter 34.
 
 ## The chapters

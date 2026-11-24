@@ -20,10 +20,11 @@ ASL code reaches it through the internal action **`regia.trace(Kind, Level, Code
 | --- | --- |
 | `run` | the writer itself: `RUN STARTED` at start-up; `RUN ENDED` when the Root ends the story (`regia.end_story`, chapter 37), or from a JVM shutdown hook, `how: stopped`, if the run stops first (Ctrl-C, or the MAS is closed). In test mode, `RunCase` (below) |
 | `action` | `regia.act` when it sends, and the reply intake of `regia.RegiaAgent` and `regia.DirectorAgent` when the outcome comes back; the game link for a detached Director's call-offs and late outcomes, and for Actions failed when it is lost (chapter 37) |
+| `time` | `regia.wait` when a `WAIT … UNTIL` ends, met or timed out (chapter 39); the game link for `CLOCK PAUSED` and `CLOCK RESUMED` (chapter 37) |
 | `message` | `regia.send` (chapter 33), which every generated and Infrastructure send goes through: a `TELL`, an `ASK`, a `SIGNAL` (one entry for the Statement, listing every Director it went to, and in `ended` those whose Staging had ended, which `regia.send` finds when the delivery fails: `info`, not `T3303`), and a setup's `LEARN` and `PURSUE` sent by the Director (chapter 30) |
 | `plan` | `RegiaAgent.selectOption` and `DirectorAgent.selectOption`, when they choose the option (*The `plan` entry*, below); a stopped one by the walker and `regia.stop_playbook` (chapters 29 and 40), a failed one by `regia.pass_failure` (chapter 40) |
 | `goal` | `regia.pursue` and `RegiaAgent.socAcc` (`PURSUED`), `regia.reached`, `regia.goal_failed` in the generated `-!g` (`FAILED`, at `error`), and the drop walker (chapter 40) |
-| `fact` | `regia.trace` after each `REMEMBER`/`FORGET`/`UPDATE`, in the Infrastructure plan that takes in a told Fact, in the Java intake of a game Fact, Agents' and Directors' alike, and, for a Director's starting game Facts, in `regia_begin` (chapter 30) |
+| `fact` | `regia.trace` after each `LEARN`/`FORGET`/`UPDATE`, in the Infrastructure plan that takes in a told Fact, in the Java intake of a game Fact, Agents' and Directors' alike, and, for a Director's starting game Facts, in `regia_begin` (chapter 30) |
 | `phase`, `staging`, `cast` | the Infrastructure plans of chapters 30–33 that do these things. `regia_begin` writes `STAGING … STARTED`, then the initial `phase` entry, then the starting game Facts, before the setups (chapter 30) |
 | `giving` | the receiving Agent: `regia_give` and `regia_restore` write `GIVE`, each take step and `regia_set_aside` write `TAKE`, one entry per Giving (chapter 29) |
 | `failure` | the cause entry only: the Statement that knows its cause, else the catcher (the generated `-!g`, the `-!regia_<kind>` catchers of ending Plans, and `RegiaAgent`'s hook for a `WHEN` Plan failing on its own), chapter 40 |
@@ -98,7 +99,7 @@ The writer reads it once at start-up. Nothing in it changes at run time. Every e
 
 ## Time
 
-`WAIT d SECONDS.` compiles to **`regia.wait(D)`**, not `.wait(D)`, and `WAIT … UNTIL` to `regia.wait(Cond[, D])` (chapters 12 and 39). In a normal run it waits on the wall clock, exactly like `.wait`. In test mode it waits on the virtual clock. Dropping the intention during the wait removes it, as before.
+`WAIT d SECONDS` compiles to **`regia.wait(D)`**, not `.wait(D)`, and `WAIT … UNTIL` to `regia.wait(Cond[, D])` (chapters 12 and 39). In a normal run it waits on the wall clock, exactly like `.wait`. In test mode it waits on the virtual clock. Dropping the intention during the wait removes it, as before.
 
 ## Test mode
 

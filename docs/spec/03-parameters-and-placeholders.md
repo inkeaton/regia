@@ -50,7 +50,7 @@ WHEN hungry: DO walk_to(kitchen)
 - Names share the program-wide namespace (chapter 10): `NAME roast` and `FACT roast` can't both exist, and two Names can't differ only in case. Re-declaring a Name declares the same Name, so a Playbook file can declare the Names it uses.
 - **Only the source is checked.** A Name that arrives at runtime, from the game or in a Message, isn't checked against the declarations: the game may send Names the Program never writes.
 - A declared Name can go in any slot. Which Names suit which slot is a matter for types (*Declaring parameters*, above), not in 2.0.
-- Agent names are never Names (chapter 07): an Agent is reached through a Placeholder.
+- An Agent's name is a Name only inside Instancing (chapter 21, *Individual Agents*): a `.regia` file never writes one (chapter 07), and a Plan reaches an Agent through a Placeholder, meeting its name at runtime as an ordinary Name.
 
 ### `ME`
 
@@ -75,7 +75,7 @@ WHEN insulted, FROM ?foe:
 - `FROM ME` on a Trigger means the Agent caused the item itself (chapter 05).
 - "Regia never names an Agent" (chapter 07) still holds: `ME` is not a name from Instancing.
 
-A Role name can't be a Value (`toast(Host)` is an error): Roles are only recipients and `FROM` Senders (chapter 15, `15-roles-and-mappings.md`). Fill a Placeholder with `FROM Host ?h` and use `?h`.
+A Role name can't be a Value (`toast(Host)` is `R0303`): Roles are only recipients and `FROM` Senders (chapter 15, `15-roles-and-mappings.md`). Fill a Placeholder with `FROM Host ?h` and use `?h`.
 
 A **Placeholder** is a blank the Agent fills in by matching. It is written `?name`, with the same `?` wherever it appears, so a reader never has to look elsewhere to tell it apart from a Value.
 
@@ -133,7 +133,7 @@ A named Placeholder is **used** when any of these holds:
 - a Pick ranks or weighs by it: `HIGHEST ?p`, `LOWEST ?p`, or a Weight that names it (chapter 26). A Pick needs a named Placeholder, so `?` couldn't be written there;
 - it appears only inside a `COUNT(…)`, where naming it documents the slot (chapter 26).
 
-A Placeholder filled by a Trigger shared by several `GIVEN` Blocks is used if any of the Blocks, or the `ELSE`, uses it (chapter 06). One filled by a `GIVEN`'s own Context is checked in that Block alone. These are the only cases the writer can't fix with `?`, so they're the only ones spared the warning. Decided in *What counts as using a Placeholder* (`.scratch/showcase-1-5/issues/08-using-a-placeholder.md`).
+A Placeholder filled by a Trigger shared by several `GIVEN` Blocks is used if any of the Blocks, or the `ELSE`, uses it (chapter 06). This is the only case the writer can't fix with `?`, so it's the only one spared the warning. One filled by a `GIVEN`'s own Context is checked in that Block like any other. Decided in *What counts as using a Placeholder* (`.scratch/showcase-1-5/issues/08-using-a-placeholder.md`).
 
 A `?` may carry a name for the reader: **`?_victim`**, a name starting with `_`. It is still a "don't care": it fills nothing the Plan can use, two of them never join even with the same name, and it never gets the warnings below. It says what is ignored, so a Trigger can keep the shape of its neighbours (`WHEN insult_heard(?_who):` next to Plans that use `?who`) without being warned for it.
 
@@ -165,9 +165,9 @@ When several matches satisfy the Context, the Agent uses **one**, and **the lang
 
 - `R0301` A use with a different number of arguments from the declaration's parameters.
 - `R0302` A `?` in a declaration.
-- `R0303` A Role name used as a Value (hint: fill a Placeholder with `FROM Role ?x`).
+- `R0303` A Role name used as a Value, as an argument or in an Expression (hint: fill a Placeholder with `FROM Role ?x`).
 - `R0304` A Placeholder used in the Body that was never filled, or used before the Statement that fills it.
-- `R0305` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR` (the message names the branch).
+- `R0305` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` (the message names the branch).
 - `R0306` A bare `?`, or a `?_name`, in the Body.
 - `R0309` `ME` in a Plot, a Role setup included.
 - `R0310` A Name that isn't declared with `NAME` (the hint names the closest declared Name).

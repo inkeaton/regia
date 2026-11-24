@@ -43,12 +43,12 @@ A `PLAYBOOK` Block holds `ROLE` lines, Local Vocabulary and Trigger Blocks. `Kee
 
 - A Playbook never names a Plot, a Plot's Role or another Playbook. Everything that ties it to a scene is written in the Plot that gives it.
 - A Playbook describes the Agent that holds it and nobody else. It can tell and ask, and the receiver's own Plans decide what follows. It can't make another Agent run an Action, give or take away a Playbook, or change who plays a Role: those are the Director's, and even a Director does them with Messages and Givings only.
-- The Director's Statements and Triggers are errors in a Playbook: `ASSIGN`, `REMOVE`, `MAPPING`, `START SUBPLOT`, `ENTER`, `ENTERED`, `RUNNING`, `IN`.
+- The Director's Statements and Triggers are errors in a Playbook: `ASSIGN`, `REMOVE`, `MAPPING`, `START SUBPLOT`, `ENTER`, `ENTERED`, `EXITED`, a Subplot's `FINISHED`, `DROPPED` and `ENDED`, `RUNNING`, `IN`. A Goal's `ENDED` stays the Playbook's own.
 
 **Checks**
 
 - A Director Statement in a Playbook (`ASSIGN`, `REMOVE`, `MAPPING`, …) → `R1507`
-- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook → `R2005`; `IN <phase>` → `R2014`; `RUNNING` → `R1714`
+- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook, or a Subplot's `FINISHED`, `DROPPED` or `ENDED` → `R2005`; `IN <phase>` → `R2014`; `RUNNING` → `R1714`
 
 Spec: chapter 15, *Roles are addresses*. For the Director's Statements, chapter 20.
 
@@ -80,7 +80,7 @@ In a Playbook a Role is an address and never a Value. It stands in three places:
 
 Anywhere else the name is an error: as an argument (`DO bow_to(patron)`) or in an Expression. A Plan that needs one Agent of the Role fills a Placeholder, with `FROM patron ?guest` or `GIVEN ?g PLAYS patron`, and writes `?g`.
 
-- `ROLE` lines come first in the Block, before the Trigger Blocks.
+- `ROLE` lines come first in the Block, before the Trigger Blocks. That is a convention for the reader, with no check: the Transpiler reads them anywhere in the Playbook.
 - A Playbook's Role takes no Block. Nobody plays it, so there is nothing to set up; only a Plot's Role has a setup.
 - Role names are local to the Playbook. `Courtesy` has a `host`, and another Playbook may have a `host` of its own: the two have nothing to do with each other until a Plot maps them.
 - The showcase writes a Plot's Roles with a capital (`Host`) and a Playbook's in lowercase (`host`), so a reader sees which side a line is on. That is a convention only. Names are compared ignoring case, which is why a Plot's `Host` fills `Courtesy`'s `host` with no Mapping (*Mappings*).

@@ -17,7 +17,7 @@ Every entry has a **kind**:
 | `plan` | a Plan is chosen to run: the Block, the values of its Placeholders, and, when it had rivals, how it won and over whom (*Why a Plan ran*, below). Also when a waiting Plan is stopped by a drop or fails in turn (below) |
 | `unheard` | something arrived or was reached and no Plan ran for it (*What didn't run*, below) |
 | `goal` | a Pursuit starts (with its Sender, if any), and again when it is reached, dropped or failed (linked by `of`) |
-| `fact` | an Agent or a Director learns or forgets a Fact: its own `REMEMBER`/`FORGET`/`UPDATE`, a Fact told to it, a game Fact, and, for a Director, each Fact it starts with from the game |
+| `fact` | an Agent or a Director learns or forgets a Fact: its own `LEARN`/`FORGET`/`UPDATE`, a Fact told to it, a game Fact, and, for a Director, each Fact it starts with from the game |
 | `phase` | a Director enters its initial Phase, or changes Phase with the Trigger that caused it |
 | `staging` | a Staging starts (with its cast) or ends (with how it ended) |
 | `giving` | an Agent receives or loses one Giving of a Playbook |
@@ -109,7 +109,7 @@ plus the fields of its kind:
 
 Chapter 11 requires the Trace to say what failed, why, and what failed in turn because of it. Failure spreads one level at a time, so the Trace writes **one cause, then one entry per level, linked**, the same way a drop is written (below):
 
-- The **cause** is the Failure's one `failure` entry, written once: the Statement by `at`, and the cause from chapter 11's table (or "no applicable `TO` Plan") by its `code`. A `FAIL WITH r.` adds the field `reason`, the Reason with its arguments. `FAILURE T1103 FAIL WITH sold_out(pie)`, `FAILURE T1104 GOAL take_seat: no applicable TO Plan`.
+- The **cause** is the Failure's one `failure` entry, written once: the Statement by `at`, and the cause from chapter 11's table (or "no applicable `TO` Plan") by its `code`. A `FAIL WITH r` adds the field `reason`, the Reason with its arguments. `FAILURE T1103 FAIL WITH sold_out(pie)`, `FAILURE T1104 GOAL take_seat: no applicable TO Plan`.
 - **Each Pursuit that fails**, the one where the cause happened included, writes its `goal` entry, `GOAL … FAILED`, at level `error`, with `because: <seq of the cause>`. A failing `TO` Plan is its Goal's recipe, so it has no entry of its own: the Goal's is its entry.
 - **A waiting `WHEN` Plan that fails in turn** has no Goal: it writes a `plan` entry, `PLAN … FAILED`, at level `error`, with the same `because`.
 - The Reason is not repeated: it is read from the cause.

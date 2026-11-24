@@ -606,7 +606,7 @@ Spec: chapter 35, *The game's state*.
 
 all of it for one whole cycle. A Director waiting for its state reply needs no rule of its own: `ScriptedGame` answers at once, so the run is never settled while a request is unanswered.
 
-If the run has settled with something paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of going on to the next step. `regia.wait` waits on the wall clock in a normal run and on the virtual clock in a case; dropping its intention during the wait removes it either way.
+If the run has settled with an intention waiting in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of going on to the next step. While the case has paused the clock with `> pause` (*Pausing*, above), it doesn't jump, and a run settled with only such waits goes on to the next step. `regia.wait` waits on the wall clock in a normal run and on the virtual clock in a case; dropping its intention during the wait removes it either way.
 
 Spec: chapter 35, *Test mode*, step 4, and *Time*.
 

@@ -132,7 +132,7 @@ A Message arrives with its Sender, and a Trigger restricts or names it with `FRO
 **Checks**
 
 - `FROM GAME`, `FROM ME`, or `FROM` with `OR`, in a 1.5 build → `R0109`
-- `FROM <Role>` in a Plot where no Playbook the Plot gives Signals that Cue → `R3802` (warning)
+- `FROM <Role>` or `FROM ?who` in a Plot where no Playbook the Plot gives Signals that Cue → `R3802` (warning)
 
 Spec: chapter 05, chapter 07.
 

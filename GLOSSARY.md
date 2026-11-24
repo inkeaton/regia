@@ -75,7 +75,7 @@ _Avoid_: Behaviour, module, plan library
 ## Vocabulary
 
 **Vocabulary**:
-The declared Facts, Cues, Actions, Goals and Propensities that Plans are built from.
+The declared Facts, Cues, Actions, Goals and Propensities that Plans are built from. Names are declared too (`NAME`), but they are Values, not Vocabulary.
 _Avoid_: Declarations, components
 
 **Fact**:
@@ -116,7 +116,6 @@ _Avoid_: Personality, stat
 **Mood**:
 A Propensity that changes as the Agent runs Plans, such as sympathy, through a Shifts Label or a `SHIFT` Statement.
 _Avoid_: Emotion, dynamic temper, feeling
-_Avoid_: Notification, message
 
 **Game item**:
 A Fact or Cue that the game produces, declared with `GAME`. Plans test, react to and tell it like any other; only a game item can come from the game. Every other Fact and Cue is produced by the Program alone.

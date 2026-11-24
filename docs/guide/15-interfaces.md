@@ -293,12 +293,13 @@ DURING PLOT:
 `poison_drunk` comes from the game, and what the game sends has no Sender. A `FROM Watchman` never matches it, and no Playbook that `Poisoning` gives Signals it, so the Plan can never run. The warning goes on the Trigger.
 
 - The check looks at the Plot as a whole, not at Roles. `WHEN duel_won, FROM Spectator` in `HonorDuel` would not be warned: `Duelling`, which the Plot gives, Signals `duel_won`, even though it gives it to the duellists and not to the Spectators.
+- A `FROM ?who` with no Role is checked the same way: `WHEN duel_won, FROM ?winner` in `HonorDuel` would be warned if no Playbook the Plot gives Signalled `duel_won`.
 - A Trigger with no `FROM` isn't checked here, since the Cue may come from the game. The showcase's `WHEN poison_drunk:` is written that way. A Cue that nothing sends at all is the check of *A Cue nothing sends*.
 
 **Checks**
 
 - A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R3801` (warning)
-- `WHEN e, FROM <Role>` in a Plot where no Playbook the Plot gives Signals `e` → `R3802` (warning)
+- `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e` → `R3802` (warning)
 - A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T3801` (Trace, `unheard`)
 
 Spec: chapter 38, *A Signal the giving Plot never handles*, *A Signal handled in some Phases only*, *A Director Plan no Signal can reach*, *Trace entries*. For where a Signal goes, chapter 07.

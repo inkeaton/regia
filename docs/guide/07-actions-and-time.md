@@ -384,6 +384,7 @@ The plate is filled by another Plan of the same Guest. That works because `WAIT`
 | `WAIT 1 MINUTE, UNTIL on_plate(?)` | the condition holds, or the minute is over |
 | `WAIT UNTIL NOT guard_near` | the condition holds, however long that takes |
 
+- `, UNTIL` belongs to `WAIT`'s own form. It is not a trailing clause, so `R0805` doesn't apply to it.
 - The condition is anything an `IF` could test at that point: the Agent's Facts, or in a Director its own Facts, `IN`, `PLAYS` and `RUNNING`.
 - It is tested when the Body reaches the `WAIT`, and again whenever what it tests changes. If it holds already, the Body goes on at once.
 - Running out of time isn't a failure. The Body goes on either way, and an `IF` tells the endings apart. Here the recipe chooses to `FAIL WITH no_food`; another might go on with what it has.

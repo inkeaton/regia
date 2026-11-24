@@ -77,19 +77,19 @@ The Root takes the same second step after its own start (chapter 33).
 
 A Plot's parameter is a Placeholder filled in every Block of the Plot (chapter 17). The child keeps its arguments as one belief, `regia_args([alice])`, added before `!regia_begin`, so the setups already read it. A Plot without parameters has no such belief, and neither does the Root, which takes none (`R2114`).
 
-Every generated plan whose Block names a parameter reads it at the head of its context, right after the Phase guard. This holds for Trigger plans, `ENTERED`, `EXITED` and `EXITED, BY PARENT` plans, `AFTER` bodies and setups. The parameter becomes the Jason variable chapter 39 names for its Placeholder (`?offender` → `Offender`). The showcase's `HonorDuel` never names `?offender` in its own Blocks: the argument only tells its Stagings apart for the parent. If a Challenger setup did tell the Challenger who to face (`TELL ?offender …`) and a `fight` Plan waited for `conceded(?offender)`, they would be:
+Every generated plan whose Block names a parameter reads it at the head of its context, right after the Phase guard. This holds for Trigger plans, `ENTERED`, `EXITED` and `EXITED, BY PARENT` plans, `AFTER` bodies and setups. The parameter becomes the Jason variable chapter 39 names for its Placeholder (`?offender` → `Offender`). The showcase's `HonorDuel` never names `?offender` in its own Blocks: the argument only tells its Stagings apart for the parent. If a Challenger setup did tell the Challenger who to face (`TELL ?offender …`) and a `fighting` Plan waited for `conceded(?offender)`, they would be:
 
 ```
 +!regia_setup(plot, challenger, A) : regia_args([Offender])
    <- …
-+conceded(Offender)[source(S)] : regia_phase(fight) & regia_args([Offender]) & regia_cast(_, defender, S)
++conceded(Offender)[source(S)] : regia_phase(fighting) & regia_args([Offender]) & regia_cast(_, defender, S)
    <- …
 ```
 
 - Jason unifies the trigger before it tests the context, so a Trigger that names a parameter (`WHEN conceded(?offender)`) binds it from the event, and `regia_args` then **tests** it, as for any filled Placeholder (chapter 03).
 - A plan that names no parameter doesn't read the belief.
 
-- A Role mapped from a parent Role that is empty when `START SUBPLOT` runs **starts empty**, and so does one whose `MAPPING ?who` was dropped because `?who` had left (chapter 30, *One Agent*). That is not an error. `!regia_begin` posts `regia_role_emptied` for it after the setups and before the entry Plans (chapter 30), so `WHEN Defender EMPTIED: END PLOT WITH duel_abandoned.` (`honor_duel.regia:66`) ends a duel whose Defender never came. An entry Plan that has already begun is stopped by that ending, like any other Plan of the Staging (*The walk*).
+- A Role mapped from a parent Role that is empty when `START SUBPLOT` runs **starts empty**, and so does one whose `MAPPING ?who` was dropped because `?who` had left (chapter 30, *One Agent*). That is not an error. `!regia_begin` posts `regia_role_emptied` for it after the setups and before the entry Plans (chapter 30), so `WHEN Defender EMPTIED: END PLOT WITH duel_abandoned` (`honor_duel.regia:66`) ends a duel whose Defender never came. An entry Plan that has already begun is stopped by that ending, like any other Plan of the Staging (*The walk*).
 - How the **Root** Director gets its starting cast (from the `.jcm`'s Agents and the game) is an initial belief, `regia_start_cast`, compiled in (chapter 33); the Agents' names are chapter 36. It then runs the same `!regia_begin`, which also runs the setup lines of kinds and individual Agents (chapter 30).
 
 ## Ending a Staging
@@ -115,7 +115,7 @@ Steps 3 to 5 are `!regia_finish`, an `[atomic]` plan run as soon as no `regia_ch
 A child receiving `regia_end` from its `regia_parent` runs the **same walk**, with Outcome `none` and `By = parent`:
 
 - It runs its current Phase's `EXITED` and `DURING PLOT`'s `EXITED`, exactly as with its own `END PLOT`. A duel cut short by the guards can still `TELL` its Spectators. `EXITED` can't `WAIT` (chapter 20), so it can't hold the ending up.
-- **`EXITED, BY PARENT`** (chapter 20) runs before each plain `EXITED`. `regia_end` is the only way a parent ends a child, whether by `DROP SUBPLOT`, by `UNTIL EXITED` or by ending itself, and it is accepted only from the parent, so the message needs no flag: receiving it is what "by parent" means. Each `WHEN EXITED, BY PARENT` Block compiles to a plan for the generated Goal `regia_exited_by_parent(phase(fight))` or `regia_exited_by_parent(plot)`, with a catch-all that does nothing, as for `regia_exited` (chapter 30). The Root is never ended from above and never runs it.
+- **`EXITED, BY PARENT`** (chapter 20) runs before each plain `EXITED`. `regia_end` is the only way a parent ends a child, whether by `DROP SUBPLOT`, by `UNTIL EXITED` or by ending itself, and it is accepted only from the parent, so the message needs no flag: receiving it is what "by parent" means. Each `WHEN EXITED, BY PARENT` Block compiles to a plan for the generated Goal `regia_exited_by_parent(phase(fighting))` or `regia_exited_by_parent(plot)`, with a catch-all that does nothing, as for `regia_exited` (chapter 30). The Root is never ended from above and never runs it.
 - `honor_duel.regia:72` and `poisoning.regia:19` both `DO` an Action there. The child sends it on the game link itself, as every Director does (chapter 30, *Custom Actions in a Director*), so a parent that is ending, or the Root, plays no part in it. The `DO` waits for the game inside the atomic walk, as in a Phase's `EXITED` (chapter 30, *A `DO` in `EXITED`*).
 - A child **already ending** (it has `regia_ending(_)`) ignores `regia_end`: it will send `regia_ended` anyway.
 - `regia_end` is accepted only from the `regia_parent`.
@@ -130,7 +130,7 @@ The parent's `regia/director.asl` accepts `regia_ended(Plot, O)` only from a Dir
 
 ### `DROP SUBPLOT`
 
-`DROP SUBPLOT HonorDuel(?q).` is one `[atomic]` step. For every `regia_child(C, honorDuel, Args, _)` whose `Args` unify with the written pattern (`[Q]` with `?q` filled, `[_]` for `?` or an unfilled Placeholder, `[]` for a Plot without parameters):
+`DROP SUBPLOT HonorDuel(?q)` is one `[atomic]` step. For every `regia_child(C, honorDuel, Args, _)` whose `Args` unify with the written pattern (`[Q]` with `?q` filled, `[_]` for `?` or an unfilled Placeholder, `[]` for a Plot without parameters):
 
 1. remove the record;
 2. send `achieve regia_end` to `C`;
@@ -164,7 +164,7 @@ While it waits for its children, a Director has **no current Phase**, and that i
 
 ### What an Agent does: `regia_end_staging`
 
-Chapter 29's per-Playbook `regia_take(p, S, all)` on ending is **replaced** by one message per cast Agent, handled by an `[atomic]` plan in `regia/agent.asl`:
+Chapter 29's per-Playbook `regia_take(p, all)` on ending is **replaced** by one message per cast Agent, handled by an `[atomic]` plan in `regia/agent.asl`:
 
 ```
 @regia_end_staging[atomic]

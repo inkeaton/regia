@@ -207,7 +207,7 @@ Nothing in this condition has to reach the Body: the Trigger filled `?speaker`, 
 
 **Checks**
 
-- A Placeholder used that is filled only under `NOT`, or in only some branches of an `OR` → `R0305` (the message names the branch)
+- A Placeholder used that is filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` → `R0305` (the message names the branch)
 - A named Placeholder that appears only under `NOT` → `R0308` (warning; hint: `?`)
 - A Placeholder filled in an `IF` condition and used outside its branch → `R0604`
 - A Placeholder filled by a `FOR EACH` used after its Block → `R2604`

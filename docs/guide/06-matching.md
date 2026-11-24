@@ -293,6 +293,7 @@ A Director counts only its own Facts, never an Agent's. That is why `RoyalBanque
 
 - A Pick inside `COUNT(…)` → `R2603`
 - A Placeholder filled inside `COUNT(…)` used outside it → `R0304`
+- `n OF` in a Context (`GIVEN 3 OF …`) → `R2607` (hint: `COUNT(…) >= n`)
 - `FROM ALL Guest` or any other quantity after `FROM` or `BY`, in a 1.5 build → `R0109`
 
 Spec: chapter 26, *`COUNT`*. For Expressions, chapter 04; for `PLAYS`, chapter 15; for `RUNNING`, chapter 17; for a Director's conditions, chapter 20.

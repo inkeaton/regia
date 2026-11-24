@@ -106,7 +106,7 @@ Instancing has no comment form. It is written only in `.regin` Instancing files 
 
 **Errors**
 
-- `R0201` An unclosed multiline comment (pointing at its opener).
+- `R0201` An unclosed multiline comment, plain (`#[`) or doc (`#@key[`), pointing at its opener.
 - `R0202` A doc comment that doesn't start its own line.
 - `R0204` An `#@allow` naming the code of an error.
 

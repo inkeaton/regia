@@ -72,7 +72,7 @@ The rules for `IF` branches apply (chapters 04 and 06), with Options in the plac
 
 - A Placeholder filled inside an Option, by `LET` (`LET ?dmg BE RANDOM(1, 6)`) or by an `IF` condition inside it, can be used inside that Option.
 - **A Placeholder filled in every Option outlives the Random choice**, as one filled in every branch of an `IF`/`ELSE` outlives the `IF`: it is certainly filled after it. An Option holding only `PASS` fills nothing, so a Random choice with one fills nothing that outlives it.
-- A Placeholder filled in some Options but not all can't be used after the Random choice, or anywhere else in the Plan but a sibling Option.
+- A Placeholder filled in some Options but not all can't be used after the Random choice, or anywhere else in the Plan but a sibling Option (`R0305`, chapter 03).
 - **Sibling Options may fill the same Placeholder**, since only one of them runs.
 - Placeholders filled before the Random choice can be used in every Option and in every weight.
 

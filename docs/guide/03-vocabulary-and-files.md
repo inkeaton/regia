@@ -125,7 +125,7 @@ TO fetch(?dish):
 
 **Checks**
 
-- `GAME` on a `GOAL`, an `ACTION`, a `NAME` or a local declaration → `R1016`
+- `GAME` on anything but a `FACT` or a `CUE` (`GAME TRAIT`, `GAME GOAL`, …), or on a local declaration → `R1016`; on a `NAME` line it is `R0311`
 - `LEARN`, `FORGET` or `UPDATE` on a game Fact → `R0807` (warning)
 - A Trigger waiting for a Cue that isn't `GAME` and that nothing in the Program sends → `R3807` (warning; hint: `GAME CUE`)
 - A game message for an item that isn't `GAME`, or that the receiver never uses → Trace warning (Jason: `T2801`)
@@ -209,7 +209,7 @@ A slot holds either a Placeholder (`?dish`, in *Placeholders and Expressions*) o
 | a String | `"The feast is over, and the poisoner was never found."` | no |
 | `ME` | `scandal(ME)` | reserved: the Agent running the Plan |
 
-`roast` and `kitchen` are Names. Every Name written in the source is declared with `NAME`, so `DO walk_to(kitchn)` is an error whose hint is the closest declared Name, `kitchen`. A `NAME` line declares Names and nothing else: no parameters, no `AS`, no `GAME`, and only at the top level of a file.
+`roast` and `kitchen` are Names. Every Name written in the source is declared with `NAME`, so `DO walk_to(kitchn)` is an error whose hint is the closest declared Name, `kitchen`. A `NAME` line declares Names and nothing else: no parameters, no `AS`, no `GAME`, and only at the top level of a file. Names are declared, but they are Values, not Vocabulary.
 
 - Only the source is checked. A Name that arrives at runtime, from the game or in a Message, isn't checked against the declarations. The game lays a `seat(seat_3)` that no Plan ever writes, so `seat_3` needs no declaration.
 - A declared Name can go in any slot. Which Names suit which slot would be a matter for types, which 1.5 doesn't have.
@@ -427,13 +427,14 @@ PLAYBOOK Duelling:
 A Cue that one Playbook both sends and reacts to may be declared inside it. `challenged`, `hit` and `yielded` are what two holders of `Duelling` say to each other, and no other Playbook or Plot can name them. `greeting` in `Courtesy` is another.
 
 - A local Cue is sent with `TELL`, to any recipient `TELL` accepts. A receiver holding the Playbook reacts with its Plans; any other receiver has no Plan for it, and nothing happens (*Messages*).
-- It can't be Signalled and can't be an Outcome: a Director is outside the Playbook and couldn't name it.
+- It can't be Signalled and can't be an Outcome: a Director is outside the Playbook and couldn't name it. To a Plot, a local Cue isn't declared at all.
 - It can be a Reason (`FAIL WITH`). Only Plans of the same Playbook can match it with `FAILED WITH`; anyone else sees a plain `FAILED`.
 - The other rules of local items hold: no External name, no shadowing, no importing, and the same local name in two Playbooks is two Cues.
 
 **Checks**
 
-- A local Cue sent with `SIGNAL` or `END PLOT WITH` → `R1014`
+- A local Cue sent with `SIGNAL` → `R1014`
+- A local Cue as an Outcome (`END PLOT WITH`, `FINISHED WITH`) → `R1004`: the Plot can't see it
 
 Spec: chapter 10, *Local Cues*.
 

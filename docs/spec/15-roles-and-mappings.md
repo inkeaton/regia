@@ -22,7 +22,7 @@ PLAYBOOK NobleSocializing:
 
 - A Playbook's Role names are **local to that Playbook**, like a Plot's Role names are local to the Plot (chapter 10). Two Playbooks may each have a `host`; a Playbook's `Guest` and a Plot's `Guest` are different Roles that a Mapping may join.
 - **The capital is a convention.** The showcase writes a Plot's Roles with a capital (`Host`) and a Playbook's in lowercase (`host`), so that a reader sees which side a line is on. The language doesn't read it: names are compared ignoring case (chapter 10), and a Plot's `Host` fills a Playbook's `host` with no `MAPPING` (*Mappings*, below).
-- `ROLE` lines come before the Playbook's Trigger Blocks. A Playbook's `ROLE` takes no Block (`R1601`): only a Plot's Role has a setup (chapter 16).
+- `ROLE` lines are written before the Trigger Blocks by convention; the Transpiler reads them anywhere in the Playbook. A Playbook's `ROLE` takes no Block (`R1601`): only a Plot's Role has a setup (chapter 16).
 - **`ROLE` is one word for both.** A Plot's Role is played and a Playbook's is an address, but both are Roles, classes of Agents, and a Mapping joins the two (`MAPPING Host AS host`), which reads well only because both sides are called Roles. The syntax review kept the word under chapter 01's rule for nouns.
 - The Playbook stays **independent of any Plot**: it never names a Plot or a Plot's Role. Whoever gives it fills its Roles (*Mappings*, below).
 - A Playbook with no `ROLE` lines can still use `FROM ?who`, `FROM DIRECTOR`, `?who` recipients and `EVERYONE`, as before.
@@ -232,7 +232,7 @@ ASSIGN Brawling TO 2 OF Guest, MAPPING 1 OF Guest AS rival
 ```
 
 - Counts and fractions are allowed in the target of `ASSIGN … TO`, on the giver's side of `MAPPING`, and on a Role recipient (below). They are an error on `REMOVE`, after `PLAYS`, after `EXCEPT`, and on `EVERYONE`. A quantity on `FROM` or `BY` is a Quota, with its own rules (chapter 18).
-- `%` follows the Expression it applies to, and is followed by `OF`: `50% OF Guest`, `?share% OF Guest`, `(?n * 10)% OF Guest`. A space before it is allowed, as around an operator; the spec and the tools write none. It is the share of a count and nothing else: Regia has one Number kind (chapter 04), so `50%` is never a Value (`LET ?x BE 50%.`, `WEIGHT 30%`), and `0.5 OF Guest` is a count, never "half". A `%` anywhere but before `OF` is `R1517`.
+- `%` follows the Expression it applies to, and is followed by `OF`: `50% OF Guest`, `?share% OF Guest`, `(?n * 10)% OF Guest`. A space before it is allowed, as around an operator; the spec and the tools write none. It is the share of a count and nothing else: Regia has one Number kind (chapter 04), so `50%` is never a Value (`LET ?x BE 50%`, `WEIGHT 30%`), and `0.5 OF Guest` is a count, never "half". A `%` anywhere but before `OF` is `R1517`.
 - `%` is a percentage, never a remainder, which Regia doesn't have (chapter 04, ADR 0045). It replaced the unit word `PERCENT`, which is `R1516`.
 - The Expression follows chapter 04: Values, filled Placeholders, `RANDOM`, arithmetic.
 
@@ -298,7 +298,7 @@ START SUBPLOT HonorDuel(?offender), MAPPING Guest EXCEPT ?offended, ?offender AS
 
 - It is allowed where a Role is a **recipient**, an **`ASSIGN` target**, or the **giver's side of a `MAPPING`**. `CAST` takes it too: `CAST EXCEPT Duellist` is "everyone else".
 - **It is as live as the Role it is on.** A whole-Role Mapping or a standing Giving with `EXCEPT` is checked when used, on both sides: an Agent who joins as `Guest` and not `Guard` gets `ASSIGN Poisoning TO Guest EXCEPT Guard`. With `EXCEPT ?who` the Agent left out is the one the Placeholder held when the Statement ran. A counted pick is drawn from what is left and is then fixed, as always. A Subplot's Cast is still fixed when it starts (chapter 17).
-- **One `EXCEPT` per Role, followed by a list**: one or more items separated by commas, each one Role of this Plot or one filled Placeholder, in any mix. A comma followed by a keyword (`, MAPPING`, `, UNTIL EXITED`) ends the list and starts the Statement's next clause. Without a comma, the list ends at the first word that can't be an item: `TO` in `MAPPING Guest EXCEPT ?a, ?b AS Spectator`, or the Message in `TELL Guest EXCEPT ?a, ?b scandal(?b)`. `Guest EXCEPT Guard EXCEPT ?who` (write `Guest EXCEPT Guard, ?who`), `EXCEPT 2 OF Guard`, `EXCEPT CAST`, `EXCEPT EVERYONE`, and the same Role or Placeholder twice in one list are errors. Two Placeholders that hold the same Agent when the Statement runs are fine.
+- **One `EXCEPT` per Role, followed by a list**: one or more items separated by commas, each one Role of this Plot or one filled Placeholder, in any mix. A comma followed by a keyword (`, MAPPING`, `, UNTIL EXITED`) ends the list and starts the Statement's next clause. Without a comma, the list ends at the first word that can't be an item: `AS` in `MAPPING Guest EXCEPT ?a, ?b AS Spectator`, or the Message in `TELL Guest EXCEPT ?a, ?b scandal(?b)`. `Guest EXCEPT Guard EXCEPT ?who` (write `Guest EXCEPT Guard, ?who`), `EXCEPT 2 OF Guard`, `EXCEPT CAST`, `EXCEPT EVERYONE`, and the same Role or Placeholder twice in one list are errors. Two Placeholders that hold the same Agent when the Statement runs are fine.
 - An `EXCEPT ?who` whose Placeholder doesn't hold an Agent leaves nobody out for that item, with a Trace warning; the list's other items still apply. Director Statements never fail (chapter 20).
 - It is **not** allowed:
   - on **`REMOVE`**, which takes a plain Role, `CAST`, `?who`, or a Role followed by `?who` (*Taking a giving from one Agent*). A Giving made to `Guest EXCEPT Guard` (or `Guest EXCEPT Guard, ?who`) counts as made to `Guest`, and `REMOVE Poisoning FROM Guest` takes it. Taking apart two Givings made to the same Role needs a Giving to have an identity (*Not in 2.0*).
@@ -349,13 +349,12 @@ PLOT HonorDuel:
 - It is not allowed in a Role setup, which has no conditions (chapter 16).
 - `PLAYS` is the word Instancing already uses for the same relation (`KIND noble, PLAYS Guest`, chapter 21).
 
-A Role is still not a Value: `hates(host)` stays an error, and `PLAYS` is the one way from a Role to an Agent besides a Message arriving (ADR 0023).
+A Role is still not a Value: `hates(host)` stays an error (`R0303`, chapter 03), and `PLAYS` is the one way from a Role to an Agent besides a Message arriving (ADR 0023).
 
 ## Transpiler checks
 
 **Errors**
 
-- `R1501` A Role name used as a Value: as an argument or in an Expression.
 - `R1502` A Role used but not declared by the Playbook or Plot.
 - `R1503` A receiving Role left unfilled by a giving Statement (the message names the Role and suggests a `MAPPING`).
 - `R1504` Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare.
@@ -373,7 +372,7 @@ A Role is still not a Value: `hates(host)` stays an error, and `PLAYS` is the on
 - `R1516` The retired `n PERCENT OF Role` (hint: `n% OF Role`).
 - `R1517` A `%` that isn't directly before `OF` (hint: a share is written `n% OF Role`; Regia has no remainder, and Weights are relative).
 
-`R1505` (`MAPPING ?who AS …`) is no longer given: chapter 20 allows it.
+`R1505` (`MAPPING ?who AS …`) is no longer given: chapter 20 allows it. `R1501` (a Role name used as a Value) is retired into `R0303` (chapter 03, ADR 0048).
 
 ## Trace entries
 

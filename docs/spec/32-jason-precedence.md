@@ -96,7 +96,7 @@ The `regia-jason` Agents' class overrides `selectOption(options)`. Jason passes 
 
 0. **A catch-all last.** An option annotated `regia_unheard` (chapters 30 and 39) or `regia_noop` (an ending nobody listens to, chapter 40) is chosen only when it is the only option. Otherwise it is left out before the steps below.
 1. **Infrastructure first.** If no option carries `regia_rank`, call `super.selectOption(options)` unchanged. Infrastructure triggers all start with `regia_`, which designer names can't (chapter 28), so an Infrastructure plan never competes with a Playbook plan.
-2. **Best Rank.** For each option, read its Playbook's Rank for the option's `Item`: the best over that Playbook's `regia_given` beliefs. Keep only the options with the best Rank. An option with `regia_rank` but no `regia_given` for its Playbook means the guard was bypassed: drop it and leave a Trace entry.
+2. **Best Rank.** For each option, read its Playbook's Rank for the option's `Item`: the best over that Playbook's `regia_holds` (chapter 29), so a closing Playbook's ending plans rank by its snapshot. Keep only the options with the best Rank. An option with `regia_rank` but no `regia_holds` for its Playbook means the guard was bypassed: drop it and leave a Trace entry.
 3. **Best position inside each Playbook.** Among the options of one Playbook, keep only those with the lowest `Pos`. This is chapter 13's "first in the text wins", and it keeps a Playbook's later Trigger Blocks out of a `TIES` pool (chapter 13: each side brings its winning unlabelled Trigger Block).
 4. **Hand over.** Sort what remains by Playbook name and call `VesnaAgent.selectOption` on that new list. VEsNA-Pro uses temper selection if at least one option carries `temper` (Suits alternatives, or a `TIES` pool); otherwise it takes the first, which is name order.
 5. **Fits and Shifts.** Before handing over, when the list carries a `temper`, compute each option's fit with `Temper.computeWeight` for the winner's `fits`. After VEsNA-Pro picks, apply the chosen plan's `effects` through `Temper.shift`. This runs for every chosen Playbook plan, contested or not, since Jason calls `selectOption` for every event once it is overridden.
@@ -144,7 +144,7 @@ Changed from chapter 31:
 
 **Warnings**
 
-- `T3201` A ranked option whose Playbook has no `regia_given`, so its guard was bypassed: the option is dropped.
+- `T3201` A ranked option whose Playbook has no `regia_holds` (neither given nor closing), so its guard was bypassed: the option is dropped.
 
 ## Regia 1.5
 

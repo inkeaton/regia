@@ -306,6 +306,7 @@ A Subplot ends itself with `END PLOT`, as any Plot does. With `WITH <cue>`, it a
 
 - A Statement after `END PLOT` in the same branch → `R1702`
 - `END PLOT WITH` something other than one declared Cue, or with arguments not filled → `R1703`
+- A Playbook's local Cue as an Outcome → `R1004` (the Plot can't see it)
 - `END PLOT WITH` in a Plot never started as a Subplot → `R1705` (warning: `WITH` is ignored)
 
 Spec: chapter 17, *Ending*, *Outcomes*. For what `END PLOT` does to the Staging, chapter 20.

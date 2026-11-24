@@ -278,7 +278,7 @@ A comment set apart by a blank line belongs to nothing and stays where it is, li
 
 **Checks**
 
-- A multiline comment never closed → `R0201` (pointing at its opener)
+- A multiline comment never closed, plain (`#[`) or doc (`#@key[`) → `R0201` (pointing at its opener)
 
 Spec: chapter 02. For what moves with a construct, chapter 22.
 

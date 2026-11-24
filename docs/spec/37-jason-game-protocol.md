@@ -38,7 +38,7 @@ The game never parses Jason term text. `regia-jason` turns JSON into Jason terms
 
 ### Sending
 
-A Custom Action whose External name has **no dots** is a **game Action** (chapter 10). `DO walk_to(?p).` compiles to
+A Custom Action whose External name has **no dots** is a **game Action** (chapter 10). `DO walk_to(?p)` compiles to
 
 ```
 regia.act("walk_to", walk_to(P))
@@ -60,7 +60,7 @@ The first argument is the External name, the second the Action under its Regia n
 
 ### The Target's own code
 
-A dotted Action goes through `regia.act` too, so every `DO` has one entry point, for Agents and Directors alike. `DO play_fanfare.`, with `ACTION hall.music.fanfare AS play_fanfare.`, compiles to
+A dotted Action goes through `regia.act` too, so every `DO` has one entry point, for Agents and Directors alike. `DO play_fanfare`, with `ACTION hall.music.fanfare AS play_fanfare`, compiles to
 
 ```
 regia.act("hall.music.fanfare", play_fanfare)
@@ -93,8 +93,7 @@ The game answers each `regia_action` with one or two `regia_action_result` messa
 - **The game decides what "done" means for each Action**, as it decides which Cues exist. For `walk_to`, it means the character has arrived. Regia never checks the world itself (chapter 11). The `ACTION` declaration's doc comment records the agreement between the designer and the game programmer, and the Visual Editor shows it:
 
   ```regia
-  ## Walks to the place. Done when the character arrives;
-  ## fails if no path exists.
+  #@desc: Done when the Agent has arrived. Refused if the place can't be reached.
   ACTION walk_to(place)
   ```
 
@@ -104,11 +103,11 @@ The game answers each `regia_action` with one or two `regia_action_result` messa
 
 | Statement | Waits for | Fails on |
 | --- | --- | --- |
-| `DO a.` | the final reply | `refused` or `failed` |
-| `DO a, WITHOUT WAITING.` | `accepted`, or a final reply | `refused` |
+| `DO a` | the final reply | `refused` or `failed` |
+| `DO a, WITHOUT WAITING` | `accepted`, or a final reply | `refused` |
 
-- **`DO a.` waits until the Action is done**, the same way each Statement finishes before the next one (chapter 08, ADR 0005).
-- **`DO a, WITHOUT WAITING.`** carries on once the game has accepted the Action. A `failed` that comes later can't fail a Body that has moved on, as with `PURSUE g, WITHOUT WAITING.` (chapter 11): it is recorded in the Trace and nothing else. A designer who cares about the outcome either waits, or has the game send a Cue (`WHEN arrived(door):`), which is how 1.0 programs were written.
+- **`DO a` waits until the Action is done**, the same way each Statement finishes before the next one (chapter 08, ADR 0005).
+- **`DO a, WITHOUT WAITING`** carries on once the game has accepted the Action. A `failed` that comes later can't fail a Body that has moved on, as with `PURSUE g, WITHOUT WAITING` (chapter 11): it is recorded in the Trace and nothing else. A designer who cares about the outcome either waits, or has the game send a Cue (`WHEN arrived(door):`), which is how 1.0 programs were written.
 - **No timeout.** 2.0 has none on a `DO` (chapter 12). A game that never answers leaves a waiting `DO` waiting until its Plan is stopped, and then the Action is called off (below).
 - **No body, no Action.** If the agent's body isn't connected (it never connected, or the connection dropped), `regia.act` sends nothing and fails at once as if the game had refused, with the reason `no body`. A Director's Action fails the same way when the game link isn't connected, with the reason `no game link` (chapter 28). A Director's Action already sent when the link is lost fails too (*Custom Actions in a Director*).
 

@@ -82,8 +82,8 @@ A case states what it expects in **annotations**: comments starting with `#!`. T
 
 ```
     PRECEDENCE:
-        Brawling OVER Drunkard.
-        Drunkard OVER Brawling.      #! error R1301
+        Brawling OVER Drunkard
+        Drunkard OVER Brawling       #! error R1301
 ```
 
 On a line of its own, `#!^` points at the line above. Use it where a trailing comment can't go, such as after a single-line doc comment, whose value runs to the end of the line:

@@ -54,7 +54,7 @@ A Subplot's Roles are **played**, unlike a Playbook's Roles, which are only addr
 - Role setups run for this cast, per chapter 16.
 - **A Role that starts empty fires `EMPTIED`**, after the setups and before the initial Phase's entry Plans, in Role declaration order, `CAST` last (chapter 19). It happens when the parent's Role was empty at that moment, or a counted pick found nobody. The Subplot's `EMPTIED` Plan handles it as it handles the last Agent leaving: a duel with no Defender ends itself instead of waiting.
 - Agents joining the parent's Role **don't** carry through to a running Subplot. An Agent leaving the Program leaves every Staging, the Subplot's included, and its Director hears `LEFT`/`EMPTIED` (chapter 19).
-- **A Plot doesn't say whether it is the Root Plot.** It is written the same either way, and Instancing names or infers the Root (chapter 21). A `JOINED` Plan in a Plot that is never the Root can't fire, and is a warning (`R1905`, chapter 19).
+- **A Plot doesn't say whether it is the Root Plot.** It is written the same either way, and Instancing names the Root, never infers it (chapter 21, ADR 0036). A `JOINED` Plan in a Plot that is never the Root can't fire, and is a warning (`R1905`, chapter 19).
 
 ### Being in both
 
@@ -134,7 +134,7 @@ PLOT HonorDuel:
 - `END PLOT WITH <event>` takes exactly one Cue declared in the Vocabulary. Different endings use different Cues (`duel_settled`, `duel_abandoned`).
 - Its arguments must be filled: Values or filled Placeholders, as for any Action (chapter 08). An Agent is allowed (`?winner`); the parent's Director can send it Messages, give it Playbooks and map it onto Roles (chapter 20).
 - The child declares no list of its endings: they are part of its Interface, worked out by the Transpiler (chapter 38). The Transpiler warns when a parent matches an Outcome the child never ends with, and when the child has an ending that no Plan of the parent hears (`R1706`, `R1708`).
-- A local Cue of a Playbook can't be an Outcome (chapter 10).
+- A local Cue of a Playbook can't be an Outcome: a Plot can't see it (`R1004`, chapter 10).
 - A plain `END PLOT` ends with no Outcome. In a Plot that isn't a Subplot, `WITH` has no one to tell and is ignored with a warning.
 
 ### The parent's Triggers: `FINISHED`, `DROPPED`, `ENDED`

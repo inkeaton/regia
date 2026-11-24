@@ -409,7 +409,7 @@ A selected `ASSIGN` or `START SUBPLOT` also shows the Interface check between it
 **Checks**
 
 - A Plot gives a Playbook that Signals a Cue the Plot has no Plan for → `R3801` (warning)
-- `WHEN e, FROM <Role>` where no Playbook the Plot gives Signals `e` → `R3802` (warning)
+- `WHEN e` with any `FROM` where no Playbook the Plot gives Signals `e` → `R3802` (warning)
 - Mappings that leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R3803` (warning)
 - A Subplot ending no Plan of the parent hears → `R1708` (warning)
 
@@ -592,7 +592,7 @@ The Cue is declared and the edge is drawn. The `SIGNAL feast_cancelled` that sen
 **Checks**
 
 - A Trigger on a Cue that isn't `GAME` and that nothing in the Program sends → `R3807` (warning, until the `SIGNAL` is written)
-- `WHEN e, FROM <Role>` where no Playbook the Plot gives Signals `e` → `R3802` (warning)
+- `WHEN e` with any `FROM` where no Playbook the Plot gives Signals `e` → `R3802` (warning)
 
 Spec: chapter 25, *Adding a transition*, *Where a new declaration lands*. For where a `CUE` may stand, chapter 10; for the checks, chapter 38.
 

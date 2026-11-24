@@ -162,7 +162,7 @@ PLOT RoyalBanquet:
 Decided in the ticket *Phase declaration checks* (`.scratch/regia-2/issues/44-phase-declaration-checks.md`).
 
 - A Plot that declares Phases marks **exactly one** `INITIAL`, even when it has only one Phase. The Staging starts in it. Declaration order is free (chapter 10), so there is no default "first Phase".
-- **A Plot may declare no Phases.** It has only Role setups and `DURING PLOT` Plans, which is enough for a small Subplot that gives a Playbook and ends on a Signal. It behaves as if it had one Phase that is never left: `DURING PLOT`'s `ENTERED` fires when the Staging starts, and `EXITED` when it ends. With no Phase to name, any `ENTER` in it is an error.
+- **A Plot may declare no Phases.** It has only Role setups and `DURING PLOT` Plans, which is enough for a small Subplot that gives a Playbook and ends on a Signal. It behaves as if it had one Phase that is never left: `DURING PLOT`'s `ENTERED` fires when the Staging starts, and `EXITED` when it ends. With no Phase to name, any `ENTER` in it is an error (`R2008`).
 - **One Block per Phase.** Each declared Phase has at most one `DURING` Block, and the Plot at most one `DURING PLOT`, so a Phase's Plans are all in one place.
 - A Phase with no `DURING` Block is fine: a quiet Phase, moved on by `DURING PLOT` Plans. So is a Phase that nothing leaves: it can be the last act, ended by `END PLOT` or by the parent.
 - `PHASE` and `DURING` belong to Plots only.
@@ -210,7 +210,7 @@ DURING fighting:
 ### What starting a Staging does
 
 1. `DURING PLOT` and the initial Phase become active, and their Quota counts start (chapter 18).
-2. The Plot's Role setups run, then the initial Phase's Role setups, each in Role declaration order (chapter 16).
+2. The `CAST:` setup runs, then the Plot's Role setups, then the initial Phase's Role setups, each in Role declaration order (chapter 16). In the Root Plot's Staging, each starting Agent's kind or individual-Agent lines run next (chapter 21, *Setup lines*).
 3. `DURING PLOT`'s `ENTERED` Plan runs, then the initial Phase's; `DURING PLOT`'s and the initial Phase's `AFTER` counts start.
 
 A Phase counts before anything is sent on its behalf. A setup's `PURSUE take_seat` that ends at once is heard by the initial Phase's `WHEN take_seat ENDED, BY ALL Guest`.
@@ -256,21 +256,21 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 - `R2002` `TO g:` or `FROM DIRECTOR` in a Director.
 - `R2003` `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan.
 - `R2004` A Statement after `ENTER` in the same branch.
-- `R2005` `ENTERED`, `EXITED` or `ENDED` in a Playbook (Director Trigger kinds only).
+- `R2005` `ENTERED` or `EXITED`, or a Subplot's `FINISHED`, `DROPPED` or `ENDED`, in a Playbook (Director Trigger kinds only; a Goal's `ENDED` is legal there).
 - `R2006` `Role DO …` or `WORLD DO …` (not part of the language).
 - `R2007` A Plot that declares Phases with no `INITIAL` Phase, or with several (a quick fix marks one `INITIAL`).
-- `R2008` `DURING p:`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare (with a "did you mean" hint when a declared name is close).
+- `R2008` `DURING p:`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare, or any `ENTER` in a Plot that declares no Phases (with a "did you mean" hint when a declared name is close).
 - `R2009` Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks.
 - `R2010` `PHASE` or `DURING` inside a `PLAYBOOK`.
 - `R2012` `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot that never asks `g`: no `ASK … TO g` and no setup `PURSUE g`.
 - `R2013` `FROM` on a Goal's ending in a Plot (hint: `BY`).
 - `R2014` `IN <phase>` in a Playbook, or in a Plot that declares no Phases.
+- `R2016` The retired `TRANSITION TO p` (hint: `ENTER p`).
 
 **Warnings**
 
 - `R2011` A Phase that can never be entered: it isn't `INITIAL`, and no `ENTER` in the Plot names it.
 - `R2015` `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot.
-- `R2016` The retired `TRANSITION TO p` (hint: `ENTER p`).
 
 A `GOAL` declared inside a Plot is `R1015` (chapter 10). `ME` in a Plot is `R0309` (chapter 03). A Signal the Plot gives the Playbook for and never handles, and a `FROM <Role>` Plan no Signal can reach, are `R3801` and `R3802` (chapter 38). A Label on a Director's Plan is `R1406`; `JOINED`, `LEFT` and `EMPTIED` in a Playbook are `R1901`; an unfilled Placeholder in `ASSIGN`, `MAPPING` or a recipient is `R0304`/`R0305`.
 

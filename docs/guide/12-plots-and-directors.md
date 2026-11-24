@@ -318,7 +318,7 @@ The initial Phase is current before any setup runs. A Guest with no seat laid fa
 - `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan → `R2003`
 - A Statement after `ENTER` in the same branch → `R2004`
 - `ENTER` in a Plot with no Phases → `R2008`
-- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook → `R2005`
+- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook, or a Subplot's `FINISHED`, `DROPPED` or `ENDED` → `R2005`
 - `AFTER` in a Playbook → `R1205` (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`)
 - The retired `TRANSITION TO p` → `R2016` (hint: `ENTER p`)
 - An `AFTER` Duration that isn't a Number → `T1201` (Trace, Failure); a negative one, counted as 0 → `T1202` (Trace warning)

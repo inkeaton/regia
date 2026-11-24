@@ -19,7 +19,7 @@ The annotation is stamped where the request enters the Agent:
 
 | Request | Stamped by |
 | --- | --- |
-| The Agent's own `PURSUE g.` or `PURSUE g, WITHOUT WAITING.` | `regia.pursue(G, Id)`, then `!g[regia_pursuit(Id)]` or `!!g[regia_pursuit(Id)]` (chapter 39) |
+| The Agent's own `PURSUE g` or `PURSUE g, WITHOUT WAITING` | `regia.pursue(G, Id)`, then `!g[regia_pursuit(Id)]` or `!!g[regia_pursuit(Id)]` (chapter 39) |
 | An `ASK` from an Agent, a Director's `ASK`, a Role setup's `PURSUE` (an `achieve` message) | `regia.RegiaAgent.socAcc`, which adds the annotation to the message's content before Jason posts it |
 | A Director's `ASK EVERYONE` (`regia_everyone(achieve, G)`, chapter 30) | the Infrastructure plan that unwraps it, with `regia.pursue(G, S, Id)` and `!!G[source(S), regia_pursuit(Id)]` |
 
@@ -101,7 +101,7 @@ A Pursuit no recipe takes (`T1104`): Jason finds no applicable `+!g` plan, sees 
 
 ### Reasons along the chain
 
-- **`FAIL.`** maps to `.fail(regia_fail)`, and **`FAIL WITH r.`** to `.fail(regia_fail, regia_reason(r))` (chapter 39).
+- **`FAIL`** maps to `.fail(regia_fail)`, and **`FAIL WITH r`** to `.fail(regia_fail, regia_reason(r))` (chapter 39).
 - Jason adds every `.fail` argument to the `-!g` event it posts. `regia.goal_failed` reads `regia_reason(R)`, and `regia.pass_failure` passes it on unchanged, so every Goal of the chain fails with the same Reason (chapter 11). Only `FAIL WITH` sets it.
 - From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T1103` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__9` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
 
@@ -116,11 +116,11 @@ A catcher that finds `regia_because` writes no cause entry.
 
 ### A `WHEN` Plan that fails on its own
 
-A `WHEN` Plan that fails with no Goal under it (`T0401` in `WHEN insulted`, or a `FAIL.` there) has no `-!` event, and Jason drops its intention with a console warning. **`regia.RegiaAgent` catches this on the Java side** and writes the Plan's cause entry (*The cause entry*), so chapter 11's "a failed `WHEN` Plan just stops" still leaves its trace, and the console shows the Trace line, not Jason's warning. Which Jason hook it uses (a `CircumstanceListener`, or an override of the failure path through the Agent's `TransitionSystem`) is chosen when `regia-jason` is written. A `WHEN` Plan *waiting* on a Goal that fails is handled by `regia.pass_failure` (above), not by this hook.
+A `WHEN` Plan that fails with no Goal under it (`T0401` in `WHEN insulted`, or a `FAIL` there) has no `-!` event, and Jason drops its intention with a console warning. **`regia.RegiaAgent` catches this on the Java side** and writes the Plan's cause entry (*The cause entry*), so chapter 11's "a failed `WHEN` Plan just stops" still leaves its trace, and the console shows the Trace line, not Jason's warning. Which Jason hook it uses (a `CircumstanceListener`, or an override of the failure path through the Agent's `TransitionSystem`) is chosen when `regia-jason` is written. A `WHEN` Plan *waiting* on a Goal that fails is handled by `regia.pass_failure` (above), not by this hook.
 
 ## `DROPPED`: the walker
 
-`DROP g.` maps to **`regia.drop(G)`** (chapter 39). It follows chapter 08's four steps in Java:
+`DROP g` maps to **`regia.drop(G)`** (chapter 39). It follows chapter 08's four steps in Java:
 
 1. **Find** every intention of the Agent holding a `+!g` frame that unifies with `G`, running, suspended (waiting in `regia.act` or `regia.wait`) or waiting for an event, and every pending `+!g` event that already has a `regia_pursuit`.
 2. **Take each intention whole.** Every frame above the `+!g` frame is what it waits on, and every frame below waits on it, down to the intention's bottom, where a `!!`, a message or an event started it. So a `DROP` stops the whole intention (chapter 08's steps 1, 2 and 4). A frame that is itself another `+!g` is the same Pursuit's recursion or another Pursuit of `g`, and is dropped as a level like the others.
@@ -130,9 +130,9 @@ A `WHEN` Plan that fails with no Goal under it (`T0401` in `WHEN insulted`, or a
 6. **Start one new intention per intention removed**, `!!regia_endings([…])`, listing for each goal frame `regia_dropped(G, Sender, Id, none)` then `regia_ended(G, Sender, Id, none)`, from the top of the stack down: innermost first, each level complete before the next (chapter 05). Senders and `Id`s are read from the frames' triggers.
 
 - Goals started `WITHOUT WAITING` are on intentions of their own, and are stopped only if they hold `+!g` themselves (chapter 08).
-- `DROP g.` when no Pursuit of `g` exists finds nothing and does nothing. No entry is written.
+- `DROP g` when no Pursuit of `g` exists finds nothing and does nothing. No entry is written.
 - From `dining.regia:21`: `hungry FORGOTTEN` during `WAIT 1 MINUTE, UNTIL on_plate(?)` removes the `have_dinner` intention, which was started `WITHOUT WAITING` and so has `have_dinner` at its bottom, writes `GOAL have_dinner DROPPED`, and runs `WHEN have_dinner DROPPED` (pushing the plate away) and `WHEN have_dinner ENDED` on a fresh intention.
-- From `duelling.regia:49`: `DROP strike.` runs in `WHEN yielded`, which holds no `strike`, so its Body carries on to `DO salute`.
+- From `duelling.regia:49`: `DROP strike` runs in `WHEN yielded`, which holds no `strike`, so its Body carries on to `DO salute`.
 
 **`regia.stop_playbook` (chapter 29) shares this walker.** It finds every intention holding a frame of the Playbooks taken, instead of a `+!g` frame, and takes each whole as step 2 does. Its entries are `because:` the take's `TAKE` entry, and in step 6 it hands the endings, carrying the closing's id as `Closing`, to the one closing intention of the take instead of starting intentions of its own (chapter 29, *Stopping P's Plans*).
 

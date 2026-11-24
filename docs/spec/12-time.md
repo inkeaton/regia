@@ -63,6 +63,7 @@ WHEN door_opened:
 ```
 
 - **`WAIT <Duration>, UNTIL <condition>`** waits until the condition holds, or until the Duration has run out, whichever comes first. **`WAIT UNTIL <condition>`** has no limit.
+- **`, UNTIL` is part of `WAIT`'s own form**, not a trailing clause: chapter 08's `R0805` doesn't apply to it.
 - **The condition is anything an `IF` can test** in that Block (chapter 06): the Agent's Facts, or in a Director its own Facts, `IN <phase>`, `PLAYS` and `RUNNING`. It is checked when the Body reaches the `WAIT`, and again whenever what it tests changes. If it already holds, the Body carries on at once.
 - **Running out of time is not a failure.** The Body carries on either way, and an `IF` after the `WAIT` tells the two endings apart. `WAIT … UNTIL` fails only as `WAIT` does, on a Duration that isn't a Number.
 - **The condition names no new Values.** Its Placeholders must be certainly filled before the `WAIT`, or be blanks (`?`), because after a timeout nothing would fill them. To use what was found, test it again with `IF` or `GIVEN`.
