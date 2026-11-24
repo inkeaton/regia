@@ -5,6 +5,9 @@
 /science_game/minds/build/
 /science_game/minds/bin/
 
+# AgentSpeak generated from src/regia/ (minds)
+/science_game/minds/src/agt/gen/
+
 # Runtime logs (minds and game)
 /science_game/*/logs/
 

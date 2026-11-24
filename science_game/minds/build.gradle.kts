@@ -30,6 +30,44 @@ sourceSets {
     }
 }
 
+// The agents in src/agt/gen/ are never tracked: every build regenerates them
+// from src/regia/ when a .regia file or the transpiler has changed.
+val compileRegia = tasks.register<Exec>("compileRegia") {
+    description = "compiles the Regia sources to AgentSpeak"
+    group = "JaCaMo"
+
+    val repoRoot = file("../..")
+    val genDir = file("src/agt/gen")
+
+    inputs.dir("src/regia")
+    inputs.files(fileTree("$repoRoot/language/src/regia") { include("**/*.py", "**/*.lark") })
+        .ignoreEmptyDirectories()  // __pycache__
+    inputs.files("$repoRoot/language/pyproject.toml", "$repoRoot/uv.lock", "$repoRoot/.python-version")
+    outputs.dir(genDir)
+
+    commandLine(
+        "uv", "run", "--project", repoRoot.path, "--package", "regia", "--locked",
+        "regia", "compile", "src/regia/for_science.regia", "-o", genDir.path,
+    )
+
+    doFirst {
+        val uv = System.getenv("PATH").orEmpty().split(File.pathSeparator)
+            .flatMap { listOf(File(it, "uv"), File(it, "uv.exe")) }
+            .firstOrNull { it.isFile && it.canExecute() }
+            ?: throw GradleException(
+                "uv was not found on the PATH. It runs the Regia transpiler that generates the agents. " +
+                    "Install it from https://docs.astral.sh/uv/ and try again."
+            )
+        executable = uv.path
+
+        // The compiler doesn't remove agents whose source is gone
+        delete(genDir)
+    }
+}
+
+// compileJava comes before classes and run, and its source tree contains genDir
+tasks.compileJava { dependsOn(compileRegia) }
+
 tasks.register<JavaExec>("run") {
     description = "runs the application"
     group = "JaCaMo"
