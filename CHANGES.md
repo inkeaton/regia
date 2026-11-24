@@ -24,8 +24,9 @@ The tag `artifact-submitted` is the artifact as it was submitted with the paper,
 
 ## Other changes
 
-- The demo videos and the snippet images in `docs/`, left out of the submitted archive for its size limit, are back ([`91aeabe`](../../commit/91aeabe)).
+- The demo videos and the snippet images in `docs/`, left out of the submitted archive for its size limit, are back ([`91aeabe`](../../commit/91aeabe)), the videos without their audio track ([`61b8b9a`](../../commit/61b8b9a)).
 - Two downloaded paper textures in the game are replaced by generated ones ([`09da043`](../../commit/09da043)).
+- The game's images are WebP instead of PNG, at the same size in pixels ([`8511233`](../../commit/8511233)).
 - The demo instructions start the game before the agents ([`a02ff34`](../../commit/a02ff34)), and the game's main scene is the demo instead of an empty scene ([`c67dd6e`](../../commit/c67dd6e)).
 - READMEs and comments cite the sections of the paper and its supplementary material ([`c67dd6e`](../../commit/c67dd6e)).
 
