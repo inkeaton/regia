@@ -65,11 +65,12 @@ It took under 3 minutes on our machine, with the downloads already cached. It ru
 | `qscores` | recomputes the questionnaire scores (N = 32) and **fails unless every CSV matches the paper's** | `qscores/results/` | `qscores/reference/results/` |
 | `figures` | redraws the questionnaire figures, the paper's benchmark fits from its own runs, and the plots and fits of the rerun | `qscores/figures/`, `language/benchmarks/results/` | `qscores/reference/figures/`, `language/benchmarks/reference/fits/` |
 
-The outputs are not tracked; the reference directories hold the paper's data and figures. Benchmark timings depend on the machine, so a rerun reproduces the trends, not the numbers. Figures are compared by eye.
+The outputs are not tracked; the reference directories hold the paper's data and figures. Benchmark timings depend on the machine, so a rerun reproduces the trends, not the numbers. `make all` doesn't compare the figures, since another CPU or operating system may draw a pixel differently: `make compare-figures` does, and so does CI.
 
 Not part of `make all`:
 
 - `make bench-runtime` runs the runtime benchmarks. **It kills other running Gradle and JaCaMo processes.**
+- `make compare-figures` redraws the figures and fails unless those drawn from the paper's data match the paper's pixel by pixel.
 - `make editor` builds the visual editor.
 - The demo game is played by hand: see [`science_game/README.md`](science_game/README.md).
 

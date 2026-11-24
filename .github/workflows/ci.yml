@@ -57,6 +57,9 @@ jobs:
       - name: Smoke-run the compile benchmarks
         run: make bench REPS=1
 
+      - name: Redraw the figures and compare them with the paper's
+        run: make compare-figures
+
       - name: Build the editor
         run: make editor
 

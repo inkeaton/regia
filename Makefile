@@ -19,7 +19,7 @@ GRADLEW := ./gradlew --no-daemon
 # Timed repetitions per benchmark configuration. Empty: each suite's own value.
 REPS :=
 
-.PHONY: help all check-env setup gen test minds bench bench-runtime qscores figures editor serve clean
+.PHONY: help all check-env setup gen test minds bench bench-runtime qscores figures compare-figures editor serve clean
 
 help:  ## List the targets
 	@awk -F ':.*## ' '/^[a-z-]+:.*## / { printf "  %-15s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -79,6 +79,11 @@ figures: qscores  ## Redraw the figures (those of the benchmark rerun need `make
 		$(UV_RUN) python -m benchmarks plot --all; \
 		$(UV_RUN) python benchmarks/bench_fits.py benchmarks/results --format png; \
 	else echo "No benchmark rerun to plot: run 'make bench' first."; fi
+
+# Not in `all`: another CPU or OS may draw a pixel differently. CI runs it.
+compare-figures: figures  ## Redraw the figures and compare those drawn from the paper's data, pixel by pixel
+	$(UV_RUN) python qscores/compare_figures.py
+	$(UV_RUN) python qscores/compare_figures.py language/benchmarks/results/reference_fits language/benchmarks/reference/fits
 
 editor:  ## Build the visual editor
 	cd editor && npm ci && npm run build

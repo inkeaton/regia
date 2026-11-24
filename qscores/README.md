@@ -72,7 +72,14 @@ cd qscores
 python compare_reference.py [RESULTS_DIR] [REFERENCE_DIR]
 ```
 
-Compares the regenerated CSVs with the paper's, in `reference/results`. They must match exactly, except for line endings; any difference is printed and the script exits with status 1. The figures are not compared: PNG bytes depend on the fonts and libraries installed, so check them by eye against `reference/figures`.
+Compares the regenerated CSVs with the paper's, in `reference/results`. They must match exactly, except for line endings; any difference is printed and the script exits with status 1. The figures have their own script:
+
+```bash
+cd qscores
+python compare_figures.py [FIG_DIR] [REFERENCE_DIR]
+```
+
+Compares the redrawn figures with the paper's, in `reference/figures`, pixel by pixel (the compressed PNG bytes may differ). `make compare-figures`, from the repository root, redraws and compares these and the paper's benchmark fits. CI checks them on Ubuntu; on another system, a few pixels may differ.
 
 ## Output Files
 
@@ -115,6 +122,7 @@ qscores/
 ├── expand_data.py        Expand coding sheets for new respondents
 ├── make_figures.py       Publication figure generation
 ├── compare_reference.py  Check the regenerated CSVs against the paper's
+├── compare_figures.py    Check the redrawn figures against the paper's
 ├── data/                 Input data files (xlsx, csv)
 ├── reference/            The paper's outputs
 │   ├── results/          CSVs and summary
