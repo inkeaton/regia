@@ -1,0 +1,66 @@
+# Builds the artifact from a fresh clone, with the Makefile's own targets.
+# Left to run by hand: the Godot game, the full compile benchmarks and the
+# runtime benchmarks.
+name: CI
+
+on:
+  push:
+    branches: ["1.0"]
+  pull_request:
+    branches: ["1.0"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # uv also installs the Python in .python-version
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: editor/.nvmrc
+          cache: npm
+          cache-dependency-path: editor/package-lock.json
+
+      - name: Set up the Python workspace
+        run: make setup
+
+      - name: Test the transpiler
+        run: make test
+
+      - name: Generate the agents and build the minds
+        run: make minds
+
+      - name: Recompute the scores and compare them with the paper's
+        run: make qscores
+
+      - name: Smoke-run the compile benchmarks
+        run: make bench REPS=1
+
+      - name: Build the editor
+        run: make editor
+
+      - name: Check that the build leaves the tree clean
+        run: |
+          git status --short
+          test -z "$(git status --porcelain)"
