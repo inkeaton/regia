@@ -5,5 +5,5 @@
 +!start <-
     .print("Scientist Test Agent started.").
 // Scientist Agent - Regia Playbook
-{ include("gen/role_forscience_scientist.asl") }
+{ include("role_forscience_scientist.asl") }
 

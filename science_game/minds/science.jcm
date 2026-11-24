@@ -19,10 +19,14 @@ mas science_game {
         port:       9003
     }
 
-    agent forscience_director:gen/director_forscience.asl {
+    agent forscience_director:director_forscience.asl {
         ag-class:   vesna.VesnaAgent
         address:    localhost
         port:       9004
         goals: start_plot([map(scientist, [scientist]), map(cop, [cop]), map(dog, [dog])])
     }
+
+    // Generated agents live in src/agt/gen/; listing it lets bare names
+    // (include, .create_agent of subplot directors) resolve there.
+    asl-path: "src/agt", "src/agt/gen"
 }
