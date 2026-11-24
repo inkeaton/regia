@@ -2,6 +2,7 @@
 name = "regia"
 version = "0.2.0"
 description = "A Domain Specific Language for Game Designers to model Agent behaviour and Game flow, compiled to AgentSpeak."
+license = "Apache-2.0"
 requires-python = ">=3.11"
 
 dependencies = [
@@ -33,7 +34,7 @@ dev = [  # test suite
 
 # == Build system ==============================================================
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 # == Pytest configuration ======================================================

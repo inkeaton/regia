@@ -1,0 +1,41 @@
+Regia
+Copyright (c) 2026 The Regia authors (anonymised for review)
+
+The code in this repository is licensed under the Apache License,
+Version 2.0 (see LICENSE). The parts listed here have other terms.
+
+Questionnaire data
+  qscores/data/, qscores/reference/ and qscores/questionnaire_print.pdf
+  are licensed under CC-BY-4.0 (see LICENSE-data).
+
+VEsNA
+  These files are, or derive from, part of the VEsNA framework. They are
+  not covered by LICENSE: all rights remain with VEsNA's authors. They
+  are included to reproduce the paper.
+    science_game/minds/src/agt/vesna/IntentionWrapper.java
+    science_game/minds/src/agt/vesna/OptionWrapper.java
+    science_game/minds/src/agt/vesna/Temper.java
+    science_game/minds/src/agt/vesna/TemperSelectable.java
+    science_game/minds/src/agt/vesna/VesnaAgent.java
+    science_game/minds/src/agt/vesna/WsClient.java
+    science_game/minds/src/agt/vesna/WsClientMsgHandler.java
+    science_game/minds/src/env/vesna/GrabbableArtifact.java
+    science_game/minds/src/env/vesna/SituatedArtifact.java
+
+Game design diagrams
+  The images in "docs/snippets references/" belong to an industrial
+  partner, anonymised for review, and are included with permission. All
+  rights reserved by their owner; no other license here covers them.
+
+Game art
+  The portraits in science_game/game/resources/images/portraits/ and
+  science_game/game/resources/images/flower.png are from works by
+  J. J. Grandville (1803-1847), in the public domain.
+  The paper textures seen in the videos in science_game/demo_video/ come
+  from Resource Boy (https://resourceboy.com/), and are not distributed
+  here as files.
+
+Gradle wrapper
+  science_game/minds/gradlew, gradlew.bat and
+  gradle/wrapper/gradle-wrapper.jar are part of Gradle, under the Apache
+  License, Version 2.0.
