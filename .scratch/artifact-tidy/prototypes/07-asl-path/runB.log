@@ -1,0 +1,28 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :run
+Runtime Services (RTS) is running at 127.0.1.1:46823
+Agent mind inspector is running at http://127.0.1.1:3272
+CArtAgO Http Server running on http://127.0.1.1:3273
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+SLF4J: Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.
+SLF4J: Ignoring binding found at [jar:file:/home/mari/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-nop/1.7.30/55d4c73dd343efebd236abfeb367c9ef41d55063/slf4j-nop-1.7.30.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.
+nov 24, 2026 9:35:27 AM jason.stdlib.println execute
+INFORMAZIONI: Dog Test Agent started.
+nov 24, 2026 9:35:27 AM jason.stdlib.println execute
+INFORMAZIONI: Scientist Test Agent started.
+nov 24, 2026 9:35:27 AM jason.stdlib.println execute
+INFORMAZIONI: Cop Test Agent started.
+nov 24, 2026 9:35:31 AM jason.stdlib.println execute
+INFORMAZIONI: PROBE asking forscience_director to start subplot missingdonut
+nov 24, 2026 9:35:31 AM jason.stdlib.println execute
+INFORMAZIONI: [ForScience] Spawning subplot 'missingdonut' as agent missingdonut_forscience_director_136 with bindings [map(cop,[]),map(dog,[])]
+nov 24, 2026 9:35:31 AM jason.stdlib.println execute
+INFORMAZIONI: [MissingDonut] Booting up director agent missingdonut_forscience_director_136 in phase 'trade'...
+nov 24, 2026 9:35:36 AM jason.stdlib.println execute
+INFORMAZIONI: PROBE agents now: [forscience_director,cop,scientist,missingdonut_forscience_director_136,dog,probe]

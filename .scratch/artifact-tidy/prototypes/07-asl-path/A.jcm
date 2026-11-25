@@ -1,0 +1,8 @@
+mas science_game {
+
+    agent scientist:scientist.asl
+    agent cop:cop.asl
+    agent dog:dog.asl
+    agent forscience_director:gen/director_forscience.asl
+    agent probe:probe07.asl
+}

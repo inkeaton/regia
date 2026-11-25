@@ -13,3 +13,12 @@ language/benchmarks/__pycache__/
 docs/.obsidian/
 # Paper artifact: branch 1.0, checked out here as a git worktree
 /1.0/
+# instructions for development, not the code itself 
+docs/.dev/
+# Local wiring that loads docs/.dev into Claude Code
+/CLAUDE.local.md
+/.claude/skills
+/.claude/agents
+/.claude/settings.local.json
+# Rust build output (Cargo.lock is tracked)
+/transpiler/target/

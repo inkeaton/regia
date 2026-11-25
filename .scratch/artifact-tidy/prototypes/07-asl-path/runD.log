@@ -1,0 +1,41 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :run
+Runtime Services (RTS) is running at 127.0.1.1:39757
+Agent mind inspector is running at http://127.0.1.1:3272
+CArtAgO Http Server running on http://127.0.1.1:3273
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+SLF4J: Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.
+SLF4J: Ignoring binding found at [jar:file:/home/mari/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-nop/1.7.30/55d4c73dd343efebd236abfeb367c9ef41d55063/slf4j-nop-1.7.30.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.
+nov 24, 2026 9:37:09 AM jason.asSyntax.directives.Include process
+GRAVE: The included file 'role_forscience_scientist.asl' was not found! (it is being included in the agent 'scientist')
+nov 24, 2026 9:37:09 AM jason.asSyntax.directives.Include process
+GRAVE: The included file 'role_forscience_cop.asl' was not found! (it is being included in the agent 'cop')
+nov 24, 2026 9:37:09 AM jason.asSyntax.directives.Include process
+GRAVE: The included file 'role_forscience_dog.asl' was not found! (it is being included in the agent 'dog')
+nov 24, 2026 9:37:09 AM jason.stdlib.println execute
+INFORMAZIONI: Dog Test Agent started.
+nov 24, 2026 9:37:09 AM jason.stdlib.println execute
+INFORMAZIONI: Cop Test Agent started.
+nov 24, 2026 9:37:09 AM jason.stdlib.println execute
+INFORMAZIONI: Scientist Test Agent started.
+nov 24, 2026 9:37:13 AM jason.stdlib.println execute
+INFORMAZIONI: PROBE asking forscience_director to start subplot missingdonut
+nov 24, 2026 9:37:13 AM jason.stdlib.println execute
+INFORMAZIONI: [ForScience] Spawning subplot 'missingdonut' as agent missingdonut_forscience_director_749 with bindings [map(cop,[]),map(dog,[])]
+nov 24, 2026 9:37:13 AM jason.asSemantics.TransitionSystem applyExecInt
+GRAVE: Error in internal action '.create_agent(ChildId,SourceFile)' (file:src/agt/gen/director_forscience.asl:178): director_missingdonut.asl (File o directory non esistente)
+java.io.FileNotFoundException: director_missingdonut.asl (File o directory non esistente)
+
+nov 24, 2026 9:37:13 AM jason.asSemantics.TransitionSystem generateGoalDeletion
+AVVERTENZA: No failure event was generated for +!start_subplot("missingdonut",missingdonut,[map(cop,cop),map(dog,dog)])[code(.create_agent("missingdonut_forscience_director_749","director_missingdonut.asl")),code_line(178),code_src("file:src/agt/gen/director_forscience.asl"),error(unknown),error_msg(""),source(probe)]
+intention 5: 
+    +!start_subplot("missingdonut",missingdonut,[map(cop,cop),map(dog,dog)])[source(probe)] <- ... .create_agent(ChildId,SourceFile); .send(ChildId,achieve,start_plot(Bindings)); .send(ChildId,tell,parent_plot(Me)); +child_plot(ChildId,SubplotAtom,MappingsData) / {HH=9, MM=37, SS=13, SubplotStr="missingdonut", ChildId="missingdonut_forscience_director_749", MappingsData=[map(cop,cop),map(dog,dog)], MS=749, Me=forscience_director, SubplotAtom=missingdonut, SourceFile="director_missingdonut.asl", Bindings=_98, _98=[map(cop,[]),map(dog,[])]}
+
+nov 24, 2026 9:37:18 AM jason.stdlib.println execute
+INFORMAZIONI: PROBE agents now: [forscience_director,cop,scientist,dog,probe]

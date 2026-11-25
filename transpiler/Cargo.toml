@@ -1,0 +1,29 @@
+# The Regia Transpiler: one workspace, three crates (spec chapter 23, "Crates").
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Why these lints: docs/standards/comments-rust.md, "Tooling".
+[workspace.lints.rust]
+missing_docs = "warn"
+unused_doc_comments = "warn"
+
+[workspace.lints.clippy]
+missing_docs_in_private_items = "warn"
+missing_errors_doc = "warn"
+missing_panics_doc = "warn"
+missing_safety_doc = "warn"
+undocumented_unsafe_blocks = "warn"
+doc_markdown = "warn"
+too_long_first_doc_paragraph = "warn"
+doc_lazy_continuation = "warn"
+doc_overindented_list_items = "warn"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "warn"
+private_intra_doc_links = "warn"
