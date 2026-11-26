@@ -49,12 +49,12 @@ The designer's ending Plans compile to plans for four generated goals, one per k
 From `serving.regia:21` and `:23`:
 
 ```
-@regia_plan__9[regia_rank(serving, failed(bring), 0)]
+@regia_plan__serving__9[regia_rank(serving, failed(bring), 0)]
 +!regia_failed(bring(Dish, _), Guest, sold_out(Dish), _, _)
     : regia_given(serving, _, _, _, _, _) & <Guest in patron> & Guest \== percept & Guest \== self
    <- regia.send(Guest, signal, sold_out(Dish)).
 
-@regia_plan__10[regia_rank(serving, failed(bring), 1)]
+@regia_plan__serving__10[regia_rank(serving, failed(bring), 1)]
 +!regia_failed(bring(Dish, _), Guest, _, _, _)
     : regia_given(serving, _, _, _, _, _) & <Guest in patron> & Guest \== percept & Guest \== self
    <- regia.act("bow_to", bow_to(Guest)).
@@ -103,7 +103,7 @@ A Pursuit no recipe takes (`T1104`): Jason finds no applicable `+!g` plan, sees 
 
 - **`FAIL`** maps to `.fail(regia_fail)`, and **`FAIL WITH r`** to `.fail(regia_fail, regia_reason(r))` (chapter 39).
 - Jason adds every `.fail` argument to the `-!g` event it posts. `regia.goal_failed` reads `regia_reason(R)`, and `regia.pass_failure` passes it on unchanged, so every Goal of the chain fails with the same Reason (chapter 11). Only `FAIL WITH` sets it.
-- From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T1103` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__9` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
+- From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T1103` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__serving__9` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
 
 ### The cause entry
 

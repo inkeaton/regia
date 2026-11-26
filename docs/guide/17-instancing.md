@@ -44,7 +44,7 @@ Instancing is written in `.regin` files, and only there. `banquet.regin` imports
 
 - A `.regin` holds `IMPORT`s and Instancing, and nothing else: no Vocabulary, no Playbook, no Plot.
 - A `.regin` may import `.regia` files and other `.regin` files. A `.regia` file can't import a `.regin`: the story never depends on a cast.
-- Only a `.regin` Entry can be built. A `.regia` Entry is checked without a Root Plot (*The Root Plot*, below).
+- Only a `.regin` Entry can be run. A `.regia` Entry is checked and built without a Root Plot (*The Root Plot*, below).
 - Several builds of one story are several small `.regin` files over the same `.regia` files: a two-Guest test, the full hall, a build for each Target (*Layering builds*, below).
 
 The lines of a `.regin` follow the rules of every Regia file: indentation for Blocks, `,` between clauses, `#` comments (*Syntax*).
@@ -61,11 +61,11 @@ Spec: chapter 21, *Instancing files*. For Entry files, chapter 10.
 `ROOT RoyalBanquet` names the Plot that starts when the run does. Every other Plot is a Subplot below it, started with `START SUBPLOT`. Instancing never starts a Plot itself; a story running beside the banquet would be a Subplot the banquet starts.
 
 - The Root Plot is named, never inferred. Nothing in `royal_banquet.regia` says it is the Root, and the file would read the same as a Subplot of a wider `Castle`.
-- A Build's Entry must reach exactly one `ROOT`, even when it declares nothing else. Rank keys and Role files depend on it.
+- A `.regin` Entry must reach exactly one `ROOT`, even when it declares nothing else. Its Role files and the Root Director depend on it.
 - A Plot that some `START SUBPLOT` starts can't be the Root.
 - The Root Plot takes no parameters: Instancing has nothing to pass them.
 - A Plot the Root Plot never reaches is compiled like the rest, and never runs.
-- A `.regia` Entry has no Root Plot. `regia check playbooks/duelling.regia` runs every check that doesn't need one, and skips this chapter's checks and the ranking of Plans across Plots (*Precedence and Labels*).
+- A `.regia` Entry has no Root Plot. `regia build playbooks/duelling.regia` builds Target code only, for a project written by hand. `regia check playbooks/duelling.regia` runs every check that doesn't need one, and skips this chapter's checks and the ranking of Plans across Plots (*Precedence and Labels*).
 
 **Checks**
 
@@ -374,7 +374,7 @@ IMPORT "plots/royal_banquet"
 ROOT RoyalBanquet
 ```
 
-A cast is optional; the `ROOT` isn't. A `.regin` that names the Root Plot and declares no kind and no individual Agent builds the Target code alone. On Jason that means the ASL files, and no `.jcm` to start them with. As soon as one kind or individual Agent is declared, the Build also has the instancing output: for Jason, the `.jcm` and the `cast.json` the game reads.
+In a `.regin`, a cast is optional; the `ROOT` isn't. A `.regin` that names the Root Plot and declares no kind and no individual Agent builds the Target code alone. On Jason that means the ASL files, and no `.jcm` to start them with. As soon as one kind or individual Agent is declared, the Build also has the instancing output: for Jason, the `.jcm` and the `cast.json` the game reads.
 
 Checks on kinds and individual Agents run only when at least one of them exists. `story.regin` gets no warning about Roles nobody plays.
 

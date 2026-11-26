@@ -1,0 +1,9 @@
+IMPORT "moves"
+
+GAME CUE music_started
+
+PLAYBOOK Dancer:
+    WHEN music_started:
+        DO wave
+        DO curtsy                        #! error R1004
+        DO nod

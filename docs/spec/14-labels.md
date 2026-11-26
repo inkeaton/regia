@@ -133,7 +133,7 @@ A Target that doesn't support a Label **ignores** it, with **one warning per Pro
 **Warnings**
 
 - `R1408` A Label the Target doesn't support (once per Program per Label).
-- `R1409` A declared Propensity that no Label and no `SHIFT` names.
+- `R1409` A declared Propensity that no Label and no `SHIFT` names. Absence check (chapter 23).
 
 `R1304` and `R1309` (mixing labelled and unlabelled candidates) are retired, ADR 0033. `R1410` (a `SHIFTS` Label the Target can never apply) is retired: a `SHIFTS` Label now always applies when its Plan is chosen (*Moods and Labels on VEsNA-Pro*).
 

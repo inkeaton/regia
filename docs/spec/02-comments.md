@@ -36,7 +36,7 @@ Multiline plain comments **nest**. Inside one, every opener (`#[`, `#@key[`) cou
 
 Plain comments mean nothing to the Transpiler. They are kept in the syntax tree as trivia, next to whitespace, so that text survives round-trips through the Visual Editor exactly as written. A plain comment directly above a construct, or after it on the same line, moves with that construct when the Visual Editor moves or deletes it; one set apart by a blank line stays where it is (chapter 22, `22-bidirectional-editing.md`).
 
-Comment-only lines don't count for indentation (see *Statements and blocks*). Neither do the lines a multiline comment spans.
+Comment-only lines don't count for indentation (see *Statements and blocks*). Neither do the lines a multiline comment spans. A comment line's own indentation only says which Block it is in (chapter 22).
 
 ## Doc comments
 
@@ -79,7 +79,7 @@ A key may repeat. Two `#@author:` lines give two authors. Values are plain text.
 - Any declaration can take doc comments: Plot, Playbook, Role, Phase, Plan, and Vocabulary items. Statements can't.
 - A Vocabulary line that declares several items (`FACT purse(gold), craves(dish), on_duty`) passes its doc comments to **every item** on it. To document one item alone, declare it on its own line.
 - A doc comment at the **top of the file**, followed by a blank line, documents the file itself.
-- Any other doc comment, for example one followed by a blank line in the middle of a file or one above a Statement, gets a **warning** ("detached doc comment") and is ignored.
+- Any other doc comment, for example one followed by a blank line in the middle of a file or one above a Statement, or one indented further than the declaration below it, gets a **warning** ("detached doc comment") and is ignored.
 
 ### Allowing a warning: `#@allow`
 
@@ -93,7 +93,7 @@ A warning the writer has seen and accepts is answered in the source, where a rev
 
 - `#@allow: <code>, …` lists Diagnostic codes. It silences those warnings when their primary span lies inside the declaration it attaches to, nested declarations included: on a Plot it covers the Plot's Plans, and as a file's doc comment it covers the whole file.
 - Only warnings can be allowed. Naming an error's code is an error (`R0204`).
-- An `allow` that silences nothing, because the warning went away or the code is unknown, gets a warning of its own (`R0205`), so allows don't go stale. `R0205` can't itself be allowed.
+- An `allow` that silences nothing, because the warning went away or the code is unknown, gets a warning of its own (`R0205`), so allows don't go stale. `R0205` can't itself be allowed, and it is reported only when the Program has no errors: an error can silence the warning the allow was written for.
 - An allowed warning isn't gone: `regia check --all-warnings` shows it marked *allowed*, and the Visual Editor shows it faded (chapters 23, 24).
 
 It is for a warning the writer can't, or chooses not to, avoid, such as an order by name between two Playbooks that are never held together (chapter 13). A warning the language could avoid by itself is fixed in the language instead, as `?_name` does for an ignored Placeholder (chapter 03).
@@ -113,7 +113,7 @@ Instancing has no comment form. It is written only in `.regin` Instancing files 
 **Warnings**
 
 - `R0203` A detached doc comment: not directly above a declaration, and not a file's doc comment. It is ignored.
-- `R0205` An `#@allow` code that silences no warning in its declaration.
+- `R0205` An `#@allow` code that silences no warning in its declaration. Absence check (chapter 23).
 
 ## Regia 1.5
 

@@ -554,7 +554,7 @@ ROOT RoyalBanquet
 A Program has exactly one Root Plot. It is the only Plot that starts by itself, in one Staging, when the Program starts. Every other Plot runs only as a Subplot, started by a `START SUBPLOT` somewhere below it. Stories that run side by side are Subplots of the Root Plot, often started from its `DURING PLOT`'s `WHEN ENTERED:`.
 
 - The Root Plot is named in Instancing with `ROOT`, never inferred. Nothing in `royal_banquet.regia` says that it is the Root. Had the banquet been a Subplot of a wider `Castle`, the file would read the same.
-- A Build's Entry is a `.regin` file that reaches a `ROOT`. A `.regia` file given as the Entry is checked but not built, and the checks that need a Root Plot don't run.
+- A `.regin` Entry must reach a `ROOT`. A `.regia` Entry has no Root Plot: the checks that need one don't run, and its Build is Target code only.
 - Agent kinds and individual Agents play Roles of the Root Plot and of no other. Roles further down are filled by Mappings.
 - The Root Plot takes no parameters: Instancing has nothing to pass them.
 - A Plot the Root Plot never reaches is compiled and never runs.

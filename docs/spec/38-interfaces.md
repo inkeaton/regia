@@ -133,13 +133,13 @@ An Agent's own `PURSUE` is `FROM ME` and never takes the Sender of the Plan it i
 
 **Warnings**
 
-- `R3801` A Plot gives a Playbook that sends a Signal the Plot has no Plan for, in any Phase.
-- `R3802` `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e`.
-- `R3803` A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role.
-- `R3804` `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r`.
-- `R3805` A `PURSUE g` where no recipe of `g` in the Program admits `ME` (hint: `FROM … OR ME`).
-- `R3806` An `ASK … TO g`, or a setup's `PURSUE g`, where every recipe of `g` in the Program is `FROM ME`.
-- `R3807` A Cue that isn't `GAME` (chapter 10) and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` in the Program sends, while some Trigger waits for it. Reported on each such Trigger (hint: declare it `GAME CUE` if the game sends it). A local Cue is checked within its Playbook.
+- `R3801` A Plot gives a Playbook that sends a Signal the Plot has no Plan for, in any Phase. Absence check (chapter 23).
+- `R3802` `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e`. Absence check (chapter 23).
+- `R3803` A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role. Absence check (chapter 23).
+- `R3804` `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r`. Absence check (chapter 23).
+- `R3805` A `PURSUE g` where no recipe of `g` in the Program admits `ME` (hint: `FROM … OR ME`). Absence check (chapter 23).
+- `R3806` An `ASK … TO g`, or a setup's `PURSUE g`, where every recipe of `g` in the Program is `FROM ME`. Absence check (chapter 23).
+- `R3807` A Cue that isn't `GAME` (chapter 10) and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` in the Program sends, while some Trigger waits for it. Reported on each such Trigger (hint: declare it `GAME CUE` if the game sends it). A local Cue is checked within its Playbook. Absence check (chapter 23).
 
 An ending the parent never matches is `R1708` (chapter 17). A Goal-ending Trigger in a Plot that never asks the Goal is `R2012` (chapter 20); with `BY` in a Playbook that never asks it, `R0508` (chapter 05).
 

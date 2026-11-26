@@ -204,7 +204,7 @@ How a Goal Statement is written in ASL. What each internal action does, and how 
 - **A recipe's trigger** binds the Sender and the Pursuit's `Id`, and its Body ends with `regia.reached` (chapter 40, *`REACHED`*). From `serving.regia:15`:
 
   ```
-  @regia_plan__4[regia_rank(serving, to(fetch), 0)]
+  @regia_plan__serving__4[regia_rank(serving, to(fetch), 0)]
   +!fetch(Dish)[source(Regia_sender), regia_pursuit(Regia_pursuit)] : regia_given(serving, _, _, _, _, _)
      <- regia.act("walk_to", walk_to(kitchen));
         if (not in_stock(Dish)) { .fail(regia_fail, regia_reason(sold_out(Dish))) };

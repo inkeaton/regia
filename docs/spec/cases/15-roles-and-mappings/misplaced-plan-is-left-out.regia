@@ -1,0 +1,19 @@
+#! case: a misplaced Plan is reported once and left out, so its Statements cause nothing
+#! rule: R1508
+
+GAME CUE food_served
+CUE welcome
+ACTION bow
+
+PLAYBOOK Dining:
+    WHEN welcome: DO bow.
+
+PLOT Banquet:
+    ROLE Guest.
+    PHASE reception INITIAL.
+
+    DURING reception:
+        WHEN food_served:
+            ASSIGN Dining TO Guest.
+        WHEN ASSIGNED:                   #! error R1508
+            TELL Guest welcome.

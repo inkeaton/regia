@@ -2,7 +2,7 @@
 
 How Instancing (chapter 21) becomes a Jason Build's `.jcm`: the names and ports of the starting Agents, the top-level file of an Agent that plays several Roles, how `RANDOM` Propensity values are drawn, what the game is told about the starting cast, and what the Root Director knows about each kind so it can create joiners. Decided in the ticket *.jcm generation* (`.scratch/regia-2/issues/41-jcm-generation.md`). Individual Agents and lowercase Target names were added in *Agent kinds and Instancing files* (`.scratch/regia-revision/issues/15-instancing.md`). The setup lines of kinds and individual Agents in *What a Staging runs when it starts* (`.scratch/showcase-1-5/issues/17-staging-start.md`). It builds on chapter 28's layout, chapter 30's Root Director, chapter 33's joins and chapter 35's seed and console filter, and implements the ASL mapping notes of chapter 21. It was checked against VEsNA-Pro's `vesna.jcm` and `VesnaAgent` (`vesna-pro-main/src/agt/vesna/VesnaAgent.java`), which read `temper`, `strategy`, `address` and `port` as user parameters.
 
-The `.jcm` exists only when Instancing declares at least one Agent kind or individual Agent (chapter 21). Everything else in this chapter applies to that case.
+The `.jcm` exists only when Instancing declares at least one Agent kind or individual Agent (chapter 21). Everything else in this chapter applies to that case. A `.regia` Entry's Build never has one (chapter 28).
 
 ## Starting Agent names
 

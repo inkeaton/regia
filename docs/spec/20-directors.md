@@ -262,15 +262,15 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 - `R2008` `DURING p:`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare, or any `ENTER` in a Plot that declares no Phases (with a "did you mean" hint when a declared name is close).
 - `R2009` Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks.
 - `R2010` `PHASE` or `DURING` inside a `PLAYBOOK`.
-- `R2012` `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot that never asks `g`: no `ASK … TO g` and no setup `PURSUE g`.
+- `R2012` `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot that never asks `g`: no `ASK … TO g` and no setup `PURSUE g`. Absence check (chapter 23).
 - `R2013` `FROM` on a Goal's ending in a Plot (hint: `BY`).
 - `R2014` `IN <phase>` in a Playbook, or in a Plot that declares no Phases.
 - `R2016` The retired `TRANSITION TO p` (hint: `ENTER p`).
 
 **Warnings**
 
-- `R2011` A Phase that can never be entered: it isn't `INITIAL`, and no `ENTER` in the Plot names it.
-- `R2015` `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot.
+- `R2011` A Phase that can never be entered: it isn't `INITIAL`, and no `ENTER` in the Plot names it. Absence check (chapter 23).
+- `R2015` `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot. Absence check (chapter 23).
 
 A `GOAL` declared inside a Plot is `R1015` (chapter 10). `ME` in a Plot is `R0309` (chapter 03). A Signal the Plot gives the Playbook for and never handles, and a `FROM <Role>` Plan no Signal can reach, are `R3801` and `R3802` (chapter 38). A Label on a Director's Plan is `R1406`; `JOINED`, `LEFT` and `EMPTIED` in a Playbook are `R1901`; an unfilled Placeholder in `ASSIGN`, `MAPPING` or a recipient is `R0304`/`R0305`.
 

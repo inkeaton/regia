@@ -36,7 +36,7 @@ The Transpiler can only offer the hint when the declaring file is still part of 
 
 ## The program
 
-- A Program starts from **one Entry file**. The **Program** is every file reachable from it through imports. Builds are layered by importing (`test.regin` imports `banquet.regin`, chapter 21), never by naming several Entry files, so `regia check a.regin b.regin` checks two Programs, one after the other (chapter 23). Entry files are often `.regin` Instancing files, which import `.regia` files and other `.regin` files; a `.regia` file can't import a `.regin` (chapter 21). Only a `.regin` Entry can be built; a `.regia` Entry is checked without a Root Plot (chapter 21).
+- A Program starts from **one Entry file**. The **Program** is every file reachable from it through imports. Builds are layered by importing (`test.regin` imports `banquet.regin`, chapter 21), never by naming several Entry files, so `regia check a.regin b.regin` checks two Programs, one after the other (chapter 23). Entry files are often `.regin` Instancing files, which import `.regia` files and other `.regin` files; a `.regia` file can't import a `.regin` (chapter 21). Any Entry can be checked and built; a `.regia` Entry has no Root Plot (chapter 21, *A `.regia` Entry*), and only a `.regin` Entry can be run.
 - **Visibility is per file**: a file can only use names it declares or reaches through its imports.
 - **Uniqueness is program-wide**: the checks below cover every file of the Program, even two files that never import each other (both reached from the Entry through different paths). At runtime they could meet on one Agent that runs Playbooks from both, so one name must mean one thing everywhere.
 
@@ -157,7 +157,7 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 - `R1001` An `IMPORT` that isn't at the top of the file, after its doc comment and before any declaration.
 - `R1002` An import path that leads to no file.
 - `R1003` An import cycle (the message names every file in the loop).
-- `R1004` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`).
+- `R1004` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`). Absence check (chapter 23).
 - `R1005` Two declarations of one name that don't agree on kind, parameter count, External name or `GAME` (the message names both).
 - `R1006` A Playbook or Plot declared twice.
 - `R1007` Two names that differ only in case, in the program-wide namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders.

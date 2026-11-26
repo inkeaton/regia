@@ -151,7 +151,7 @@ A Challenger left alone stops telling `hit` because `Duelling` is taken from it,
 
 **Warnings**
 
-- `R1905` `JOINED` in a Plot that is never the Root Plot: it can't fire.
+- `R1905` `JOINED` in a Plot that is never the Root Plot: it can't fire. Absence check (chapter 23).
 
 ## Trace entries
 

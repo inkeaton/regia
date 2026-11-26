@@ -308,7 +308,7 @@ A Trigger has no Context clause: the Context is a `GIVEN` Block under the Trigge
 - `R0505` `FROM` on a `FORGOTTEN` Trigger.
 - `R0506` `BY` on a Trigger that isn't a Goal's ending (a Cue, a Fact, a `TO` recipe, a Subplot's `ENDED`), except `, BY PARENT` on `EXITED` (chapter 20). `BY PARENT` on any other Trigger, and `BY` with anything but `PARENT` on `EXITED`, are this error too.
 - `R0507` `FROM` and `BY` on the same Trigger.
-- `R0508` `WHEN g … BY` in a Playbook that never asks `g`: no `ASK … TO g`. In a Plot it is `R2012` (chapter 20).
+- `R0508` `WHEN g … BY` in a Playbook that never asks `g`: no `ASK … TO g`. In a Plot it is `R2012` (chapter 20). Absence check (chapter 23).
 - `R0509` `FROM GAME` on a `TO` recipe or a Goal's ending (no Goal comes from the game).
 - `R0510` `FROM ME` on a Cue Trigger (an Agent never sends to itself).
 - `R0511` A Placeholder or a quantity after `GAME` or `ME`, or anywhere in a `FROM … OR …` list.

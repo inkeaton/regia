@@ -210,22 +210,22 @@ A Plot may not start itself, directly or through other Plots (A starts B starts 
 - `R1701` A cycle among `START SUBPLOT` Statements (the message names the cycle).
 - `R1702` A Statement after `END PLOT` in the same branch.
 - `R1703` `END PLOT WITH` something other than one declared Cue, or with unfilled arguments.
-- `R1704` `WHEN P FINISHED` (any form), `WHEN P DROPPED`, `WHEN P ENDED`, `DROP SUBPLOT P` or `P RUNNING` where this Plot never starts `P`.
+- `R1704` `WHEN P FINISHED` (any form), `WHEN P DROPPED`, `WHEN P ENDED`, `DROP SUBPLOT P` or `P RUNNING` where this Plot never starts `P`. Absence check (chapter 23).
 - `R1709` A Plot written with the wrong number of arguments: a Plot with parameters written bare, or one without written with arguments, in `START SUBPLOT`, `WHEN … FINISHED`, `WHEN … DROPPED`, `WHEN … ENDED`, `DROP SUBPLOT` or `RUNNING`; or a Plot written with arguments in `PRECEDENCE`.
 - `R1710` A `START SUBPLOT` argument that isn't filled, or is a Role.
 - `R1711` A Plan that fills a Plot parameter again (`LET ?quarrel BE …`), or two parameters of one Plot with the same name.
-- `R1712` `WHEN P DROPPED` in a Plot that never ends `P` from above: no `DROP SUBPLOT P`, and no `UNTIL EXITED` on a `START SUBPLOT P`.
+- `R1712` `WHEN P DROPPED` in a Plot that never ends `P` from above: no `DROP SUBPLOT P`, and no `UNTIL EXITED` on a `START SUBPLOT P`. Absence check (chapter 23).
 - `R1714` `RUNNING` in a Playbook.
 - `R1715` The retired `WHEN P ENDED WITH e:` or `WHEN P ENDED WITHOUT OUTCOME:`, or `ENDED` with any other complement (hint: `FINISHED WITH e`, or a plain `FINISHED` after the `FINISHED WITH` Plans).
 - `R1717` The retired `END SUBPLOT P` (hint: `DROP SUBPLOT P`).
 
 **Warnings**
 
-- `R1705` `END PLOT WITH` in a Plot never started as a Subplot: `WITH` is ignored.
-- `R1706` `WHEN P FINISHED WITH e` where `P` never ends with `e`.
+- `R1705` `END PLOT WITH` in a Plot never started as a Subplot: `WITH` is ignored. Absence check (chapter 23).
+- `R1706` `WHEN P FINISHED WITH e` where `P` never ends with `e`. Absence check (chapter 23).
 - `R1707` Retired: with the specific Trigger firing before `ENDED`, a plain `ENDED` shadows nothing (ADR 0030).
-- `R1708` An ending of `P`, with an Outcome or bare, that no Plan of the starting Plot hears in any Phase: no `FINISHED WITH` for that Outcome, no plain `FINISHED`, and no `ENDED`. Reported on the `START SUBPLOT`, once per unmatched ending. Endings from above are not checked.
-- `R1713` A `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, where the Plot has a `DROPPED` or `ENDED` Plan for `P` in `p` and none in `DURING PLOT` or another Phase: the ending from above arrives after `p` is left, and nothing hears it.
+- `R1708` An ending of `P`, with an Outcome or bare, that no Plan of the starting Plot hears in any Phase: no `FINISHED WITH` for that Outcome, no plain `FINISHED`, and no `ENDED`. Reported on the `START SUBPLOT`, once per unmatched ending. Endings from above are not checked. Absence check (chapter 23).
+- `R1713` A `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, where the Plot has a `DROPPED` or `ENDED` Plan for `P` in `p` and none in `DURING PLOT` or another Phase: the ending from above arrives after `p` is left, and nothing hears it. Absence check (chapter 23).
 - `R1716` A plain `WHEN P FINISHED` Plan written above a `WHEN P FINISHED WITH …` Plan it also matches, which can then never run.
 
 `START SUBPLOT` Mappings get chapter 15's checks.

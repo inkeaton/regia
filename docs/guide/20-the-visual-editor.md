@@ -141,7 +141,7 @@ Spec: chapter 24, *Highlighting*, *Quick fixes*, *Instancing and builds*. For `#
 ## Building
 
 - `.regin` files are edited as text, with the same colours and Diagnostics as `.regia` files. A form for Agent kinds, counts and Propensities is post-2.0.
-- The Build menu lists every `.regin` file in the Project, since only a `.regin` Entry names a Root Plot. Each `.regin` tab also has a Build button. A `.regia` file checked as its own Entry is not listed.
+- The Build menu lists every `.regin` file in the Project, since only a `.regin` Entry names a Root Plot and can be run. A `.regia` Entry is built from the command line. Each `.regin` tab also has a Build button. A `.regia` file checked as its own Entry is not listed.
 - The Target is a project setting, `jason` by default, as `--target` is on the command line.
 - A build runs only with no errors. Otherwise the editor shows the Diagnostics and builds nothing.
 
@@ -526,7 +526,7 @@ What we type in Monaco joins the same path at step 4. The graph never edits text
 
 ### Editing broken text
 
-The parser always gives a tree, so the drawing stays while we type. A construct whose Extent contains a syntax error is drawn, and it can't be edited from the graph until the text is fixed. If Monaco has changed since the last parse, the core parses again before it computes an edit. A key that no longer resolves gives a Diagnostic instead of edits.
+The parser always gives a tree, so the drawing stays while we type. A construct whose Extent contains a syntax error, a missing part included, is drawn, and it can't be edited from the graph until the text is fixed. If Monaco has changed since the last parse, the core parses again before it computes an edit. A key that no longer resolves gives a Diagnostic instead of edits.
 
 Spec: chapter 22; chapter 25, *Edit operations*, *Canvas gestures*. ADR 0011.
 
@@ -626,8 +626,8 @@ WHEN EXITED:                         # however the feast ends
 
 `delete` removes a construct's Extent: the construct and the comments that belong to it. Belonging is decided by position alone:
 
-1. Comment lines directly above a construct, with no blank line between, belong to it. This is the same rule that attaches doc comments.
-2. A comment after the construct's last token, on the same line, belongs to it.
+1. Comment lines directly above a construct, at its indentation, with no blank line between, belong to it. This is the same rule that attaches doc comments.
+2. A comment after a construct's last token, on the same line, belongs to the outermost construct that began on that line and ends there.
 3. Comment lines at the end of a Block's body, indented at the body's level, belong to that Block.
 4. A comment set apart from every construct by a blank line belongs to none. It stays where it is when a neighbour is deleted.
 
@@ -648,7 +648,7 @@ PLAYBOOK Guest:
         DO eat_food
 ```
 
-In the syntax tree, ownership is structural. Comments that belong to a construct are inside its node, a trailing comment inside its Statement, doc comments as the first children of their declaration, so a construct's Extent is its node's text range. The Plain comments layers draw exactly these comments.
+In the syntax tree, ownership is structural. Comments that belong to a construct are inside its node, a trailing comment inside the construct rule 2 gives, doc comments as the first children of their declaration, so a construct's Extent is its node's text range. The Plain comments layers draw exactly these comments.
 
 ### Deleting a Phase
 

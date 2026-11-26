@@ -42,7 +42,7 @@ The Build of `banquet.regin` goes in `build/banquet/`, named after the Entry wit
 
 - A Playbook file holds the Plans of one Playbook and includes nothing.
 - A Director file holds one Plot's Director, and includes `regia/director.asl`. Every Staging of a Plot runs the same file: the two duels of one evening both run `HonorDuel.asl`.
-- Role files exist only for the Roles of the Root Plot, since only they start Agents. `Challenger`, `Defender`, `Spectator`, `Poisoner` and `Watchman` get no file. `Guard.asl` is written though no Agent of the banquet plays `Guard` alone: there is one Role file for every Root Plot Role, played or not.
+- Role files exist only for the Roles of the Root Plot, since only they start Agents. (The Build of a `.regia` Entry has no Root Plot, so it has one for every Role of every Plot, `roles/<Plot>__<Role>.asl`, and no `.jcm`.) `Challenger`, `Defender`, `Spectator`, `Poisoner` and `Watchman` get no file. `Guard.asl` is written though no Agent of the banquet plays `Guard` alone: there is one Role file for every Root Plot Role, played or not.
 - `unheard.asl` and `goals.asl` depend on the Program, so they are generated, one each per Build. Every Role file and combination file includes both, once. What they hold is in *Jason: Plans and Goals*.
 - File names are our names exactly as written: `Keeping_watch.asl`, `NobleSocializing.asl`. Names are unique ignoring case, so this is safe on a file system that ignores case.
 - Every generated file starts with a comment naming the Transpiler version and the source file, and saying it is generated.

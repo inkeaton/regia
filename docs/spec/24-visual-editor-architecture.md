@@ -96,7 +96,7 @@ Renaming or moving a file breaks every `IMPORT` that points at it, and the moved
 ## Instancing and builds
 
 - `.regin` files are **edited as text** in 2.0, with the same highlighting and diagnostics as `.regia` files. A form editor for Agents, counts and Propensities comes later.
-- The **Build menu** lists every `.regin` file: only a `.regin` Entry names a Root Plot and can be built (chapter 21). Each `.regin` tab also has a Build button. A `.regia` file that no `.regin` reaches is still checked as its own Entry, but isn't listed.
+- The **Build menu** lists every `.regin` file: only a `.regin` Entry names a Root Plot and can be run (chapter 21). A `.regia` Entry is built from the command line (chapter 23). Each `.regin` tab also has a Build button. A `.regia` file that no `.regin` reaches is still checked as its own Entry, but isn't listed.
 - The **Target** is a project setting, `jason` by default, as `--target` is on the command line (chapter 23).
 - A build runs only with **zero errors** (chapter 23). Otherwise the editor shows the diagnostics and builds nothing.
 - **Output** is the `(path, text)` list from `build(entry)`:

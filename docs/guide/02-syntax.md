@@ -36,7 +36,7 @@ One line is one Statement or one declaration. A line that ends in `:` is a Block
 - Every Block header ends in `:`, with no exceptions: `PLAYBOOK`, `PLOT`, a Trigger, `GIVEN`, `IF`, `ELSE`, `ROLE` with a setup, `RANDOMLY`, `OPTION`. A line that doesn't end in `:` never opens a Block. `ROLE host` declares a Role and nothing more.
 - A body ends at the first line indented as much as its header, or less.
 - We indent with tabs or with spaces, at any width, but never with both in one file.
-- Coming back to a depth that no open Block has is an error.
+- Coming back to a depth that no open Block has is an error. So is going deeper under a line that isn't a header.
 - Blank lines, comment-only lines and the lines a multiline comment spans don't count for indentation.
 - No line ends in `.` or `;`. A Statement ends with its line.
 
@@ -46,6 +46,7 @@ This is the default style, for code written by hand and for code a tool generate
 
 - Tabs and spaces mixed for indentation in one file → `R0103`
 - A line dedented to a depth that was never opened → `R0104`
+- A line indented further than the one before it, which opens no Block → `R0114`
 
 Spec: chapter 01.
 
@@ -103,7 +104,7 @@ WHEN yielded, FROM opponent: DROP strike. DO salute. SIGNAL duel_won
 
 All three Statements are in the Plan's body. A `.` works the same in an indentation Block: `DO stand_up. DO raise_cup` on one line of a body is two Statements of that body.
 
-A `.` ends a Statement only when it is followed by a space, the end of the line, a `;` or a `#`. Anywhere else it belongs to a number or a dotted name:
+A `.` ends a Statement only when it is followed by whitespace, the end of the line or of the file, a `;` or a `#`. Anywhere else it belongs to a number or a dotted name:
 
 [`vocabulary.regia`](../showcase/vocabulary.regia)
 ```regia
@@ -178,7 +179,7 @@ WHEN insult_thrown(?offender), FROM Guest ?offended:
 
 The last four lines are one Statement. A line goes on to the next one, forming one logical line, when it ends with `,` or has a `(` that isn't closed yet. A `,` always says that something more follows, so it never ends a logical line.
 
-- The lines that carry on are indented further than the logical line's first line. How much further is up to us; they never count as a Block's body.
+- The lines that carry on are indented further than the logical line's first line. One that isn't is reported and starts a new logical line, so a forgotten `)` spoils one Statement and not the rest of the file. How much further is up to us; they never count as a Block's body.
 - Lines are joined into logical lines before anything else is read, so a header can wrap before its `:`, and an Inline block can wrap too.
 - A `,` never joins two Statements. Statements are separated by a new line or by `.`.
 
@@ -270,9 +271,9 @@ WHEN sold_out(?dish), FROM waiter:
 
 Comments mean nothing to the Transpiler, but they are kept in the syntax tree next to the whitespace, so text goes through the Visual Editor exactly as written. When the editor moves or deletes a construct, the comments that belong to it go too:
 
-- comment lines directly above it, with no blank line in between;
-- a comment after it on its last line;
-- for a Block, comment lines at the end of its body, indented at the body's level, like `# no ELSE: …` in `TO take_seat`.
+- comment lines directly above it, at its indentation, with no blank line in between;
+- a comment after it on its last line, which goes to the outermost construct that began on that line and ends there: to the Option in `OPTION, WEIGHT 5: PASS  # nothing`;
+- for a Block, comment lines at the end of its body, indented at the body's level, whatever comes below, like `# no ELSE: …` in `TO take_seat`; for a header with no body, the comment lines indented under it.
 
 A comment set apart by a blank line belongs to nothing and stays where it is, like the `#[ … ]#` above. A line starting with `##` or `#%` is an ordinary comment.
 
@@ -359,6 +360,19 @@ It is meant for a warning the writer can't avoid or has chosen not to. A warning
 - `#@allow` naming a code that silences no warning in its declaration → `R0205` (warning)
 
 Spec: chapter 02. For the order by name, chapter 13; for `--all-warnings`, chapter 23.
+
+## Names and Strings
+
+- A name is an ASCII letter, then ASCII letters, digits or `_`. A Placeholder is `?name`, `?_name` or `?`, with no space after the `?`.
+- A String is `"…"` on one line, with `\"` and `\\` as its only escapes. Strings and comments may hold any Unicode text.
+
+**Checks**
+
+- A character Regia doesn't use → `R0112`
+- A String not closed on its line, or another escape → `R0113`
+- Text that fits no construct, and that no other check names → `R0115`
+
+Spec: chapter 01.
 
 ## Keywords
 

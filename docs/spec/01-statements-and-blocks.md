@@ -104,7 +104,7 @@ Hint: put `WHEN e:` on its own line, indented under `PLAYBOOK P:`.
 
 ## When `.` ends a Statement
 
-A `.` ends a Statement only when it is followed by a space, the end of the line, `;`, or `#` (a comment). Anywhere else it belongs to a dotted name (`engine.security.summon_guards`) or a number (`0.5`).
+A `.` ends a Statement only when it is followed by whitespace, the end of the line or of the file, `;`, or `#` (a comment). Anywhere else it belongs to a dotted name (`engine.security.summon_guards`) or a number (`0.5`).
 
 So `DO complain.SIGNAL insult_thrown` reads as one dotted name and is an error; write `DO complain. SIGNAL insult_thrown`. When a dotted name contains a keyword, the Transpiler hints at the likely mistake ("did you mean `. SIGNAL`?").
 
@@ -114,9 +114,11 @@ A `.` at the end of a line, or a `;` closing an Inline block right at the end of
 
 ## Indentation rules
 
-- Tabs or spaces, at any width, but consistent within a file. Mixing tabs and spaces for indentation in one file is an error.
-- Dedenting to a level that was never opened is an error ("this line is indented less than the Block it's in, but more than the one outside").
-- Blank lines and comment-only lines don't count for indentation.
+- Tabs or spaces, at any width, but consistent within a file. Each tab or space counts as one column. The first indented line sets which of the two the file uses, and using the other one to indent is an error (`R0103`), reported once per file, at the first such line. Continuation lines count for this; comment-only lines don't. After it, `R0104` and `R0105` are not reported in that file, since its columns can't be trusted.
+- A line indented further than the one before it, when that one isn't a Block header, is an error (`R0114`).
+- Dedenting to a level that was never opened is an error ("this line is indented less than the Block it's in, but more than the one outside"). The line is read as belonging to the Block outside.
+- Blank lines and comment-only lines don't count for indentation: they never open or close a Block. Which Block a comment line falls in is in chapter 22 (*Which Block a comment is in*).
+- Code after a multiline comment that started its line has the indentation of the line the comment opened on.
 
 ## Continuation lines
 
@@ -125,7 +127,7 @@ A physical line continues onto the next one, forming one logical line, when:
 - it ends with `,`: a `,` always says that something more follows (*Clauses and the comma*, below), so it never ends a logical line; or
 - it has a `(` that isn't closed yet.
 
-Continuation lines must be indented further than the logical line's first line. Physical lines are joined into logical lines before any of the rules above apply, so an Inline block can continue this way too.
+Continuation lines must be indented further than the logical line's first line. A line that isn't is an error (`R0105`) and starts a new logical line, with any open `(` forgotten, so a missing `)` or a stray `,` never swallows the rest of the file. What the broken line lacks, such as its `)`, is not reported too. Physical lines are joined into logical lines before any of the rules above apply, so an Inline block can continue this way too.
 
 ```regia
 WHEN hates(?h) LEARNED, FROM ?teller,
@@ -135,6 +137,16 @@ WHEN hates(?h) LEARNED, FROM ?teller,
 ```
 
 A `,` never joins two Statements: Statements are separated by a new line or by `.`.
+
+## Names, Strings and characters
+
+- A **name** is an ASCII letter followed by ASCII letters, digits or `_`.
+- A **Placeholder** is `?name`, `?_name` or `?` alone (chapter 03), with no space after the `?`.
+- A **dotted name** is names joined by `.` with no spaces (chapter 10).
+- A **String** is written `"…"` on one line. Its only escapes are `\"` and `\\`. Any Unicode text may appear in it, as in a comment.
+- A line ends with `\n` or `\r\n`. The last line needs no line break. A UTF-8 byte order mark at the start of a file is ignored.
+
+Names are ASCII so that they are legal in a Target (Jason only lowercases the first letter, chapter 28) and compare ignoring case without ambiguity. Unicode names could be added later without breaking any Program.
 
 ## Parsing never depends on declarations
 
@@ -270,6 +282,10 @@ A construct reported with `R0109` gets no other Diagnostic: the checks of its ow
 - `R0109` A construct of a system Regia 1.5 leaves out, in a 1.5 build (the message names it and says it is Regia 2.0). Reported by a 1.5 build only; retired in 2.0.
 - `R0110` A name spelled exactly like a keyword (the message says the word is a keyword; hint: change its case or its spelling).
 - `R0111` A clause keyword after the core of a header or Statement with no `,` before it, such as `WHEN e FROM DIRECTOR:` (the message names the clause; hint: `WHEN e, FROM DIRECTOR:`).
+- `R0112` A character Regia doesn't use outside a String or a comment.
+- `R0113` A String not closed on its line, or an escape other than `\"` and `\\`.
+- `R0114` A line indented further than the one before it, which opens no Block.
+- `R0115` Text that fits no construct, and that no other check names (the message says what was found and what was expected).
 
 **Warnings**
 
@@ -279,4 +295,4 @@ A construct reported with `R0109` gets no other Diagnostic: the checks of its ow
 
 All of this chapter is in 1.5 (ADR 0025). `R0109` is reported by a 1.5 build only, and is retired in 2.0 (*A word of Regia 2.0 in a 1.5 build*, above).
 
-Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R0111` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R0107` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`). *Retired spellings*, and the rules that retired spellings keep their error for ever, that retired keywords stay reserved, and that only this spec's own spellings get an error, were decided in the ticket *Retired spellings and their codes* (`.scratch/syntax-review/issues/13-retired-spellings.md`).
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R0111` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R0107` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`). *Retired spellings*, and the rules that retired spellings keep their error for ever, that retired keywords stay reserved, and that only this spec's own spellings get an error, were decided in the ticket *Retired spellings and their codes* (`.scratch/syntax-review/issues/13-retired-spellings.md`). *Names, Strings and characters*, `R0112` to `R0115`, and how layout errors are recovered from were decided in the ticket *Review: text to tokens* (`.scratch/transpiler/issues/01-text-to-tokens.md`) and are in 1.5.

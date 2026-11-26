@@ -67,19 +67,19 @@ A Diagnostic has the same parts wherever it is shown:
 - Two severities. An error stops the Build; a warning doesn't. What the language does by its own rule, such as a default left out, is a line of a report (*Reports*), never a Diagnostic.
 - The severity is printed beside the code, `warning[R1305]`, and never read from it.
 - Every pass collects Diagnostics and none stops early, so one run reports every problem. A broken line in one file doesn't hide a wrong name in another.
-- The list is sorted by file, then by position. Duplicates, and cascades from one broken construct, are removed.
+- The list is sorted by file, then by position, and exact duplicates are removed. One mistake gives one Diagnostic: a check stays silent when what it looks for may be in text the Transpiler couldn't read, such as a broken Statement or a missing import.
 - The command line prints a fix only by its title, as a `help:` line. The Visual Editor offers it as an action we can apply.
 - The command line counts lines and columns from 1, columns in characters. Inside the Transpiler a position is a byte offset, and the Visual Editor gets them as the Language Server Protocol counts them (*The Workspace*).
 - The command line renders Diagnostics in the layout above, rustc's.
 
 ### Warnings we accept
 
-A warning we have read and accept is answered in the source with `#@allow` (*Syntax*). After validation, allowed warnings are taken out of the list. `regia check --all-warnings` keeps them, marked *allowed*, and the Visual Editor shows them faded.
+A warning we have read and accept is answered in the source with `#@allow` (*Syntax*). After validation, allowed warnings are marked *allowed* and hidden. `regia check --all-warnings` shows them, and the Visual Editor shows them faded.
 
 **Checks**
 
 - `#@allow` naming an error's code → `R0204`
-- `#@allow` naming a code that silences nothing → `R0205` (warning, never itself allowed)
+- `#@allow` naming a code that silences nothing → `R0205` (warning, never itself allowed, reported only when the Program has no errors)
 
 Spec: chapter 23, *Diagnostics*, *Positions*. For `#@allow`, chapter 02; for `R1004`, chapter 10.
 
@@ -119,19 +119,20 @@ flowchart LR
 
 | Pass | Works on | Gives |
 |---|---|---|
-| Lex | one file's text | tokens, comments and whitespace included; indentation as indent and dedent tokens |
+| Lex | one file's text | tokens, comments and whitespace included; line ends and indentation as newline, indent and dedent tokens; lexical Diagnostics |
 | Parse | one file's tokens | a lossless tree, and syntax Diagnostics |
 | Typed accessors | one file's tree | typed views of its nodes (`Plot`, `WhenBlock`, `AssignStmt`, …); names are still text |
-| Model build | every file of the Program | the Model: imports, names, kinds and parameter counts, Role Mappings, precedence ranks and Instancing resolved |
-| Validate | the Model | the Diagnostics that need the whole Program, the Target's included |
+| Model build | every file of the Program | the Model: imports, names, kinds and parameter counts, Role Mappings, precedence ranks and Instancing resolved; Diagnostics for what can't enter it as written |
+| Validate | the Model | the Diagnostics about what the built Model means, the Target's included |
 | Emit | the Model | the Target's output files |
 
-- Every file is parsed alone, and the parser always gives a tree, even for broken text. A stretch it can't read becomes an error node; what is inside is skipped and the rest is read as usual. A missing `:` in `dining.regia` gives one syntax error there, and every other file is still checked.
+- Every file is parsed alone, and the parser always gives a tree, even for broken text. A stretch it can't read becomes an error node; what is inside is skipped and the rest is read as usual. A missing part leaves nothing in the tree, and the rest of its line is read. A missing `:` in `dining.regia` gives one syntax error there, and every other file is still checked.
 - Parsing never depends on declarations. Every construct can be read from its tokens alone, which is what lets each file be parsed on its own and its imports be found before any name is resolved.
 - The lossless tree keeps every byte: printing it gives the file back. The Visual Editor's text edits work on it (*The Visual Editor*).
 - The Model is the Program's meaning across files. `ASSIGN Dining` in the `ROLE Guest` setup no longer holds the word `Dining`: it points to the Playbook declared in `dining.regia`, with the Mappings we left out filled in. Every item keeps its origin, its file and range, which is how a Diagnostic finds its way back to our text.
 - The Model is resolved, not desugared. A Role setup stays a Role setup, and only the Target turns it into Messages from the Director. A Diagnostic therefore speaks of what we wrote, never of what it becomes.
 - The Model is rebuilt in full on every change. On broken code it is built as far as it can be, so the Visual Editor's graph and the other Diagnostics stay while we type.
+- One mistake gives one report. A check that says nothing does something (nothing declares `wave`, nothing sends `scandal`) stays silent when what it looks for may be in text that couldn't be read: `ACTION ) wave` is one syntax error, and `DO wave` reports nothing. A file that imports a missing file, directly or not, gets no `R1004` for a file-level name.
 
 Since names are resolved across the Program, a name error can show in a file nobody touched, because an import elsewhere changed.
 
@@ -182,9 +183,9 @@ Spec: chapter 23, *Targets*. For the settings, chapter 21, *Target settings*; fo
 regia build banquet.regin
 ```
 
-`regia build` checks, and if there is no error, writes the Build into the Build folder, `build/<Entry path>/`. The Entry path is the Entry's path from the current directory, without its extension: `banquet.regin` builds into `build/banquet/`, and `tests/test.regin` into `build/tests/test/`. Two Entries with one name in two folders never share a Build.
+`regia build` checks, and if there is no error, writes the Build into the Build folder, `build/<Entry path>/`. The Entry path is the Entry's path from the current directory, without the `.regin` extension: `banquet.regin` builds into `build/banquet/`, and `tests/test.regin` into `build/tests/test/`. Two Entries with one name in two folders never share a Build.
 
-- `build` takes one `.regin` Entry. A `.regia` Entry is an error of the command line: a Build needs a `ROOT`.
+- `build` takes one Entry. A `.regia` Entry gives Target code only, with no Root Plot and no cast: for Jason, the ASL files with no `.jcm`. It builds into a folder that keeps the extension, `build/plots/honor_duel.regia/`.
 - Warnings don't block the Build.
 - A build replaces everything in its folder except `traces/`, so the files of a renamed or removed Playbook don't linger. `traces/` keeps the Traces of past runs, and neither the command line nor the Visual Editor ever clears it.
 - A `.regin` that declares no Agent kind and no individual Agent builds the Target code alone. For Jason, that is the ASL files with no `.jcm`.
@@ -204,7 +205,7 @@ regia run banquet.regin --seed 42
 - `lib/` sits beside `build/` in the current directory, and holds the Target's own code, already built: jars, for Jason, such as the class behind an Action with a dotted External name. `run` and `test` put it on the class path. The command line never compiles it, never reads it in `check` or `build`, and never copies it into a Build.
 - `--seed <n>` gives the run its seed. It beats the Build's `SEED`; with neither, the run picks one. The Trace records it either way (*Randomness*).
 - `--console all|warnings|off` sets how much of the Trace the console shows; the default is `all`. The Trace file always gets every entry (*The Trace*). How much is shown changes nothing in the run, so it isn't a Target setting.
-- `run` takes one `.regin` Entry, as `build` does.
+- `run` takes one `.regin` Entry. A `.regia` Entry is an error of the command line: a run needs a `ROOT`.
 
 Spec: chapter 23, *The command line*. For the Jason runtime and `lib/`, chapters 28 and 35.
 
@@ -252,7 +253,8 @@ The exit status is 0 on success, and 1 when an error was reported, a warning und
 |---|---|
 | `check` | any number of `.regin` or `.regia` files, each its own Program; a `.regia` Entry is checked without a Root Plot |
 | `explain` | one `.regin` or `.regia` file |
-| `build`, `run` | one `.regin` file |
+| `build` | one `.regin` or `.regia` file |
+| `run` | one `.regin` file |
 | `test` | case files and folders; a folder is searched for cases |
 
 Spec: chapter 23, *The command line*.
@@ -425,7 +427,7 @@ The Visual Editor runs `regia-core` compiled to WebAssembly, through one statefu
 | `docs(path)` | one file's Docs page: its Plots, Playbooks and Vocabulary, with doc comments and Interfaces |
 | `preview(operation)` | what an edit operation would do, before it is applied |
 | `edit(operation)` | the text edits, per file, for one domain edit operation, `moveFile(from, to)` included |
-| `build(entry)` | the Target's output files for one `.regin` Entry |
+| `build(entry)` | the Target's output files for one Entry |
 | `report(entry, kind)` | the conflict report or an Interface, as `regia explain` prints it |
 
 - Every `.regin` in the Project is an Entry, its own Program and its own Build. A `.regia` file no Entry reaches is checked as its own Entry, with no Root Plot, so it still gets name errors while it is being written. Every file gets its syntax Diagnostics either way.

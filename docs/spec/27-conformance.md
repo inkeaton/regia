@@ -55,11 +55,11 @@ docs/spec/cases/
 
 - A case is one `.regia` file, or a **folder** when it needs several files (Imports, Instancing). The name is a slug saying what it exercises.
 - In a folder case, the Entry is the `.regin` file at its root if there is one; otherwise every `.regia` file in the folder is the Entry of a Program of its own, as on the command line (chapter 10).
-- A **behaviour case** is always a folder, with a `.trace` file and a `.regin` Entry naming its `ROOT`, since only a `.regin` Entry can be built and run (chapter 21). The `.trace` format is in chapter 34.
+- A **behaviour case** is always a folder, with a `.trace` file and a `.regin` Entry naming its `ROOT`, since only a `.regin` Entry can be run (chapter 21). The `.trace` format is in chapter 34.
 
 The format is not only the spec's: `regia test` (chapter 23) runs cases of this form written by anyone, so a writer can keep cases for their own Program.
 
-The spec owns its cases. The development effort copies or vendors them into the Transpiler's test suite and doesn't edit them there; a disagreement with a case is a change to the spec.
+The spec owns its cases. The Transpiler's test suite reads them in place from `docs/spec/cases/` and never edits them to make code pass; a disagreement with a case is a change to the spec.
 
 ## Annotations
 
@@ -97,7 +97,7 @@ On a line of its own, `#!^` points at the line above. Use it where a trailing co
 
 Several Diagnostics on one line are written one after another: `#! error R1301, warning R1305`.
 
-**Matching.** A check case passes when the Transpiler reports exactly the annotated Diagnostics: same severity, same code, primary span starting on the same line. A Diagnostic with no annotation, or an annotation with no Diagnostic, fails the case. Message wording, labels, hints and quick fixes aren't checked, so they can improve without breaking cases. In a folder case, each annotation sits in the file the Diagnostic lands in.
+**Matching.** A check case passes when the Transpiler reports exactly the annotated Diagnostics: same severity, same code, primary span starting on the same line. A Diagnostic with no annotation, or an annotation with no Diagnostic, fails the case. Message wording, labels, hints and quick fixes aren't checked, so they can improve without breaking cases. In a folder case, each annotation sits in the file the Diagnostic lands in. A folder case with several Programs matches the union of their Diagnostics, exact duplicates removed (chapter 23, *The Workspace*).
 
 ## Coverage
 
@@ -131,5 +131,5 @@ Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-th
 
 ## Not decided here
 
-- How the test runner is built inside `regia test`, and how cases are vendored into the Transpiler's repository: the development effort.
+- How the test runner is built inside `regia test`: chapter 23, *Tests*.
 - ASL snapshot tests: the development effort, outside the spec.

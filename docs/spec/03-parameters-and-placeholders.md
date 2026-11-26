@@ -32,7 +32,7 @@ A **Value** is fixed when the Plan is written:
 |---|---|
 | Name | `kitchen`, `red_wine`, declared with `NAME` (below) |
 | Number | `3`, `-0.5` (see chapter 04, `04-numbers-and-expressions.md`) |
-| String | `"A guest finishes their meal."` |
+| String | `"A guest finishes their meal."` (its form is in chapter 01) |
 
 ### Names are declared
 
@@ -166,7 +166,7 @@ When several matches satisfy the Context, the Agent uses **one**, and **the lang
 - `R0301` A use with a different number of arguments from the declaration's parameters.
 - `R0302` A `?` in a declaration.
 - `R0303` A Role name used as a Value, as an argument or in an Expression (hint: fill a Placeholder with `FROM Role ?x`).
-- `R0304` A Placeholder used in the Body that was never filled, or used before the Statement that fills it.
+- `R0304` A Placeholder used in the Body that was never filled, or used before the Statement that fills it. Its *never filled* part is an absence check (chapter 23).
 - `R0305` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` (the message names the branch).
 - `R0306` A bare `?`, or a `?_name`, in the Body.
 - `R0309` `ME` in a Plot, a Role setup included.
@@ -175,8 +175,8 @@ When several matches satisfy the Context, the Agent uses **one**, and **the lang
 
 **Warnings**
 
-- `R0307` A named Placeholder that is filled but never used (hint: `?`). What counts as a use is listed under *"Don't care": `?`*.
-- `R0308` A named Placeholder that appears only under `NOT` (hint: `?`).
+- `R0307` A named Placeholder that is filled but never used (hint: `?`). What counts as a use is listed under *"Don't care": `?`*. Absence check (chapter 23).
+- `R0308` A named Placeholder that appears only under `NOT` (hint: `?`). Absence check (chapter 23).
 
 ## Regia 1.5
 

@@ -4,6 +4,8 @@ Chapter 10 let several Entry files make one Program, while a Build was made from
 
 We decided that a Program has **one Entry file**, and builds are layered by importing, never by naming several Entries. The Root Plot is **named** with `ROOT` in Instancing and never inferred, because which story a game setup runs is a fact about that setup (ADR 0035's layers). Only a `.regin` Entry can be built or run. A `.regia` Entry has no Root Plot: it is checked for what it says (names, Plans, Precedence, Interfaces), and the checks that need a Root Plot don't run.
 
+Amended by ADR 0049: a `.regia` Entry can be built too, without a Root Plot. Everything else here stands.
+
 ## Considered options
 
 - **Several Entries, one Program**: no use that importing doesn't already cover, and two readings of one command line.

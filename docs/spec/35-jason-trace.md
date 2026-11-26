@@ -63,13 +63,13 @@ Jason's failure events carry the **ASL** location (`code_src`, `code_line`). To 
   "names": { "regia_director__royalBanquet": "director:RoyalBanquet",
              "regia_director__honorDuel": "director:HonorDuel",
              "regia_when__insult": null },
-  "plans": { "regia_plan__42": { "owner": "Dining", "trigger": "WHEN served(?dish), FROM waiter",
+  "plans": { "regia_plan__dining__6": { "owner": "Dining", "trigger": "WHEN served(?dish), FROM waiter",
                                  "given": "sated", "at": "playbooks/dining.regia:62:9",
                                  "vars": { "Dish": "?dish" } } }
 }
 ```
 
-- **`lines`**: each ASL file, and each of its lines that comes from a Statement or a Plan → the `.regia` file, line and column.
+- **`lines`**: each ASL file, and each of its lines that comes from a Statement or a Plan → the `.regia` file, line and column: 1-based lines and character columns, as the CLI shows them (chapter 23, *Positions*). Every map is sorted by key, so a Build is the same bytes every time.
 - **`names`**: every Generated name → the designer name it stands for, or `null` to fold it away (frames that never appear in the Trace). A Subplot Director's name has no number here: the writer adds it.
 - **`plans`**: every plan label of a designer's Block → the Block as a `plan` entry names it (`owner`, `trigger`, `given` or `else`), its `at`, and the map from the plan's ASL variables to its Placeholders.
 

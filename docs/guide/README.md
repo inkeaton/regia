@@ -72,7 +72,7 @@ flowchart LR
     E[Visual Editor] <-->|text and graph| S
 ```
 
-Regia doesn't run by itself. The Transpiler, `regia`, reads an Entry file and every file it reaches through `IMPORT`: together, the Program. `regia check` reports Diagnostics, each an error or a warning pointing at a place in the source and carrying a Diagnostic code. `regia build` takes a `.regin` Entry and, when there are no errors, writes a Build: the Target files for that Program and its Instancing.
+Regia doesn't run by itself. The Transpiler, `regia`, reads an Entry file and every file it reaches through `IMPORT`: together, the Program. `regia check` reports Diagnostics, each an error or a warning pointing at a place in the source and carrying a Diagnostic code. `regia build` takes an Entry and, when there are no errors, writes a Build: the Target files for that Program and its Instancing. A `.regia` Entry has no Instancing, so its Build is Target code only.
 
 A Target is a language that can run. 1.5 has one, AgentSpeak as run by Jason. A Build holds our Plans, translated, and the Infrastructure: fixed Target code, the same for every Program, that runs Givings, Phases, Stagings and Precedence around them. On Jason, every Agent and every Director is a Jason agent.
 

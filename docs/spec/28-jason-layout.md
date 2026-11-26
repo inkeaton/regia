@@ -13,7 +13,7 @@ build/<Entry path>/
     asl/regia/director.asl             Infrastructure, fixed
     asl/playbooks/NobleSocializing.asl one per Playbook
     asl/directors/RoyalBanquet.asl     one per Plot
-    asl/roles/Guest.asl                one per Role of the Root Plot
+    asl/roles/Guest.asl                one per Role of the Root Plot (a .regia Entry: below)
     asl/roles/Guard__Guest.asl         one per Role set of a kind playing several Roles (chapter 36)
     asl/unheard.asl                    the Agents' catch-alls for told Cues no Plan takes (chapter 39)
     asl/goals.asl                      the generated `-!g` plan of every Goal (chapter 40)
@@ -24,17 +24,45 @@ build/<Entry path>/
 
 - **Playbook files** hold the Plans of one Playbook and nothing else. Which Playbooks a Role file includes, and the `regia_playbook` beliefs that list them, are in chapter 29. They never include any file.
 - **Director files** hold one Plot's Director. Every Staging of that Plot runs the same file (chapter 17). A Director file includes `regia/director.asl`.
-- **Role files** exist only for the **Root Plot's Roles**, because only they start Agents (chapter 21). A Role file includes `regia/agent.asl` and every Playbook file the Role can be given in its lifetime, following Subplot Mappings down the Plot tree. A Subplot Role such as `Challenger` gets no file: the Playbooks it brings are included in the Root Plot Role files that map to it. An Agent kind that plays several Roles runs a generated combination file, `roles/<RoleA>__<RoleB>.asl` (chapter 36).
+- **Role files** exist only for the **Root Plot's Roles**, because only they start Agents (chapter 21; a `.regia` Entry's Build is below). A Role file includes `regia/agent.asl` and every Playbook file the Role can be given in its lifetime, following Subplot Mappings down the Plot tree. A Subplot Role such as `Challenger` gets no file: the Playbooks it brings are included in the Root Plot Role files that map to it. An Agent kind that plays several Roles runs a generated combination file, `roles/<RoleA>__<RoleB>.asl` (chapter 36).
 - **`unheard.asl`** is generated, one per Build, and every Role file (or combination file) includes it once. It depends on the Program, since it lists every Cue some `TELL` sends, so it isn't Infrastructure. **`goals.asl`** is the same kind of file, holding one unguarded `-!g` plan for every Goal of the Program (chapter 40).
 - **File names** are the Regia names exactly as written. Names are unique ignoring case (chapter 10), so this is safe on file systems that ignore case.
 - Every generated file starts with a comment naming the Transpiler version and the source file, and saying it is generated.
 - Include paths are relative to `asl/`, which the `.jcm` sets as the ASL source path.
+
+### A Build of a `.regia` Entry
+
+A `.regia` Entry's Build has no Root Plot and no cast (chapter 21, ADR 0049). It holds the same files, except:
+
+- There is no `.jcm` and no `cast.json`.
+- **Every Role of every Plot gets a Role file**, `roles/<Plot>__<Role>.asl` (`roles/HonorDuel__Challenger.asl`), since any Plot may be the one a hand-written project starts. It includes what that Role can be given if its Plot is the top one: chapter 29's rules, read with that Plot in the Root Plot's place. There are no combination files: an Agent that plays several Roles needs a top-level file written by hand, in the form chapter 36 gives.
+- **No Director file is the Root's.** None holds `regia_rank_prefix`, `regia_start_cast`, `regia_kind`, `!regia_root_start` or plans for the setup lines of kinds. Every one holds the do-nothing catch-all of `regia_instance_setup` (chapter 30). A hand-written `.jcm` makes one Director the Root by giving it the beliefs `regia_rank_prefix([])` (chapter 32) and `regia_start_cast([…])` (chapter 33) and the goal `regia_root_start`, and by starting the game link as chapter 36 shows. Each entry's `Source` there is `agent(<Agent>)`.
+
+Playbook files are written exactly as in a Build with a Root Plot.
+
+**A Program with no Plot**, such as `regia build courtesy.regia`, gets no Role file at all. Its Build holds the Playbook files, the Infrastructure, `unheard.asl`, `goals.asl` and the source map. What a Role file would carry (the includes, the `regia_playbook` beliefs of chapter 29 and the `regia_game` beliefs of *External names*) is written by hand in the project's top-level file, in the form chapter 36 gives.
 
 ## Shared Infrastructure
 
 - The Infrastructure is **fixed ASL text built into the Transpiler**. It is the same for every Program and is written out unchanged into every Build, with a header naming the Transpiler version, so a Build stands on its own. Anything that depends on the Program goes in the generated files instead. This replaces 1.0's copying of infrastructure plans into every file.
 - Jason doesn't skip a file that is included twice. So only an **Agent's top-level file** (a Role file, or a Director file) includes the Infrastructure. Playbook files include nothing.
 - `regia/agent.asl` holds what every Agent runs: receiving Givings, Signals to Directors, failure and trace plumbing. `regia/director.asl` holds what every Director runs: Phase switching, Staging life cycle, Role records. Their contents are decided by the tickets listed at the top.
+
+### Generated ASL is readable
+
+A generated plan reads like the designer's Plan. Its context is the Givings guard, the Sender test and the designer's Context, in that order, each a named rule or the designer's own formula. Each Statement is one body step. Mechanics that recur from plan to plan are named Infrastructure, kept in the shared files, not written out in every plan. This was 1.0's idea (its `!signal_directors`), and 2.0 keeps the named part out of the generated files.
+
+Each recurring mechanic takes one of three forms:
+
+| Form | When | Examples |
+| --- | --- | --- |
+| A **rule** in `agent.asl` or `director.asl` | a test in a context | `regia_holds`, `regia_plays` (chapter 29) |
+| An **internal action** of `regia-jason` | one atomic step, or a step that reads the intention | `regia.send`, `regia.pick`, `regia.reached` |
+| An **Infrastructure plan** | several steps that may wait or fail | `regia_close` (chapter 29), `regia_endings` (chapter 40) |
+
+A rule costs nothing at run time. An Infrastructure plan is a subgoal: it takes reasoning cycles, goes through `selectOption`, and adds a frame to the intention, which matters to what reads the intention (chapter 40). An internal action is plumbing: game and Regia information stays in the game and in the Agents' beliefs, never in its Java state.
+
+Which patterns of chapters 29–40 are named, and how, is the ticket *Readable generated ASL* (`.scratch/transpiler/issues/13-readable-generated-asl.md`).
 
 ## The Java library
 
@@ -102,6 +130,7 @@ Tickets that need a concept missing from this table add a row.
 - A Generated name always **starts with `regia_`** and **separates its parts with `__`**: `regia_when__ready`, `regia_given`, `regia_local__nobleSocializing__already_greeted`.
 - Designer names can do neither (chapter 10), so a Generated name can't collide with a designer's name, and the parts of a Generated name split one way only.
 - **Local Vocabulary** (chapter 10) is emitted as `regia_local__<Playbook or Plot>__<name>`. Two Playbooks with the same local name get two different Jason names.
+- A **plan label** is `regia_plan__<owner>__<n>`: the Jason name of the Playbook or Plot holding the Block, and its number among that owner's labelled plans, from 1 in source order (`regia_plan__courtesy__1`, `regia_plan__royalBanquet__4`). Labels must be unique within an Agent, which includes many Playbooks. Numbering per owner keeps them unique, and an edit to one file never renumbers another's plans.
 - A **generated variable** is a Generated name with its first letter uppercased (`Regia_total`, `Regia_each__1`), and a Placeholder becomes a variable with its first letter uppercased (`?speaker` → `Speaker`): chapter 39.
 - Trace entries name the designer's items, never Generated names (chapter 11).
 

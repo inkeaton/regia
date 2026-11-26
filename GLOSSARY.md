@@ -322,7 +322,7 @@ A line at the top of a file, `IMPORT "path"`, that makes another file's declarat
 _Avoid_: Include, require, use
 
 **Entry file**:
-The one file a Program starts from. Only an Instancing file can be the Entry of a Build; any file can be the Entry of a check.
+The one file a Program starts from. Any file can be the Entry of a check or a Build; only an Instancing file can be the Entry of a run.
 _Avoid_: Main file, root file (Root is kept for the Root Plot)
 
 **Active Entry**:
@@ -358,7 +358,7 @@ The subset of Regia 2.0 that is built first, by the same Transpiler and Visual E
 _Avoid_: 1.5 mode, lite, Regia light, preview
 
 **Instancing**:
-What holds for one cast of a story, in one game setup, fixed before the run starts: which Plot is the Root Plot, which Agent kinds and individual Agents exist and how many start, what they start with, the seed, and settings for a Target. What holds for every cast belongs to the Program, and what only comes up during the run belongs to the game. A Build always has some: at least the name of its Root Plot.
+What holds for one cast of a story, in one game setup, fixed before the run starts: which Plot is the Root Plot, which Agent kinds and individual Agents exist and how many start, what they start with, the seed, and settings for a Target. What holds for every cast belongs to the Program, and what only comes up during the run belongs to the game. The Build of an Instancing file always has some: at least the name of its Root Plot.
 _Avoid_: Deployment, configuration, compilation settings
 
 **Agent kind**:
@@ -397,6 +397,10 @@ _Avoid_: Error number, error id
 A warning the writer has seen and accepts, marked with `#@allow` on the declaration it falls in. It is hidden but not gone: it can be shown again on request.
 _Avoid_: Suppressed warning, ignored warning
 
+**Absence check**:
+A check that reports that nothing in a Plan, a Playbook or Plot, or the Program does something, such as sending a Cue or using a Placeholder. It stays silent when the missing thing may be in text the Transpiler couldn't read, so one mistake gives one Diagnostic.
+_Avoid_: Unused check, dead-code lint
+
 **Conflict report**:
 The list, per Role and Trigger, of the Plans that compete for it in the order they rank, with the reason for each place. It is a report, not a Diagnostic.
 _Avoid_: Precedence table, priority list
@@ -422,7 +426,7 @@ A folder of Regia files opened together in the Visual Editor. It bounds which fi
 _Avoid_: Workspace (the Transpiler's in-editor state), package
 
 **Build**:
-The Target files produced from one Instancing Entry file, with the Instancing that Entry reaches.
+The Target files produced from one Entry file, with the Instancing that Entry reaches. From a `.regia` Entry there is none, so the Build has no Root Plot and no cast.
 _Avoid_: Compilation, output (unqualified)
 
 **Build folder**:

@@ -1,0 +1,10 @@
+#! case: an allow that silences nothing is not reported while the Program has errors
+#! rule: R0205
+
+GAME CUE insult_heard(speaker)
+ACTION glare_at(target)
+
+#@allow: R0307
+PLAYBOOK Guest:
+    WHEN insult_heard(?who):
+        DO ) glare_at(?who)              #! error R0115

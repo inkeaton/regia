@@ -1,0 +1,12 @@
+#! case: a Cue whose only sender is broken is not reported as never sent
+#! rule: R3807
+
+GAME CUE insult_heard
+CUE scandal
+ACTION gasp
+
+PLAYBOOK Gossip:
+    WHEN insult_heard:
+        TELL EVERYONE ) scandal          #! error R0115
+    WHEN scandal:
+        DO gasp

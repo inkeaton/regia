@@ -1,0 +1,5 @@
+#! case: a missing import silences name errors only in the files that reach it
+#! rule: R1004
+
+IMPORT "scene"
+IMPORT "lost"                            #! error R1002

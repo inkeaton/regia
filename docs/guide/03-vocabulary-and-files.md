@@ -289,7 +289,7 @@ IMPORT "plots/royal_banquet"
 
 A Program starts from one Entry file and is every file reachable from it through imports. Visibility is per file: a file uses only the names it declares or reaches. Uniqueness is Program-wide: two files that never import each other, both reached from the Entry, still can't give one name two meanings, since their Playbooks may end up on one Agent.
 
-- Only a `.regin` Entry can be built. A `.regia` Entry is checked, without a Root Plot.
+- Any Entry can be checked and built. A `.regia` Entry has no Root Plot, so its Build is Target code only. Only a `.regin` Entry can be run.
 - A `.regin` imports `.regia` files and other `.regin` files. A `.regia` file can't import a `.regin`: design files never depend on a build (*Instancing*).
 - Builds are layered by importing, never by naming several Entry files. `regia check a.regin b.regin` checks two Programs, one after the other.
 

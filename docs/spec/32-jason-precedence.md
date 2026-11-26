@@ -73,7 +73,7 @@ The Agent keeps every `regia_given` belief (chapter 29) and **never stores a mer
 Every plan compiled from a Playbook's Trigger Block carries one annotation in its label:
 
 ```
-@regia_plan__17[regia_rank(nobleSocializing, when(insult_heard), 0), temper([sympathy(-0.5)])]
+@regia_plan__nobleSocializing__5[regia_rank(nobleSocializing, when(insult_heard), 0), temper([sympathy(-0.5)])]
 ```
 
 `regia_rank(Playbook, Item, Pos)` is the **fixed part** of the rank:
@@ -111,7 +111,7 @@ After step 2, options from different Playbooks remain only for a `TIES` pool, be
 A Director's competing plans all come from one Plot, and each plan has one fixed item. Its rank is therefore **resolved completely at compile time**:
 
 ```
-@regia_plan__42[regia_phase(feast), regia_rank(0, 0)]
+@regia_plan__royalBanquet__7[regia_phase(feast), regia_rank(0, 0)]
 ```
 
 `regia_rank(Level, Pos)`:

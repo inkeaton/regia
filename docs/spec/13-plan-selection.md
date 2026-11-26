@@ -192,13 +192,13 @@ Instancing orders nothing. A Program has exactly one Root Plot and Instancing ne
 
 - `R1301` A cycle in one Plot's written relations, its Subplots' `PARENT` relations included (the message prints the cycle). Defaults are never part of one.
 - `R1302` `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
-- `R1303` A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot.
+- `R1303` A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot. Its *never* parts are an absence check (chapter 23).
 - `R1304` Retired (ADR 0033): Trigger Blocks with and without `SUITS` may be mixed.
 
 **Warnings**
 
 - `R1305` A competition ordered only by name.
-- `R1306` A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes).
+- `R1306` A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes). Absence check (chapter 23).
 - `R1307` A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
 - `R1308` `TIES` with no `SUITS` to choose by.
 - `R1309` Retired (ADR 0033): an unlabelled candidate in a mixed `TIES` pool is neutral.

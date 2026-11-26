@@ -38,9 +38,9 @@ TARGET jason:
 - A `.regin` holds only `IMPORT`s and Instancing: no Vocabulary, Playbooks or Plots.
 - A `.regin` may import `.regia` files and other `.regin` files. Importing another `.regin` layers builds: `test.regin` imports `banquet.regin` and changes only what differs.
 - A `.regia` file importing a `.regin` is an error. Design files never depend on a build.
-- `.regin` files are usually Entry files (chapter 10), but anything they reach is part of the Program as usual. Only a `.regin` Entry can be built.
+- `.regin` files are usually Entry files (chapter 10), but anything they reach is part of the Program as usual. Only a `.regin` Entry can be run, and only its Build has a cast.
 
-Several builds of one story (a 2-guest test, a 50-guest release, a build for each Target) are several small `.regin` files importing the same `.regia` files. Instancing has no other home: the Instancing comments of earlier drafts (`#%`) are gone (chapter 02), so a Plot file is never built into a cast by itself.
+Several builds of one story (a 2-guest test, a 50-guest release, a build for each Target) are several small `.regin` files importing the same `.regia` files. Instancing has no other home: the Instancing comments of earlier drafts (`#%`) are gone (chapter 02), so a Plot file is never built into a cast by itself (a `.regia` Entry builds Target code only, below).
 
 ## Overriding
 
@@ -57,17 +57,27 @@ Several builds of one story (a 2-guest test, a 50-guest release, a build for eac
 
 ## With no cast
 
-A cast is optional, the `ROOT` isn't. A `.regin` that only names the Root Plot, sets the seed or gives Target settings produces Target code only (for Jason: the ASL files, no `.jcm`). The instancing output (the `.jcm` for Jason) is produced as soon as at least one kind or individual Agent is declared.
+In a `.regin`, a cast is optional and the `ROOT` isn't. A `.regin` that only names the Root Plot, sets the seed or gives Target settings produces Target code only (for Jason: the ASL files, no `.jcm`). The instancing output (the `.jcm` for Jason) is produced as soon as at least one kind or individual Agent is declared.
 
 ## The Root Plot
 
 A Program has **exactly one Root Plot**. Every other Plot is a Subplot below it, reached only through `START SUBPLOT` (chapter 17). Instancing never starts a Plot. Stories that run side by side are Subplots started by the Root Plot (usually from `DURING PLOT: WHEN ENTERED:`) and ordered by its `PRECEDENCE` (chapter 13).
 
 - The Root Plot is **named**, never inferred: `ROOT RoyalBanquet`. Which story a game setup runs is a fact about that setup, so it is said in Instancing (ADR 0036).
-- A Build's Entry is a `.regin` file, and it must reach a `ROOT`, **even with no other Instancing**. Rank keys and Role files depend on the Root Plot.
+- A `.regin` Entry must reach a `ROOT`, **even with no other Instancing**. Its Role files and the Root Director depend on the Root Plot.
 - Naming a Plot that is started as a Subplot somewhere is an error, since its Staging would have no clear parent.
-- A `.regia` Entry has no Root Plot. It can be checked but not built (chapter 23): the checks that need a Root Plot (this chapter's, and chapter 13's ranking across the hierarchy) don't run, and everything else does. So a Playbook file or a Subplot's file is checked for what it says, never as if it were the whole story.
+- A `.regia` Entry has no Root Plot (*A `.regia` Entry*, below): the checks that need a Root Plot (this chapter's, and chapter 13's ranking across the hierarchy) don't run, and everything else does. So a Playbook file or a Subplot's file is checked for what it says, never as if it were the whole story.
 - Plots that the Root Plot never reaches are compiled like the rest but never run. The Transpiler warns about them.
+
+## A `.regia` Entry
+
+A `.regia` file can be the Entry of a Build too (ADR 0049). Its Program has no Root Plot and no Instancing.
+
+- **The Build is Target code only**: every Playbook and every Plot of the Program, and nothing that starts them (for Jason: ASL files, no `.jcm`, chapter 28). It is for putting into a project of the Target written by hand.
+- **No Plot is taken for the Root**, not even the only one. The Target code is made so that any Plot of the Program can be the one that project starts.
+- It is checked as `check` checks it, without the checks that need a Root Plot, so a problem may appear only when a `.regin` Entry reaches the file.
+- Target settings take their defaults, and there is no `SEED`.
+- It **can't be run** (chapter 23): a run needs a Root Plot and a cast.
 
 ## Agent kinds
 
@@ -213,11 +223,11 @@ Checks on kinds and individual Agents run only when at least one exists.
 - `R2108` A `COUNT` or a `SEED` that isn't a whole, non-negative literal.
 - `R2109` The same name declared twice in one file, as a kind or an individual Agent.
 - `R2114` A Root Plot with parameters: Instancing has nothing to pass them (chapter 17).
-- `R2117` A kind or an individual Agent that plays nothing: a first declaration with neither `PLAYS` nor `LIKE`.
+- `R2117` A kind or an individual Agent that plays nothing: a first declaration with neither `PLAYS` nor `LIKE`. Absence check (chapter 23).
 - `R2118` A `COUNT` in an `AGENT`.
 - `R2119` A `LIKE` naming something that isn't a kind, or a kind reaching itself through `LIKE`.
 - `R2120` Two bases setting the same item differently, with the kind or Agent not writing it (the message names both bases).
-- `R2121` A `NO KIND` or `NO AGENT` naming nothing declared in the files the file reaches.
+- `R2121` A `NO KIND` or `NO AGENT` naming nothing declared in the files the file reaches. Absence check (chapter 23).
 - `R2122` An argument naming an individual Agent this build doesn't have.
 - `R2123` A kind and an individual Agent with the same name.
 - `R2124` A Target setting written with the retired `=` (`strategy = random`; hint: `strategy random`).
@@ -227,9 +237,9 @@ A setup line that breaks chapter 16's rules gets chapter 16's code (`R1602`, `R1
 
 **Warnings**
 
-- `R2110` A Root Plot Role that no kind and no individual Agent plays.
+- `R2110` A Root Plot Role that no kind and no individual Agent plays. Absence check (chapter 23).
 - `R2111` Retired (ADR 0033): a missing value is neutral.
-- `R2112` A Plot the Root Plot never reaches.
+- `R2112` A Plot the Root Plot never reaches. Absence check (chapter 23).
 - `R2113` An unknown key in the group of a known Target, or a value outside the set its key takes.
 - `R2115` A Quota `FROM n OF Role` or `BY n OF Role` in the Root Plot, with n made of Values only, where the individual Agents that play the Role plus the `COUNT`s of the kinds that play it add up to fewer than n, and none of those kinds has a `COUNT` of 0 (which only enters by joining). The Role can never be that large in this build, so the Quota can never be met (chapter 18).
 - `R2116` A `TARGET` group for a Target the Transpiler doesn't know. It is skipped.

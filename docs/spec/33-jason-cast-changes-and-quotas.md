@@ -4,7 +4,7 @@ How the Jason Target handles the Cast changing and counts Quota Triggers. It cov
 
 ## The Root Director's starting cast
 
-The Transpiler names the starting Agents (`noble_1` …, chapter 36), so it knows the Root Plot's starting cast at compile time. The Root Director's file carries it as an initial belief, next to `regia_rank_prefix([])` (chapter 32):
+The Transpiler names the starting Agents (`noble_1` …, chapter 36), so it knows the Root Plot's starting cast at compile time. In the Build of a `.regin` Entry, the Root Director's file carries it as an initial belief, next to `regia_rank_prefix([])` (chapter 32):
 
 ```
 regia_start_cast([agent(king, agent(king), [host]),
@@ -167,7 +167,7 @@ Jason handles one plan per event, but chapter 18 needs both the plain Trigger an
       !regia_count(ready, [], S).      // the count, in regia/director.asl or regia/agent.asl
 
 // the designer's plain `WHEN ready, FROM Guest ?g:` in Phase reception
-@regia_plan__12[regia_phase(reception), regia_rank(0, 0)]
+@regia_plan__royalBanquet__3[regia_phase(reception), regia_rank(0, 0)]
 +!regia_when__ready(G) : regia_phase(reception) & regia_cast(_, guest, G) <- …
 
 // nothing applicable, or no plain Block at all: the unheard entry for a Signal or a told Cue,
