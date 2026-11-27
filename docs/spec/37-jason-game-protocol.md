@@ -121,7 +121,7 @@ If a waiting `DO`'s Plan is stopped (its Goal is dropped, its Phase is exited, i
 ```
 
 - **The game decides what calling off means** for each Action, as it decides what "done" means: the Guest puts down the fork, a `walk_to` stops where it is, an instant Action has nothing to stop. The `ACTION` doc comment records it.
-- **It has no reply.** Any reply the game sends later under that `id` is dropped silently, with no `T3701`.
+- **It has no reply.** Any reply the game sends later under that `id` is dropped silently, with no `T37_01-stray-action-result`.
 - **Only a waiting `DO` is called off.** An Action started `WITHOUT WAITING` was set loose and is never called off, as a Goal started `WITHOUT WAITING` isn't dropped (chapter 08). A Plan that **fails** never has an Action under way: it stops at the failing Statement.
 - **A dotted (Java) Action can't be called off**: it runs synchronously, so no Plan is ever stopped while it waits on one.
 - **A Director's Action** is called off the same way, on the game link (*Custom Actions in a Director*, below).
@@ -143,7 +143,7 @@ VEsNA-Pro's built-in internal actions (`vesna.walk`, `vesna.jump`, `vesna.rotate
 
 ## Game messages on the game link
 
-No Director has a body (chapter 30). The game link reads every message the game sends on its connection: `regia_cue`, `regia_fact`, `regia_state_result`, `regia_join`, `regia_leave`, `regia_action_result`, `regia_pause` and `regia_resume`. It handles `regia_pause` and `regia_resume` itself, and delivers the rest to the attached Directors that should have them (chapters 28, 30, 33): a Fact or Cue to every Director that hears it, a `regia_state_result` to the Director that asked, a `regia_action_result` to the Director that sent the Action. Any other type is ignored, with `T3702`. A Director takes in what the link delivers in its own Java message intake (chapter 30, *Hearing the game*).
+No Director has a body (chapter 30). The game link reads every message the game sends on its connection: `regia_cue`, `regia_fact`, `regia_state_result`, `regia_join`, `regia_leave`, `regia_action_result`, `regia_pause` and `regia_resume`. It handles `regia_pause` and `regia_resume` itself, and delivers the rest to the attached Directors that should have them (chapters 28, 30, 33): a Fact or Cue to every Director that hears it, a `regia_state_result` to the Director that asked, a `regia_action_result` to the Director that sent the Action. Any other type is ignored, with `T37_02-unknown-message-type`. A Director takes in what the link delivers in its own Java message intake (chapter 30, *Hearing the game*).
 
 ### The game's starting state
 
@@ -161,9 +161,9 @@ When a Director attaches (chapter 30), the link asks the game for the state that
 
 - `facts` in the request are the External names of the Facts the Director's Plot hears. The reply lists **every instance of them true now**, in `regia_fact`'s `name` and `args` form (chapter 30). A Fact with no instance true is just absent.
 - `agents` are the Agents of the Director's starting cast. `left` names those that have already left the game. The game keeps no record of Stagings: each request is a question about its own state, asked under an `id`.
-- `id` comes from the link's counter, which Directors' Actions share (*Custom Actions in a Director*, below). A reply with an unknown `id`, or a second reply to one, is ignored with `T3703`.
+- `id` comes from the link's counter, which Directors' Actions share (*Custom Actions in a Director*, below). A reply with an unknown `id`, or a second reply to one, is ignored with `T37_03-stray-state-result`.
 - **The game must answer every request**, in order with the rest of what it sends: the reply describes the game when it is sent, and what changes after it is sent after it. A game that never answers holds that Director unstarted (chapter 30).
-- **The first request is the Root's.** Subplots start only from a running Director, so the game knows the story has begun once it has answered the first `regia_state`, and sends **no `regia_join` before** it: the link would drop it (`T3305`, chapter 33).
+- **The first request is the Root's.** Subplots start only from a running Director, so the game knows the story has begun once it has answered the first `regia_state`, and sends **no `regia_join` before** it: the link would drop it (`T33_05-join-before-root-state`, chapter 33).
 - With no link, there is no request: the Director starts with no game Facts and nobody left (chapter 30).
 
 ## Custom Actions in a Director
@@ -172,7 +172,7 @@ A Director writes `DO` exactly as an Agent does (chapter 20), and **every Direct
 
 - **Sending.** A Director's `regia.act` hands the Action to the link. The link takes an `id` from **its one counter**, the same one `regia_state` uses, so every `id` the link sends is unique on its connection. It records the `id` against the requesting Director and sends `regia_action` with `sender: "regia_game_link"`. The game never learns which Director acted. Agents keep their counters per body.
 - **Replies.** The link routes each `regia_action_result` **by `id` alone** and delivers it into the requesting Director's mailbox with `receiveMsg`, like a Fact or a Cue. A reply therefore keeps its place in socket order: a `regia_fact` the game sent before a `done` is a belief before the Plan's next Statement runs. `regia.DirectorAgent`'s Java intake resumes `regia.act`, with the same code as an Agent's `myHandleMsg`, and no ASL plan is involved. A suspended atomic intention still wakes on a message, so a `DO` in an `EXITED` Plan wakes inside the atomic transition (chapter 30, *A `DO` in `EXITED`*). `regia.stop_hearing` stops Facts and Cues only, so an ending Director still gets its Action replies until it detaches. The link forgets an `id` at its final reply.
-- **Calling off.** When a waiting Director Action's intention is dropped, the same circumstance listener as an Agent's sees it (*A Plan that stops while waiting*, above). `regia.act` asks the link to send `regia_action_cancel {id}`, and the link forgets the `id`, so a later reply under it is dropped silently with no `T3701`. ADR 0038 holds unchanged; only the transport differs from an Agent's.
+- **Calling off.** When a waiting Director Action's intention is dropped, the same circumstance listener as an Agent's sees it (*A Plan that stops while waiting*, above). `regia.act` asks the link to send `regia_action_cancel {id}`, and the link forgets the `id`, so a later reply under it is dropped silently with no `T37_01-stray-action-result`. ADR 0038 holds unchanged; only the transport differs from an Agent's.
 - **Detaching with Actions in flight.** A Director's walk can't reach its kill with a **waiting** `DO`: step 1 stops the other intentions, which calls their Actions off, and `EXITED` waits for its own (chapter 31). A Director that dies some other way is killed without any intention being dropped, so when it **detaches** (chapter 30, its stop hook) the link calls off each of its waiting Actions itself: it sends `regia_action_cancel` and writes `DO <action> CANCELLED`. An Action that Director started **`WITHOUT WAITING`** stays in flight. The link keeps its `id` until the final reply and then writes the outcome entry itself, under that Director's name. It never delivers the reply to an agent: Jason reuses a killed agent's name, so a new Director of the same name must not receive it.
 - **A lost link.** If the link's connection closes, every Director Action still in flight gets a final `failed` with the reason `no game link`, since no reply can come any more. A waiting `DO` fails its Plan, a `DO` in an atomic `EXITED` no longer holds its Director (and every ancestor's walk) forever, and a `WITHOUT WAITING` one gets its `FAILED` entry. A new Action fails at once (*Waiting*, above).
 - **Rejected:** the Root's **Action relay**: a Subplot Director sent `achieve regia_act(N, A, ReqId)` to the Root, which sent the Action under its own `id`, kept `regia_relay(Id, Requester, ReqId)` and told each reply back as `regia_act_result`. The Root ran ASL and kept records for other Stagings, its relay plans had to stay unguarded while it ended, and a relayed reply to an ended requester needed `regia.send`'s catch. **Resuming the intention straight from the socket thread** (`runAtBeginOfNextCycle`): the resume could overtake a Fact the game sent before the reply, still waiting in the mailbox. **A separate Action counter on the link**: it gives nothing back, and the same `id` would name two requests on one connection.
@@ -202,7 +202,7 @@ When the Root Staging ends (chapter 31), the Root Director sends the game one me
 
 - `outcome` is the Root's Outcome (chapter 17) as a JSON string, or `null` when `END PLOT` has none.
 - The game decides what to do with it (credits, a menu). It sends no reply.
-- **After it**, no Director is left. The link drops every `regia_join` (`T3304`, chapter 33), still kills Agents the game reports as leaving, and still stops and starts the clock. Agents keep running with no Givings, on their own bodies.
+- **After it**, no Director is left. The link drops every `regia_join` (`T33_04-join-after-root-ended`, chapter 33), still kills Agents the game reports as leaving, and still stops and starts the clock. Agents keep running with no Givings, on their own bodies.
 
 ## The Trace
 
@@ -258,9 +258,9 @@ An Agent's `id` counter and the waiting intentions live in `regia.act`'s Java st
 
 **Warnings**
 
-- `T3701` A `regia_action_result` with an unknown `id`, or after the final reply, ignored.
-- `T3702` A message of an unknown type on the game link, ignored.
-- `T3703` A `regia_state_result` with an unknown `id`, or a second one for the same `id`, ignored.
+- `T37_01-stray-action-result` A `regia_action_result` with an unknown `id`, or after the final reply, ignored.
+- `T37_02-unknown-message-type` A message of an unknown type on the game link, ignored.
+- `T37_03-stray-state-result` A `regia_state_result` with an unknown `id`, or a second one for the same `id`, ignored.
 
 ## Regia 1.5
 

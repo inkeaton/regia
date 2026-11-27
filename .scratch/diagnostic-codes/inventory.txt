@@ -1,0 +1,2607 @@
+Live files (223):
+  .scratch/regia-spec-findings/issues/04-decide-trace-entries.md
+  .scratch/regia-spec-findings/issues/05-apply-trace-entries.md
+  .scratch/regia-spec-findings/issues/06-decide-runtime-order.md
+  .scratch/regia-spec-findings/issues/07-apply-runtime-order.md
+  .scratch/regia-spec-findings/issues/08-decide-instancing.md
+  .scratch/regia-spec-findings/issues/09-apply-instancing.md
+  .scratch/regia-spec-findings/issues/10-decide-interfaces-precedence.md
+  .scratch/regia-spec-findings/issues/11-apply-interfaces-precedence.md
+  .scratch/regia-spec-findings/issues/12-decide-jason-target.md
+  .scratch/regia-spec-findings/issues/13-apply-jason-target.md
+  .scratch/regia-spec-findings/issues/14-decide-visual-editor.md
+  .scratch/regia-spec-findings/issues/15-apply-visual-editor.md
+  .scratch/regia-spec-findings/issues/16-decide-command-line.md
+  .scratch/regia-spec-findings/issues/17-apply-command-line.md
+  .scratch/regia-spec-findings/issues/18-decide-showcase-readme.md
+  .scratch/regia-spec-findings/issues/19-apply-showcase-readme.md
+  .scratch/regia-spec-findings/issues/20-decide-2-0-only.md
+  .scratch/regia-spec-findings/issues/21-apply-2-0-only.md
+  .scratch/regia-spec-findings/issues/22-final-check.md
+  .scratch/transpiler/issues/10-print-a-file.md
+  .scratch/transpiler/issues/11-missing-file.md
+  .scratch/transpiler/issues/14-ownership-drill.md
+  .scratch/transpiler/issues/15-whitespace-and-line-breaks.md
+  .scratch/transpiler/issues/16-names-and-reserved-words.md
+  .scratch/transpiler/issues/17-token-dump.md
+  .scratch/transpiler/issues/18-stray-character.md
+  .scratch/transpiler/issues/19-placeholders-and-punctuation.md
+  .scratch/transpiler/issues/20-stop-and-dotted-names.md
+  .scratch/transpiler/issues/21-numbers.md
+  .scratch/transpiler/issues/22-lexer-moves-into-regia-core.md
+  .scratch/transpiler/issues/23-collections-drill.md
+  .scratch/transpiler/issues/24-strings.md
+  .scratch/transpiler/issues/25-line-and-doc-comments.md
+  .scratch/transpiler/issues/26-multiline-comments.md
+  .scratch/transpiler/issues/27-layout-newline.md
+  .scratch/transpiler/issues/28-continuation-lines.md
+  .scratch/transpiler/issues/29-indent-stack.md
+  .scratch/transpiler/issues/30-dedent-to-unopened-level.md
+  .scratch/transpiler/issues/31-continuation-not-indented.md
+  .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md
+  .scratch/transpiler/issues/33-indent-after-multiline-comment.md
+  .scratch/transpiler/issues/34-print-back-everything.md
+  .scratch/transpiler/issues/35-cut-m2.md
+  GLOSSARY.md
+  docs/adr/0001-placeholders-are-filled-by-matching.md
+  docs/adr/0002-values-are-named-in-the-body.md
+  docs/adr/0003-events-are-momentary-fact-changes-are-trigger-kinds.md
+  docs/adr/0004-given-is-the-context-if-is-control-flow.md
+  docs/adr/0005-pursue-waits-ask-does-not.md
+  docs/adr/0006-one-parameter-count-per-name.md
+  docs/adr/0007-failed-notifies-it-does-not-rescue.md
+  docs/adr/0008-precedence-is-declared-where-playbooks-are-put-together.md
+  docs/adr/0009-directors-direct-through-messages.md
+  docs/adr/0010-transpiler-in-rust-with-a-hand-written-parser.md
+  docs/adr/0011-graph-edits-are-text-splices-on-a-read-only-tree.md
+  docs/adr/0012-an-owned-resolved-model-between-the-tree-and-the-targets.md
+  docs/adr/0013-quota-counting-is-asl-not-java.md
+  docs/adr/0014-behaviour-cases-run-against-a-scripted-game.md
+  docs/adr/0015-the-interface-is-inferred-not-declared.md
+  docs/adr/0016-an-event-may-be-local-to-a-playbook.md
+  docs/adr/0017-every-request-is-its-own-pursuit.md
+  docs/adr/0018-a-drop-spreads-as-a-drop.md
+  docs/adr/0019-whoever-asked-hears-the-ending-and-a-failure-carries-a-reason.md
+  docs/adr/0020-the-game-and-the-agent-itself-are-not-senders.md
+  docs/adr/0021-a-playbook-taken-away-still-runs-its-closing-plans.md
+  docs/adr/0022-a-phase-may-carry-role-setups-and-a-giving-stays-standing.md
+  docs/adr/0023-a-role-can-be-tested-and-is-still-not-a-value.md
+  docs/adr/0024-the-cast-is-a-role-every-plot-has.md
+  docs/adr/0025-regia-1-5-is-a-subset-of-2-0-built-first.md
+  docs/adr/0026-the-vocabulary-says-what-the-game-produces.md
+  docs/adr/0027-names-are-declared.md
+  docs/adr/0028-a-plot-takes-arguments-and-they-tell-its-stagings-apart.md
+  docs/adr/0029-unassign-takes-what-was-given-the-way-it-names.md
+  docs/adr/0030-a-subplots-endings-are-heard-like-a-goals.md
+  docs/adr/0031-a-quota-plan-reads-what-it-counted.md
+  docs/adr/0032-a-default-gives-way-to-what-is-written.md
+  docs/adr/0033-choosing-by-propensity-is-the-targets-and-an-unlabelled-plan-is-neutral.md
+  docs/adr/0034-a-rolls-kind-is-written.md
+  docs/adr/0035-instancing-is-the-cast-of-one-game-setup.md
+  docs/adr/0036-a-build-is-one-regin-entry-that-names-its-root-plot.md
+  docs/adr/0037-the-trace-says-what-didnt-run-as-info.md
+  docs/adr/0038-a-stopped-plan-calls-off-its-action.md
+  docs/adr/0039-a-cue-is-declared-an-event-starts-a-plan.md
+  docs/adr/0040-directors-share-one-game-link-that-holds-only-plumbing.md
+  docs/adr/0041-clauses-follow-a-comma-and-keywords-are-uppercase.md
+  docs/adr/0042-let-fills-a-placeholder-and-equals-only-compares.md
+  docs/adr/0043-to-introduces-a-goal-with-two-closed-exceptions.md
+  docs/adr/0044-by-keeps-the-amount-and-randomly-has-two-jobs.md
+  docs/adr/0045-percent-is-a-share-never-a-remainder.md
+  docs/adr/0046-a-roles-block-is-its-setup.md
+  docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md
+  docs/adr/0048-a-role-used-as-a-value-has-one-code.md
+  docs/adr/0049-a-regia-entry-builds-without-a-root-plot.md
+  docs/adr/0050-generated-asl-is-jason-first.md
+  docs/adr/0051-codes-carry-a-name-after-their-number.md
+  docs/guide/01-the-logic-of-regia.md
+  docs/guide/02-syntax.md
+  docs/guide/03-vocabulary-and-files.md
+  docs/guide/04-plans.md
+  docs/guide/05-placeholders-and-expressions.md
+  docs/guide/06-matching.md
+  docs/guide/07-actions-and-time.md
+  docs/guide/08-randomness.md
+  docs/guide/09-goals-and-failure.md
+  docs/guide/10-messages.md
+  docs/guide/11-playbooks-and-roles.md
+  docs/guide/12-plots-and-directors.md
+  docs/guide/13-subplots-and-stagings.md
+  docs/guide/14-when-an-agent-leaves.md
+  docs/guide/15-interfaces.md
+  docs/guide/16-precedence-and-labels.md
+  docs/guide/17-instancing.md
+  docs/guide/18-the-trace.md
+  docs/guide/19-the-transpiler.md
+  docs/guide/20-the-visual-editor.md
+  docs/guide/21-jason-the-build.md
+  docs/guide/22-jason-plans-and-goals.md
+  docs/guide/23-jason-givings-and-precedence.md
+  docs/guide/24-jason-directors-and-stagings.md
+  docs/guide/25-jason-the-game-and-the-trace.md
+  docs/guide/README.md
+  docs/showcase/README.md
+  docs/showcase/banquet.regin
+  docs/showcase/playbooks/courtesy.regia
+  docs/showcase/playbooks/dining.regia
+  docs/showcase/playbooks/duelling.regia
+  docs/showcase/playbooks/hosting.regia
+  docs/showcase/playbooks/keeping_watch.regia
+  docs/showcase/playbooks/noble_socializing.regia
+  docs/showcase/playbooks/scheming.regia
+  docs/showcase/playbooks/serving.regia
+  docs/showcase/playbooks/wagering.regia
+  docs/showcase/plots/honor_duel.regia
+  docs/showcase/plots/poisoning.regia
+  docs/showcase/plots/royal_banquet.regia
+  docs/showcase/vocabulary.regia
+  docs/spec/01-statements-and-blocks.md
+  docs/spec/02-comments.md
+  docs/spec/03-parameters-and-placeholders.md
+  docs/spec/04-numbers-and-expressions.md
+  docs/spec/05-goals-and-triggers.md
+  docs/spec/06-context-and-control-flow.md
+  docs/spec/07-messaging.md
+  docs/spec/08-basic-actions.md
+  docs/spec/09-random-choice.md
+  docs/spec/10-scoping-and-imports.md
+  docs/spec/11-failure.md
+  docs/spec/12-time.md
+  docs/spec/13-plan-selection.md
+  docs/spec/14-labels.md
+  docs/spec/15-roles-and-mappings.md
+  docs/spec/16-role-setup.md
+  docs/spec/17-subplots.md
+  docs/spec/18-quota-triggers.md
+  docs/spec/19-cast-changes.md
+  docs/spec/20-directors.md
+  docs/spec/21-instancing.md
+  docs/spec/22-bidirectional-editing.md
+  docs/spec/23-transpiler-architecture.md
+  docs/spec/24-visual-editor-architecture.md
+  docs/spec/25-graph-view.md
+  docs/spec/26-match-selection.md
+  docs/spec/27-conformance.md
+  docs/spec/28-jason-layout.md
+  docs/spec/29-jason-givings.md
+  docs/spec/30-jason-directors.md
+  docs/spec/31-jason-stagings.md
+  docs/spec/32-jason-precedence.md
+  docs/spec/33-jason-cast-changes-and-quotas.md
+  docs/spec/34-trace.md
+  docs/spec/35-jason-trace.md
+  docs/spec/36-jason-jcm.md
+  docs/spec/37-jason-game-protocol.md
+  docs/spec/38-interfaces.md
+  docs/spec/39-jason-plan-bodies.md
+  docs/spec/40-jason-goal-life.md
+  docs/spec/cases/01-statements-and-blocks/bad-character-reported-once.regia
+  docs/spec/cases/01-statements-and-blocks/clause-without-its-comma.regia
+  docs/spec/cases/01-statements-and-blocks/dedent-to-unopened-level.regia
+  docs/spec/cases/01-statements-and-blocks/later-word-in-a-1-5-build.regia
+  docs/spec/cases/02-comments/allow-made-stale-by-an-error.regia
+  docs/spec/cases/02-comments/allow-with-a-misnamed-code.regia
+  docs/spec/cases/02-comments/detached-doc-comment.regia
+  docs/spec/cases/03-parameters-and-placeholders/or-branch-leaves-placeholder-empty.regia
+  docs/spec/cases/03-parameters-and-placeholders/placeholder-used-in-broken-statement.regia
+  docs/spec/cases/04-numbers-and-expressions/naming-a-filled-placeholder.regia
+  docs/spec/cases/05-goals-and-triggers/fact-trigger-without-kind-word.regia
+  docs/spec/cases/06-context-and-control-flow/and-or-without-parentheses.regia
+  docs/spec/cases/07-messaging/tell-with-a-goal.regia
+  docs/spec/cases/08-basic-actions/update-to-another-fact.regia
+  docs/spec/cases/09-random-choice/either-is-retired.regia
+  docs/spec/cases/09-random-choice/randomly-without-options.regia
+  docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/hub.regia
+  docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/moves.regia
+  docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/scene.regia
+  docs/spec/cases/10-scoping-and-imports/name-from-an-unreached-file/brawl.regia
+  docs/spec/cases/10-scoping-and-imports/name-from-an-unreached-file/food.regia
+  docs/spec/cases/11-failure/failed-action-fails-its-goal/case.trace
+  docs/spec/cases/11-failure/failed-action-fails-its-goal/game.regin
+  docs/spec/cases/11-failure/failed-action-fails-its-goal/watch.regia
+  docs/spec/cases/12-time/wait-without-a-unit.regia
+  docs/spec/cases/13-plan-selection/precedence-cycle.regia
+  docs/spec/cases/14-labels/and-in-a-label-is-retired.regia
+  docs/spec/cases/14-labels/suits-value-out-of-range.regia
+  docs/spec/cases/15-roles-and-mappings/misplaced-plan-is-left-out.regia
+  docs/spec/cases/15-roles-and-mappings/percent-is-retired.regia
+  docs/spec/cases/15-roles-and-mappings/percent-only-before-of.regia
+  docs/spec/cases/15-roles-and-mappings/receiving-role-left-unfilled.regia
+  docs/spec/cases/16-role-setup/custom-action-in-a-setup.regia
+  docs/spec/cases/16-role-setup/plot-parameter-in-a-setup.regia
+  docs/spec/cases/16-role-setup/retired-starts-with.regia
+  docs/spec/cases/17-subplots/statement-after-end-plot.regia
+  docs/spec/cases/18-quota-triggers/percent-over-a-hundred.regia
+  docs/spec/cases/19-cast-changes/joined-in-a-playbook.regia
+  docs/spec/cases/19-cast-changes/spawn-refused-in-1-5/banquet.regia
+  docs/spec/cases/19-cast-changes/spawn-refused-in-1-5/case.trace
+  docs/spec/cases/19-cast-changes/spawn-refused-in-1-5/game.regin
+  docs/spec/cases/20-directors/pursue-in-a-director.regia
+  docs/spec/cases/21-instancing/plays-a-role-the-root-plot-lacks/banquet.regia
+  docs/spec/cases/21-instancing/plays-a-role-the-root-plot-lacks/game.regin
+  docs/spec/cases/26-match-selection/at-random-is-retired.regia
+  docs/spec/cases/26-match-selection/pick-on-for-each.regia
+  docs/spec/cases/38-interfaces/cue-sent-in-broken-statement.regia
+
+Codes (288). `*` marks the line that defines the code.
+
+R0101
+  * docs/spec/01-statements-and-blocks.md:275: - `R0101` A Block header ending a line inside an Inline block, whose indented body has no valid parent (hint: put the header on its own line).
+    docs/guide/02-syntax.md:93
+    docs/spec/23-transpiler-architecture.md:33
+
+R0102
+  * docs/spec/01-statements-and-blocks.md:276: - `R0102` A dotted name that contains a keyword, such as `complain.SIGNAL` (hint: `. SIGNAL`).
+    .scratch/transpiler/issues/20-stop-and-dotted-names.md:14
+    docs/guide/02-syntax.md:128
+    docs/spec/23-transpiler-architecture.md:33
+
+R0103
+  * docs/spec/01-statements-and-blocks.md:277: - `R0103` Tabs and spaces mixed for indentation in one file.
+    .scratch/transpiler/issues/30-dedent-to-unopened-level.md:30
+    .scratch/transpiler/issues/31-continuation-not-indented.md:30
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:1
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:10
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:22
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:22
+    docs/guide/02-syntax.md:47
+    docs/spec/01-statements-and-blocks.md:117
+    docs/spec/23-transpiler-architecture.md:33
+
+R0104
+  * docs/spec/01-statements-and-blocks.md:278: - `R0104` A line dedented to a level that was never opened.
+    .scratch/transpiler/issues/30-dedent-to-unopened-level.md:1
+    .scratch/transpiler/issues/30-dedent-to-unopened-level.md:10
+    .scratch/transpiler/issues/30-dedent-to-unopened-level.md:14
+    .scratch/transpiler/issues/30-dedent-to-unopened-level.md:22
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:10
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:22
+    docs/guide/02-syntax.md:48
+    docs/spec/01-statements-and-blocks.md:117
+    docs/spec/23-transpiler-architecture.md:33
+    docs/spec/cases/01-statements-and-blocks/dedent-to-unopened-level.regia:2
+    docs/spec/cases/01-statements-and-blocks/dedent-to-unopened-level.regia:10
+
+R0105
+  * docs/spec/01-statements-and-blocks.md:279: - `R0105` A continuation line not indented further than the first line of its logical line.
+    .scratch/transpiler/issues/28-continuation-lines.md:14
+    .scratch/transpiler/issues/28-continuation-lines.md:30
+    .scratch/transpiler/issues/31-continuation-not-indented.md:1
+    .scratch/transpiler/issues/31-continuation-not-indented.md:10
+    .scratch/transpiler/issues/31-continuation-not-indented.md:22
+    .scratch/transpiler/issues/32-mixed-tabs-and-spaces.md:10
+    docs/guide/02-syntax.md:188
+    docs/spec/01-statements-and-blocks.md:117
+    docs/spec/01-statements-and-blocks.md:130
+    docs/spec/23-transpiler-architecture.md:33
+
+R0106
+  * docs/spec/01-statements-and-blocks.md:292: - `R0106` A Block header with no body. A Block holding only `PASS` has a body.
+    docs/guide/02-syntax.md:240
+    docs/guide/08-randomness.md:47
+    docs/spec/09-random-choice.md:35
+    docs/spec/23-transpiler-architecture.md:33
+
+R0107
+  * docs/spec/01-statements-and-blocks.md:280: - `R0107` Retired with Flat blocks; the number is not reused.
+    docs/guide/19-the-transpiler.md:101
+    docs/spec/01-statements-and-blocks.md:256
+    docs/spec/01-statements-and-blocks.md:298
+
+R0108
+  * docs/spec/01-statements-and-blocks.md:281: - `R0108` A `;` that closes no Inline block (hint: a Block's body on later lines is indented under its header; Flat blocks closed by `;` no longer exist).
+    docs/guide/02-syntax.md:164
+    docs/showcase/README.md:97
+    docs/spec/01-statements-and-blocks.md:89
+    docs/spec/01-statements-and-blocks.md:92
+    docs/spec/01-statements-and-blocks.md:113
+    docs/spec/01-statements-and-blocks.md:256
+    docs/spec/23-transpiler-architecture.md:33
+
+R0109
+  * docs/spec/01-statements-and-blocks.md:282: - `R0109` A construct of a system Regia 1.5 leaves out, in a 1.5 build (the message names it and says it is Regia 2.0). Reported by a 1.5 build only; retired in 2.0.
+    docs/adr/0025-regia-1-5-is-a-subset-of-2-0-built-first.md:17
+    docs/guide/01-the-logic-of-regia.md:246
+    docs/guide/02-syntax.md:437
+    docs/guide/04-plans.md:141
+    docs/guide/04-plans.md:188
+    docs/guide/04-plans.md:270
+    docs/guide/06-matching.md:297
+    docs/guide/09-goals-and-failure.md:249
+    docs/guide/09-goals-and-failure.md:430
+    docs/guide/10-messages.md:134
+    docs/guide/10-messages.md:255
+    docs/guide/11-playbooks-and-roles.md:221
+    docs/guide/11-playbooks-and-roles.md:297
+    docs/guide/12-plots-and-directors.md:440
+    docs/guide/14-when-an-agent-leaves.md:114
+    docs/guide/14-when-an-agent-leaves.md:265
+    docs/guide/15-interfaces.md:91
+    docs/guide/15-interfaces.md:173
+    docs/guide/15-interfaces.md:365
+    docs/guide/19-the-transpiler.md:275
+    docs/guide/19-the-transpiler.md:284
+    docs/guide/19-the-transpiler.md:288
+    docs/guide/README.md:110
+    docs/showcase/README.md:108
+    docs/spec/01-statements-and-blocks.md:260
+    docs/spec/01-statements-and-blocks.md:269
+    docs/spec/01-statements-and-blocks.md:269
+    docs/spec/01-statements-and-blocks.md:296
+    docs/spec/03-parameters-and-placeholders.md:183
+    docs/spec/05-goals-and-triggers.md:324
+    docs/spec/07-messaging.md:213
+    docs/spec/15-roles-and-mappings.md:424
+    docs/spec/18-quota-triggers.md:189
+    docs/spec/19-cast-changes.md:182
+    docs/spec/20-directors.md:301
+    docs/spec/23-transpiler-architecture.md:55
+    docs/spec/23-transpiler-architecture.md:125
+    docs/spec/23-transpiler-architecture.md:197
+    docs/spec/23-transpiler-architecture.md:198
+    docs/spec/23-transpiler-architecture.md:375
+    docs/spec/27-conformance.md:30
+    docs/spec/27-conformance.md:88
+    docs/spec/27-conformance.md:127
+    docs/spec/cases/01-statements-and-blocks/later-word-in-a-1-5-build.regia:2
+    docs/spec/cases/01-statements-and-blocks/later-word-in-a-1-5-build.regia:9
+
+R0110
+  * docs/spec/01-statements-and-blocks.md:283: - `R0110` A name spelled exactly like a keyword (the message says the word is a keyword; hint: change its case or its spelling).
+    .scratch/transpiler/issues/16-names-and-reserved-words.md:30
+    docs/adr/0041-clauses-follow-a-comma-and-keywords-are-uppercase.md:5
+    docs/guide/02-syntax.md:397
+    docs/guide/03-vocabulary-and-files.md:365
+    docs/spec/01-statements-and-blocks.md:195
+    docs/spec/23-transpiler-architecture.md:52
+
+R0111
+  * docs/spec/01-statements-and-blocks.md:284: - `R0111` A clause keyword after the core of a header or Statement with no `,` before it, such as `WHEN e FROM DIRECTOR:` (the message names the clause; hint: `WHEN e, FROM DIRECTOR:`).
+    docs/adr/0044-by-keeps-the-amount-and-randomly-has-two-jobs.md:19
+    docs/guide/02-syntax.md:217
+    docs/guide/04-plans.md:221
+    docs/guide/12-plots-and-directors.md:380
+    docs/guide/19-the-transpiler.md:93
+    docs/showcase/README.md:104
+    docs/spec/01-statements-and-blocks.md:182
+    docs/spec/01-statements-and-blocks.md:256
+    docs/spec/01-statements-and-blocks.md:298
+    docs/spec/05-goals-and-triggers.md:295
+    docs/spec/20-directors.md:208
+    docs/spec/23-transpiler-architecture.md:52
+    docs/spec/cases/01-statements-and-blocks/clause-without-its-comma.regia:2
+    docs/spec/cases/01-statements-and-blocks/clause-without-its-comma.regia:9
+
+R0112
+  * docs/spec/01-statements-and-blocks.md:285: - `R0112` A character Regia doesn't use outside a String or a comment.
+    .scratch/transpiler/issues/15-whitespace-and-line-breaks.md:30
+    .scratch/transpiler/issues/18-stray-character.md:1
+    .scratch/transpiler/issues/18-stray-character.md:10
+    .scratch/transpiler/issues/18-stray-character.md:14
+    .scratch/transpiler/issues/18-stray-character.md:18
+    .scratch/transpiler/issues/18-stray-character.md:22
+    .scratch/transpiler/issues/19-placeholders-and-punctuation.md:22
+    .scratch/transpiler/issues/24-strings.md:22
+    docs/guide/02-syntax.md:372
+    docs/spec/01-statements-and-blocks.md:298
+    docs/spec/23-transpiler-architecture.md:33
+    docs/spec/cases/01-statements-and-blocks/bad-character-reported-once.regia:2
+    docs/spec/cases/01-statements-and-blocks/bad-character-reported-once.regia:9
+
+R0113
+  * docs/spec/01-statements-and-blocks.md:286: - `R0113` A String not closed on its line, or an escape other than `\"` and `\\`.
+    .scratch/transpiler/issues/18-stray-character.md:30
+    .scratch/transpiler/issues/24-strings.md:1
+    .scratch/transpiler/issues/24-strings.md:14
+    .scratch/transpiler/issues/24-strings.md:22
+    .scratch/transpiler/issues/24-strings.md:22
+    docs/guide/02-syntax.md:373
+    docs/spec/23-transpiler-architecture.md:33
+
+R0114
+  * docs/spec/01-statements-and-blocks.md:287: - `R0114` A line indented further than the one before it, which opens no Block.
+    docs/guide/02-syntax.md:49
+    docs/spec/01-statements-and-blocks.md:118
+    docs/spec/23-transpiler-architecture.md:33
+
+R0115
+  * docs/spec/01-statements-and-blocks.md:288: - `R0115` Text that fits no construct, and that no other check names (the message says what was found and what was expected).
+    docs/guide/02-syntax.md:374
+    docs/spec/01-statements-and-blocks.md:298
+    docs/spec/23-transpiler-architecture.md:33
+    docs/spec/cases/02-comments/allow-made-stale-by-an-error.regia:10
+    docs/spec/cases/03-parameters-and-placeholders/placeholder-used-in-broken-statement.regia:9
+    docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/moves.regia:1
+    docs/spec/cases/38-interfaces/cue-sent-in-broken-statement.regia:10
+
+R0201
+  * docs/spec/02-comments.md:110: - `R0201` An unclosed multiline comment, plain (`#[`) or doc (`#@key[`), pointing at its opener.
+    .scratch/transpiler/issues/26-multiline-comments.md:1
+    .scratch/transpiler/issues/26-multiline-comments.md:10
+    .scratch/transpiler/issues/26-multiline-comments.md:18
+    .scratch/transpiler/issues/26-multiline-comments.md:22
+    docs/guide/02-syntax.md:282
+    docs/spec/23-transpiler-architecture.md:33
+
+R0202
+  * docs/spec/02-comments.md:111: - `R0202` A doc comment that doesn't start its own line.
+    .scratch/transpiler/issues/25-line-and-doc-comments.md:1
+    .scratch/transpiler/issues/25-line-and-doc-comments.md:10
+    .scratch/transpiler/issues/25-line-and-doc-comments.md:14
+    .scratch/transpiler/issues/25-line-and-doc-comments.md:22
+    docs/guide/02-syntax.md:334
+    docs/spec/23-transpiler-architecture.md:33
+
+R0203
+  * docs/spec/02-comments.md:117: - `R0203` A detached doc comment: not directly above a declaration, and not a file's doc comment. It is ignored.
+    docs/guide/02-syntax.md:335
+    docs/guide/19-the-transpiler.md:336
+    docs/spec/23-transpiler-architecture.md:197
+    docs/spec/27-conformance.md:103
+    docs/spec/cases/02-comments/detached-doc-comment.regia:2
+    docs/spec/cases/02-comments/detached-doc-comment.regia:8
+
+R0204
+  * docs/spec/02-comments.md:112: - `R0204` An `#@allow` naming the code of an error.
+    docs/guide/02-syntax.md:359
+    docs/guide/19-the-transpiler.md:81
+    docs/guide/20-the-visual-editor.md:137
+    docs/spec/02-comments.md:95
+    docs/spec/23-transpiler-architecture.md:197
+
+R0205
+  * docs/spec/02-comments.md:118: - `R0205` An `#@allow` code that silences no warning in its declaration. Absence check (chapter 23).
+    docs/guide/02-syntax.md:361
+    docs/guide/19-the-transpiler.md:83
+    docs/guide/20-the-visual-editor.md:137
+    docs/spec/02-comments.md:96
+    docs/spec/02-comments.md:97
+    docs/spec/02-comments.md:97
+    docs/spec/23-transpiler-architecture.md:138
+    docs/spec/23-transpiler-architecture.md:212
+    docs/spec/cases/02-comments/allow-made-stale-by-an-error.regia:2
+
+R0206
+  * docs/spec/02-comments.md:113: - `R0206` An `#@allow` code without its Code name, or with a name that isn't its number's (quick fix: the right name).
+    docs/adr/0051-codes-carry-a-name-after-their-number.md:5
+    docs/guide/02-syntax.md:360
+    docs/guide/19-the-transpiler.md:82
+    docs/spec/02-comments.md:96
+    docs/spec/27-conformance.md:26
+    docs/spec/cases/02-comments/allow-with-a-misnamed-code.regia:2
+    docs/spec/cases/02-comments/allow-with-a-misnamed-code.regia:8
+
+R0301
+  * docs/spec/03-parameters-and-placeholders.md:166: - `R0301` A use with a different number of arguments from the declaration's parameters.
+    docs/guide/03-vocabulary-and-files.md:86
+    docs/guide/05-placeholders-and-expressions.md:81
+    docs/spec/23-transpiler-architecture.md:198
+
+R0302
+  * docs/spec/03-parameters-and-placeholders.md:167: - `R0302` A `?` in a declaration.
+    docs/guide/03-vocabulary-and-files.md:87
+
+R0303
+  * docs/spec/03-parameters-and-placeholders.md:168: - `R0303` A Role name used as a Value, as an argument or in an Expression (hint: fill a Placeholder with `FROM Role ?x`).
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:1
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:3
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:5
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:5
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:7
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:11
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:12
+    docs/guide/01-the-logic-of-regia.md:128
+    docs/guide/03-vocabulary-and-files.md:227
+    docs/guide/05-placeholders-and-expressions.md:82
+    docs/guide/11-playbooks-and-roles.md:91
+    docs/guide/12-plots-and-directors.md:94
+    docs/spec/03-parameters-and-placeholders.md:78
+    docs/spec/15-roles-and-mappings.md:352
+    docs/spec/15-roles-and-mappings.md:358
+    docs/spec/15-roles-and-mappings.md:377
+
+R0304
+  * docs/spec/03-parameters-and-placeholders.md:169: - `R0304` A Placeholder used in the Body that was never filled, or used before the Statement that fills it. Its *never filled* part is an absence check (chapter 23).
+    docs/guide/05-placeholders-and-expressions.md:121
+    docs/guide/06-matching.md:295
+    docs/guide/07-actions-and-time.md:47
+    docs/guide/10-messages.md:96
+    docs/guide/12-plots-and-directors.md:496
+    docs/guide/13-subplots-and-stagings.md:144
+    docs/spec/20-directors.md:275
+    docs/spec/23-transpiler-architecture.md:127
+    docs/spec/23-transpiler-architecture.md:136
+    docs/spec/23-transpiler-architecture.md:199
+
+R0305
+  * docs/spec/03-parameters-and-placeholders.md:170: - `R0305` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` (the message names the branch).
+    docs/guide/05-placeholders-and-expressions.md:210
+    docs/guide/05-placeholders-and-expressions.md:406
+    docs/guide/07-actions-and-time.md:47
+    docs/guide/10-messages.md:96
+    docs/guide/12-plots-and-directors.md:496
+    docs/guide/13-subplots-and-stagings.md:144
+    docs/spec/04-numbers-and-expressions.md:125
+    docs/spec/09-random-choice.md:75
+    docs/spec/20-directors.md:275
+    docs/spec/cases/03-parameters-and-placeholders/or-branch-leaves-placeholder-empty.regia:2
+    docs/spec/cases/03-parameters-and-placeholders/or-branch-leaves-placeholder-empty.regia:11
+
+R0306
+  * docs/spec/03-parameters-and-placeholders.md:171: - `R0306` A bare `?`, or a `?_name`, in the Body.
+    docs/guide/05-placeholders-and-expressions.md:172
+
+R0307
+  * docs/spec/03-parameters-and-placeholders.md:178: - `R0307` A named Placeholder that is filled but never used (hint: `?`). What counts as a use is listed under *"Don't care": `?`*. Absence check (chapter 23).
+    docs/guide/04-plans.md:336
+    docs/guide/05-placeholders-and-expressions.md:122
+    docs/guide/05-placeholders-and-expressions.md:173
+    docs/spec/06-context-and-control-flow.md:71
+    docs/spec/23-transpiler-architecture.md:127
+    docs/spec/23-transpiler-architecture.md:136
+    docs/spec/23-transpiler-architecture.md:199
+    docs/spec/23-transpiler-architecture.md:201
+    docs/spec/26-match-selection.md:53
+    docs/spec/cases/02-comments/allow-made-stale-by-an-error.regia:7
+    docs/spec/cases/03-parameters-and-placeholders/placeholder-used-in-broken-statement.regia:2
+
+R0308
+  * docs/spec/03-parameters-and-placeholders.md:179: - `R0308` A named Placeholder that appears only under `NOT` (hint: `?`). Absence check (chapter 23).
+    docs/guide/05-placeholders-and-expressions.md:211
+    docs/spec/23-transpiler-architecture.md:136
+
+R0309
+  * docs/spec/03-parameters-and-placeholders.md:172: - `R0309` `ME` in a Plot, a Role setup included.
+    docs/guide/03-vocabulary-and-files.md:228
+    docs/guide/05-placeholders-and-expressions.md:83
+    docs/guide/12-plots-and-directors.md:180
+    docs/guide/12-plots-and-directors.md:438
+    docs/guide/17-instancing.md:282
+    docs/spec/03-parameters-and-placeholders.md:183
+    docs/spec/05-goals-and-triggers.md:318
+    docs/spec/16-role-setup.md:34
+    docs/spec/20-directors.md:275
+    docs/spec/21-instancing.md:236
+    docs/spec/23-transpiler-architecture.md:198
+
+R0310
+  * docs/spec/03-parameters-and-placeholders.md:173: - `R0310` A Name that isn't declared with `NAME` (the hint names the closest declared Name).
+    docs/guide/03-vocabulary-and-files.md:225
+    docs/guide/05-placeholders-and-expressions.md:85
+    docs/guide/17-instancing.md:240
+
+R0311
+  * docs/spec/03-parameters-and-placeholders.md:174: - `R0311` A `NAME` line with parameters, `AS` or `GAME`, or inside a `PLAYBOOK` or `PLOT`.
+    docs/guide/03-vocabulary-and-files.md:128
+    docs/guide/03-vocabulary-and-files.md:226
+    docs/spec/10-scoping-and-imports.md:172
+
+R0401
+  * docs/spec/04-numbers-and-expressions.md:165: - `R0401` A number written in a form Regia doesn't have: `.5`, an exponent, digit separators, another base.
+    .scratch/transpiler/issues/21-numbers.md:1
+    .scratch/transpiler/issues/21-numbers.md:10
+    .scratch/transpiler/issues/21-numbers.md:14
+    .scratch/transpiler/issues/21-numbers.md:22
+    .scratch/transpiler/issues/21-numbers.md:22
+    docs/guide/05-placeholders-and-expressions.md:246
+    docs/spec/23-transpiler-architecture.md:33
+
+R0402
+  * docs/spec/04-numbers-and-expressions.md:166: - `R0402` An Expression in a Trigger slot.
+    docs/guide/05-placeholders-and-expressions.md:84
+    docs/guide/05-placeholders-and-expressions.md:296
+
+R0403
+  * docs/spec/04-numbers-and-expressions.md:167: - `R0403` A chained comparison, such as `0 < ?h < 20` or `?a = ?b != ?c` (hint: `0 < ?h AND ?h < 20`).
+    docs/guide/05-placeholders-and-expressions.md:297
+
+R0404
+  * docs/spec/04-numbers-and-expressions.md:168: - `R0404` A comparison in a Context or an `IF` condition with a side that isn't filled yet (a comparison never fills).
+    docs/guide/05-placeholders-and-expressions.md:402
+
+R0405
+  * docs/spec/04-numbers-and-expressions.md:169: - `R0405` `LET` on a Placeholder that is already filled (`LET ?h BE ?h - 1`; hint: `LET ?new BE ?h - 1`).
+    docs/guide/05-placeholders-and-expressions.md:403
+    docs/spec/cases/04-numbers-and-expressions/naming-a-filled-placeholder.regia:2
+    docs/spec/cases/04-numbers-and-expressions/naming-a-filled-placeholder.regia:10
+
+R0406
+  * docs/spec/04-numbers-and-expressions.md:170: - `R0406` Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`host + 1`, `"hi" < 3`).
+    docs/guide/05-placeholders-and-expressions.md:298
+    docs/guide/05-placeholders-and-expressions.md:422
+
+R0407
+  * docs/spec/04-numbers-and-expressions.md:171: - `R0407` The retired spelling `?x = e` as a Body Statement (hint: `LET ?x BE e`).
+    docs/adr/0042-let-fills-a-placeholder-and-equals-only-compares.md:16
+    docs/guide/05-placeholders-and-expressions.md:404
+    docs/spec/01-statements-and-blocks.md:241
+
+R0408
+  * docs/spec/04-numbers-and-expressions.md:172: - `R0408` `LET` in a Context or an `IF` condition.
+    docs/adr/0042-let-fills-a-placeholder-and-equals-only-compares.md:16
+    docs/guide/05-placeholders-and-expressions.md:405
+
+R0501
+  * docs/spec/05-goals-and-triggers.md:304: - `R0501` One name declared as two kinds (`FACT fed` and `GOAL fed`).
+    docs/guide/03-vocabulary-and-files.md:63
+    docs/guide/03-vocabulary-and-files.md:343
+    docs/guide/09-goals-and-failure.md:61
+    docs/spec/10-scoping-and-imports.md:161
+    docs/spec/23-transpiler-architecture.md:115
+
+R0502
+  * docs/spec/05-goals-and-triggers.md:305: - `R0502` A Cue tested in a Context or an `IF` (`IF food_served`).
+    docs/guide/01-the-logic-of-regia.md:78
+    docs/guide/04-plans.md:60
+    docs/guide/04-plans.md:268
+    docs/guide/04-plans.md:471
+
+R0503
+  * docs/spec/05-goals-and-triggers.md:306: - `R0503` A Fact Trigger without a kind word (`WHEN hates(?h):`, hint: `LEARNED` or `FORGOTTEN`).
+    docs/guide/04-plans.md:137
+    docs/guide/10-messages.md:192
+    docs/guide/19-the-transpiler.md:310
+    docs/guide/19-the-transpiler.md:315
+    docs/guide/19-the-transpiler.md:332
+    docs/spec/cases/05-goals-and-triggers/fact-trigger-without-kind-word.regia:2
+    docs/spec/cases/05-goals-and-triggers/fact-trigger-without-kind-word.regia:8
+
+R0504
+  * docs/spec/05-goals-and-triggers.md:307: - `R0504` A kind word that doesn't suit the item (`WHEN food_served LEARNED`, `WHEN find_food LEARNED`).
+    docs/guide/04-plans.md:138
+    docs/guide/09-goals-and-failure.md:247
+
+R0505
+  * docs/spec/05-goals-and-triggers.md:308: - `R0505` `FROM` on a `FORGOTTEN` Trigger.
+    docs/guide/04-plans.md:186
+    docs/guide/10-messages.md:193
+
+R0506
+  * docs/spec/05-goals-and-triggers.md:309: - `R0506` `BY` on a Trigger that isn't a Goal's ending (a Cue, a Fact, a `TO` recipe, a Subplot's `ENDED`), except `, BY PARENT` on `EXITED` (chapter 20). `BY PARENT` on any other Trigger, and `BY` with anything but `PARENT` on `EXITED`, are this error too.
+    docs/adr/0044-by-keeps-the-amount-and-randomly-has-two-jobs.md:19
+    docs/guide/04-plans.md:187
+    docs/guide/12-plots-and-directors.md:379
+    docs/spec/05-goals-and-triggers.md:330
+    docs/spec/20-directors.md:208
+
+R0507
+  * docs/spec/05-goals-and-triggers.md:310: - `R0507` `FROM` and `BY` on the same Trigger.
+    docs/spec/05-goals-and-triggers.md:330
+
+R0508
+  * docs/spec/05-goals-and-triggers.md:311: - `R0508` `WHEN g … BY` in a Playbook that never asks `g`: no `ASK … TO g`. In a Plot it is `R2012` (chapter 20). Absence check (chapter 23).
+    docs/spec/05-goals-and-triggers.md:330
+    docs/spec/23-transpiler-architecture.md:137
+    docs/spec/38-interfaces.md:144
+
+R0509
+  * docs/spec/05-goals-and-triggers.md:312: - `R0509` `FROM GAME` on a `TO` recipe or a Goal's ending (no Goal comes from the game).
+    docs/spec/05-goals-and-triggers.md:330
+
+R0510
+  * docs/spec/05-goals-and-triggers.md:313: - `R0510` `FROM ME` on a Cue Trigger (an Agent never sends to itself).
+    docs/spec/05-goals-and-triggers.md:330
+
+R0511
+  * docs/spec/05-goals-and-triggers.md:314: - `R0511` A Placeholder or a quantity after `GAME` or `ME`, or anywhere in a `FROM … OR …` list.
+    docs/spec/05-goals-and-triggers.md:330
+
+R0512
+  * docs/spec/05-goals-and-triggers.md:315: - `R0512` `GAME`, `ME` or `OR` after `BY`.
+    docs/spec/05-goals-and-triggers.md:330
+
+R0513
+  * docs/spec/05-goals-and-triggers.md:316: - `R0513` The retired keyword `EVENT` (hint: renamed `CUE`).
+    docs/adr/0039-a-cue-is-declared-an-event-starts-a-plan.md:5
+    docs/guide/04-plans.md:62
+    docs/spec/01-statements-and-blocks.md:200
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:240
+    docs/spec/05-goals-and-triggers.md:97
+
+R0601
+  * docs/spec/06-context-and-control-flow.md:122: - `R0601` `AND` and `OR` mixed at one level without parentheses (hint: both groupings).
+    docs/guide/04-plans.md:267
+    docs/guide/04-plans.md:471
+    docs/spec/cases/06-context-and-control-flow/and-or-without-parentheses.regia:2
+    docs/spec/cases/06-context-and-control-flow/and-or-without-parentheses.regia:10
+
+R0602
+  * docs/spec/06-context-and-control-flow.md:123: - `R0602` An `ELSE` with no `GIVEN` before it, or a `GIVEN` after the `ELSE`.
+    docs/guide/04-plans.md:332
+
+R0603
+  * docs/spec/06-context-and-control-flow.md:124: - `R0603` Statements before, between or after the `GIVEN` Blocks of a Trigger Block (the message explains that the Context is checked before any Statement runs).
+    docs/guide/04-plans.md:333
+
+R0604
+  * docs/spec/06-context-and-control-flow.md:125: - `R0604` A Placeholder filled in an `IF` condition reused outside its branch: in a later `IF`, or as a Placeholder filled in the Trigger or Context (hint: a different name).
+    docs/guide/04-plans.md:470
+    docs/guide/05-placeholders-and-expressions.md:212
+
+R0605
+  * docs/spec/06-context-and-control-flow.md:129: - `R0605` A `GIVEN` that can never run, because an earlier `GIVEN` always catches it first.
+    docs/guide/04-plans.md:334
+
+R0701
+  * docs/spec/07-messaging.md:180: - `R0701` `TELL` with a Goal (hint: `ASK … TO`).
+    docs/guide/10-messages.md:42
+    docs/guide/README.md:142
+    docs/spec/cases/07-messaging/tell-with-a-goal.regia:2
+    docs/spec/cases/07-messaging/tell-with-a-goal.regia:10
+
+R0702
+  * docs/spec/07-messaging.md:181: - `R0702` `ASK … TO` with a Fact or a Cue (hint: `TELL`).
+    docs/guide/10-messages.md:253
+
+R0703
+  * docs/spec/07-messaging.md:182: - `R0703` `SIGNAL` with something that isn't a Cue.
+    docs/guide/10-messages.md:302
+
+R0704
+  * docs/spec/07-messaging.md:183: - `R0704` A Value in the recipient position, `ME` included (Regia never names an Agent).
+    docs/guide/05-placeholders-and-expressions.md:83
+    docs/guide/10-messages.md:95
+    docs/spec/03-parameters-and-placeholders.md:73
+
+R0705
+  * docs/spec/07-messaging.md:184: - `R0705` A trailing clause on a message Statement (none exist in 2.0).
+    docs/guide/10-messages.md:339
+
+R0706
+  * docs/spec/07-messaging.md:185: - `R0706` A reserved word used: the kind words `TOLD`, `AGREED`, `REFUSED`, or `REFUSE`.
+    docs/guide/02-syntax.md:398
+    docs/guide/10-messages.md:340
+    docs/spec/01-statements-and-blocks.md:222
+    docs/spec/01-statements-and-blocks.md:226
+
+R0801
+  * docs/spec/08-basic-actions.md:178: - `R0801` A blank (an unfilled Placeholder) in a Basic Action's argument (for `FORGET`, the hint suggests `FOR EACH`).
+    docs/guide/06-matching.md:242
+    docs/guide/07-actions-and-time.md:43
+    docs/spec/26-match-selection.md:154
+
+R0802
+  * docs/spec/08-basic-actions.md:179: - `R0802` A name whose kind doesn't suit the Action: `LEARN`/`FORGET`/`UPDATE` with a Cue or a Goal, `PURSUE`/`DROP` with a Fact or a Cue, `DROP` with a Plot (hint: `DROP SUBPLOT P`, chapter 17), `DO` with anything but a Custom Action (the message suggests the right Action).
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:22
+    docs/guide/01-the-logic-of-regia.md:79
+    docs/guide/04-plans.md:61
+    docs/guide/07-actions-and-time.md:44
+    docs/guide/07-actions-and-time.md:145
+    docs/guide/07-actions-and-time.md:206
+    docs/guide/09-goals-and-failure.md:62
+    docs/guide/09-goals-and-failure.md:203
+    docs/guide/13-subplots-and-stagings.md:441
+    docs/spec/17-subplots.md:192
+
+R0803
+  * docs/spec/08-basic-actions.md:180: - `R0803` A Custom Action without `DO`, or `DO` before a Basic Action.
+    docs/guide/07-actions-and-time.md:45
+    docs/guide/07-actions-and-time.md:205
+
+R0804
+  * docs/spec/08-basic-actions.md:181: - `R0804` `UPDATE f TO f2` with two different Facts.
+    docs/guide/07-actions-and-time.md:99
+    docs/spec/cases/08-basic-actions/update-to-another-fact.regia:2
+    docs/spec/cases/08-basic-actions/update-to-another-fact.regia:10
+
+R0805
+  * docs/spec/08-basic-actions.md:182: - `R0805` A trailing clause other than `, WITHOUT WAITING`, or one on a Statement other than `PURSUE` and `DO`.
+    docs/guide/07-actions-and-time.md:146
+    docs/guide/07-actions-and-time.md:387
+    docs/guide/09-goals-and-failure.md:106
+    docs/guide/09-goals-and-failure.md:204
+    docs/spec/12-time.md:66
+
+R0806
+  * docs/spec/08-basic-actions.md:186: - `R0806` A waiting `PURSUE g` in a `TO g` Plan, with the Trigger's own arguments and no `GIVEN` or `IF` around it: the Goal can never be reached (hint: `, WITHOUT WAITING` repeats).
+    docs/adr/0017-every-request-is-its-own-pursuit.md:16
+    docs/guide/04-plans.md:503
+    docs/guide/07-actions-and-time.md:147
+    docs/guide/09-goals-and-failure.md:107
+    docs/spec/08-basic-actions.md:93
+
+R0807
+  * docs/spec/08-basic-actions.md:187: - `R0807` `LEARN`, `FORGET` or `UPDATE` on a game Fact, by an Agent or a Director: the game may undo it (hint: record a Fact of the Program's own).
+    docs/adr/0026-the-vocabulary-says-what-the-game-produces.md:21
+    docs/guide/03-vocabulary-and-files.md:129
+    docs/guide/03-vocabulary-and-files.md:133
+    docs/guide/07-actions-and-time.md:46
+    docs/spec/08-basic-actions.md:43
+    docs/spec/10-scoping-and-imports.md:82
+
+R0808
+  * docs/spec/08-basic-actions.md:183: - `R0808` The retired `CHANGE f TO f2` (hint: `UPDATE f TO f2`).
+    docs/adr/0043-to-introduces-a-goal-with-two-closed-exceptions.md:21
+    docs/guide/07-actions-and-time.md:100
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:242
+    docs/spec/08-basic-actions.md:58
+    docs/spec/08-basic-actions.md:208
+
+R0901
+  * docs/spec/09-random-choice.md:102: - `R0901` A `RANDOMLY` with no `OPTION` Block.
+    docs/guide/08-randomness.md:44
+    docs/spec/09-random-choice.md:34
+    docs/spec/cases/09-random-choice/randomly-without-options.regia:2
+    docs/spec/cases/09-random-choice/randomly-without-options.regia:9
+
+R0902
+  * docs/spec/09-random-choice.md:103: - `R0902` An `OPTION:` Block that isn't directly under a `RANDOMLY:`, or a Statement other than an `OPTION` Block directly under a `RANDOMLY:` (hint: wrap it in an `OPTION:`, or move it out).
+    docs/guide/08-randomness.md:45
+    docs/spec/09-random-choice.md:32
+
+R0903
+  * docs/spec/09-random-choice.md:104: - `R0903` A weight whose Placeholders aren't certainly filled before the Random choice.
+    docs/guide/08-randomness.md:82
+
+R0904
+  * docs/spec/09-random-choice.md:105: - `R0904` A Placeholder filled inside some Options but not all, used after the Random choice, or anywhere else in the Plan but a sibling Option.
+    docs/guide/08-randomness.md:122
+
+R0905
+  * docs/spec/09-random-choice.md:110: - `R0905` A `RANDOMLY` with a single `OPTION`: it always runs.
+    docs/guide/08-randomness.md:46
+    docs/spec/09-random-choice.md:34
+
+R0906
+  * docs/spec/09-random-choice.md:106: - `R0906` The retired headers `EITHER:` and `OR:` (hint: write `RANDOMLY:` with one `OPTION:` Block per Option).
+    docs/guide/08-randomness.md:48
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:243
+    docs/spec/09-random-choice.md:45
+    docs/spec/cases/09-random-choice/either-is-retired.regia:2
+    docs/spec/cases/09-random-choice/either-is-retired.regia:9
+    docs/spec/cases/09-random-choice/either-is-retired.regia:10
+
+R1001
+  * docs/spec/10-scoping-and-imports.md:157: - `R1001` An `IMPORT` that isn't at the top of the file, after its doc comment and before any declaration.
+    docs/guide/03-vocabulary-and-files.md:311
+    docs/spec/23-transpiler-architecture.md:117
+
+R1002
+  * docs/spec/10-scoping-and-imports.md:158: - `R1002` An import path that leads to no file.
+    docs/guide/03-vocabulary-and-files.md:312
+    docs/guide/19-the-transpiler.md:32
+    docs/spec/23-transpiler-architecture.md:117
+    docs/spec/23-transpiler-architecture.md:144
+    docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/hub.regia:5
+
+R1003
+  * docs/spec/10-scoping-and-imports.md:159: - `R1003` An import cycle (the message names every file in the loop).
+    docs/guide/03-vocabulary-and-files.md:313
+    docs/guide/19-the-transpiler.md:33
+    docs/spec/23-transpiler-architecture.md:117
+
+R1004
+  * docs/spec/10-scoping-and-imports.md:160: - `R1004` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`). Absence check (chapter 23).
+    docs/guide/03-vocabulary-and-files.md:314
+    docs/guide/03-vocabulary-and-files.md:437
+    docs/guide/13-subplots-and-stagings.md:53
+    docs/guide/13-subplots-and-stagings.md:309
+    docs/guide/19-the-transpiler.md:44
+    docs/guide/19-the-transpiler.md:60
+    docs/guide/19-the-transpiler.md:85
+    docs/guide/19-the-transpiler.md:94
+    docs/guide/19-the-transpiler.md:137
+    docs/guide/20-the-visual-editor.md:135
+    docs/spec/10-scoping-and-imports.md:145
+    docs/spec/17-subplots.md:137
+    docs/spec/23-transpiler-architecture.md:113
+    docs/spec/23-transpiler-architecture.md:127
+    docs/spec/23-transpiler-architecture.md:130
+    docs/spec/23-transpiler-architecture.md:138
+    docs/spec/23-transpiler-architecture.md:148
+    docs/spec/23-transpiler-architecture.md:198
+    docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/hub.regia:2
+    docs/spec/cases/10-scoping-and-imports/missing-import-silences-names/scene.regia:8
+    docs/spec/cases/10-scoping-and-imports/name-from-an-unreached-file/brawl.regia:2
+    docs/spec/cases/10-scoping-and-imports/name-from-an-unreached-file/brawl.regia:9
+
+R1005
+  * docs/spec/10-scoping-and-imports.md:161: - `R1005` Two declarations of one name, of one kind, that don't agree on parameter count, External name or `GAME` (the message names both). Two kinds is `R0501`.
+    docs/guide/03-vocabulary-and-files.md:88
+    docs/guide/03-vocabulary-and-files.md:181
+    docs/guide/03-vocabulary-and-files.md:343
+    docs/spec/10-scoping-and-imports.md:81
+    docs/spec/23-transpiler-architecture.md:115
+    docs/spec/23-transpiler-architecture.md:198
+
+R1006
+  * docs/spec/10-scoping-and-imports.md:162: - `R1006` A Playbook or Plot declared twice.
+    docs/guide/03-vocabulary-and-files.md:344
+    docs/guide/12-plots-and-directors.md:55
+    docs/spec/23-transpiler-architecture.md:115
+
+R1007
+  * docs/spec/10-scoping-and-imports.md:163: - `R1007` Two names that differ only in case, in the program-wide namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders.
+    docs/guide/03-vocabulary-and-files.md:363
+    docs/guide/05-placeholders-and-expressions.md:86
+    docs/guide/11-playbooks-and-roles.md:94
+    docs/guide/12-plots-and-directors.md:55
+    docs/guide/21-jason-the-build.md:209
+    docs/guide/22-jason-plans-and-goals.md:64
+    docs/spec/28-jason-layout.md:175
+    docs/spec/39-jason-plan-bodies.md:12
+
+R1008
+  * docs/spec/10-scoping-and-imports.md:164: - `R1008` A name, a Placeholder's included, that starts with `regia_` or contains `__`.
+    docs/guide/03-vocabulary-and-files.md:364
+    docs/guide/05-placeholders-and-expressions.md:86
+    docs/guide/21-jason-the-build.md:210
+    docs/guide/22-jason-plans-and-goals.md:65
+    docs/spec/28-jason-layout.md:175
+    docs/spec/39-jason-plan-bodies.md:11
+
+R1009
+  * docs/spec/10-scoping-and-imports.md:165: - `R1009` A dotted name without `AS`.
+    docs/guide/03-vocabulary-and-files.md:178
+    docs/guide/07-actions-and-time.md:284
+    docs/guide/21-jason-the-build.md:211
+
+R1010
+  * docs/spec/10-scoping-and-imports.md:166: - `R1010` `AS` on a `GOAL`, on a local declaration, or on a `FACT` or `CUE` that isn't `GAME`.
+    docs/guide/03-vocabulary-and-files.md:179
+    docs/guide/03-vocabulary-and-files.md:407
+
+R1011
+  * docs/spec/10-scoping-and-imports.md:167: - `R1011` One External name given two Regia names.
+    docs/guide/03-vocabulary-and-files.md:180
+
+R1012
+  * docs/spec/10-scoping-and-imports.md:168: - `R1012` `ACTION` declared inside a `PLAYBOOK` or `PLOT`, or `CUE` declared inside a `PLOT`.
+    docs/guide/03-vocabulary-and-files.md:65
+    docs/guide/03-vocabulary-and-files.md:403
+    docs/guide/12-plots-and-directors.md:57
+
+R1013
+  * docs/spec/10-scoping-and-imports.md:169: - `R1013` A local name that shadows a name the file can see.
+    docs/guide/03-vocabulary-and-files.md:405
+
+R1014
+  * docs/spec/10-scoping-and-imports.md:170: - `R1014` A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL`, or a local Cue sent with `SIGNAL`.
+    docs/adr/0016-an-event-may-be-local-to-a-playbook.md:15
+    docs/guide/03-vocabulary-and-files.md:406
+    docs/guide/03-vocabulary-and-files.md:436
+    docs/guide/10-messages.md:43
+    docs/spec/10-scoping-and-imports.md:145
+
+R1015
+  * docs/spec/10-scoping-and-imports.md:171: - `R1015` `GOAL` declared inside a `PLOT` (hint: declare it at file level to `ASK` for it).
+    docs/adr/0016-an-event-may-be-local-to-a-playbook.md:18
+    docs/guide/03-vocabulary-and-files.md:404
+    docs/guide/12-plots-and-directors.md:56
+    docs/spec/20-directors.md:275
+
+R1016
+  * docs/spec/10-scoping-and-imports.md:172: - `R1016` `GAME` on anything but a `FACT` or a `CUE`, or on a local declaration (a `NAME` line is `R0311`).
+    docs/guide/03-vocabulary-and-files.md:128
+    docs/guide/03-vocabulary-and-files.md:407
+    docs/spec/10-scoping-and-imports.md:78
+
+R1101
+  * docs/spec/11-failure.md:182: - `R1101` A Goal that is pursued, asked or declared, but has no `TO` Plan anywhere in the Program. It would always fail.
+    docs/guide/01-the-logic-of-regia.md:81
+    docs/guide/09-goals-and-failure.md:63
+    docs/guide/09-goals-and-failure.md:362
+
+R1102
+  * docs/spec/11-failure.md:183: - `R1102` Statements after `FAIL` in the same Block, which can never run.
+    docs/guide/09-goals-and-failure.md:399
+    docs/spec/23-transpiler-architecture.md:127
+
+R1103
+  * docs/spec/11-failure.md:184: - `R1103` A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments and no `GIVEN` or `IF` around the `PURSUE`: it retries without end.
+    docs/guide/09-goals-and-failure.md:477
+    docs/spec/11-failure.md:149
+
+R1104
+  * docs/spec/11-failure.md:177: - `R1104` `FAIL WITH` something other than one declared Cue, or with unfilled arguments.
+    docs/guide/09-goals-and-failure.md:398
+    docs/spec/11-failure.md:217
+
+R1105
+  * docs/spec/11-failure.md:178: - `R1105` `WITH` on `REACHED`, `DROPPED` or `ENDED` after a Goal's name.
+    docs/guide/04-plans.md:139
+    docs/guide/09-goals-and-failure.md:248
+    docs/guide/09-goals-and-failure.md:429
+
+R1106
+  * docs/spec/11-failure.md:185: - `R1106` A plain `WHEN g FAILED` Plan written above a `WHEN g FAILED WITH …` Plan it also matches, which can then never run.
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:23
+    docs/guide/09-goals-and-failure.md:428
+    docs/spec/11-failure.md:100
+    docs/spec/11-failure.md:217
+
+R1201
+  * docs/spec/12-time.md:101: - `R1201` `WAIT` without a unit word, or with a word that isn't `SECOND`, `SECONDS`, `MINUTE` or `MINUTES`.
+    docs/guide/03-vocabulary-and-files.md:261
+    docs/guide/07-actions-and-time.md:338
+    docs/guide/07-actions-and-time.md:399
+    docs/guide/07-actions-and-time.md:449
+    docs/spec/cases/12-time/wait-without-a-unit.regia:2
+    docs/spec/cases/12-time/wait-without-a-unit.regia:8
+
+R1202
+  * docs/spec/12-time.md:102: - `R1202` A Duration whose Placeholders aren't certainly filled before the `WAIT`.
+    docs/guide/03-vocabulary-and-files.md:262
+    docs/guide/07-actions-and-time.md:339
+    docs/guide/07-actions-and-time.md:399
+    docs/guide/07-actions-and-time.md:449
+
+R1203
+  * docs/spec/12-time.md:108: - `R1203` A negative Number written directly as the Duration (`WAIT -2 SECONDS`).
+    docs/guide/03-vocabulary-and-files.md:263
+    docs/guide/07-actions-and-time.md:340
+    docs/guide/07-actions-and-time.md:399
+    docs/guide/07-actions-and-time.md:449
+
+R1204
+  * docs/spec/12-time.md:103: - `R1204` A Placeholder in a `WAIT … UNTIL` condition that isn't certainly filled before the `WAIT` and isn't a blank.
+    docs/guide/07-actions-and-time.md:398
+    docs/guide/22-jason-plans-and-goals.md:355
+    docs/spec/39-jason-plan-bodies.md:98
+
+R1205
+  * docs/spec/12-time.md:104: - `R1205` `AFTER` in a Playbook (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`).
+    docs/guide/07-actions-and-time.md:448
+    docs/guide/12-plots-and-directors.md:322
+
+R1301
+  * docs/spec/13-plan-selection.md:193: - `R1301` A cycle in one Plot's written relations, its Subplots' `PARENT` relations included (the message prints the cycle). Defaults are never part of one.
+    docs/adr/0032-a-default-gives-way-to-what-is-written.md:5
+    docs/guide/16-precedence-and-labels.md:174
+    docs/guide/16-precedence-and-labels.md:257
+    docs/guide/19-the-transpiler.md:95
+    docs/guide/19-the-transpiler.md:332
+    docs/guide/23-jason-givings-and-precedence.md:530
+    docs/spec/13-plan-selection.md:100
+    docs/spec/23-transpiler-architecture.md:181
+    docs/spec/23-transpiler-architecture.md:198
+    docs/spec/27-conformance.md:39
+    docs/spec/27-conformance.md:82
+    docs/spec/27-conformance.md:96
+    docs/spec/27-conformance.md:108
+    docs/spec/32-jason-precedence.md:19
+    docs/spec/cases/13-plan-selection/precedence-cycle.regia:2
+    docs/spec/cases/13-plan-selection/precedence-cycle.regia:21
+
+R1302
+  * docs/spec/13-plan-selection.md:194: - `R1302` `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
+    docs/guide/16-precedence-and-labels.md:258
+    docs/guide/16-precedence-and-labels.md:531
+
+R1303
+  * docs/spec/13-plan-selection.md:195: - `R1303` A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot. Its *never* parts are an absence check (chapter 23).
+    docs/guide/16-precedence-and-labels.md:175
+    docs/guide/16-precedence-and-labels.md:259
+    docs/guide/16-precedence-and-labels.md:300
+    docs/spec/23-transpiler-architecture.md:137
+
+R1304
+  * docs/spec/13-plan-selection.md:196: - `R1304` Retired (ADR 0033): Trigger Blocks with and without `SUITS` may be mixed.
+    docs/adr/0033-choosing-by-propensity-is-the-targets-and-an-unlabelled-plan-is-neutral.md:22
+    docs/spec/14-labels.md:139
+    docs/spec/27-conformance.md:46
+
+R1305
+  * docs/spec/13-plan-selection.md:200: - `R1305` A competition ordered only by name.
+    docs/guide/02-syntax.md:344
+    docs/guide/16-precedence-and-labels.md:186
+    docs/guide/16-precedence-and-labels.md:191
+    docs/guide/16-precedence-and-labels.md:260
+    docs/guide/19-the-transpiler.md:68
+    docs/guide/19-the-transpiler.md:96
+    docs/guide/19-the-transpiler.md:332
+    docs/guide/23-jason-givings-and-precedence.md:532
+    docs/showcase/README.md:119
+    docs/spec/02-comments.md:87
+    docs/spec/23-transpiler-architecture.md:208
+    docs/spec/27-conformance.md:43
+    docs/spec/27-conformance.md:108
+
+R1306
+  * docs/spec/13-plan-selection.md:201: - `R1306` A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes). Absence check (chapter 23).
+    docs/guide/16-precedence-and-labels.md:176
+    docs/spec/23-transpiler-architecture.md:137
+
+R1307
+  * docs/spec/13-plan-selection.md:202: - `R1307` A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
+    .scratch/regia-spec-findings/issues/10-decide-interfaces-precedence.md:13
+    docs/guide/04-plans.md:404
+    docs/guide/12-plots-and-directors.md:378
+    docs/guide/16-precedence-and-labels.md:120
+    docs/guide/16-precedence-and-labels.md:298
+    docs/spec/23-transpiler-architecture.md:127
+
+R1308
+  * docs/spec/13-plan-selection.md:203: - `R1308` `TIES` with no `SUITS` to choose by.
+    docs/guide/16-precedence-and-labels.md:532
+    docs/guide/23-jason-givings-and-precedence.md:533
+
+R1309
+  * docs/spec/13-plan-selection.md:204: - `R1309` Retired (ADR 0033): an unlabelled candidate in a mixed `TIES` pool is neutral.
+    docs/adr/0033-choosing-by-propensity-is-the-targets-and-an-unlabelled-plan-is-neutral.md:22
+    docs/spec/14-labels.md:139
+
+R1310
+  * docs/spec/13-plan-selection.md:205: - `R1310` `SUITS` on a Target without a Selection function (once per Program).
+    docs/guide/16-precedence-and-labels.md:450
+    docs/guide/16-precedence-and-labels.md:533
+    docs/guide/19-the-transpiler.md:174
+    docs/guide/23-jason-givings-and-precedence.md:669
+    docs/spec/23-transpiler-architecture.md:242
+
+R1311
+  * docs/spec/13-plan-selection.md:206: - `R1311` A Subplot's relation dropped because its parent says the opposite. (It was a note; there are no notes any more, chapter 23.)
+    docs/guide/16-precedence-and-labels.md:261
+    docs/guide/23-jason-givings-and-precedence.md:531
+    docs/spec/13-plan-selection.md:80
+    docs/spec/32-jason-precedence.md:19
+
+R1312
+  * docs/spec/13-plan-selection.md:207: - `R1312` Retired: a default left out is a line of the conflict report.
+    docs/adr/0032-a-default-gives-way-to-what-is-written.md:5
+
+R1401
+  * docs/spec/14-labels.md:123: - `R1401` An unknown Label keyword, or a Label repeated on one header.
+    docs/guide/16-precedence-and-labels.md:384
+
+R1402
+  * docs/spec/14-labels.md:124: - `R1402` A Propensity named twice in one Label, or in both a Trigger's `SHIFTS` and a `GIVEN`'s.
+    docs/guide/16-precedence-and-labels.md:385
+
+R1403
+  * docs/spec/14-labels.md:125: - `R1403` A name in `SUITS` that isn't a declared Propensity, or a name in `SHIFTS` or `SHIFT` that isn't a declared Mood.
+    docs/guide/16-precedence-and-labels.md:386
+    docs/guide/16-precedence-and-labels.md:490
+
+R1404
+  * docs/spec/14-labels.md:126: - `R1404` A Label value that isn't a Number literal, or that lies outside its range ([0, 1] for a Trait in `SUITS`, [-1, 1] otherwise).
+    docs/guide/16-precedence-and-labels.md:387
+    docs/spec/cases/14-labels/suits-value-out-of-range.regia:2
+    docs/spec/cases/14-labels/suits-value-out-of-range.regia:10
+
+R1405
+  * docs/spec/14-labels.md:127: - `R1405` `SUITS` on a `GIVEN` or `ELSE`.
+    docs/guide/04-plans.md:335
+    docs/guide/16-precedence-and-labels.md:388
+
+R1406
+  * docs/spec/14-labels.md:128: - `R1406` Any Label on a Director's Plan, or `SHIFT` in a Director's Body.
+    docs/guide/12-plots-and-directors.md:437
+    docs/guide/16-precedence-and-labels.md:299
+    docs/guide/16-precedence-and-labels.md:389
+    docs/guide/16-precedence-and-labels.md:493
+    docs/spec/20-directors.md:275
+
+R1407
+  * docs/spec/14-labels.md:129: - `R1407` A `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT`.
+    docs/guide/03-vocabulary-and-files.md:64
+    docs/guide/16-precedence-and-labels.md:330
+
+R1408
+  * docs/spec/14-labels.md:135: - `R1408` A Label the Target doesn't support (once per Program per Label).
+    docs/guide/16-precedence-and-labels.md:451
+    docs/guide/19-the-transpiler.md:175
+    docs/spec/23-transpiler-architecture.md:242
+
+R1409
+  * docs/spec/14-labels.md:136: - `R1409` A declared Propensity that no Label and no `SHIFT` names. Absence check (chapter 23).
+    docs/guide/03-vocabulary-and-files.md:66
+    docs/guide/16-precedence-and-labels.md:331
+    docs/spec/23-transpiler-architecture.md:137
+
+R1410
+  * docs/spec/14-labels.md:137: - `R1410` Retired: a `SHIFTS` Label always applies when its Plan is chosen (*Moods and Labels on VEsNA-Pro*).
+    docs/spec/14-labels.md:139
+
+R1411
+  * docs/spec/14-labels.md:130: - `R1411` The same Mood named twice in one `SHIFT`.
+    docs/guide/16-precedence-and-labels.md:491
+
+R1412
+  * docs/spec/14-labels.md:131: - `R1412` Propensities in a `SUITS` or `SHIFTS` Label, or Moods in a `SHIFT`, joined with the retired `AND` (hint: list them with `,`).
+    docs/guide/02-syntax.md:218
+    docs/guide/04-plans.md:222
+    docs/guide/16-precedence-and-labels.md:390
+    docs/guide/16-precedence-and-labels.md:492
+    docs/spec/01-statements-and-blocks.md:244
+    docs/spec/14-labels.md:38
+    docs/spec/cases/14-labels/and-in-a-label-is-retired.regia:2
+    docs/spec/cases/14-labels/and-in-a-label-is-retired.regia:10
+
+R1501
+  * docs/spec/15-roles-and-mappings.md:358: - `R1501` Retired into `R0303` (chapter 03, ADR 0048): a Role name used as a Value.
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:3
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:5
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:5
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:11
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:12
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:16
+    docs/adr/0048-a-role-used-as-a-value-has-one-code.md:16
+    docs/spec/15-roles-and-mappings.md:377
+
+R1502
+  * docs/spec/15-roles-and-mappings.md:359: - `R1502` A Role used but not declared by the Playbook or Plot.
+    docs/guide/01-the-logic-of-regia.md:173
+    docs/guide/04-plans.md:189
+    docs/guide/10-messages.md:97
+    docs/guide/11-playbooks-and-roles.md:92
+    docs/guide/11-playbooks-and-roles.md:167
+    docs/guide/12-plots-and-directors.md:95
+    docs/guide/13-subplots-and-stagings.md:142
+    docs/guide/13-subplots-and-stagings.md:181
+
+R1503
+  * docs/spec/15-roles-and-mappings.md:360: - `R1503` A receiving Role left unfilled by a giving Statement (the message names the Role and suggests a `MAPPING`).
+    docs/guide/01-the-logic-of-regia.md:127
+    docs/guide/11-playbooks-and-roles.md:164
+    docs/guide/13-subplots-and-stagings.md:140
+    docs/spec/16-role-setup.md:153
+    docs/spec/cases/15-roles-and-mappings/receiving-role-left-unfilled.regia:2
+    docs/spec/cases/15-roles-and-mappings/receiving-role-left-unfilled.regia:18
+
+R1504
+  * docs/spec/15-roles-and-mappings.md:361: - `R1504` Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare.
+    docs/guide/01-the-logic-of-regia.md:172
+    docs/guide/11-playbooks-and-roles.md:165
+    docs/guide/13-subplots-and-stagings.md:141
+
+R1505
+  * docs/spec/15-roles-and-mappings.md:362: - `R1505` Retired: `MAPPING ?who AS …` is allowed (chapter 20).
+    docs/spec/15-roles-and-mappings.md:377
+
+R1506
+  * docs/spec/15-roles-and-mappings.md:363: - `R1506` A count or fraction where none is allowed: on `REMOVE`, after `PLAYS`, after `EXCEPT`, or on `EVERYONE`.
+    docs/guide/10-messages.md:98
+    docs/guide/11-playbooks-and-roles.md:294
+    docs/guide/11-playbooks-and-roles.md:340
+    docs/guide/11-playbooks-and-roles.md:528
+
+R1507
+  * docs/spec/15-roles-and-mappings.md:364: - `R1507` A Playbook Statement that directs another Agent (`ASSIGN`, `MAPPING`, …). Director Statements are only for Directors.
+    docs/guide/01-the-logic-of-regia.md:80
+    docs/guide/11-playbooks-and-roles.md:50
+    docs/guide/12-plots-and-directors.md:495
+    docs/guide/13-subplots-and-stagings.md:52
+
+R1508
+  * docs/spec/15-roles-and-mappings.md:365: - `R1508` `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder, `FROM` or `BY`.
+    docs/guide/04-plans.md:140
+    docs/guide/11-playbooks-and-roles.md:437
+    docs/guide/12-plots-and-directors.md:439
+    docs/spec/23-transpiler-architecture.md:198
+    docs/spec/cases/15-roles-and-mappings/misplaced-plan-is-left-out.regia:2
+    docs/spec/cases/15-roles-and-mappings/misplaced-plan-is-left-out.regia:18
+
+R1509
+  * docs/spec/15-roles-and-mappings.md:366: - `R1509` `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block (in `DURING PLOT`, in a Role setup), not last in its Statement, or on a Statement other than `ASSIGN` and `START SUBPLOT`.
+    docs/guide/11-playbooks-and-roles.md:219
+    docs/guide/13-subplots-and-stagings.md:265
+
+R1510
+  * docs/spec/15-roles-and-mappings.md:368: - `R1510` `EXCEPT` where it isn't allowed: in a Playbook, on `REMOVE`, on `FROM` or `BY`, after `PLAYS`, on `EVERYONE`; a second `EXCEPT` on one Role (the message suggests one list: `EXCEPT Guard, ?who`); an item of the list that isn't one Role of this Plot or one Placeholder; or the same Role or Placeholder twice in one list.
+    docs/guide/10-messages.md:98
+    docs/guide/11-playbooks-and-roles.md:339
+    docs/guide/11-playbooks-and-roles.md:528
+    docs/guide/13-subplots-and-stagings.md:143
+
+R1511
+  * docs/spec/15-roles-and-mappings.md:369: - `R1511` `PLAYS` misused: a left side that isn't a Placeholder, `?` or `ME`; a right side that isn't one Role declared here (or `CAST`, in a Plot); or `PLAYS` in a Trigger or a Role setup.
+    docs/guide/11-playbooks-and-roles.md:380
+
+R1512
+  * docs/spec/15-roles-and-mappings.md:370: - `R1512` `CAST` declared as a Role, or written in a Playbook.
+    docs/guide/11-playbooks-and-roles.md:243
+    docs/spec/16-role-setup.md:153
+
+R1513
+  * docs/spec/15-roles-and-mappings.md:371: - `R1513` `ASSIGN P TO <Role> ?who` with a count, a `MAPPING` or `UNTIL EXITED`.
+    docs/guide/11-playbooks-and-roles.md:529
+    docs/spec/15-roles-and-mappings.md:129
+
+R1514
+  * docs/spec/15-roles-and-mappings.md:372: - `R1514` The retired `MAPPING a TO b` (hint: `MAPPING a AS b`).
+    docs/adr/0043-to-introduces-a-goal-with-two-closed-exceptions.md:21
+    docs/guide/01-the-logic-of-regia.md:174
+    docs/guide/11-playbooks-and-roles.md:166
+    docs/guide/13-subplots-and-stagings.md:145
+    docs/spec/01-statements-and-blocks.md:245
+    docs/spec/15-roles-and-mappings.md:62
+    docs/spec/15-roles-and-mappings.md:426
+
+R1515
+  * docs/spec/15-roles-and-mappings.md:373: - `R1515` The retired `UNASSIGN` or `UNASSIGNED` (hint: `REMOVE`, `REMOVED`).
+    docs/adr/0043-to-introduces-a-goal-with-two-closed-exceptions.md:21
+    docs/guide/01-the-logic-of-regia.md:175
+    docs/guide/11-playbooks-and-roles.md:438
+    docs/guide/11-playbooks-and-roles.md:530
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:246
+    docs/spec/15-roles-and-mappings.md:95
+    docs/spec/15-roles-and-mappings.md:426
+
+R1516
+  * docs/spec/15-roles-and-mappings.md:374: - `R1516` The retired `n PERCENT OF Role` (hint: `n% OF Role`).
+    docs/adr/0045-percent-is-a-share-never-a-remainder.md:3
+    docs/guide/11-playbooks-and-roles.md:296
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:247
+    docs/spec/15-roles-and-mappings.md:236
+    docs/spec/cases/15-roles-and-mappings/percent-is-retired.regia:2
+    docs/spec/cases/15-roles-and-mappings/percent-is-retired.regia:16
+
+R1517
+  * docs/spec/15-roles-and-mappings.md:375: - `R1517` A `%` that isn't directly before `OF` (hint: a share is written `n% OF Role`; Regia has no remainder, and Weights are relative).
+    docs/adr/0045-percent-is-a-share-never-a-remainder.md:5
+    docs/adr/0045-percent-is-a-share-never-a-remainder.md:17
+    docs/guide/05-placeholders-and-expressions.md:299
+    docs/guide/06-matching.md:155
+    docs/guide/08-randomness.md:83
+    docs/guide/11-playbooks-and-roles.md:295
+    docs/spec/09-random-choice.md:60
+    docs/spec/15-roles-and-mappings.md:235
+    docs/spec/cases/15-roles-and-mappings/percent-only-before-of.regia:2
+    docs/spec/cases/15-roles-and-mappings/percent-only-before-of.regia:9
+    docs/spec/cases/15-roles-and-mappings/percent-only-before-of.regia:12
+
+R1601
+  * docs/spec/16-role-setup.md:141: - `R1601` A Block on a Playbook's Role.
+    docs/adr/0046-a-roles-block-is-its-setup.md:7
+    docs/guide/01-the-logic-of-regia.md:126
+    docs/guide/11-playbooks-and-roles.md:93
+    docs/guide/12-plots-and-directors.md:177
+    docs/spec/15-roles-and-mappings.md:25
+
+R1602
+  * docs/spec/16-role-setup.md:142: - `R1602` A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup.
+    docs/guide/01-the-logic-of-regia.md:125
+    docs/guide/08-randomness.md:144
+    docs/guide/08-randomness.md:271
+    docs/guide/12-plots-and-directors.md:178
+    docs/guide/17-instancing.md:279
+    docs/spec/21-instancing.md:236
+    docs/spec/cases/16-role-setup/custom-action-in-a-setup.regia:2
+    docs/spec/cases/16-role-setup/custom-action-in-a-setup.regia:8
+
+R1603
+  * docs/spec/16-role-setup.md:143: - `R1603` `TO` on a setup `ASSIGN`, a counted target, or a counted `MAPPING`.
+    docs/guide/08-randomness.md:236
+    docs/guide/11-playbooks-and-roles.md:220
+    docs/guide/12-plots-and-directors.md:179
+    docs/guide/17-instancing.md:280
+    docs/spec/21-instancing.md:236
+
+R1604
+  * docs/spec/16-role-setup.md:144: - `R1604` A Placeholder in a setup, other than the Plot's parameters.
+    docs/adr/0046-a-roles-block-is-its-setup.md:20
+    docs/guide/12-plots-and-directors.md:180
+    docs/guide/17-instancing.md:281
+    docs/spec/21-instancing.md:236
+    docs/spec/cases/16-role-setup/plot-parameter-in-a-setup.regia:2
+    docs/spec/cases/16-role-setup/plot-parameter-in-a-setup.regia:10
+
+R1605
+  * docs/spec/16-role-setup.md:151: - `R1605` A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it.
+    docs/guide/01-the-logic-of-regia.md:129
+    docs/guide/09-goals-and-failure.md:64
+    docs/guide/12-plots-and-directors.md:184
+    docs/showcase/README.md:319
+
+R1606
+  * docs/spec/16-role-setup.md:145: - `R1606` A setup in `DURING PLOT`, a second setup for one Role (or for `CAST`) in one Phase or at Plot level, or `ROLE <name>` with no Block inside a `DURING`.
+    docs/guide/12-plots-and-directors.md:181
+
+R1607
+  * docs/spec/16-role-setup.md:146: - `R1607` A Phase setup for a Role the Plot doesn't declare.
+    docs/guide/12-plots-and-directors.md:182
+
+R1608
+  * docs/spec/16-role-setup.md:147: - `R1608` The retired header `ROLE <name> STARTS WITH:` or `CAST STARTS WITH:`. The hint gives `ROLE <name>:` or `CAST:`.
+    docs/adr/0046-a-roles-block-is-its-setup.md:3
+    docs/guide/01-the-logic-of-regia.md:130
+    docs/guide/12-plots-and-directors.md:183
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:248
+    docs/spec/16-role-setup.md:21
+    docs/spec/cases/16-role-setup/retired-starts-with.regia:2
+    docs/spec/cases/16-role-setup/retired-starts-with.regia:7
+    docs/spec/cases/16-role-setup/retired-starts-with.regia:9
+
+R1701
+  * docs/spec/17-subplots.md:210: - `R1701` A cycle among `START SUBPLOT` Statements (the message names the cycle).
+    docs/guide/13-subplots-and-stagings.md:463
+
+R1702
+  * docs/spec/17-subplots.md:211: - `R1702` A Statement after `END PLOT` in the same branch.
+    docs/guide/12-plots-and-directors.md:540
+    docs/guide/13-subplots-and-stagings.md:307
+    docs/spec/23-transpiler-architecture.md:199
+    docs/spec/cases/17-subplots/statement-after-end-plot.regia:2
+    docs/spec/cases/17-subplots/statement-after-end-plot.regia:13
+
+R1703
+  * docs/spec/17-subplots.md:212: - `R1703` `END PLOT WITH` something other than one declared Cue, or with unfilled arguments.
+    docs/guide/13-subplots-and-stagings.md:308
+    docs/guide/14-when-an-agent-leaves.md:186
+
+R1704
+  * docs/spec/17-subplots.md:213: - `R1704` `WHEN P FINISHED` (any form), `WHEN P DROPPED`, `WHEN P ENDED`, `DROP SUBPLOT P` or `P RUNNING` where this Plot never starts `P`. Absence check (chapter 23).
+    docs/guide/13-subplots-and-stagings.md:240
+    docs/guide/13-subplots-and-stagings.md:403
+    docs/guide/13-subplots-and-stagings.md:440
+    docs/spec/17-subplots.md:102
+    docs/spec/17-subplots.md:173
+    docs/spec/17-subplots.md:191
+    docs/spec/23-transpiler-architecture.md:137
+
+R1705
+  * docs/spec/17-subplots.md:224: - `R1705` `END PLOT WITH` in a Plot never started as a Subplot: `WITH` is ignored. Absence check (chapter 23).
+    docs/guide/12-plots-and-directors.md:541
+    docs/guide/13-subplots-and-stagings.md:310
+    docs/spec/23-transpiler-architecture.md:137
+
+R1706
+  * docs/spec/17-subplots.md:225: - `R1706` `WHEN P FINISHED WITH e` where `P` never ends with `e`. Absence check (chapter 23).
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:23
+    docs/guide/13-subplots-and-stagings.md:406
+    docs/guide/15-interfaces.md:422
+    docs/spec/17-subplots.md:136
+    docs/spec/23-transpiler-architecture.md:137
+
+R1707
+  * docs/spec/17-subplots.md:226: - `R1707` Retired: with the specific Trigger firing before `ENDED`, a plain `ENDED` shadows nothing (ADR 0030).
+    docs/adr/0030-a-subplots-endings-are-heard-like-a-goals.md:23
+
+R1708
+  * docs/spec/17-subplots.md:227: - `R1708` An ending of `P`, with an Outcome or bare, that no Plan of the starting Plot hears in any Phase: no `FINISHED WITH` for that Outcome, no plain `FINISHED`, and no `ENDED`. Reported on the `START SUBPLOT`, once per unmatched ending. Endings from above are not checked. Absence check (chapter 23).
+    docs/adr/0015-the-interface-is-inferred-not-declared.md:14
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:23
+    docs/guide/13-subplots-and-stagings.md:407
+    docs/guide/15-interfaces.md:423
+    docs/guide/20-the-visual-editor.md:414
+    docs/spec/17-subplots.md:136
+    docs/spec/23-transpiler-architecture.md:137
+    docs/spec/25-graph-view.md:74
+    docs/spec/38-interfaces.md:144
+
+R1709
+  * docs/spec/17-subplots.md:214: - `R1709` A Plot written with the wrong number of arguments: a Plot with parameters written bare, or one without written with arguments, in `START SUBPLOT`, `WHEN … FINISHED`, `WHEN … DROPPED`, `WHEN … ENDED`, `DROP SUBPLOT` or `RUNNING`; or a Plot written with arguments in `PRECEDENCE`.
+    docs/guide/13-subplots-and-stagings.md:95
+    docs/guide/13-subplots-and-stagings.md:242
+    docs/guide/13-subplots-and-stagings.md:443
+
+R1710
+  * docs/spec/17-subplots.md:215: - `R1710` A `START SUBPLOT` argument that isn't filled, or is a Role.
+    docs/guide/13-subplots-and-stagings.md:96
+    docs/guide/24-jason-directors-and-stagings.md:461
+    docs/spec/31-jason-stagings.md:51
+
+R1711
+  * docs/spec/17-subplots.md:216: - `R1711` A Plan that fills a Plot parameter again (`LET ?quarrel BE …`), or two parameters of one Plot with the same name.
+    docs/guide/13-subplots-and-stagings.md:97
+
+R1712
+  * docs/spec/17-subplots.md:217: - `R1712` `WHEN P DROPPED` in a Plot that never ends `P` from above: no `DROP SUBPLOT P`, and no `UNTIL EXITED` on a `START SUBPLOT P`. Absence check (chapter 23).
+    docs/adr/0030-a-subplots-endings-are-heard-like-a-goals.md:27
+    docs/guide/13-subplots-and-stagings.md:404
+    docs/spec/17-subplots.md:173
+    docs/spec/23-transpiler-architecture.md:137
+
+R1713
+  * docs/spec/17-subplots.md:228: - `R1713` A `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, where the Plot has a `DROPPED` or `ENDED` Plan for `P` in `p` and none in `DURING PLOT` or another Phase: the ending from above arrives after `p` is left, and nothing hears it. Absence check (chapter 23).
+    docs/adr/0030-a-subplots-endings-are-heard-like-a-goals.md:27
+    docs/guide/13-subplots-and-stagings.md:266
+    docs/spec/17-subplots.md:108
+    docs/spec/23-transpiler-architecture.md:137
+
+R1714
+  * docs/spec/17-subplots.md:218: - `R1714` `RUNNING` in a Playbook.
+    docs/guide/04-plans.md:269
+    docs/guide/11-playbooks-and-roles.md:51
+    docs/guide/13-subplots-and-stagings.md:241
+    docs/spec/17-subplots.md:102
+    docs/spec/23-transpiler-architecture.md:198
+
+R1715
+  * docs/spec/17-subplots.md:219: - `R1715` The retired `WHEN P ENDED WITH e:` or `WHEN P ENDED WITHOUT OUTCOME:`, or `ENDED` with any other complement (hint: `FINISHED WITH e`, or a plain `FINISHED` after the `FINISHED WITH` Plans).
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:22
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:22
+    docs/guide/13-subplots-and-stagings.md:405
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:249
+    docs/spec/17-subplots.md:174
+
+R1716
+  * docs/spec/17-subplots.md:229: - `R1716` A plain `WHEN P FINISHED` Plan written above a `WHEN P FINISHED WITH …` Plan it also matches, which can then never run.
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:23
+    docs/guide/13-subplots-and-stagings.md:408
+    docs/spec/17-subplots.md:167
+
+R1717
+  * docs/spec/17-subplots.md:220: - `R1717` The retired `END SUBPLOT P` (hint: `DROP SUBPLOT P`).
+    docs/adr/0047-a-subplot-finishes-and-ended-is-only-the-catch-all.md:22
+    docs/guide/13-subplots-and-stagings.md:442
+    docs/spec/01-statements-and-blocks.md:250
+    docs/spec/17-subplots.md:192
+
+R1801
+  * docs/spec/18-quota-triggers.md:151: - `R1801` A quantity on a Trigger kind other than a Cue or a Goal's ending with `BY`.
+    docs/spec/18-quota-triggers.md:189
+
+R1802
+  * docs/spec/18-quota-triggers.md:152: - `R1802` A quantity in front of something that isn't a Role or, in a Plot, `CAST` (`FROM ALL ?x`, `FROM ALL DIRECTOR`, `BY ALL ?x`).
+
+R1803
+  * docs/spec/18-quota-triggers.md:153: - `R1803` `?who` after a quantity.
+
+R1804
+  * docs/spec/18-quota-triggers.md:155: - `R1804` A quantity that isn't a Number Expression, uses `RANDOM`, or reads a Placeholder that isn't filled in every Block; or, made of Values only, is 0 or less for `n OF`, or outside (0, 100] for `n% OF`.
+    docs/spec/cases/18-quota-triggers/percent-over-a-hundred.regia:2
+    docs/spec/cases/18-quota-triggers/percent-over-a-hundred.regia:13
+
+R1805
+  * docs/spec/18-quota-triggers.md:154: - `R1805` A quantity on a `FAILED WITH` Trigger.
+
+R1806
+  * docs/spec/18-quota-triggers.md:156: - `R1806` `SENT` outside the Plans of a Quota Trigger Block, or naming a Cue other than the one its Trigger counts.
+    docs/spec/18-quota-triggers.md:112
+    docs/spec/18-quota-triggers.md:189
+
+R1901
+  * docs/spec/19-cast-changes.md:147: - `R1901` `JOINED`, `LEFT` or `EMPTIED` in a Playbook.
+    docs/guide/14-when-an-agent-leaves.md:111
+    docs/guide/14-when-an-agent-leaves.md:185
+    docs/guide/14-when-an-agent-leaves.md:251
+    docs/spec/19-cast-changes.md:182
+    docs/spec/20-directors.md:275
+    docs/spec/cases/19-cast-changes/joined-in-a-playbook.regia:2
+    docs/spec/cases/19-cast-changes/joined-in-a-playbook.regia:9
+
+R1902
+  * docs/spec/19-cast-changes.md:148: - `R1902` `JOINED`, `LEFT` or `EMPTIED` after something that isn't a Role of this Plot or `CAST`.
+    docs/guide/14-when-an-agent-leaves.md:112
+    docs/guide/14-when-an-agent-leaves.md:185
+    docs/spec/19-cast-changes.md:182
+
+R1903
+  * docs/spec/19-cast-changes.md:149: - `R1903` `?who` after `EMPTIED`.
+    docs/guide/14-when-an-agent-leaves.md:184
+
+R1904
+  * docs/spec/19-cast-changes.md:150: - `R1904` A quantity on them (`WHEN ALL Guest LEFT`).
+    docs/guide/14-when-an-agent-leaves.md:113
+
+R1905
+  * docs/spec/19-cast-changes.md:154: - `R1905` `JOINED` in a Plot that is never the Root Plot: it can't fire. Absence check (chapter 23).
+    docs/spec/17-subplots.md:57
+    docs/spec/17-subplots.md:249
+    docs/spec/19-cast-changes.md:111
+    docs/spec/19-cast-changes.md:182
+    docs/spec/23-transpiler-architecture.md:137
+
+R2001
+  * docs/spec/20-directors.md:255: - `R2001` `PURSUE`, `DROP` or `SIGNAL` in a Director.
+    docs/guide/01-the-logic-of-regia.md:244
+    docs/guide/07-actions-and-time.md:148
+    docs/guide/09-goals-and-failure.md:65
+    docs/guide/09-goals-and-failure.md:205
+    docs/guide/10-messages.md:303
+    docs/guide/12-plots-and-directors.md:436
+    docs/spec/cases/20-directors/pursue-in-a-director.regia:2
+    docs/spec/cases/20-directors/pursue-in-a-director.regia:16
+
+R2002
+  * docs/spec/20-directors.md:256: - `R2002` `TO g:` or `FROM DIRECTOR` in a Director.
+    docs/guide/12-plots-and-directors.md:435
+
+R2003
+  * docs/spec/20-directors.md:257: - `R2003` `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan.
+    docs/guide/07-actions-and-time.md:343
+    docs/guide/12-plots-and-directors.md:318
+    docs/guide/24-jason-directors-and-stagings.md:306
+    docs/spec/30-jason-directors.md:128
+
+R2004
+  * docs/spec/20-directors.md:258: - `R2004` A Statement after `ENTER` in the same branch.
+    docs/guide/12-plots-and-directors.md:319
+
+R2005
+  * docs/spec/20-directors.md:259: - `R2005` `ENTERED` or `EXITED`, or a Subplot's `FINISHED`, `DROPPED` or `ENDED`, in a Playbook (Director Trigger kinds only; a Goal's `ENDED` is legal there).
+    docs/guide/11-playbooks-and-roles.md:51
+    docs/guide/12-plots-and-directors.md:321
+
+R2006
+  * docs/spec/20-directors.md:260: - `R2006` `Role DO …` or `WORLD DO …` (not part of the language).
+    docs/guide/01-the-logic-of-regia.md:243
+    docs/guide/12-plots-and-directors.md:494
+
+R2007
+  * docs/spec/20-directors.md:261: - `R2007` A Plot that declares Phases with no `INITIAL` Phase, or with several (a quick fix marks one `INITIAL`).
+    docs/guide/01-the-logic-of-regia.md:241
+    docs/guide/12-plots-and-directors.md:222
+    docs/guide/20-the-visual-editor.md:136
+    docs/guide/20-the-visual-editor.md:139
+
+R2008
+  * docs/spec/20-directors.md:262: - `R2008` `DURING p:`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare, or any `ENTER` in a Plot that declares no Phases (with a "did you mean" hint when a declared name is close).
+    docs/guide/01-the-logic-of-regia.md:242
+    docs/guide/12-plots-and-directors.md:223
+    docs/guide/12-plots-and-directors.md:320
+    docs/guide/20-the-visual-editor.md:206
+    docs/guide/20-the-visual-editor.md:664
+    docs/guide/24-jason-directors-and-stagings.md:184
+    docs/spec/20-directors.md:50
+    docs/spec/20-directors.md:165
+
+R2009
+  * docs/spec/20-directors.md:263: - `R2009` Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks.
+    docs/guide/12-plots-and-directors.md:224
+
+R2010
+  * docs/spec/20-directors.md:264: - `R2010` `PHASE` or `DURING` inside a `PLAYBOOK`.
+    docs/guide/12-plots-and-directors.md:58
+
+R2011
+  * docs/spec/20-directors.md:272: - `R2011` A Phase that can never be entered: it isn't `INITIAL`, and no `ENTER` in the Plot names it. Absence check (chapter 23).
+    docs/guide/12-plots-and-directors.md:225
+    docs/guide/20-the-visual-editor.md:665
+    docs/spec/23-transpiler-architecture.md:137
+
+R2012
+  * docs/spec/20-directors.md:265: - `R2012` `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot that never asks `g`: no `ASK … TO g` and no setup `PURSUE g`. Absence check (chapter 23).
+    docs/spec/05-goals-and-triggers.md:311
+    docs/spec/20-directors.md:98
+    docs/spec/20-directors.md:301
+    docs/spec/23-transpiler-architecture.md:137
+    docs/spec/38-interfaces.md:144
+
+R2013
+  * docs/spec/20-directors.md:266: - `R2013` `FROM` on a Goal's ending in a Plot (hint: `BY`).
+    docs/spec/20-directors.md:90
+    docs/spec/20-directors.md:301
+
+R2014
+  * docs/spec/20-directors.md:267: - `R2014` `IN <phase>` in a Playbook, or in a Plot that declares no Phases.
+    docs/guide/04-plans.md:269
+    docs/guide/11-playbooks-and-roles.md:51
+    docs/guide/12-plots-and-directors.md:377
+    docs/guide/24-jason-directors-and-stagings.md:185
+    docs/spec/20-directors.md:50
+    docs/spec/30-jason-directors.md:73
+
+R2015
+  * docs/spec/20-directors.md:273: - `R2015` `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot. Absence check (chapter 23).
+    docs/guide/12-plots-and-directors.md:381
+    docs/spec/20-directors.md:207
+    docs/spec/23-transpiler-architecture.md:137
+
+R2016
+  * docs/spec/20-directors.md:268: - `R2016` The retired `TRANSITION TO p` (hint: `ENTER p`).
+    docs/adr/0043-to-introduces-a-goal-with-two-closed-exceptions.md:21
+    docs/guide/01-the-logic-of-regia.md:245
+    docs/guide/12-plots-and-directors.md:323
+    docs/spec/01-statements-and-blocks.md:230
+    docs/spec/01-statements-and-blocks.md:251
+    docs/spec/20-directors.md:225
+    docs/spec/20-directors.md:305
+
+R2101
+  * docs/spec/21-instancing.md:216: - `R2101` A `.regia` file importing a `.regin`.
+    docs/guide/01-the-logic-of-regia.md:288
+    docs/guide/03-vocabulary-and-files.md:315
+    docs/guide/17-instancing.md:54
+    docs/guide/19-the-transpiler.md:34
+    docs/spec/23-transpiler-architecture.md:117
+
+R2102
+  * docs/spec/21-instancing.md:217: - `R2102` A `.regin` declaring anything other than Imports and Instancing.
+    docs/guide/17-instancing.md:55
+
+R2103
+  * docs/spec/21-instancing.md:218: - `R2103` Two sibling files setting the same item differently, with no file above them settling it.
+    docs/guide/17-instancing.md:362
+    docs/spec/21-instancing.md:122
+
+R2104
+  * docs/spec/21-instancing.md:219: - `R2104` A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot that is started as a Subplot.
+    docs/adr/0036-a-build-is-one-regin-entry-that-names-its-root-plot.md:17
+    docs/guide/01-the-logic-of-regia.md:286
+    docs/guide/12-plots-and-directors.md:564
+    docs/guide/17-instancing.md:72
+    docs/guide/19-the-transpiler.md:35
+    docs/spec/23-transpiler-architecture.md:155
+    docs/spec/23-transpiler-architecture.md:198
+
+R2105
+  * docs/spec/21-instancing.md:220: - `R2105` A `PLAYS` Role that isn't a Role of the Root Plot.
+    docs/guide/01-the-logic-of-regia.md:287
+    docs/guide/12-plots-and-directors.md:566
+    docs/guide/17-instancing.md:109
+    docs/spec/cases/21-instancing/plays-a-role-the-root-plot-lacks/game.regin:2
+    docs/spec/cases/21-instancing/plays-a-role-the-root-plot-lacks/game.regin:8
+
+R2106
+  * docs/spec/21-instancing.md:221: - `R2106` A Propensity that isn't declared as `TRAIT` or `MOOD`.
+    docs/guide/17-instancing.md:161
+
+R2107
+  * docs/spec/21-instancing.md:222: - `R2107` A value, or a `RANDOM` bound, that isn't a literal, or lies outside [0, 1] for a Trait or [-1, 1] for a Mood.
+    docs/guide/08-randomness.md:272
+    docs/guide/17-instancing.md:162
+
+R2108
+  * docs/spec/21-instancing.md:223: - `R2108` A `COUNT` or a `SEED` that isn't a whole, non-negative literal.
+    docs/guide/08-randomness.md:303
+    docs/guide/17-instancing.md:110
+    docs/guide/17-instancing.md:400
+
+R2109
+  * docs/spec/21-instancing.md:224: - `R2109` The same name declared twice in one file, as a kind or an individual Agent.
+    docs/guide/17-instancing.md:111
+
+R2110
+  * docs/spec/21-instancing.md:240: - `R2110` A Root Plot Role that no kind and no individual Agent plays. Absence check (chapter 23).
+    docs/guide/01-the-logic-of-regia.md:289
+    docs/guide/12-plots-and-directors.md:96
+    docs/guide/17-instancing.md:114
+    docs/spec/23-transpiler-architecture.md:138
+
+R2111
+  * docs/spec/21-instancing.md:241: - `R2111` Retired (ADR 0033): a missing value is neutral.
+    docs/adr/0033-choosing-by-propensity-is-the-targets-and-an-unlabelled-plan-is-neutral.md:22
+    docs/guide/19-the-transpiler.md:101
+
+R2112
+  * docs/spec/21-instancing.md:242: - `R2112` A Plot the Root Plot never reaches. Absence check (chapter 23).
+    docs/guide/12-plots-and-directors.md:567
+    docs/guide/17-instancing.md:74
+    docs/spec/23-transpiler-architecture.md:138
+
+R2113
+  * docs/spec/21-instancing.md:243: - `R2113` An unknown key in the group of a known Target, or a value outside the set its key takes.
+    .scratch/regia-spec-findings/issues/16-decide-command-line.md:13
+    docs/guide/17-instancing.md:433
+    docs/guide/19-the-transpiler.md:178
+    docs/guide/21-jason-the-build.md:373
+    docs/spec/36-jason-jcm.md:222
+
+R2114
+  * docs/spec/21-instancing.md:225: - `R2114` A Root Plot with parameters: Instancing has nothing to pass them (chapter 17).
+    docs/adr/0028-a-plot-takes-arguments-and-they-tell-its-stagings-apart.md:15
+    docs/guide/12-plots-and-directors.md:565
+    docs/guide/13-subplots-and-stagings.md:98
+    docs/guide/17-instancing.md:73
+    docs/guide/24-jason-directors-and-stagings.md:66
+    docs/spec/17-subplots.md:43
+    docs/spec/31-jason-stagings.md:84
+
+R2115
+  * docs/spec/21-instancing.md:244: - `R2115` A Quota `FROM n OF Role` or `BY n OF Role` in the Root Plot, with n made of Values only, where the individual Agents that play the Role plus the `COUNT`s of the kinds that play it add up to fewer than n, and none of those kinds has a `COUNT` of 0 (which only enters by joining). The Role can never be that large in this build, so the Quota can never be met (chapter 18).
+    docs/spec/18-quota-triggers.md:81
+    docs/spec/18-quota-triggers.md:158
+
+R2116
+  * docs/spec/21-instancing.md:245: - `R2116` A `TARGET` group for a Target the Transpiler doesn't know. It is skipped.
+    .scratch/regia-spec-findings/issues/16-decide-command-line.md:13
+    docs/guide/17-instancing.md:434
+    docs/guide/19-the-transpiler.md:177
+
+R2117
+  * docs/spec/21-instancing.md:226: - `R2117` A kind or an individual Agent that plays nothing: a first declaration with neither `PLAYS` nor `LIKE`. Absence check (chapter 23).
+    docs/guide/17-instancing.md:112
+    docs/spec/23-transpiler-architecture.md:138
+
+R2118
+  * docs/spec/21-instancing.md:227: - `R2118` A `COUNT` in an `AGENT`.
+    docs/guide/17-instancing.md:236
+
+R2119
+  * docs/spec/21-instancing.md:228: - `R2119` A `LIKE` naming something that isn't a kind, or a kind reaching itself through `LIKE`.
+    docs/guide/17-instancing.md:197
+
+R2120
+  * docs/spec/21-instancing.md:229: - `R2120` Two bases setting the same item differently, with the kind or Agent not writing it (the message names both bases).
+    docs/guide/17-instancing.md:198
+
+R2121
+  * docs/spec/21-instancing.md:230: - `R2121` A `NO KIND` or `NO AGENT` naming nothing declared in the files the file reaches. Absence check (chapter 23).
+    docs/guide/17-instancing.md:363
+    docs/spec/23-transpiler-architecture.md:138
+
+R2122
+  * docs/spec/21-instancing.md:231: - `R2122` An argument naming an individual Agent this build doesn't have.
+    .scratch/regia-spec-findings/issues/08-decide-instancing.md:12
+    .scratch/regia-spec-findings/issues/18-decide-showcase-readme.md:14
+    docs/guide/17-instancing.md:238
+    docs/guide/17-instancing.md:364
+
+R2123
+  * docs/spec/21-instancing.md:232: - `R2123` A kind and an individual Agent with the same name.
+    docs/guide/17-instancing.md:237
+
+R2124
+  * docs/spec/21-instancing.md:233: - `R2124` A Target setting written with the retired `=` (`strategy = random`; hint: `strategy random`).
+    docs/adr/0042-let-fills-a-placeholder-and-equals-only-compares.md:16
+    docs/guide/17-instancing.md:432
+    docs/spec/01-statements-and-blocks.md:252
+    docs/spec/21-instancing.md:203
+
+R2125
+  * docs/spec/21-instancing.md:234: - `R2125` Roles after `PLAYS` joined with the retired `AND` (`PLAYS Guest AND Drunkard`; hint: `PLAYS Guest, Drunkard`).
+    docs/guide/02-syntax.md:219
+    docs/guide/17-instancing.md:113
+    docs/spec/01-statements-and-blocks.md:253
+    docs/spec/21-instancing.md:103
+
+R2601
+  * docs/spec/26-match-selection.md:146: - `R2601` `HIGHEST` together with `LOWEST`, `WEIGHT` together with `HIGHEST`, `LOWEST` or `RANDOMLY`, or a Pick clause written twice.
+    docs/guide/06-matching.md:114
+    docs/guide/06-matching.md:153
+    docs/guide/08-randomness.md:200
+    docs/spec/26-match-selection.md:65
+
+R2602
+  * docs/spec/26-match-selection.md:147: - `R2602` A ranked Placeholder not filled by the same condition (a Trigger Placeholder, or one filled earlier in the Body).
+    docs/guide/06-matching.md:115
+
+R2603
+  * docs/spec/26-match-selection.md:148: - `R2603` A Pick (`WEIGHT` included) on `FOR EACH`, a Trigger, `COUNT(…)` or `ELSE`.
+    docs/guide/06-matching.md:176
+    docs/guide/06-matching.md:244
+    docs/guide/06-matching.md:294
+    docs/spec/cases/26-match-selection/pick-on-for-each.regia:2
+    docs/spec/cases/26-match-selection/pick-on-for-each.regia:9
+
+R2604
+  * docs/spec/26-match-selection.md:149: - `R2604` A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block.
+    docs/guide/05-placeholders-and-expressions.md:213
+    docs/guide/06-matching.md:243
+
+R2605
+  * docs/spec/26-match-selection.md:150: - `R2605` A Weight using a Placeholder that is neither filled by the condition nor certainly filled before it.
+    docs/guide/06-matching.md:154
+
+R2606
+  * docs/spec/26-match-selection.md:151: - `R2606` The retired Pick `, AT RANDOM` (hint: `, RANDOMLY`).
+    docs/adr/0044-by-keeps-the-amount-and-randomly-has-two-jobs.md:20
+    docs/guide/06-matching.md:116
+    docs/guide/08-randomness.md:201
+    docs/spec/01-statements-and-blocks.md:254
+    docs/spec/cases/26-match-selection/at-random-is-retired.regia:2
+    docs/spec/cases/26-match-selection/at-random-is-retired.regia:10
+
+R2607
+  * docs/spec/26-match-selection.md:152: - `R2607` `n OF` in a Context: a Quota form only (chapter 18; hint: `COUNT(…) >= n`).
+    docs/guide/06-matching.md:296
+    docs/spec/26-match-selection.md:131
+
+R2801
+  * docs/spec/28-jason-layout.md:173: - `R2801` Retired: a Fact or Cue External name that isn't a Jason atom is no longer an error, since External names never reach ASL as beliefs.
+    docs/adr/0026-the-vocabulary-says-what-the-game-produces.md:21
+
+R3501
+  * docs/spec/35-jason-trace.md:159: - `R3501` Retired: the console level is an option of `regia run`, not a Target setting.
+    docs/guide/25-jason-the-game-and-the-trace.md:488
+
+R3601
+  * docs/spec/36-jason-jcm.md:218: - `R3601` A port past 65535: `base_port` plus the number of starting Agents is too large.
+    docs/guide/19-the-transpiler.md:176
+    docs/guide/21-jason-the-build.md:371
+    docs/guide/21-jason-the-build.md:530
+
+R3602
+  * docs/spec/36-jason-jcm.md:219: - `R3602` `base_port` that isn't a whole number in 1–65535.
+    docs/guide/19-the-transpiler.md:97
+    docs/guide/19-the-transpiler.md:156
+    docs/guide/19-the-transpiler.md:176
+    docs/guide/21-jason-the-build.md:370
+
+R3603
+  * docs/spec/36-jason-jcm.md:220: - `R3603` An individual Agent named `<kind>_<digits>` for a kind of the Build.
+    docs/guide/17-instancing.md:239
+    docs/guide/19-the-transpiler.md:176
+    docs/guide/21-jason-the-build.md:372
+    docs/guide/21-jason-the-build.md:530
+    docs/spec/36-jason-jcm.md:14
+
+R3801
+  * docs/spec/38-interfaces.md:136: - `R3801` A Plot gives a Playbook that sends a Signal the Plot has no Plan for, in any Phase. Absence check (chapter 23).
+    docs/adr/0015-the-interface-is-inferred-not-declared.md:14
+    docs/guide/10-messages.md:304
+    docs/guide/15-interfaces.md:47
+    docs/guide/15-interfaces.md:301
+    docs/guide/20-the-visual-editor.md:411
+    docs/showcase/README.md:415
+    docs/spec/20-directors.md:275
+    docs/spec/23-transpiler-architecture.md:137
+    docs/spec/25-graph-view.md:74
+    docs/spec/38-interfaces.md:19
+    docs/spec/38-interfaces.md:162
+
+R3802
+  * docs/spec/38-interfaces.md:137: - `R3802` `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e`. Absence check (chapter 23).
+    .scratch/regia-spec-findings/issues/14-decide-visual-editor.md:17
+    docs/guide/10-messages.md:135
+    docs/guide/15-interfaces.md:302
+    docs/guide/20-the-visual-editor.md:412
+    docs/guide/20-the-visual-editor.md:595
+    docs/spec/20-directors.md:275
+    docs/spec/23-transpiler-architecture.md:137
+    docs/spec/25-graph-view.md:74
+    docs/spec/25-graph-view.md:170
+
+R3803
+  * docs/spec/38-interfaces.md:138: - `R3803` A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role. Absence check (chapter 23).
+    docs/adr/0015-the-interface-is-inferred-not-declared.md:14
+    docs/guide/10-messages.md:254
+    docs/guide/15-interfaces.md:363
+    docs/guide/20-the-visual-editor.md:413
+    docs/spec/23-transpiler-architecture.md:137
+    docs/spec/25-graph-view.md:74
+    docs/spec/38-interfaces.md:95
+
+R3804
+  * docs/spec/38-interfaces.md:139: - `R3804` `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r`. Absence check (chapter 23).
+    docs/guide/15-interfaces.md:396
+    docs/spec/23-transpiler-architecture.md:138
+    docs/spec/38-interfaces.md:162
+
+R3805
+  * docs/spec/38-interfaces.md:140: - `R3805` A `PURSUE g` where no recipe of `g` in the Program admits `ME` (hint: `FROM … OR ME`). Absence check (chapter 23).
+    docs/guide/15-interfaces.md:366
+    docs/showcase/README.md:415
+    docs/spec/05-goals-and-triggers.md:318
+    docs/spec/05-goals-and-triggers.md:330
+    docs/spec/08-basic-actions.md:91
+    docs/spec/08-basic-actions.md:206
+    docs/spec/23-transpiler-architecture.md:138
+    docs/spec/27-conformance.md:133
+    docs/spec/38-interfaces.md:122
+    docs/spec/38-interfaces.md:162
+
+R3806
+  * docs/spec/38-interfaces.md:141: - `R3806` An `ASK … TO g`, or a setup's `PURSUE g`, where every recipe of `g` in the Program is `FROM ME`. Absence check (chapter 23).
+    docs/guide/15-interfaces.md:366
+    docs/showcase/README.md:415
+    docs/spec/05-goals-and-triggers.md:318
+    docs/spec/05-goals-and-triggers.md:330
+    docs/spec/23-transpiler-architecture.md:138
+    docs/spec/27-conformance.md:133
+    docs/spec/38-interfaces.md:162
+
+R3807
+  * docs/spec/38-interfaces.md:142: - `R3807` A Cue that isn't `GAME` (chapter 10) and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` in the Program sends, while some Trigger waits for it. Reported on each such Trigger (hint: declare it `GAME CUE` if the game sends it). A local Cue is checked within its Playbook. Absence check (chapter 23).
+    .scratch/regia-spec-findings/issues/14-decide-visual-editor.md:17
+    docs/adr/0026-the-vocabulary-says-what-the-game-produces.md:21
+    docs/guide/03-vocabulary-and-files.md:130
+    docs/guide/03-vocabulary-and-files.md:133
+    docs/guide/15-interfaces.md:230
+    docs/guide/20-the-visual-editor.md:594
+    docs/showcase/README.md:415
+    docs/spec/10-scoping-and-imports.md:82
+    docs/spec/23-transpiler-architecture.md:127
+    docs/spec/23-transpiler-architecture.md:138
+    docs/spec/23-transpiler-architecture.md:199
+    docs/spec/38-interfaces.md:63
+    docs/spec/38-interfaces.md:87
+    docs/spec/38-interfaces.md:162
+    docs/spec/cases/38-interfaces/cue-sent-in-broken-statement.regia:2
+
+T0401
+  * docs/spec/04-numbers-and-expressions.md:178: - `T0401` Body arithmetic on something that isn't a Number.
+    docs/guide/05-placeholders-and-expressions.md:423
+    docs/guide/09-goals-and-failure.md:293
+    docs/guide/18-the-trace.md:323
+    docs/guide/22-jason-plans-and-goals.md:691
+    docs/spec/11-failure.md:198
+    docs/spec/34-trace.md:142
+    docs/spec/40-jason-goal-life.md:127
+
+T0402
+  * docs/spec/04-numbers-and-expressions.md:179: - `T0402` A division by zero.
+    docs/guide/05-placeholders-and-expressions.md:424
+    docs/guide/09-goals-and-failure.md:293
+    docs/guide/18-the-trace.md:323
+    docs/guide/22-jason-plans-and-goals.md:691
+    docs/spec/11-failure.md:198
+    docs/spec/34-trace.md:142
+
+T0403
+  * docs/spec/04-numbers-and-expressions.md:180: - `T0403` A whole roll with no whole number between its bounds.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:12
+    docs/adr/0034-a-rolls-kind-is-written.md:5
+    docs/guide/05-placeholders-and-expressions.md:337
+    docs/guide/08-randomness.md:171
+    docs/guide/18-the-trace.md:324
+    docs/guide/22-jason-plans-and-goals.md:187
+    docs/guide/25-jason-the-game-and-the-trace.md:517
+    docs/guide/25-jason-the-game-and-the-trace.md:523
+    docs/spec/04-numbers-and-expressions.md:73
+    docs/spec/35-jason-trace.md:145
+
+T0701
+  * docs/spec/07-messaging.md:191: - `T0701` A recipient Placeholder that doesn't hold an Agent at runtime.
+    docs/guide/09-goals-and-failure.md:294
+    docs/guide/10-messages.md:101
+    docs/guide/18-the-trace.md:325
+    docs/guide/22-jason-plans-and-goals.md:399
+    docs/spec/11-failure.md:198
+    docs/spec/34-trace.md:142
+    docs/spec/39-jason-plan-bodies.md:120
+    docs/spec/39-jason-plan-bodies.md:261
+
+T0702
+  * docs/spec/07-messaging.md:195: - `T0702` A Cue told to an Agent, for which no Plan of the Agent's given Playbooks runs: none names it, or every one that does has a Context that doesn't hold. The entry names the Cue and its Sender. A Fact told is a `fact` entry whether or not a Plan reacts to it.
+    docs/guide/04-plans.md:406
+    docs/guide/10-messages.md:44
+    docs/guide/16-precedence-and-labels.md:74
+    docs/guide/18-the-trace.md:71
+    docs/guide/18-the-trace.md:122
+    docs/guide/18-the-trace.md:203
+    docs/guide/18-the-trace.md:224
+    docs/guide/18-the-trace.md:326
+    docs/guide/22-jason-plans-and-goals.md:483
+    docs/guide/22-jason-plans-and-goals.md:488
+    docs/guide/22-jason-plans-and-goals.md:495
+    docs/guide/22-jason-plans-and-goals.md:497
+    docs/spec/07-messaging.md:203
+    docs/spec/30-jason-directors.md:302
+    docs/spec/33-jason-cast-changes-and-quotas.md:175
+    docs/spec/34-trace.md:42
+    docs/spec/34-trace.md:90
+    docs/spec/34-trace.md:144
+    docs/spec/39-jason-plan-bodies.md:188
+    docs/spec/39-jason-plan-bodies.md:195
+    docs/spec/39-jason-plan-bodies.md:198
+
+T0801
+  * docs/spec/08-basic-actions.md:193: - `T0801` `UPDATE f TO f2` when `f` isn't known.
+    docs/guide/07-actions-and-time.md:101
+    docs/guide/09-goals-and-failure.md:295
+    docs/guide/18-the-trace.md:327
+    docs/guide/22-jason-plans-and-goals.md:309
+    docs/guide/22-jason-plans-and-goals.md:313
+    docs/guide/22-jason-plans-and-goals.md:672
+    docs/spec/11-failure.md:198
+    docs/spec/34-trace.md:142
+    docs/spec/35-jason-trace.md:16
+    docs/spec/39-jason-plan-bodies.md:82
+    docs/spec/40-jason-goal-life.md:120
+
+T0901
+  * docs/spec/09-random-choice.md:116: - `T0901` A weight that isn't a Number.
+    docs/guide/06-matching.md:157
+    docs/guide/08-randomness.md:84
+    docs/guide/09-goals-and-failure.md:296
+    docs/guide/18-the-trace.md:328
+    docs/guide/22-jason-plans-and-goals.md:184
+    docs/guide/22-jason-plans-and-goals.md:243
+    docs/spec/11-failure.md:198
+    docs/spec/26-match-selection.md:68
+    docs/spec/34-trace.md:142
+
+T0902
+  * docs/spec/09-random-choice.md:120: - `T0902` A negative weight, counted as 0.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:12
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:12
+    docs/guide/08-randomness.md:85
+    docs/guide/18-the-trace.md:317
+    docs/guide/18-the-trace.md:329
+    docs/guide/22-jason-plans-and-goals.md:173
+    docs/guide/22-jason-plans-and-goals.md:185
+    docs/spec/09-random-choice.md:64
+    docs/spec/09-random-choice.md:127
+    docs/spec/34-trace.md:143
+    docs/spec/39-jason-plan-bodies.md:27
+
+T0903
+  * docs/spec/09-random-choice.md:121: - `T0903` Every weight is 0 (or negative): no Option runs.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:12
+    docs/guide/08-randomness.md:86
+    docs/guide/18-the-trace.md:317
+    docs/guide/18-the-trace.md:329
+    docs/guide/22-jason-plans-and-goals.md:174
+    docs/guide/22-jason-plans-and-goals.md:186
+    docs/spec/09-random-choice.md:65
+    docs/spec/09-random-choice.md:127
+    docs/spec/34-trace.md:143
+    docs/spec/39-jason-plan-bodies.md:27
+
+T1101
+  * docs/spec/11-failure.md:193: - `T1101` A Custom Action that the game refuses, or reports as failed while the `DO` waits.
+    docs/guide/07-actions-and-time.md:207
+    docs/guide/07-actions-and-time.md:285
+    docs/guide/09-goals-and-failure.md:291
+    docs/guide/18-the-trace.md:79
+    docs/guide/18-the-trace.md:272
+    docs/guide/18-the-trace.md:305
+    docs/guide/18-the-trace.md:330
+    docs/guide/21-jason-the-build.md:246
+    docs/guide/22-jason-plans-and-goals.md:672
+    docs/guide/22-jason-plans-and-goals.md:685
+    docs/guide/22-jason-plans-and-goals.md:692
+    docs/guide/24-jason-directors-and-stagings.md:710
+    docs/guide/25-jason-the-game-and-the-trace.md:109
+    docs/guide/25-jason-the-game-and-the-trace.md:172
+    docs/guide/25-jason-the-game-and-the-trace.md:329
+    docs/guide/25-jason-the-game-and-the-trace.md:633
+    docs/spec/34-trace.md:142
+    docs/spec/34-trace.md:155
+    docs/spec/34-trace.md:238
+    docs/spec/40-jason-goal-life.md:120
+    docs/spec/cases/11-failure/failed-action-fails-its-goal/case.trace:7
+    docs/spec/cases/11-failure/failed-action-fails-its-goal/game.regin:2
+
+T1102
+  * docs/spec/11-failure.md:194: - `T1102` `PURSUE g` waiting on a Goal that fails.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:13
+    docs/adr/0018-a-drop-spreads-as-a-drop.md:17
+
+T1103
+  * docs/spec/11-failure.md:195: - `T1103` `FAIL`, with its Reason when `FAIL WITH` gave one.
+    docs/guide/09-goals-and-failure.md:292
+    docs/guide/09-goals-and-failure.md:400
+    docs/guide/09-goals-and-failure.md:486
+    docs/guide/18-the-trace.md:256
+    docs/guide/18-the-trace.md:304
+    docs/guide/18-the-trace.md:331
+    docs/guide/22-jason-plans-and-goals.md:532
+    docs/guide/22-jason-plans-and-goals.md:538
+    docs/guide/22-jason-plans-and-goals.md:652
+    docs/guide/22-jason-plans-and-goals.md:673
+    docs/guide/22-jason-plans-and-goals.md:689
+    docs/spec/34-trace.md:112
+    docs/spec/39-jason-plan-bodies.md:231
+    docs/spec/40-jason-goal-life.md:114
+    docs/spec/40-jason-goal-life.md:121
+
+T1104
+  * docs/spec/11-failure.md:196: - `T1104` A Goal with no applicable `TO` Plan.
+    docs/guide/04-plans.md:405
+    docs/guide/04-plans.md:504
+    docs/guide/09-goals-and-failure.md:146
+    docs/guide/09-goals-and-failure.md:361
+    docs/guide/15-interfaces.md:364
+    docs/guide/16-precedence-and-labels.md:75
+    docs/guide/18-the-trace.md:248
+    docs/guide/18-the-trace.md:303
+    docs/guide/18-the-trace.md:332
+    docs/guide/18-the-trace.md:392
+    docs/guide/18-the-trace.md:393
+    docs/guide/22-jason-plans-and-goals.md:666
+    docs/guide/22-jason-plans-and-goals.md:673
+    docs/guide/22-jason-plans-and-goals.md:690
+    docs/guide/23-jason-givings-and-precedence.md:464
+    docs/showcase/README.md:255
+    docs/spec/08-basic-actions.md:206
+    docs/spec/29-jason-givings.md:257
+    docs/spec/34-trace.md:112
+    docs/spec/34-trace.md:142
+    docs/spec/40-jason-goal-life.md:108
+    docs/spec/40-jason-goal-life.md:108
+    docs/spec/40-jason-goal-life.md:121
+
+T1201
+  * docs/spec/12-time.md:114: - `T1201` A Duration that isn't a Number.
+    docs/guide/07-actions-and-time.md:341
+    docs/guide/07-actions-and-time.md:399
+    docs/guide/07-actions-and-time.md:449
+    docs/guide/09-goals-and-failure.md:297
+    docs/guide/12-plots-and-directors.md:324
+    docs/guide/18-the-trace.md:333
+    docs/guide/22-jason-plans-and-goals.md:356
+    docs/spec/11-failure.md:198
+    docs/spec/34-trace.md:142
+
+T1202
+  * docs/spec/12-time.md:118: - `T1202` A negative Duration, counted as 0.
+    docs/guide/07-actions-and-time.md:342
+    docs/guide/07-actions-and-time.md:399
+    docs/guide/07-actions-and-time.md:449
+    docs/guide/12-plots-and-directors.md:324
+    docs/guide/18-the-trace.md:333
+    docs/guide/22-jason-plans-and-goals.md:345
+    docs/guide/22-jason-plans-and-goals.md:357
+    docs/spec/12-time.md:138
+    docs/spec/34-trace.md:143
+    docs/spec/39-jason-plan-bodies.md:88
+    docs/spec/39-jason-plan-bodies.md:238
+
+T1501
+  * docs/spec/15-roles-and-mappings.md:383: - `T1501` A count or fraction that isn't a Number.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:14
+    docs/guide/08-randomness.md:237
+    docs/guide/09-goals-and-failure.md:298
+    docs/guide/11-playbooks-and-roles.md:298
+    docs/guide/18-the-trace.md:334
+    docs/spec/34-trace.md:142
+    docs/spec/39-jason-plan-bodies.md:141
+
+T1502
+  * docs/spec/15-roles-and-mappings.md:387: - `T1502` A count asking for more Agents than are left in the pool: it takes everyone left.
+    docs/guide/08-randomness.md:238
+    docs/guide/10-messages.md:99
+    docs/guide/11-playbooks-and-roles.md:299
+    docs/guide/13-subplots-and-stagings.md:146
+    docs/guide/18-the-trace.md:335
+    docs/guide/22-jason-plans-and-goals.md:393
+    docs/guide/22-jason-plans-and-goals.md:400
+    docs/spec/07-messaging.md:47
+    docs/spec/15-roles-and-mappings.md:275
+    docs/spec/34-trace.md:143
+    docs/spec/35-jason-trace.md:16
+    docs/spec/39-jason-plan-bodies.md:141
+
+T1503
+  * docs/spec/15-roles-and-mappings.md:388: - `T1503` A negative count, counted as 0.
+    docs/guide/08-randomness.md:238
+    docs/guide/10-messages.md:99
+    docs/guide/11-playbooks-and-roles.md:299
+    docs/guide/18-the-trace.md:335
+    docs/guide/22-jason-plans-and-goals.md:400
+    docs/spec/34-trace.md:143
+    docs/spec/39-jason-plan-bodies.md:141
+
+T1504
+  * docs/spec/15-roles-and-mappings.md:389: - `T1504` An `EXCEPT ?who` whose Placeholder doesn't hold an Agent: nobody is left out.
+    docs/guide/11-playbooks-and-roles.md:341
+    docs/guide/18-the-trace.md:336
+    docs/guide/23-jason-givings-and-precedence.md:236
+    docs/guide/24-jason-directors-and-stagings.md:358
+    docs/spec/29-jason-givings.md:188
+    docs/spec/29-jason-givings.md:290
+    docs/spec/30-jason-directors.md:279
+    docs/spec/34-trace.md:143
+
+T1505
+  * docs/spec/15-roles-and-mappings.md:390: - `T1505` A `REMOVE` naming one Agent that takes nothing: `FROM <Role> ?who` when `?who` doesn't play the Role, or `FROM ?who` with no giving made to that Agent.
+    docs/adr/0029-unassign-takes-what-was-given-the-way-it-names.md:21
+    docs/guide/11-playbooks-and-roles.md:531
+    docs/guide/18-the-trace.md:337
+    docs/guide/23-jason-givings-and-precedence.md:234
+    docs/guide/24-jason-directors-and-stagings.md:630
+    docs/spec/15-roles-and-mappings.md:109
+    docs/spec/29-jason-givings.md:103
+    docs/spec/29-jason-givings.md:109
+    docs/spec/29-jason-givings.md:142
+    docs/spec/29-jason-givings.md:149
+    docs/spec/29-jason-givings.md:290
+    docs/spec/34-trace.md:143
+
+T1506
+  * docs/spec/15-roles-and-mappings.md:391: - `T1506` An `ASSIGN P TO <Role> ?who` with nothing to lift: `?who` doesn't play the Role, or no giving of `P` leaves it out.
+    docs/adr/0029-unassign-takes-what-was-given-the-way-it-names.md:21
+    docs/guide/11-playbooks-and-roles.md:532
+    docs/guide/18-the-trace.md:337
+    docs/guide/23-jason-givings-and-precedence.md:235
+    docs/guide/24-jason-directors-and-stagings.md:605
+    docs/guide/24-jason-directors-and-stagings.md:631
+    docs/spec/15-roles-and-mappings.md:128
+    docs/spec/29-jason-givings.md:115
+    docs/spec/29-jason-givings.md:144
+    docs/spec/29-jason-givings.md:149
+    docs/spec/29-jason-givings.md:290
+    docs/spec/30-jason-directors.md:245
+    docs/spec/34-trace.md:143
+
+T1601
+  * docs/spec/16-role-setup.md:159: - `T1601` A setup Statement that can't be carried out, skipped.
+    docs/guide/01-the-logic-of-regia.md:334
+    docs/guide/12-plots-and-directors.md:185
+    docs/guide/17-instancing.md:283
+    docs/guide/18-the-trace.md:338
+    docs/guide/24-jason-directors-and-stagings.md:503
+    docs/guide/24-jason-directors-and-stagings.md:528
+    docs/guide/24-jason-directors-and-stagings.md:535
+    docs/spec/34-trace.md:143
+
+T1801
+  * docs/spec/18-quota-triggers.md:164: - `T1801` A quantity worked out at runtime to 0 or less, a share above 100%, or something that isn't a Number. The Quota doesn't fire at that check.
+    docs/spec/18-quota-triggers.md:32
+    docs/spec/18-quota-triggers.md:189
+    docs/spec/34-trace.md:143
+    docs/spec/34-trace.md:262
+
+T1802
+  * docs/spec/18-quota-triggers.md:168: - `T1802` A quota met with no candidate Block: every `GIVEN` failed and there is no `ELSE`. The entry names the Quota and the argument value; the count has reset.
+    docs/adr/0037-the-trace-says-what-didnt-run-as-info.md:19
+    docs/spec/18-quota-triggers.md:128
+    docs/spec/18-quota-triggers.md:189
+    docs/spec/33-jason-cast-changes-and-quotas.md:220
+    docs/spec/34-trace.md:43
+    docs/spec/34-trace.md:90
+    docs/spec/34-trace.md:144
+    docs/spec/34-trace.md:262
+
+T1901
+  * docs/spec/19-cast-changes.md:160: - `T1901` A `TELL` or `ASK` to an Agent that has left the Program, dropped.
+    docs/guide/10-messages.md:100
+    docs/guide/12-plots-and-directors.md:497
+    docs/guide/14-when-an-agent-leaves.md:80
+    docs/guide/14-when-an-agent-leaves.md:310
+    docs/guide/14-when-an-agent-leaves.md:314
+    docs/guide/18-the-trace.md:80
+    docs/guide/18-the-trace.md:339
+    docs/guide/22-jason-plans-and-goals.md:391
+    docs/guide/22-jason-plans-and-goals.md:401
+    docs/guide/24-jason-directors-and-stagings.md:709
+    docs/guide/24-jason-directors-and-stagings.md:999
+    docs/spec/19-cast-changes.md:72
+    docs/spec/19-cast-changes.md:178
+    docs/spec/20-directors.md:284
+    docs/spec/33-jason-cast-changes-and-quotas.md:271
+    docs/spec/34-trace.md:88
+    docs/spec/34-trace.md:143
+    docs/spec/39-jason-plan-bodies.md:120
+
+T1902
+  * docs/spec/19-cast-changes.md:161: - `T1902` A spawn the game reported in a 1.5 run, refused: joining is Regia 2.0 (*Regia 1.5*, below). Reported by a 1.5 run only; retired in 2.0.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:16
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:16
+    docs/adr/0025-regia-1-5-is-a-subset-of-2-0-built-first.md:16
+    docs/guide/14-when-an-agent-leaves.md:266
+    docs/guide/14-when-an-agent-leaves.md:310
+    docs/guide/17-instancing.md:115
+    docs/guide/18-the-trace.md:340
+    docs/guide/18-the-trace.md:347
+    docs/guide/18-the-trace.md:451
+    docs/guide/19-the-transpiler.md:282
+    docs/guide/19-the-transpiler.md:284
+    docs/guide/19-the-transpiler.md:289
+    docs/guide/21-jason-the-build.md:512
+    docs/guide/21-jason-the-build.md:518
+    docs/guide/24-jason-directors-and-stagings.md:972
+    docs/guide/24-jason-directors-and-stagings.md:979
+    docs/guide/25-jason-the-game-and-the-trace.md:39
+    docs/guide/25-jason-the-game-and-the-trace.md:45
+    docs/guide/README.md:111
+    docs/spec/19-cast-changes.md:180
+    docs/spec/19-cast-changes.md:184
+    docs/spec/21-instancing.md:261
+    docs/spec/27-conformance.md:88
+    docs/spec/27-conformance.md:127
+    docs/spec/33-jason-cast-changes-and-quotas.md:279
+    docs/spec/34-trace.md:143
+    docs/spec/34-trace.md:264
+    docs/spec/cases/19-cast-changes/spawn-refused-in-1-5/case.trace:3
+    docs/spec/cases/19-cast-changes/spawn-refused-in-1-5/game.regin:2
+
+T2001
+  * docs/spec/20-directors.md:281: - `T2001` A Giving or a Mapping that reaches an Agent who has left, dropped.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:15
+    docs/guide/12-plots-and-directors.md:497
+    docs/guide/13-subplots-and-stagings.md:147
+    docs/guide/18-the-trace.md:341
+    docs/guide/23-jason-givings-and-precedence.md:237
+    docs/guide/24-jason-directors-and-stagings.md:628
+    docs/spec/30-jason-directors.md:372
+    docs/spec/34-trace.md:143
+
+T2002
+  * docs/spec/20-directors.md:282: - `T2002` A Director Plan that failed: it stops, and the Phase and the Staging are untouched. It follows the failure entry of its cause.
+    docs/guide/01-the-logic-of-regia.md:335
+    docs/guide/12-plots-and-directors.md:512
+    docs/guide/18-the-trace.md:273
+    docs/guide/18-the-trace.md:306
+    docs/guide/18-the-trace.md:342
+    docs/guide/24-jason-directors-and-stagings.md:262
+    docs/guide/24-jason-directors-and-stagings.md:298
+    docs/guide/24-jason-directors-and-stagings.md:307
+    docs/guide/24-jason-directors-and-stagings.md:733
+    docs/guide/24-jason-directors-and-stagings.md:842
+    docs/guide/24-jason-directors-and-stagings.md:911
+    docs/guide/24-jason-directors-and-stagings.md:916
+    docs/spec/30-jason-directors.md:133
+    docs/spec/30-jason-directors.md:372
+    docs/spec/31-jason-stagings.md:224
+    docs/spec/31-jason-stagings.md:254
+    docs/spec/34-trace.md:143
+
+T2601
+  * docs/spec/26-match-selection.md:160: - `T2601` Every Match of a weighted Pick weighs 0 (or less): the condition has no Match to use.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:12
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:12
+    docs/guide/06-matching.md:156
+    docs/guide/08-randomness.md:202
+    docs/guide/18-the-trace.md:317
+    docs/guide/18-the-trace.md:343
+    docs/guide/22-jason-plans-and-goals.md:235
+    docs/guide/22-jason-plans-and-goals.md:242
+    docs/spec/26-match-selection.md:67
+    docs/spec/39-jason-plan-bodies.md:58
+    docs/spec/39-jason-plan-bodies.md:240
+
+T2801
+  * docs/spec/28-jason-layout.md:186: - `T2801` A `regia_cue` or `regia_fact` whose name matches no `regia_game` entry of the receiving Agent. The entry names the message's name and the receiver. Nothing else happens. A Director never writes it: the game link delivers a Director only what its `regia_hears` lists, and drops a message no attached Director hears with no entry (chapter 30).
+    docs/guide/03-vocabulary-and-files.md:131
+    docs/guide/21-jason-the-build.md:212
+    docs/guide/25-jason-the-game-and-the-trace.md:243
+    docs/guide/25-jason-the-game-and-the-trace.md:562
+    docs/spec/28-jason-layout.md:158
+    docs/spec/30-jason-directors.md:24
+    docs/spec/34-trace.md:145
+    docs/spec/34-trace.md:210
+    docs/spec/34-trace.md:211
+    docs/spec/35-jason-trace.md:117
+
+T2802
+  * docs/spec/28-jason-layout.md:181: - `T2802` The game link couldn't connect to the game at start. The entry names the address and port. The run starts anyway (*The game link*).
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:17
+    docs/guide/21-jason-the-build.md:244
+    docs/guide/24-jason-directors-and-stagings.md:115
+    docs/guide/25-jason-the-game-and-the-trace.md:541
+    docs/spec/28-jason-layout.md:112
+    docs/spec/30-jason-directors.md:42
+    docs/spec/34-trace.md:213
+    docs/spec/35-jason-trace.md:114
+
+T2803
+  * docs/spec/28-jason-layout.md:182: - `T2803` The game link's connection was lost mid-run. The entry names the address and port. The run goes on.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:17
+    docs/guide/21-jason-the-build.md:245
+    docs/guide/24-jason-directors-and-stagings.md:116
+    docs/guide/25-jason-the-game-and-the-trace.md:565
+    docs/spec/28-jason-layout.md:112
+    docs/spec/30-jason-directors.md:42
+    docs/spec/34-trace.md:145
+    docs/spec/34-trace.md:213
+    docs/spec/35-jason-trace.md:121
+
+T2901
+  * docs/spec/29-jason-givings.md:285: - `T2901` A `regia_give` for a Playbook the Agent's files don't hold (a Transpiler bug), ignored.
+    docs/guide/23-jason-givings-and-precedence.md:233
+    docs/spec/34-trace.md:145
+
+T2902
+  * docs/spec/29-jason-givings.md:286: - `T2902` Retired: a Plan stopped because its Playbook was taken away writes chapter 40's `plan … stopped` instead.
+    docs/spec/29-jason-givings.md:288
+    docs/spec/34-trace.md:145
+
+T3001
+  * docs/spec/30-jason-directors.md:370: - `T3001` A Giving or Mapping to a `?who` who was never in this Staging (such as an Agent named by a game Cue's argument), dropped.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:15
+    docs/guide/24-jason-directors-and-stagings.md:629
+    docs/spec/34-trace.md:145
+
+T3201
+  * docs/spec/32-jason-precedence.md:147: - `T3201` A ranked option whose Playbook has no `regia_holds` (neither given nor closing), so its guard was bypassed: the option is dropped.
+    docs/guide/23-jason-givings-and-precedence.md:668
+    docs/spec/34-trace.md:145
+
+T3301
+  * docs/spec/33-jason-cast-changes-and-quotas.md:269: - `T3301` A `regia_join` that makes no sense: a name starting with `regia_`, an Agent already in the Program, a kind that isn't declared or was removed, or a missing or invalid `port` (chapter 36). It is ignored.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:16
+    docs/spec/34-trace.md:145
+
+T3302
+  * docs/spec/33-jason-cast-changes-and-quotas.md:270: - `T3302` A `regia_leave` for an Agent that isn't in the Program, ignored by the link.
+    docs/guide/24-jason-directors-and-stagings.md:978
+    docs/spec/28-jason-layout.md:111
+    docs/spec/33-jason-cast-changes-and-quotas.md:286
+
+T3303
+  * docs/spec/33-jason-cast-changes-and-quotas.md:271: - `T3303` An Infrastructure send to an agent that doesn't exist, caught by `regia.send`. A designer's `TELL` or `ASK` to an Agent who has left writes chapter 19's `T1901` instead.
+    docs/guide/24-jason-directors-and-stagings.md:1000
+    docs/spec/29-jason-givings.md:259
+    docs/spec/33-jason-cast-changes-and-quotas.md:122
+    docs/spec/35-jason-trace.md:24
+
+T3304
+  * docs/spec/33-jason-cast-changes-and-quotas.md:272: - `T3304` A join after the Root Staging has ended, dropped by the link: no agent is created.
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:16
+    docs/spec/28-jason-layout.md:111
+    docs/spec/33-jason-cast-changes-and-quotas.md:46
+    docs/spec/33-jason-cast-changes-and-quotas.md:64
+    docs/spec/33-jason-cast-changes-and-quotas.md:279
+    docs/spec/33-jason-cast-changes-and-quotas.md:286
+    docs/spec/37-jason-game-protocol.md:205
+
+T3305
+  * docs/spec/33-jason-cast-changes-and-quotas.md:273: - `T3305` A join before the game has answered the Root's state request, dropped by the link: no agent is created. The game must send no `regia_join` before it has answered the first `regia_state` (chapter 37).
+    .scratch/regia-spec-findings/issues/04-decide-trace-entries.md:16
+    docs/guide/25-jason-the-game-and-the-trace.md:595
+    docs/spec/33-jason-cast-changes-and-quotas.md:47
+    docs/spec/33-jason-cast-changes-and-quotas.md:286
+    docs/spec/34-trace.md:145
+    docs/spec/35-jason-trace.md:133
+    docs/spec/37-jason-game-protocol.md:166
+
+T3701
+  * docs/spec/37-jason-game-protocol.md:261: - `T3701` A `regia_action_result` with an unknown `id`, or after the final reply, ignored.
+    docs/guide/25-jason-the-game-and-the-trace.md:110
+    docs/guide/25-jason-the-game-and-the-trace.md:136
+    docs/spec/34-trace.md:145
+    docs/spec/37-jason-game-protocol.md:124
+    docs/spec/37-jason-game-protocol.md:175
+
+T3702
+  * docs/spec/37-jason-game-protocol.md:262: - `T3702` A message of an unknown type on the game link, ignored.
+    docs/guide/25-jason-the-game-and-the-trace.md:44
+    docs/spec/37-jason-game-protocol.md:146
+
+T3703
+  * docs/spec/37-jason-game-protocol.md:263: - `T3703` A `regia_state_result` with an unknown `id`, or a second one for the same `id`, ignored.
+    docs/guide/25-jason-the-game-and-the-trace.md:301
+    docs/guide/25-jason-the-game-and-the-trace.md:595
+    docs/spec/34-trace.md:145
+    docs/spec/35-jason-trace.md:133
+    docs/spec/37-jason-game-protocol.md:164
+
+T3801
+  * docs/spec/38-interfaces.md:150: - `T3801` A Signal that reached a Director with no Plan for it in the current Phase or in `DURING PLOT`. The entry names the Cue, the sending Agent, the Plot and the Phase.
+    docs/adr/0015-the-interface-is-inferred-not-declared.md:15
+    docs/adr/0037-the-trace-says-what-didnt-run-as-info.md:5
+    docs/guide/01-the-logic-of-regia.md:247
+    docs/guide/10-messages.md:305
+    docs/guide/11-playbooks-and-roles.md:533
+    docs/guide/12-plots-and-directors.md:441
+    docs/guide/15-interfaces.md:303
+    docs/guide/18-the-trace.md:122
+    docs/guide/18-the-trace.md:209
+    docs/guide/18-the-trace.md:225
+    docs/guide/18-the-trace.md:344
+    docs/guide/18-the-trace.md:469
+    docs/guide/23-jason-givings-and-precedence.md:465
+    docs/guide/24-jason-directors-and-stagings.md:666
+    docs/guide/24-jason-directors-and-stagings.md:676
+    docs/guide/24-jason-directors-and-stagings.md:678
+    docs/guide/25-jason-the-game-and-the-trace.md:388
+    docs/spec/07-messaging.md:203
+    docs/spec/20-directors.md:94
+    docs/spec/20-directors.md:284
+    docs/spec/29-jason-givings.md:258
+    docs/spec/30-jason-directors.md:300
+    docs/spec/30-jason-directors.md:307
+    docs/spec/30-jason-directors.md:372
+    docs/spec/33-jason-cast-changes-and-quotas.md:177
+    docs/spec/33-jason-cast-changes-and-quotas.md:179
+    docs/spec/34-trace.md:44
+    docs/spec/34-trace.md:90
+    docs/spec/34-trace.md:144
+    docs/spec/35-jason-trace.md:14
+    docs/spec/39-jason-plan-bodies.md:260
+
+T3802
+  * docs/spec/38-interfaces.md:151: - `T3802` A Subplot's own ending that no Plan of the parent heard (no `FINISHED WITH` Plan for its Outcome, no plain `FINISHED` and no `ENDED`), in the current Phase or in `DURING PLOT`. The entry names the Subplot, the Outcome (or says the ending was bare) and the parent's Phase. A `DROPPED` ending with no Plan writes no entry: the parent caused it (chapter 17).
+    docs/adr/0015-the-interface-is-inferred-not-declared.md:15
+    docs/adr/0030-a-subplots-endings-are-heard-like-a-goals.md:25
+    docs/adr/0037-the-trace-says-what-didnt-run-as-info.md:5
+    docs/guide/13-subplots-and-stagings.md:409
+    docs/guide/15-interfaces.md:424
+    docs/guide/18-the-trace.md:122
+    docs/guide/18-the-trace.md:215
+    docs/guide/18-the-trace.md:226
+    docs/guide/18-the-trace.md:345
+    docs/guide/24-jason-directors-and-stagings.md:896
+    docs/guide/24-jason-directors-and-stagings.md:903
+    docs/guide/24-jason-directors-and-stagings.md:915
+    docs/guide/24-jason-directors-and-stagings.md:918
+    docs/spec/17-subplots.md:171
+    docs/spec/20-directors.md:284
+    docs/spec/31-jason-stagings.md:211
+    docs/spec/31-jason-stagings.md:220
+    docs/spec/31-jason-stagings.md:224
+    docs/spec/31-jason-stagings.md:254
+    docs/spec/31-jason-stagings.md:254
+    docs/spec/34-trace.md:45
+    docs/spec/34-trace.md:90
+    docs/spec/34-trace.md:144
+    docs/spec/34-trace.md:168
+    docs/spec/34-trace.md:168
+
+Check by hand (12):
+  docs/adr/0015-the-interface-is-inferred-not-declared.md:14: `R3801`–`R3803` (a range: both ends renamed, reword it)
+  docs/guide/21-jason-the-build.md:530: `R3601` to `R3603` (a range: both ends renamed, reword it)
+  docs/showcase/README.md:415: `R3801`–`R3807` (a range: both ends renamed, reword it)
+  docs/spec/01-statements-and-blocks.md:298: `R0112` to `R0115` (a range: both ends renamed, reword it)
+  docs/spec/11-failure.md:217: `R1104` to `R1106` (a range: both ends renamed, reword it)
+  docs/spec/16-role-setup.md:153: `R1503`–`R1512` (a range: both ends renamed, reword it)
+  docs/spec/18-quota-triggers.md:189: `R1801` to `R1806` (a range: both ends renamed, reword it)
+  docs/spec/34-trace.md:142: `T1101`–`T1104` (a range: both ends renamed, reword it)
+  docs/spec/34-trace.md:145: `T2801`–`T2803` (a range: both ends renamed, reword it)
+  docs/spec/34-trace.md:145: `T3301`–`T3305` (a range: both ends renamed, reword it)
+  docs/spec/34-trace.md:145: `T3701`–`T3703` (a range: both ends renamed, reword it)
+  docs/spec/38-interfaces.md:162: `R3801` to `R3804` (a range: both ends renamed, reword it)
+

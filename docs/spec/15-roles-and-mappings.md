@@ -22,7 +22,7 @@ PLAYBOOK NobleSocializing:
 
 - A Playbook's Role names are **local to that Playbook**, like a Plot's Role names are local to the Plot (chapter 10). Two Playbooks may each have a `host`; a Playbook's `Guest` and a Plot's `Guest` are different Roles that a Mapping may join.
 - **The capital is a convention.** The showcase writes a Plot's Roles with a capital (`Host`) and a Playbook's in lowercase (`host`), so that a reader sees which side a line is on. The language doesn't read it: names are compared ignoring case (chapter 10), and a Plot's `Host` fills a Playbook's `host` with no `MAPPING` (*Mappings*, below).
-- `ROLE` lines are written before the Trigger Blocks by convention; the Transpiler reads them anywhere in the Playbook. A Playbook's `ROLE` takes no Block (`R1601`): only a Plot's Role has a setup (chapter 16).
+- `ROLE` lines are written before the Trigger Blocks by convention; the Transpiler reads them anywhere in the Playbook. A Playbook's `ROLE` takes no Block (`R16_01-block-on-playbook-role`): only a Plot's Role has a setup (chapter 16).
 - **`ROLE` is one word for both.** A Plot's Role is played and a Playbook's is an address, but both are Roles, classes of Agents, and a Mapping joins the two (`MAPPING Host AS host`), which reads well only because both sides are called Roles. The syntax review kept the word under chapter 01's rule for nouns.
 - The Playbook stays **independent of any Plot**: it never names a Plot or a Plot's Role. Whoever gives it fills its Roles (*Mappings*, below).
 - A Playbook with no `ROLE` lines can still use `FROM ?who`, `FROM DIRECTOR`, `?who` recipients and `EVERYONE`, as before.
@@ -59,7 +59,7 @@ PLOT RoyalBanquet:
 ```
 
 - The form is `, MAPPING <giver Role> AS <receiver Role>`, one clause per receiving Role, separated by `,` like other trailing clauses (`, WITHOUT WAITING`, chapter 08; Labels, chapter 14). The giver's Role always comes first.
-- `AS` introduces the name the giver's Role goes by on the receiving side, as it does for an External name (`ext AS name`, chapter 10). The retired spelling `MAPPING a TO b` is an error (`R1514`): `TO` introduces a Goal (chapter 01).
+- `AS` introduces the name the giver's Role goes by on the receiving side, as it does for an External name (`ext AS name`, chapter 10). The retired spelling `MAPPING a TO b` is an error (`R15_14-retired-mapping-to`): `TO` introduces a Goal (chapter 01).
 - **Same names bind without writing them, ignoring case.** A receiving Role with no `MAPPING` is filled by the giver's Role of the same name, if there is one: above, the Playbook's `Guest` is the Plot's `Guest`, and its `host` would be the Plot's `Host` without the clause. A Plot can't declare both `Host` and `host` (chapter 10), so there is never a choice. An explicit `MAPPING` overrides it. `CAST` never binds by name (*The whole Cast*, below).
 - A receiving Role left unfilled (no `MAPPING`, no Role of the same name) is a **compile-time error** at that Statement.
 - The giver's side is a Role of the Plot the Statement is in, `CAST`, either of them with a count or an `EXCEPT` (below), or a Placeholder holding one Agent (`MAPPING ?who AS opponent`, chapter 20).
@@ -92,7 +92,7 @@ A Guest's `partner` is the Hosts; a Host's `partner` is the Guests.
   - to the whole Cast: `CAST`, a counted part of it, `CAST EXCEPT …`, or the `CAST` setups. These givings **narrow**: they no longer reach the Guests, and go on for everyone else. A standing one now reads `CAST EXCEPT Guest`, so a Guest who joins later doesn't get `Chatting` from it and a Servant who joins does. A counted one loses the picked Agents who play `Guest`.
   - Givings from other Stagings stay. So do this Staging's givings to another Role and to one Agent (`?who`), even for an Agent that also plays `Guest`: those givings were never made to the Guests.
 - `REMOVE Chatting FROM CAST` takes away every giving of `Chatting` this Staging made, to any Role, to the Cast, or to one Agent.
-- `FROM` introduces where the Playbook is taken from, in the same sense as a Sender's `FROM` (where a Message comes from, chapter 05), and with the same `<Role> ?who` shape (below). `REMOVE` and `REMOVED` replaced `UNASSIGN` and `UNASSIGNED`; the retired words are an error (`R1515`).
+- `FROM` introduces where the Playbook is taken from, in the same sense as a Sender's `FROM` (where a Message comes from, chapter 05), and with the same `<Role> ?who` shape (below). `REMOVE` and `REMOVED` replaced `UNASSIGN` and `UNASSIGNED`; the retired words are an error (`R15_15-retired-unassign`).
 - **A giving belongs to the Staging that made it**, and only that Staging takes it away. An Agent holding `Keeping_watch` from the banquet and from `Poisoning` keeps the banquet's when `Poisoning` takes its own away or ends. The Agent knows which Director made each giving it holds.
 
 #### Taking a giving from one Agent
@@ -106,7 +106,7 @@ What a `REMOVE` naming one Agent takes depends on **how the giving was made**, w
 | `REMOVE Dining FROM CAST ?offended` | everything this Staging gave `?offended` of `Dining`: its givings to that Agent end, and it is taken out of every other one. |
 
 - Standing givings stay standing: a later joiner still gets the Playbook, only `?who` is left out.
-- `FROM Guest ?who` when `?who` doesn't play `Guest`, or a `FROM ?who` with no giving to that Agent, does nothing, with a Trace warning (`T1505`).
+- `FROM Guest ?who` when `?who` doesn't play `Guest`, or a `FROM ?who` with no giving to that Agent, does nothing, with a Trace warning (`T15_05-remove-takes-nothing`).
 - `REMOVED` fires only if `?who` has lost its last giving of the Playbook, from any Staging.
 
 #### Giving it back: `ASSIGN … TO <Role> ?who`
@@ -125,8 +125,8 @@ WHEN HonorDuel(?a, ?b) ENDED:                    # however it ended (chapter 17)
 The Plot's arguments (chapter 17) carry the two duellists to the `ENDED` Plan. It runs for every ending, a Subplot ended from above (`DROP SUBPLOT`, `UNTIL EXITED`) included, which the parent hears as `DROPPED` and then `ENDED` (chapter 17, ADR 0030). The giving back is written once.
 
 - `ASSIGN P TO Guest ?who` **lifts the exclusion** of `?who` from this Staging's givings of `P` whose target includes `Guest`, whether it was written (`Guest EXCEPT ?who`) or made by narrowing. `?who` holds those givings again, with their bindings, and later `REMOVE P FROM Guest` takes them as it takes everyone's.
-- It makes no new giving. With no exclusion of `?who` to lift, or when `?who` doesn't play `Guest`, it does nothing, with a Trace warning (`T1506`).
-- It takes no count, no `MAPPING` and no `UNTIL EXITED`: the giving it reopens already has its own (`R1513`).
+- It makes no new giving. With no exclusion of `?who` to lift, or when `?who` doesn't play `Guest`, it does nothing, with a Trace warning (`T15_06-assign-lifts-nothing`).
+- It takes no count, no `MAPPING` and no `UNTIL EXITED`: the giving it reopens already has its own (`R15_13-clause-on-placeholder-assign`).
 - `ASSIGN P TO ?who` is still a new giving to that one Agent, which `REMOVE P FROM Guest` doesn't reach. To give a Guest back what the Guests have, write `TO Guest ?who`.
 - A giving to a whole Role is **standing**: it also reaches Agents who join the Role later, until it is taken away. A giving to a counted target is not (chapter 19).
 - A giving ends when a `REMOVE` takes it away, when its Staging ends, or, if it was made **for a Phase**, when that Phase is left. A giving is for a Phase when it comes from the Phase's Role setup (chapter 16) or carries `UNTIL EXITED` (below).
@@ -232,8 +232,8 @@ ASSIGN Brawling TO 2 OF Guest, MAPPING 1 OF Guest AS rival
 ```
 
 - Counts and fractions are allowed in the target of `ASSIGN … TO`, on the giver's side of `MAPPING`, and on a Role recipient (below). They are an error on `REMOVE`, after `PLAYS`, after `EXCEPT`, and on `EVERYONE`. A quantity on `FROM` or `BY` is a Quota, with its own rules (chapter 18).
-- `%` follows the Expression it applies to, and is followed by `OF`: `50% OF Guest`, `?share% OF Guest`, `(?n * 10)% OF Guest`. A space before it is allowed, as around an operator; the spec and the tools write none. It is the share of a count and nothing else: Regia has one Number kind (chapter 04), so `50%` is never a Value (`LET ?x BE 50%`, `WEIGHT 30%`), and `0.5 OF Guest` is a count, never "half". A `%` anywhere but before `OF` is `R1517`.
-- `%` is a percentage, never a remainder, which Regia doesn't have (chapter 04, ADR 0045). It replaced the unit word `PERCENT`, which is `R1516`.
+- `%` follows the Expression it applies to, and is followed by `OF`: `50% OF Guest`, `?share% OF Guest`, `(?n * 10)% OF Guest`. A space before it is allowed, as around an operator; the spec and the tools write none. It is the share of a count and nothing else: Regia has one Number kind (chapter 04), so `50%` is never a Value (`LET ?x BE 50%`, `WEIGHT 30%`), and `0.5 OF Guest` is a count, never "half". A `%` anywhere but before `OF` is `R15_17-misplaced-percent-sign`.
+- `%` is a percentage, never a remainder, which Regia doesn't have (chapter 04, ADR 0045). It replaced the unit word `PERCENT`, which is `R15_16-retired-percent`.
 - The Expression follows chapter 04: Values, filled Placeholders, `RANDOM`, arithmetic.
 
 ### How the pick works
@@ -272,7 +272,7 @@ PLAYBOOK Dining:
 ```
 
 - **The pick is made each time the Statement runs**, from the Agents the Role reaches at that moment, the sender left out (chapter 07). Two requests may go to two different Servants. A Servant kept for the whole Giving is the pick per receiver, not in 2.0.
-- The odd values are the table's. **A count that finds nobody sends nothing**, and the Plan goes on, as for an empty Role (chapter 07), with the `T1502` warning. It is not a Failure: `ASK 1 OF waiter` and `ASK waiter` behave alike in an empty hall. A Plan that must not wait in vain tests first: `GIVEN ? PLAYS waiter`.
+- The odd values are the table's. **A count that finds nobody sends nothing**, and the Plan goes on, as for an empty Role (chapter 07), with the `T15_02-count-exceeds-pool` warning. It is not a Failure: `ASK 1 OF waiter` and `ASK waiter` behave alike in an empty hall. A Plan that must not wait in vain tests first: `GIVEN ? PLAYS waiter`.
 - Who was picked is not handed back. An asker learns it from the ending (`BY waiter ?w`, chapter 05).
 - A Quota over the endings is still measured against the whole Role (chapter 18): after `ASK 1 OF waiter TO bring(?dish)`, `WHEN bring(?dish) ENDED, BY ALL waiter` waits for Servants who were never asked. Write `BY 1 OF waiter`, or no quantity.
 - In a Playbook the Role is the Playbook's, over the union of its Givings, as for a whole-Role recipient.
@@ -349,44 +349,46 @@ PLOT HonorDuel:
 - It is not allowed in a Role setup, which has no conditions (chapter 16).
 - `PLAYS` is the word Instancing already uses for the same relation (`KIND noble, PLAYS Guest`, chapter 21).
 
-A Role is still not a Value: `hates(host)` stays an error (`R0303`, chapter 03), and `PLAYS` is the one way from a Role to an Agent besides a Message arriving (ADR 0023).
+A Role is still not a Value: `hates(host)` stays an error (`R03_03-role-as-value`, chapter 03), and `PLAYS` is the one way from a Role to an Agent besides a Message arriving (ADR 0023).
 
 ## Transpiler checks
 
 **Errors**
 
-- `R1502` A Role used but not declared by the Playbook or Plot.
-- `R1503` A receiving Role left unfilled by a giving Statement (the message names the Role and suggests a `MAPPING`).
-- `R1504` Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare.
-- `R1506` A count or fraction where none is allowed: on `REMOVE`, after `PLAYS`, after `EXCEPT`, or on `EVERYONE`.
-- `R1507` A Playbook Statement that directs another Agent (`ASSIGN`, `MAPPING`, …). Director Statements are only for Directors.
-- `R1508` `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder, `FROM` or `BY`.
-- `R1509` `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block (in `DURING PLOT`, in a Role setup), not last in its Statement, or on a Statement other than `ASSIGN` and `START SUBPLOT`.
+- `R15_01-role-name-as-value` Retired into `R03_03-role-as-value` (chapter 03, ADR 0048): a Role name used as a Value.
+- `R15_02-undeclared-role` A Role used but not declared by the Playbook or Plot.
+- `R15_03-unfilled-receiving-role` A receiving Role left unfilled by a giving Statement (the message names the Role and suggests a `MAPPING`).
+- `R15_04-misused-mapping` Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare.
+- `R15_05-mapping-from-placeholder` Retired: `MAPPING ?who AS …` is allowed (chapter 20).
+- `R15_06-misplaced-count-or-share` A count or fraction where none is allowed: on `REMOVE`, after `PLAYS`, after `EXCEPT`, or on `EVERYONE`.
+- `R15_07-director-statement-in-playbook` A Playbook Statement that directs another Agent (`ASSIGN`, `MAPPING`, …). Director Statements are only for Directors.
+- `R15_08-misused-assigned-or-removed` `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder, `FROM` or `BY`.
+- `R15_09-misused-until-exited` `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block (in `DURING PLOT`, in a Role setup), not last in its Statement, or on a Statement other than `ASSIGN` and `START SUBPLOT`.
 
-- `R1510` `EXCEPT` where it isn't allowed: in a Playbook, on `REMOVE`, on `FROM` or `BY`, after `PLAYS`, on `EVERYONE`; a second `EXCEPT` on one Role (the message suggests one list: `EXCEPT Guard, ?who`); an item of the list that isn't one Role of this Plot or one Placeholder; or the same Role or Placeholder twice in one list.
-- `R1511` `PLAYS` misused: a left side that isn't a Placeholder, `?` or `ME`; a right side that isn't one Role declared here (or `CAST`, in a Plot); or `PLAYS` in a Trigger or a Role setup.
-- `R1512` `CAST` declared as a Role, or written in a Playbook.
-- `R1513` `ASSIGN P TO <Role> ?who` with a count, a `MAPPING` or `UNTIL EXITED`.
-- `R1514` The retired `MAPPING a TO b` (hint: `MAPPING a AS b`).
-- `R1515` The retired `UNASSIGN` or `UNASSIGNED` (hint: `REMOVE`, `REMOVED`).
-- `R1516` The retired `n PERCENT OF Role` (hint: `n% OF Role`).
-- `R1517` A `%` that isn't directly before `OF` (hint: a share is written `n% OF Role`; Regia has no remainder, and Weights are relative).
+- `R15_10-misused-except` `EXCEPT` where it isn't allowed: in a Playbook, on `REMOVE`, on `FROM` or `BY`, after `PLAYS`, on `EVERYONE`; a second `EXCEPT` on one Role (the message suggests one list: `EXCEPT Guard, ?who`); an item of the list that isn't one Role of this Plot or one Placeholder; or the same Role or Placeholder twice in one list.
+- `R15_11-misused-plays` `PLAYS` misused: a left side that isn't a Placeholder, `?` or `ME`; a right side that isn't one Role declared here (or `CAST`, in a Plot); or `PLAYS` in a Trigger or a Role setup.
+- `R15_12-misused-cast` `CAST` declared as a Role, or written in a Playbook.
+- `R15_13-clause-on-placeholder-assign` `ASSIGN P TO <Role> ?who` with a count, a `MAPPING` or `UNTIL EXITED`.
+- `R15_14-retired-mapping-to` The retired `MAPPING a TO b` (hint: `MAPPING a AS b`).
+- `R15_15-retired-unassign` The retired `UNASSIGN` or `UNASSIGNED` (hint: `REMOVE`, `REMOVED`).
+- `R15_16-retired-percent` The retired `n PERCENT OF Role` (hint: `n% OF Role`).
+- `R15_17-misplaced-percent-sign` A `%` that isn't directly before `OF` (hint: a share is written `n% OF Role`; Regia has no remainder, and Weights are relative).
 
-`R1505` (`MAPPING ?who AS …`) is no longer given: chapter 20 allows it. `R1501` (a Role name used as a Value) is retired into `R0303` (chapter 03, ADR 0048).
+`R15_05-mapping-from-placeholder` (`MAPPING ?who AS …`) is no longer given: chapter 20 allows it. `R15_01-role-name-as-value` (a Role name used as a Value) is retired into `R03_03-role-as-value` (chapter 03, ADR 0048).
 
 ## Trace entries
 
 **Failures**
 
-- `T1501` A count or fraction that isn't a Number.
+- `T15_01-count-not-number` A count or fraction that isn't a Number.
 
 **Warnings**
 
-- `T1502` A count asking for more Agents than are left in the pool: it takes everyone left.
-- `T1503` A negative count, counted as 0.
-- `T1504` An `EXCEPT ?who` whose Placeholder doesn't hold an Agent: nobody is left out.
-- `T1505` A `REMOVE` naming one Agent that takes nothing: `FROM <Role> ?who` when `?who` doesn't play the Role, or `FROM ?who` with no giving made to that Agent.
-- `T1506` An `ASSIGN P TO <Role> ?who` with nothing to lift: `?who` doesn't play the Role, or no giving of `P` leaves it out.
+- `T15_02-count-exceeds-pool` A count asking for more Agents than are left in the pool: it takes everyone left.
+- `T15_03-count-below-zero` A negative count, counted as 0.
+- `T15_04-except-placeholder-not-agent` An `EXCEPT ?who` whose Placeholder doesn't hold an Agent: nobody is left out.
+- `T15_05-remove-takes-nothing` A `REMOVE` naming one Agent that takes nothing: `FROM <Role> ?who` when `?who` doesn't play the Role, or `FROM ?who` with no giving made to that Agent.
+- `T15_06-assign-lifts-nothing` An `ASSIGN P TO <Role> ?who` with nothing to lift: `?who` doesn't play the Role, or no giving of `P` leaves it out.
 
 ## Reserved words
 
@@ -419,9 +421,9 @@ For *The full ASL mapping* to pick up:
 
 In 1.5 (ADR 0025): Playbook Roles, Mappings, Givings, `UNTIL EXITED`, `WHEN ASSIGNED` and `WHEN REMOVED`, `CAST`, counts and fractions, `EXCEPT` and `PLAYS`.
 
-1.5 has no joiners, so a Staging's cast is fixed when it starts and only shrinks (chapter 19). What this chapter says about Agents who join later doesn't apply: a standing Giving reaches the Agents playing the Role when it is made, and lasts until it is taken away. `WHEN CAST ?late JOINED` is later (`R0109`, chapter 01), and so are `BY`, and Quotas over a Role or over the endings of a Goal.
+1.5 has no joiners, so a Staging's cast is fixed when it starts and only shrinks (chapter 19). What this chapter says about Agents who join later doesn't apply: a standing Giving reaches the Agents playing the Role when it is made, and lasts until it is taken away. `WHEN CAST ?late JOINED` is later (`R01_09-later-regia-construct`, chapter 01), and so are `BY`, and Quotas over a Role or over the endings of a Goal.
 
-Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `MAPPING … AS`, `REMOVE` and `REMOVED`, and `R1514` and `R1515` in the ticket *`TO` and `FROM` outside Triggers* (`.scratch/syntax-review/issues/05-to-and-from.md`), which also made `ASSIGN … TO` one of the two closed exceptions to the rule that `TO` introduces a Goal (chapter 01, ADR 0043).
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `MAPPING … AS`, `REMOVE` and `REMOVED`, and `R15_14-retired-mapping-to` and `R15_15-retired-unassign` in the ticket *`TO` and `FROM` outside Triggers* (`.scratch/syntax-review/issues/05-to-and-from.md`), which also made `ASSIGN … TO` one of the two closed exceptions to the rule that `TO` introduces a Goal (chapter 01, ADR 0043).
 
 ## Not decided here
 

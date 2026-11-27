@@ -40,7 +40,7 @@ WHEN apology(?s):
 
 - **Learning a known Fact does nothing**, and `LEARNED` doesn't fire. **Forgetting an unknown Fact does nothing**, and `FORGOTTEN` doesn't fire. Neither one fails the Plan.
 - `LEARNED` and `FORGOTTEN` fire whatever caused the change, including these Actions (chapter 05). A Fact the Agent learned itself has no Sender.
-- **A game Fact** (`GAME FACT`, chapter 10) is the game's to keep. `LEARN`, `FORGET` or `UPDATE` on one works, but the game may undo it at its next report, so the Transpiler warns (`R0807`). To remember what the game said, a Plan records a Fact of its own.
+- **A game Fact** (`GAME FACT`, chapter 10) is the game's to keep. `LEARN`, `FORGET` or `UPDATE` on one works, but the game may undo it at its next report, so the Transpiler warns (`R08_07-edit-of-game-fact`). To remember what the game said, a Plan records a Fact of its own.
 
 ### Updating a Fact
 
@@ -55,7 +55,7 @@ WHEN hit(?dmg):
 - Both sides name the **same Fact**, and they may differ only in their arguments. `UPDATE health(?h) TO score(3)` is an error.
 - **The old Fact must be known.** If it isn't, the Plan fails, because a change from something that isn't there is a mistake rather than a no-op. (A plain `FORGET` of an unknown Fact does nothing.) What failing does is in chapter 11 (`11-failure.md`).
 - It fires exactly what the pair would: `FORGOTTEN` for the old Fact, then `LEARNED` for the new one. If both sides are equal, nothing changes and nothing fires.
-- `TO` here is a destination, one of the two closed exceptions to the rule that `TO` introduces a Goal (chapter 01, ADR 0043). The retired spelling `CHANGE f TO f2` is an error (`R0808`).
+- `TO` here is a destination, one of the two closed exceptions to the rule that `TO` introduces a Goal (chapter 01, ADR 0043). The retired spelling `CHANGE f TO f2` is an error (`R08_08-retired-change`).
 ## Goals
 
 ### Pursuing
@@ -88,9 +88,9 @@ TO patrol:
 ```
 
 - **Each round is a Pursuit of its own.** `REACHED` and `ENDED` fire at the end of every round.
-- **From the second round on the Goal has no Sender**: the Agent gave it to itself, and it is `FROM ME` (chapter 05). A recipe written `TO patrol, FROM DIRECTOR:` runs one round, then fails for want of a recipe, with a warning at build time (`R3805`, chapter 38); one that the Director starts and that repeats is written `TO patrol, FROM DIRECTOR OR ME:`. A Director that asked for `patrol` hears `REACHED` after the first round and nothing after.
+- **From the second round on the Goal has no Sender**: the Agent gave it to itself, and it is `FROM ME` (chapter 05). A recipe written `TO patrol, FROM DIRECTOR:` runs one round, then fails for want of a recipe, with a warning at build time (`R38_05-pursue-without-me-recipe`, chapter 38); one that the Director starts and that repeats is written `TO patrol, FROM DIRECTOR OR ME:`. A Director that asked for `patrol` hears `REACHED` after the first round and nothing after.
 - `DROP patrol` stops the round under way, and no further round starts.
-- **The waiting form doesn't repeat.** `PURSUE patrol` inside `TO patrol` waits on a new Pursuit, which waits on another, and none is ever reached. With the recipe's own arguments and no `GIVEN` or `IF` around it, it is a warning (`R0806`). Under a condition it is ordinary recursion and is not reported.
+- **The waiting form doesn't repeat.** `PURSUE patrol` inside `TO patrol` waits on a new Pursuit, which waits on another, and none is ever reached. With the recipe's own arguments and no `GIVEN` or `IF` around it, it is a warning (`R08_06-endless-self-pursuit`). Under a condition it is ordinary recursion and is not reported.
 - Loops proper are post-2.0 (chapter 06).
 
 ### Dropping
@@ -175,22 +175,22 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 
 **Errors**
 
-- `R0801` A blank (an unfilled Placeholder) in a Basic Action's argument (for `FORGET`, the hint suggests `FOR EACH`).
-- `R0802` A name whose kind doesn't suit the Action: `LEARN`/`FORGET`/`UPDATE` with a Cue or a Goal, `PURSUE`/`DROP` with a Fact or a Cue, `DROP` with a Plot (hint: `DROP SUBPLOT P`, chapter 17), `DO` with anything but a Custom Action (the message suggests the right Action).
-- `R0803` A Custom Action without `DO`, or `DO` before a Basic Action.
-- `R0804` `UPDATE f TO f2` with two different Facts.
-- `R0805` A trailing clause other than `, WITHOUT WAITING`, or one on a Statement other than `PURSUE` and `DO`.
-- `R0808` The retired `CHANGE f TO f2` (hint: `UPDATE f TO f2`).
+- `R08_01-unfilled-action-argument` A blank (an unfilled Placeholder) in a Basic Action's argument (for `FORGET`, the hint suggests `FOR EACH`).
+- `R08_02-wrong-kind-for-action` A name whose kind doesn't suit the Action: `LEARN`/`FORGET`/`UPDATE` with a Cue or a Goal, `PURSUE`/`DROP` with a Fact or a Cue, `DROP` with a Plot (hint: `DROP SUBPLOT P`, chapter 17), `DO` with anything but a Custom Action (the message suggests the right Action).
+- `R08_03-misused-do` A Custom Action without `DO`, or `DO` before a Basic Action.
+- `R08_04-update-to-another-fact` `UPDATE f TO f2` with two different Facts.
+- `R08_05-wrong-trailing-clause` A trailing clause other than `, WITHOUT WAITING`, or one on a Statement other than `PURSUE` and `DO`.
+- `R08_08-retired-change` The retired `CHANGE f TO f2` (hint: `UPDATE f TO f2`).
 **Warnings**
 
-- `R0806` A waiting `PURSUE g` in a `TO g` Plan, with the Trigger's own arguments and no `GIVEN` or `IF` around it: the Goal can never be reached (hint: `, WITHOUT WAITING` repeats).
-- `R0807` `LEARN`, `FORGET` or `UPDATE` on a game Fact, by an Agent or a Director: the game may undo it (hint: record a Fact of the Program's own).
+- `R08_06-endless-self-pursuit` A waiting `PURSUE g` in a `TO g` Plan, with the Trigger's own arguments and no `GIVEN` or `IF` around it: the Goal can never be reached (hint: `, WITHOUT WAITING` repeats).
+- `R08_07-edit-of-game-fact` `LEARN`, `FORGET` or `UPDATE` on a game Fact, by an Agent or a Director: the game may undo it (hint: record a Fact of the Program's own).
 
 ## Trace entries
 
 **Failures**
 
-- `T0801` `UPDATE f TO f2` when `f` isn't known.
+- `T08_01-update-of-unknown-fact` `UPDATE f TO f2` when `f` isn't known.
 
 ## ASL mapping notes
 
@@ -203,9 +203,9 @@ For *The full ASL mapping* to pick up:
 
 ## Regia 1.5
 
-All of this chapter is in 1.5 (ADR 0025). A recipe that repeats still has no Sender from its second round on; it just can't be written `FROM ME`. The build-time warning for `TO patrol, FROM DIRECTOR:` is `R3805`, which is later, so in 1.5 that round fails at run time with `T1104` only.
+All of this chapter is in 1.5 (ADR 0025). A recipe that repeats still has no Sender from its second round on; it just can't be written `FROM ME`. The build-time warning for `TO patrol, FROM DIRECTOR:` is `R38_05-pursue-without-me-recipe`, which is later, so in 1.5 that round fails at run time with `T11_04-goal-found-no-plan` only.
 
-Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `UPDATE`, which replaced `CHANGE`, and `R0808` in the ticket *`TO` and `FROM` outside Triggers* (`.scratch/syntax-review/issues/05-to-and-from.md`).
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `UPDATE`, which replaced `CHANGE`, and `R08_08-retired-change` in the ticket *`TO` and `FROM` outside Triggers* (`.scratch/syntax-review/issues/05-to-and-from.md`).
 
 ## Not decided here
 

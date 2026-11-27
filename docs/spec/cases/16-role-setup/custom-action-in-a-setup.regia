@@ -1,9 +1,9 @@
 #! case: a Role setup holds only ASSIGN, LEARN and PURSUE
-#! rule: R1602
+#! rule: R16_02-wrong-statement-in-setup
 
 ACTION wave
 
 PLOT Banquet:
     ROLE Guest:
-        DO wave.                         #! error R1602
+        DO wave.                         #! error R16_02-wrong-statement-in-setup
     PHASE reception INITIAL.

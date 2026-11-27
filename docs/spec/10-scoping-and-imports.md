@@ -75,11 +75,11 @@ FACT       on_duty                  # learned and told by Agents
 - A `FACT` or `CUE` declared with **`GAME`** in front is a **game item**: the game produces it. Every other Fact and Cue is produced only by the Program itself: `LEARN`, `UPDATE`, `TELL`, `SIGNAL`, `END PLOT WITH` and `FAIL WITH`.
 - `GAME` says where an item comes from and nothing else. Plans test, react to and tell a game item like any other: `GIVEN hungry`, `WHEN food_served:`, `TELL Guest food_served` (a told game Cue is the same Cue, chapter 07).
 - **Only a game item comes from the game.** A game message for a Fact or Cue not declared `GAME` is dropped by the Target, with a Trace warning.
-- `GAME` goes on `FACT` and `CUE` only (`R1016`). A `GOAL` never comes from the game. An `ACTION` is split by its External name instead (below).
+- `GAME` goes on `FACT` and `CUE` only (`R10_16-game-on-wrong-declaration`). A `GOAL` never comes from the game. An `ACTION` is split by its External name instead (below).
 - **A local item is never `GAME`** (below): local Facts and Cues never come from the game.
 - In a Multi-definition `GAME` covers every item of the line, like the kind word.
-- A re-declaration merges only if both say `GAME` or neither does (`R1005`).
-- What `GAME` lets the Transpiler check: a Cue that isn't `GAME` and that nothing in the Program sends (`R3807`, chapter 38), and a Plan that changes a game Fact (`R0807`, chapter 08).
+- A re-declaration merges only if both say `GAME` or neither does (`R10_05-conflicting-redeclaration`).
+- What `GAME` lets the Transpiler check: a Cue that isn't `GAME` and that nothing in the Program sends (`R38_07-cue-never-sent`, chapter 38), and a Plan that changes a game Fact (`R08_07-edit-of-game-fact`, chapter 08).
 
 ## External names
 
@@ -142,7 +142,7 @@ A Cue that one Playbook both sends and reacts to may be declared inside it (ADR 
 
 - A local Cue is sent with **`TELL`, to any recipient** `TELL` accepts (chapter 07): a Role of the Playbook, a Placeholder that holds an Agent, or `EVERYONE`.
 - A receiver that holds the Playbook reacts with the Playbook's `WHEN` Plans, with `FROM` as for any told Cue. A receiver that doesn't hold it has no Plan for the Cue, and nothing happens, as with any told Cue nobody reacts to.
-- A local Cue **can't be Signalled** (`R1014`) and **can't be an Outcome** (`R1004`): a Director is outside the Playbook and couldn't name it.
+- A local Cue **can't be Signalled** (`R10_14-local-vocabulary-sent`) and **can't be an Outcome** (`R10_04-name-out-of-scope`): a Director is outside the Playbook and couldn't name it.
 - A local Cue **can be a Reason** (`FAIL WITH`, chapter 11). Only Plans of the same Playbook can match it with `FAILED WITH`; an asker outside the Playbook hears the Failure and matches it with plain `FAILED`.
 - It follows the other rules of local items: no External name, no shadowing, not importable, and two Playbooks may each declare the same local name as two different Cues.
 
@@ -154,22 +154,22 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 
 **Errors**
 
-- `R1001` An `IMPORT` that isn't at the top of the file, after its doc comment and before any declaration.
-- `R1002` An import path that leads to no file.
-- `R1003` An import cycle (the message names every file in the loop).
-- `R1004` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`). Absence check (chapter 23).
-- `R1005` Two declarations of one name that don't agree on kind, parameter count, External name or `GAME` (the message names both).
-- `R1006` A Playbook or Plot declared twice.
-- `R1007` Two names that differ only in case, in the program-wide namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders.
-- `R1008` A name, a Placeholder's included, that starts with `regia_` or contains `__`.
-- `R1009` A dotted name without `AS`.
-- `R1010` `AS` on a `GOAL`, on a local declaration, or on a `FACT` or `CUE` that isn't `GAME`.
-- `R1011` One External name given two Regia names.
-- `R1012` `ACTION` declared inside a `PLAYBOOK` or `PLOT`, or `CUE` declared inside a `PLOT`.
-- `R1013` A local name that shadows a name the file can see.
-- `R1014` A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL`, or a local Cue sent with `SIGNAL`.
-- `R1015` `GOAL` declared inside a `PLOT` (hint: declare it at file level to `ASK` for it).
-- `R1016` `GAME` on anything but a `FACT` or a `CUE`, or on a local declaration (a `NAME` line is `R0311`).
+- `R10_01-misplaced-import` An `IMPORT` that isn't at the top of the file, after its doc comment and before any declaration.
+- `R10_02-missing-import-file` An import path that leads to no file.
+- `R10_03-import-cycle` An import cycle (the message names every file in the loop).
+- `R10_04-name-out-of-scope` A name that isn't declared in the file or anything it reaches (when the declaring file is still in the Program, the hint names it and suggests the `IMPORT`). Absence check (chapter 23).
+- `R10_05-conflicting-redeclaration` Two declarations of one name, of one kind, that don't agree on parameter count, External name or `GAME` (the message names both). Two kinds is `R05_01-declared-as-two-kinds`.
+- `R10_06-duplicate-playbook-or-plot` A Playbook or Plot declared twice.
+- `R10_07-case-only-name-clash` Two names that differ only in case, in the program-wide namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders.
+- `R10_08-reserved-name-spelling` A name, a Placeholder's included, that starts with `regia_` or contains `__`.
+- `R10_09-dotted-name-without-as` A dotted name without `AS`.
+- `R10_10-as-on-wrong-declaration` `AS` on a `GOAL`, on a local declaration, or on a `FACT` or `CUE` that isn't `GAME`.
+- `R10_11-shared-external-name` One External name given two Regia names.
+- `R10_12-misplaced-action-or-cue` `ACTION` declared inside a `PLAYBOOK` or `PLOT`, or `CUE` declared inside a `PLOT`.
+- `R10_13-shadowing-local-name` A local name that shadows a name the file can see.
+- `R10_14-local-vocabulary-sent` A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL`, or a local Cue sent with `SIGNAL`.
+- `R10_15-goal-in-plot` `GOAL` declared inside a `PLOT` (hint: declare it at file level to `ASK` for it).
+- `R10_16-game-on-wrong-declaration` `GAME` on anything but a `FACT` or a `CUE`, or on a local declaration (a `NAME` line is `R03_11-misused-name-declaration`).
 
 ## ASL mapping notes
 

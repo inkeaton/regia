@@ -49,8 +49,8 @@ The Statement never waits. The banquet's Body carries on at once, as it does aft
 
 **Checks**
 
-- `START SUBPLOT` in a Playbook → `R1507`
-- A Plot that isn't declared in the file or anything it imports → `R1004` (the hint suggests the `IMPORT`)
+- `START SUBPLOT` in a Playbook → `R15_07-director-statement-in-playbook`
+- A Plot that isn't declared in the file or anything it imports → `R10_04-name-out-of-scope` (the hint suggests the `IMPORT`)
 
 Spec: chapter 17, *Starting a Subplot*. For what starting a Staging does, chapter 20.
 
@@ -92,10 +92,10 @@ PLOT HonorDuel(offender):
 
 **Checks**
 
-- A Plot written with the wrong number of arguments: bare when it has parameters, with arguments when it has none, in `START SUBPLOT`, an ending Trigger, `DROP SUBPLOT` or `RUNNING`; or written with arguments in `PRECEDENCE` → `R1709`
-- A `START SUBPLOT` argument that isn't filled, or is a Role → `R1710`
-- A Plan that fills a parameter again (`LET ?offender BE …`), or two parameters of one Plot with one name → `R1711`
-- A Root Plot with parameters → `R2114`
+- A Plot written with the wrong number of arguments: bare when it has parameters, with arguments when it has none, in `START SUBPLOT`, an ending Trigger, `DROP SUBPLOT` or `RUNNING`; or written with arguments in `PRECEDENCE` → `R17_09-wrong-plot-argument-count`
+- A `START SUBPLOT` argument that isn't filled, or is a Role → `R17_10-wrong-subplot-argument`
+- A Plan that fills a parameter again (`LET ?offender BE …`), or two parameters of one Plot with one name → `R17_11-repeated-plot-parameter`
+- A Root Plot with parameters → `R21_14-root-plot-with-parameters`
 
 Spec: chapter 17, *Plot parameters*. For Placeholders, chapter 03; for the Interface, chapter 38.
 
@@ -137,14 +137,14 @@ A Role can start with nobody in it, when the parent's Role was empty at that mom
 
 **Checks**
 
-- A Subplot Role left unfilled → `R1503` (the message suggests a `MAPPING`)
-- Two `MAPPING`s to one Role in one Statement, or a `MAPPING` to a Role the Subplot doesn't declare → `R1504`
-- A Role on the left that the parent doesn't declare → `R1502`
-- `EXCEPT` misused → `R1510`
-- A `MAPPING ?who` whose Placeholder isn't filled, or isn't certainly filled → `R0304`, `R0305`
-- The retired `MAPPING a TO b` → `R1514` (hint: `MAPPING a AS b`)
-- A count asking for more Agents than the Role has → `T1502` (Trace warning)
-- A Mapping that reaches an Agent who has left → `T2001` (Trace warning)
+- A Subplot Role left unfilled → `R15_03-unfilled-receiving-role` (the message suggests a `MAPPING`)
+- Two `MAPPING`s to one Role in one Statement, or a `MAPPING` to a Role the Subplot doesn't declare → `R15_04-misused-mapping`
+- A Role on the left that the parent doesn't declare → `R15_02-undeclared-role`
+- `EXCEPT` misused → `R15_10-misused-except`
+- A `MAPPING ?who` whose Placeholder isn't filled, or isn't certainly filled → `R03_04-unfilled-placeholder`, `R03_05-maybe-unfilled-placeholder`
+- The retired `MAPPING a TO b` → `R15_14-retired-mapping-to` (hint: `MAPPING a AS b`)
+- A count asking for more Agents than the Role has → `T15_02-count-exceeds-pool` (Trace warning)
+- A Mapping that reaches an Agent who has left → `T20_01-giving-after-leaving` (Trace warning)
 
 Spec: chapter 17, *Casting*. For the Mapping clause, counts and `EXCEPT`, chapter 15; for `EMPTIED`, chapter 19.
 
@@ -178,7 +178,7 @@ A Signal goes to the Directors that gave the Playbook it is written in. `wagered
 
 **Checks**
 
-- A Role the Plot doesn't declare, a Subplot's included → `R1502`
+- A Role the Plot doesn't declare, a Subplot's included → `R15_02-undeclared-role`
 
 Spec: chapter 17, *Being in both*. For Signals and `FROM DIRECTOR`, chapter 07; for Givings, chapter 15.
 
@@ -237,9 +237,9 @@ WHEN culprit_seized(?):
 
 **Checks**
 
-- `RUNNING` naming a Plot this Plot never starts → `R1704`
-- `RUNNING` in a Playbook → `R1714`
-- A Plot with parameters written bare, or one without written with arguments → `R1709`
+- `RUNNING` naming a Plot this Plot never starts → `R17_04-subplot-never-started`
+- `RUNNING` in a Playbook → `R17_14-running-in-playbook`
+- A Plot with parameters written bare, or one without written with arguments → `R17_09-wrong-plot-argument-count`
 
 Spec: chapter 17, *Running Stagings*. For distinct Matches and `COUNT`, chapter 26.
 
@@ -262,8 +262,8 @@ The parent hears it as `DROPPED` (below). `feast` has been left by then, so its 
 
 **Checks**
 
-- `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block, or not last → `R1509`
-- `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, with a `DROPPED` or `ENDED` Plan for `P` only in `p` → `R1713` (warning: nothing hears the ending)
+- `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block, or not last → `R15_09-misused-until-exited`
+- `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, with a `DROPPED` or `ENDED` Plan for `P` only in `p` → `R17_13-unheard-until-exited-ending` (warning: nothing hears the ending)
 
 Spec: chapter 17, *A Subplot outlives its Phase*. For `UNTIL EXITED`, chapter 15; for what `ENTER` does, chapter 20.
 
@@ -304,10 +304,10 @@ A Subplot ends itself with `END PLOT`, as any Plot does. With `WITH <cue>`, it a
 
 **Checks**
 
-- A Statement after `END PLOT` in the same branch → `R1702`
-- `END PLOT WITH` something other than one declared Cue, or with arguments not filled → `R1703`
-- A Playbook's local Cue as an Outcome → `R1004` (the Plot can't see it)
-- `END PLOT WITH` in a Plot never started as a Subplot → `R1705` (warning: `WITH` is ignored)
+- A Statement after `END PLOT` in the same branch → `R17_02-statement-after-end-plot`
+- `END PLOT WITH` something other than one declared Cue, or with arguments not filled → `R17_03-misused-end-plot-with`
+- A Playbook's local Cue as an Outcome → `R10_04-name-out-of-scope` (the Plot can't see it)
+- `END PLOT WITH` in a Plot never started as a Subplot → `R17_05-ignored-end-plot-with` (warning: `WITH` is ignored)
 
 Spec: chapter 17, *Ending*, *Outcomes*. For what `END PLOT` does to the Staging, chapter 20.
 
@@ -400,13 +400,13 @@ The banquet's Director acts at the second arrow and at the end. In between it kn
 
 **Checks**
 
-- `WHEN P FINISHED`, `DROPPED` or `ENDED` where this Plot never starts `P` → `R1704`
-- `WHEN P DROPPED` where this Plot never ends `P` from above: no `DROP SUBPLOT P`, no `UNTIL EXITED` on its `START SUBPLOT` → `R1712`
-- The retired `WHEN P ENDED WITH e:` or `WHEN P ENDED WITHOUT OUTCOME:`, or `ENDED` with any complement → `R1715` (hint: `FINISHED WITH e`, or a plain `FINISHED` after the `FINISHED WITH` Plans)
-- `WHEN P FINISHED WITH e` where `P` never ends with `e` → `R1706` (warning)
-- An ending of `P` that no Plan of the parent hears in any Phase → `R1708` (warning, on the `START SUBPLOT`, once per ending)
-- A plain `FINISHED` above a `FINISHED WITH` it also matches → `R1716` (warning)
-- An ending the Subplot chose that no Plan heard → `T3802` (Trace, `unheard`)
+- `WHEN P FINISHED`, `DROPPED` or `ENDED` where this Plot never starts `P` → `R17_04-subplot-never-started`
+- `WHEN P DROPPED` where this Plot never ends `P` from above: no `DROP SUBPLOT P`, no `UNTIL EXITED` on its `START SUBPLOT` → `R17_12-subplot-never-dropped`
+- The retired `WHEN P ENDED WITH e:` or `WHEN P ENDED WITHOUT OUTCOME:`, or `ENDED` with any complement → `R17_15-retired-ended-with` (hint: `FINISHED WITH e`, or a plain `FINISHED` after the `FINISHED WITH` Plans)
+- `WHEN P FINISHED WITH e` where `P` never ends with `e` → `R17_06-unknown-subplot-outcome` (warning)
+- An ending of `P` that no Plan of the parent hears in any Phase → `R17_08-unheard-subplot-ending` (warning, on the `START SUBPLOT`, once per ending)
+- A plain `FINISHED` above a `FINISHED WITH` it also matches → `R17_16-shadowed-finished-with` (warning)
+- An ending the Subplot chose that no Plan heard → `T38_02-ending-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 17, *The parent's Triggers*. For a Goal's ending Triggers, chapter 05; for which Block hears a Trigger, chapter 13.
 
@@ -437,10 +437,10 @@ When a Plot ends, its Subplots end with it, children before parents, each with `
 
 **Checks**
 
-- `DROP SUBPLOT P` where this Plot never starts `P` → `R1704`
-- `DROP P` with a Plot → `R0802` (hint: `DROP SUBPLOT P`)
-- The retired `END SUBPLOT P` → `R1717` (hint: `DROP SUBPLOT P`)
-- A Plot with parameters written bare → `R1709`
+- `DROP SUBPLOT P` where this Plot never starts `P` → `R17_04-subplot-never-started`
+- `DROP P` with a Plot → `R08_02-wrong-kind-for-action` (hint: `DROP SUBPLOT P`)
+- The retired `END SUBPLOT P` → `R17_17-retired-end-subplot` (hint: `DROP SUBPLOT P`)
+- A Plot with parameters written bare → `R17_09-wrong-plot-argument-count`
 
 Spec: chapter 17, *`DROP SUBPLOT`*, *`END PLOT`*. For `EXITED, BY PARENT`, chapter 20.
 
@@ -460,7 +460,7 @@ A Subplot's Playbooks rank against its parent's, and a Plot below itself would r
 
 **Checks**
 
-- A cycle among `START SUBPLOT` Statements → `R1701` (the message names the cycle)
+- A cycle among `START SUBPLOT` Statements → `R17_01-subplot-cycle` (the message names the cycle)
 
 Spec: chapter 17, *No cycles*. For ranking, chapter 13.
 

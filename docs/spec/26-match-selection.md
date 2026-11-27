@@ -50,7 +50,7 @@ WHEN tired:
 - `?p` must be a named Placeholder **filled by the same condition**. A Trigger Placeholder or one filled earlier in the Body is an error: it has the same value in every Match.
 - Matches whose `?p` is **not a Number are skipped**, as a comparison with a non-Number is false (chapter 04). If no Match is left, the condition doesn't hold.
 - One ranked Placeholder per Pick. Ranking by a second value is not in 2.0.
-- Ranking by `?p` **uses** it: a `?p` named only in the condition and the Pick gets no "never used" warning (`R0307`, chapter 03). The same holds for a Placeholder named in a Weight.
+- Ranking by `?p` **uses** it: a `?p` named only in the condition and the Pick gets no "never used" warning (`R03_07-unused-placeholder`, chapter 03). The same holds for a Placeholder named in a Weight.
 
 ### A weighted Pick
 
@@ -62,10 +62,10 @@ WHEN insulted:
 
 - `, WEIGHT <Expression>` picks one Match at random, each Match as likely as its Weight compared with the sum of all of them: the Weights of a Random choice (chapter 09), with Matches in the place of Options.
 - The Weight is **worked out once per Match**, with the Placeholders the condition fills in that Match, and with any certainly-filled Placeholder from before it as a fixed value. `WEIGHT ?size * 2` and `WEIGHT 10 - ?distance` are both fine.
-- It stands alone. Next to `HIGHEST`, `LOWEST` or `RANDOMLY` it is an error (`R2601`): it is already a random Pick, and it ranks nothing.
+- It stands alone. Next to `HIGHEST`, `LOWEST` or `RANDOMLY` it is an error (`R26_01-conflicting-pick-clauses`): it is already a random Pick, and it ranks nothing.
 - It mixes with Labels like the other Picks: `GIVEN grudge(?foe, ?size), WEIGHT ?size, SHIFTS anger BY 0.1:`.
-- **Wrong Weights** follow chapter 09. A negative Weight counts as 0. If **every Match weighs 0** (or less), the condition is treated as having **no Match**: a `GIVEN` doesn't apply and an `IF` goes on to its `ELSE IF` or `ELSE`. The Trace records it (`T2601`), as an entry and not a warning.
-- A Weight that **isn't a Number**: on a `GIVEN`, that Match is left out, as a comparison with a non-Number is false in a Context (chapter 04). On a Body `IF` or `ELSE IF`, it fails the Plan (`T0901`), as a Weight in a Body does.
+- **Wrong Weights** follow chapter 09. A negative Weight counts as 0. If **every Match weighs 0** (or less), the condition is treated as having **no Match**: a `GIVEN` doesn't apply and an `IF` goes on to its `ELSE IF` or `ELSE`. The Trace records it (`T26_01-all-pick-weights-zero`), as an entry and not a warning.
+- A Weight that **isn't a Number**: on a `GIVEN`, that Match is left out, as a comparison with a non-Number is false in a Context (chapter 04). On a Body `IF` or `ELSE IF`, it fails the Plan (`T09_01-weight-not-number`), as a Weight in a Body does.
 
 ### Where Picks are allowed
 
@@ -128,7 +128,7 @@ WHEN insulted(?who):
 - It counts distinct Matches over **every blank**, `?` included. `COUNT(hates(?))` is the number of Agents the Agent hates. `COUNT(hates(?x, ?))` counts `hates` Facts, so an Agent hated for two reasons counts twice.
 - A condition with no blanks counts **1 or 0**: `COUNT(is_drunk)`.
 - Placeholders filled inside `COUNT(…)` are **never filled outside it**. Certainly-filled Placeholders from outside can be used inside it as fixed values (`?who` above). A named Placeholder used only inside a `COUNT` gets no "never used" warning, since naming it there only documents the slot.
-- `n OF` stays a Quota form (chapter 18). There is no `GIVEN 3 OF …` (`R2607`): write `GIVEN COUNT(…) >= 3`.
+- `n OF` stays a Quota form (chapter 18). There is no `GIVEN 3 OF …` (`R26_07-quantity-in-condition`): write `GIVEN COUNT(…) >= 3`.
 - `COUNT` is a noun, "how many", here and in the `.regin` line `COUNT 2` (chapter 21), which says how many Agents of a kind start the Program.
 
 `COUNT` counts a Role's Agents through `PLAYS` (chapter 15): `COUNT(? PLAYS Guest)` in a Plot, `COUNT(? PLAYS waiter)` in a Playbook, the Agent itself included if it plays the Role. `EMPTIED` (chapter 19) stays the Trigger for a Role losing its last Agent; a condition is only read when something else fires. A Director still never reads Agents' Facts (chapter 20).
@@ -143,21 +143,21 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 
 **Errors**
 
-- `R2601` `HIGHEST` together with `LOWEST`, `WEIGHT` together with `HIGHEST`, `LOWEST` or `RANDOMLY`, or a Pick clause written twice.
-- `R2602` A ranked Placeholder not filled by the same condition (a Trigger Placeholder, or one filled earlier in the Body).
-- `R2603` A Pick (`WEIGHT` included) on `FOR EACH`, a Trigger, `COUNT(…)` or `ELSE`.
-- `R2604` A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block.
-- `R2605` A Weight using a Placeholder that is neither filled by the condition nor certainly filled before it.
-- `R2606` The retired Pick `, AT RANDOM` (hint: `, RANDOMLY`).
-- `R2607` `n OF` in a Context: a Quota form only (chapter 18; hint: `COUNT(…) >= n`).
+- `R26_01-conflicting-pick-clauses` `HIGHEST` together with `LOWEST`, `WEIGHT` together with `HIGHEST`, `LOWEST` or `RANDOMLY`, or a Pick clause written twice.
+- `R26_02-rank-on-unmatched-placeholder` A ranked Placeholder not filled by the same condition (a Trigger Placeholder, or one filled earlier in the Body).
+- `R26_03-misplaced-pick` A Pick (`WEIGHT` included) on `FOR EACH`, a Trigger, `COUNT(…)` or `ELSE`.
+- `R26_04-placeholder-outside-for-each` A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block.
+- `R26_05-maybe-unfilled-pick-weight` A Weight using a Placeholder that is neither filled by the condition nor certainly filled before it.
+- `R26_06-retired-at-random` The retired Pick `, AT RANDOM` (hint: `, RANDOMLY`).
+- `R26_07-quantity-in-condition` `n OF` in a Context: a Quota form only (chapter 18; hint: `COUNT(…) >= n`).
 
-A blank in a Basic Action, whose message suggests `FOR EACH`, is chapter 08's `R0801`.
+A blank in a Basic Action, whose message suggests `FOR EACH`, is chapter 08's `R08_01-unfilled-action-argument`.
 
 ## Trace entries
 
 **Entries**
 
-- `T2601` Every Match of a weighted Pick weighs 0 (or less): the condition has no Match to use.
+- `T26_01-all-pick-weights-zero` Every Match of a weighted Pick weighs 0 (or less): the condition has no Match to use.
 
 ## ASL mapping notes
 

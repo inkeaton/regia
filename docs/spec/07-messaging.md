@@ -44,7 +44,7 @@ A Director has two more: `CAST`, every Agent of its Staging reached once, and a 
 - A Playbook names Roles it declares itself (`ROLE host`), filled by the Plot that gives it. A Role there reaches the Agents bound to it by every giving the Agent holds, across Plots and Stagings (chapter 15, `15-roles-and-mappings.md`).
 - `EVERYONE` is the only audience that doesn't depend on a Plot, which is why it is the whole game. Narrower audiences are Roles.
 - If the recipient Placeholder holds something that is not an Agent at runtime (`?h` filled with `sword`), the **Plan fails**, like arithmetic on a non-Number (chapter 04). What failing does is in chapter 11 (`11-failure.md`).
-- An empty Role, or `EVERYONE` when nobody else exists, sends nothing. That is not an error. A counted recipient that finds nobody sends nothing either, with a Trace warning (`T1502`, chapter 15): an `ASK` sent to nobody has no ending to hear.
+- An empty Role, or `EVERYONE` when nobody else exists, sends nothing. That is not an error. A counted recipient that finds nobody sends nothing either, with a Trace warning (`T15_02-count-exceeds-pool`, chapter 15): an `ASK` sent to nobody has no ending to hear.
 - An Agent that plays two Roles hears a `TELL` to each of them twice. A Director that means everybody once writes `TELL CAST …`.
 
 ## Signals
@@ -177,22 +177,22 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 
 **Errors**
 
-- `R0701` `TELL` with a Goal (hint: `ASK … TO`).
-- `R0702` `ASK … TO` with a Fact or a Cue (hint: `TELL`).
-- `R0703` `SIGNAL` with something that isn't a Cue.
-- `R0704` A Value in the recipient position, `ME` included (Regia never names an Agent).
-- `R0705` A trailing clause on a message Statement (none exist in 2.0).
-- `R0706` A reserved word used: the kind words `TOLD`, `AGREED`, `REFUSED`, or `REFUSE`.
+- `R07_01-tell-with-goal` `TELL` with a Goal (hint: `ASK … TO`).
+- `R07_02-ask-with-non-goal` `ASK … TO` with a Fact or a Cue (hint: `TELL`).
+- `R07_03-signal-with-non-cue` `SIGNAL` with something that isn't a Cue.
+- `R07_04-value-as-recipient` A Value in the recipient position, `ME` included (Regia never names an Agent).
+- `R07_05-clause-on-message` A trailing clause on a message Statement (none exist in 2.0).
+- `R07_06-reserved-kind-word` A reserved word used: the kind words `TOLD`, `AGREED`, `REFUSED`, or `REFUSE`.
 
 ## Trace entries
 
 **Failures**
 
-- `T0701` A recipient Placeholder that doesn't hold an Agent at runtime.
+- `T07_01-recipient-not-agent` A recipient Placeholder that doesn't hold an Agent at runtime.
 
 **Unheard** (`info`, chapter 34)
 
-- `T0702` A Cue told to an Agent, for which no Plan of the Agent's given Playbooks runs: none names it, or every one that does has a Context that doesn't hold. The entry names the Cue and its Sender. A Fact told is a `fact` entry whether or not a Plan reacts to it.
+- `T07_02-cue-found-no-plan` A Cue told to an Agent, for which no Plan of the Agent's given Playbooks runs: none names it, or every one that does has a Context that doesn't hold. The entry names the Cue and its Sender. A Fact told is a `fact` entry whether or not a Plan reacts to it.
 
 ## ASL mapping notes
 
@@ -200,7 +200,7 @@ The Jason forms are in chapter 39 (*Messages*) and, for a Director, chapter 30 (
 
 - **A told Fact is new only once.** Whether the receiver already knows it, from any source, is decided when the message arrives, not in a Plan's Context: two tellings can arrive before either Plan runs. A Target that keeps the sources underneath, as Jason does, leaves room for `TOLD`. `FORGET f` removes the Fact with every source, so `FORGOTTEN` fires once.
 - **A told Cue leaves nothing behind** in the receiver, so that a repeated Cue fires again and Cues stay momentary (chapter 05). It reaches the same Plans as a game Cue.
-- `T0702` and chapter 38's `T3801` need a catch-all that runs only when no Plan does, also when a Plan for the Cue exists and its Context doesn't hold.
+- `T07_02-cue-found-no-plan` and chapter 38's `T38_01-signal-found-no-plan` need a catch-all that runs only when no Plan does, also when a Plan for the Cue exists and its Context doesn't hold.
 - **Role recipients and `EVERYONE`** need the infrastructure to know which Agents play a Role (chapter 29's cast copy). `EVERYONE` is a wrapped `.broadcast` that Directors ignore, so nobody needs to know every Agent (chapter 30). The sender is excluded.
 - **`SIGNAL`** keeps 1.0's shape: each Agent knows which Directors gave it which Playbook, and sends to each of them (`signal_directors` in the primer's ASL examples). The Signal reaches the Director with the Sender's Role available for `FROM Role`.
 - **A non-Agent recipient** must fail the Plan, so the generated send checks that `?x` names a known Agent first.
@@ -210,7 +210,7 @@ The Jason forms are in chapter 39 (*Messages*) and, for a Director, chapter 30 (
 
 ## Regia 1.5
 
-In 1.5 (ADR 0025), except *Hearing how an asked Goal ended*: the asker hears no ending and no Reason. A Plot or an Agent that must know writes it in the recipe, with a `TELL` or a `SIGNAL` back. `LEARNED, FROM GAME` and `LEARNED, FROM ME` are later (`R0109`, chapter 01), and so is counting tellers with a Quota Trigger.
+In 1.5 (ADR 0025), except *Hearing how an asked Goal ended*: the asker hears no ending and no Reason. A Plot or an Agent that must know writes it in the recipe, with a `TELL` or a `SIGNAL` back. `LEARNED, FROM GAME` and `LEARNED, FROM ME` are later (`R01_09-later-regia-construct`, chapter 01), and so is counting tellers with a Quota Trigger.
 
 For the ASL mapping, an Agent sends no ending reports in 1.5, and the asker needs no catch-all for them.
 

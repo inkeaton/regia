@@ -27,4 +27,4 @@ The tests pass; the four checks are clean; `Token`'s doc comment follows `commen
 
 ## Not here
 
-Diagnostics (`R0112` comes later); names; NEWLINE, which is `layout`'s.
+Diagnostics (`R01_12-stray-character` comes later); names; NEWLINE, which is `layout`'s.

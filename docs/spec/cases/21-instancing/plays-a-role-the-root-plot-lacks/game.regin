@@ -1,9 +1,9 @@
 #! case: an Agent kind plays only Roles of the Root Plot
-#! rule: R2105
+#! rule: R21_05-plays-non-root-role
 
 IMPORT "banquet".
 
 ROOT Banquet.
 
-KIND noble, PLAYS Guest, Drunkard:   #! error R2105
+KIND noble, PLAYS Guest, Drunkard:   #! error R21_05-plays-non-root-role
     COUNT 1.

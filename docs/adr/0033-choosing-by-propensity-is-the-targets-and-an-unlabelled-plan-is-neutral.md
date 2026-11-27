@@ -19,6 +19,6 @@ We decided that 2.0 leaves the scoring and the moment a `SHIFTS` Label applies t
 
 - Which candidate wins, and when a `SHIFTS` Label applies, can still change with VEsNA-Pro. The spec records how it behaves today, and the Trace is where a run is checked.
 - On VEsNA-Pro a `SHIFTS` Label has no effect for an Agent that never meets a `SUITS`. The Transpiler warns, and `SHIFT` in the Body is the reliable way.
-- R1304 (mixing in a Playbook), R1309 (a mixed `TIES` pool) and R2111 (a kind with no value) are retired.
+- R13_04-mixed-suits-trigger-blocks (mixing in a Playbook), R13_09-unlabelled-ties-candidate (a mixed `TIES` pool) and R21_11-missing-propensity-value (a kind with no value) are retired.
 - A Program with no Labels and no `SHIFT` emits no `temper`, `effects` or `strategy` at all.
 - Testing a Propensity in a Context is still not in 2.0.

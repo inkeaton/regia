@@ -13,6 +13,6 @@ The old rule made arguments do a second job. In the showcase `bring` and `fetch`
 
 - A Goal asked twice runs twice. One that must not says so: `GIVEN NOT PURSUING g`, where `PURSUING g` inside a recipe for `g` leaves out the recipe's own Pursuit.
 - `DROP g` stops every Pursuit of `g`. There is no way to drop one of several.
-- A recipe that ends with `PURSUE g, WITHOUT WAITING` for its own Goal repeats, each round a new Pursuit with no Sender. The waiting form never ends, and is a warning when unguarded (`R0806`).
+- A recipe that ends with `PURSUE g, WITHOUT WAITING` for its own Goal repeats, each round a new Pursuit with no Sender. The waiting form never ends, and is a warning when unguarded (`R08_06-endless-self-pursuit`).
 - Each ending Trigger fires once per Pursuit.
 - The Jason Target no longer joins intentions, and needs a way to tell Pursuits of one Goal apart for their Senders, their endings and the Trace.

@@ -47,8 +47,8 @@ A `PLAYBOOK` Block holds `ROLE` lines, Local Vocabulary and Trigger Blocks. `Kee
 
 **Checks**
 
-- A Director Statement in a Playbook (`ASSIGN`, `REMOVE`, `MAPPING`, …) → `R1507`
-- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook, or a Subplot's `FINISHED`, `DROPPED` or `ENDED` → `R2005`; `IN <phase>` → `R2014`; `RUNNING` → `R1714`
+- A Director Statement in a Playbook (`ASSIGN`, `REMOVE`, `MAPPING`, …) → `R15_07-director-statement-in-playbook`
+- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook, or a Subplot's `FINISHED`, `DROPPED` or `ENDED` → `R20_05-director-trigger-in-playbook`; `IN <phase>` → `R20_14-misplaced-in-clause`; `RUNNING` → `R17_14-running-in-playbook`
 
 Spec: chapter 15, *Roles are addresses*. For the Director's Statements, chapter 20.
 
@@ -88,10 +88,10 @@ Anywhere else the name is an error: as an argument (`DO bow_to(patron)`) or in a
 
 **Checks**
 
-- A Role name used as a Value → `R0303` (hint: `FROM Role ?x`)
-- A Role the Playbook doesn't declare, as a recipient, after `FROM` or after `PLAYS` → `R1502`
-- A Block on a Playbook's `ROLE` → `R1601`
-- Two Roles of one Playbook whose names differ only in case → `R1007`
+- A Role name used as a Value → `R03_03-role-as-value` (hint: `FROM Role ?x`)
+- A Role the Playbook doesn't declare, as a recipient, after `FROM` or after `PLAYS` → `R15_02-undeclared-role`
+- A Block on a Playbook's `ROLE` → `R16_01-block-on-playbook-role`
+- Two Roles of one Playbook whose names differ only in case → `R10_07-case-only-name-clash`
 
 Spec: chapter 15, *Playbook Roles*. For recipients and `FROM`, chapters 07 and 05; for names and case, chapter 10.
 
@@ -161,10 +161,10 @@ The same clause on `START SUBPLOT` is a copy: a Subplot's Roles are played, so w
 
 **Checks**
 
-- A receiving Role left unfilled → `R1503` (hint: a `MAPPING`)
-- Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare → `R1504`
-- The retired `MAPPING a TO b` → `R1514` (hint: `MAPPING a AS b`)
-- A giving Role the Plot doesn't declare → `R1502`
+- A receiving Role left unfilled → `R15_03-unfilled-receiving-role` (hint: a `MAPPING`)
+- Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the receiver doesn't declare → `R15_04-misused-mapping`
+- The retired `MAPPING a TO b` → `R15_14-retired-mapping-to` (hint: `MAPPING a AS b`)
+- A giving Role the Plot doesn't declare → `R15_02-undeclared-role`
 
 Spec: chapter 15, *Mappings*, *What a binding means*. For `MAPPING ?who`, chapter 20.
 
@@ -216,9 +216,9 @@ A Giving can be made for a Phase. It is then taken away when the Plot leaves tha
 
 **Checks**
 
-- `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block, not last in its Statement, or on a Statement other than `ASSIGN` and `START SUBPLOT` → `R1509`
-- `TO`, a count, or a counted `MAPPING` on a setup's `ASSIGN` → `R1603`
-- `JOINED`, in a 1.5 build → `R0109`
+- `UNTIL EXITED` outside a Plan of a `DURING <phase>` Block, not last in its Statement, or on a Statement other than `ASSIGN` and `START SUBPLOT` → `R15_09-misused-until-exited`
+- `TO`, a count, or a counted `MAPPING` on a setup's `ASSIGN` → `R16_03-misused-to-in-setup`
+- `JOINED`, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 15, *Givings*, *Until the Phase is left*. For setups, chapter 16; for Givings to one Agent, chapter 20.
 
@@ -240,7 +240,7 @@ CAST:
 
 **Checks**
 
-- `ROLE Cast`, in any case, in a Plot or a Playbook; `CAST` written in a Playbook → `R1512`
+- `ROLE Cast`, in any case, in a Plot or a Playbook; `CAST` written in a Playbook → `R15_12-misused-cast`
 
 Spec: chapter 15, *The whole Cast*. For the `CAST:` setup, chapter 16.
 
@@ -291,12 +291,12 @@ A share of a Playbook Role counts against the Role without the sender: `50% OF p
 
 **Checks**
 
-- A count or share on `REMOVE`, after `PLAYS`, after `EXCEPT`, or on `EVERYONE` → `R1506`
-- A `%` not directly before `OF` → `R1517` (hint: `n% OF Role`)
-- The retired `n PERCENT OF Role` → `R1516` (hint: `n% OF Role`)
-- A count after `FROM` or `BY`, in a 1.5 build → `R0109`
-- A count that isn't a Number → `T1501` (Trace, Failure)
-- A count larger than the pool → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
+- A count or share on `REMOVE`, after `PLAYS`, after `EXCEPT`, or on `EVERYONE` → `R15_06-misplaced-count-or-share`
+- A `%` not directly before `OF` → `R15_17-misplaced-percent-sign` (hint: `n% OF Role`)
+- The retired `n PERCENT OF Role` → `R15_16-retired-percent` (hint: `n% OF Role`)
+- A count after `FROM` or `BY`, in a 1.5 build → `R01_09-later-regia-construct`
+- A count that isn't a Number → `T15_01-count-not-number` (Trace, Failure)
+- A count larger than the pool → `T15_02-count-exceeds-pool` (Trace warning); a negative count → `T15_03-count-below-zero` (Trace warning)
 
 Spec: chapter 15, *Counts and fractions*. For Quotas, chapter 18; for the seed, chapter 34.
 
@@ -336,9 +336,9 @@ TELL Guest EXCEPT ?culprit duel_on           # ?culprit filled earlier in the Pl
 
 **Checks**
 
-- `EXCEPT` in a Playbook, on `REMOVE`, on `FROM`, after `PLAYS` or on `EVERYONE`; two `EXCEPT`s on one Role (hint: one list); an item that isn't one Role of this Plot or one Placeholder; or one item twice in a list → `R1510`
-- A count after `EXCEPT` (`EXCEPT 2 OF Guard`) → `R1506`
-- An `EXCEPT ?who` that holds no Agent at runtime → `T1504` (Trace warning)
+- `EXCEPT` in a Playbook, on `REMOVE`, on `FROM`, after `PLAYS` or on `EVERYONE`; two `EXCEPT`s on one Role (hint: one list); an item that isn't one Role of this Plot or one Placeholder; or one item twice in a list → `R15_10-misused-except`
+- A count after `EXCEPT` (`EXCEPT 2 OF Guard`) → `R15_06-misplaced-count-or-share`
+- An `EXCEPT ?who` that holds no Agent at runtime → `T15_04-except-placeholder-not-agent` (Trace warning)
 
 Spec: chapter 15, *Leaving Agents out*.
 
@@ -377,7 +377,7 @@ In a Plot it asks about the Plot's own Roles. `COUNT(? PLAYS Guest)` is how many
 
 **Checks**
 
-- A left side that isn't a Placeholder, `?` or `ME`; a right side that isn't one Role declared here (or `CAST`, in a Plot); `PLAYS` in a Trigger or a setup → `R1511`
+- A left side that isn't a Placeholder, `?` or `ME`; a right side that isn't one Role declared here (or `CAST`, in a Plot); `PLAYS` in a Trigger or a setup → `R15_11-misused-plays`
 
 Spec: chapter 15, *Who plays a Role*. For Matches, chapter 26.
 
@@ -434,8 +434,8 @@ A Playbook can set itself up and clean up after itself. `Dining` starts dinner a
 
 **Checks**
 
-- `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder or `FROM` → `R1508`
-- The retired `UNASSIGNED` → `R1515` (hint: `REMOVED`)
+- `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder or `FROM` → `R15_08-misused-assigned-or-removed`
+- The retired `UNASSIGNED` → `R15_15-retired-unassign` (hint: `REMOVED`)
 
 Spec: chapter 15, *Given and taken*.
 
@@ -525,12 +525,12 @@ A Guest still eating when `feast` is left loses `Dining`. `have_dinner` is dropp
 
 **Checks**
 
-- A count or `EXCEPT` on `REMOVE` → `R1506`, `R1510`
-- `ASSIGN P TO <Role> ?who` with a count, a `MAPPING` or `UNTIL EXITED` → `R1513`
-- The retired `UNASSIGN` → `R1515` (hint: `REMOVE`)
-- A `REMOVE` naming one Agent that takes nothing → `T1505` (Trace warning)
-- An `ASSIGN P TO <Role> ?who` with nothing to lift → `T1506` (Trace warning)
-- A Signal from a closing Plan with no Plan in the Director's current Phase → `T3801` (Trace, `unheard`)
+- A count or `EXCEPT` on `REMOVE` → `R15_06-misplaced-count-or-share`, `R15_10-misused-except`
+- `ASSIGN P TO <Role> ?who` with a count, a `MAPPING` or `UNTIL EXITED` → `R15_13-clause-on-placeholder-assign`
+- The retired `UNASSIGN` → `R15_15-retired-unassign` (hint: `REMOVE`)
+- A `REMOVE` naming one Agent that takes nothing → `T15_05-remove-takes-nothing` (Trace warning)
+- An `ASSIGN P TO <Role> ?who` with nothing to lift → `T15_06-assign-lifts-nothing` (Trace warning)
+- A Signal from a closing Plan with no Plan in the Director's current Phase → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 15, *Givings*, *Taking a giving from one Agent*, *Giving it back*, *Taking a Playbook away*. For `DROP` and `DROPPED`, chapters 08 and 05; for the Trace entries, chapter 34.
 

@@ -27,4 +27,4 @@ The tests pass; every word of *Reserved words* has a kind, checked by counting a
 
 ## Not here
 
-Dotted names (a later ticket); `R0110`, which isn't the lexer's.
+Dotted names (a later ticket); `R01_10-keyword-as-name`, which isn't the lexer's.

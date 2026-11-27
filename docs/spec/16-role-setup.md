@@ -18,7 +18,7 @@ PLOT RoyalBanquet:
 ```
 
 - The header is `ROLE <name>:`, the Role's declaration with a Block, as an Instancing `KIND` or `AGENT` carries the lines its Agents start with (chapter 21). `ROLE Guest` with no setup stays as before. What the Block means, "each Agent starts with this", is the meaning of a Role's Block, not a keyword.
-- The retired spelling `ROLE <name> STARTS WITH:` (and `CAST STARTS WITH:`) is an error with a hint (`R1608`): `WITH` introduces the Cue an ending carries (chapter 01).
+- The retired spelling `ROLE <name> STARTS WITH:` (and `CAST STARTS WITH:`) is an error with a hint (`R16_08-retired-starts-with`): `WITH` introduces the Cue an ending carries (chapter 01).
 - The same Block inside a `DURING <phase>` Block is the Role's setup **for that Phase** (below, *A setup for a Phase*).
 - `CAST:` with a Block is the setup of **every Agent of the Staging**, whatever its Roles (below, *A setup for the whole Cast*).
 - Only a **Plot's** Roles have a setup. A Playbook's Roles are addresses only (chapter 15); a Block on one is an error.
@@ -31,7 +31,7 @@ PLOT RoyalBanquet:
 | `PURSUE <goal>` | the Goal, without waiting |
 
 - Nothing else is allowed: no Context, no `IF`, no `RANDOMLY`, no other Actions or Director Statements.
-- Arguments are Values or Expressions (chapter 04), `RANDOM` included. The only Placeholders are the **Plot's parameters** (chapter 17), which are filled when the Staging starts. Any other Placeholder is an error: nothing is matched, so nothing can fill it. `ME` is an error too (`R0309`, chapter 03): 2.0 keeps the setup's Statements the same for every Agent.
+- Arguments are Values or Expressions (chapter 04), `RANDOM` included. The only Placeholders are the **Plot's parameters** (chapter 17), which are filled when the Staging starts. Any other Placeholder is an error: nothing is matched, so nothing can fill it. `ME` is an error too (`R03_09-me-in-plot`, chapter 03): 2.0 keeps the setup's Statements the same for every Agent.
 - The setup is **the same Statements for every Agent of the Role**, and its **Expressions are worked out for each Agent**, each time the setup runs for one. A roll is made **once per Agent**: `LEARN purse(RANDOM(5, 20))` gives every Guest its own purse. What differs between kinds of Agent, or between particular Agents, in one cast (starting Propensity values, a seat, a grudge) is written in Instancing, on a `KIND` or an `AGENT`, with the same three Statements (chapter 21).
 
 ## What it means
@@ -138,25 +138,25 @@ The setup is undone only where the things it gave are undone anyway:
 
 **Errors**
 
-- `R1601` A Block on a Playbook's Role.
-- `R1602` A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup.
-- `R1603` `TO` on a setup `ASSIGN`, a counted target, or a counted `MAPPING`.
-- `R1604` A Placeholder in a setup, other than the Plot's parameters.
-- `R1606` A setup in `DURING PLOT`, a second setup for one Role (or for `CAST`) in one Phase or at Plot level, or `ROLE <name>` with no Block inside a `DURING`.
-- `R1607` A Phase setup for a Role the Plot doesn't declare.
-- `R1608` The retired header `ROLE <name> STARTS WITH:` or `CAST STARTS WITH:`. The hint gives `ROLE <name>:` or `CAST:`.
+- `R16_01-block-on-playbook-role` A Block on a Playbook's Role.
+- `R16_02-wrong-statement-in-setup` A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup.
+- `R16_03-misused-to-in-setup` `TO` on a setup `ASSIGN`, a counted target, or a counted `MAPPING`.
+- `R16_04-placeholder-in-setup` A Placeholder in a setup, other than the Plot's parameters.
+- `R16_06-misused-setup` A setup in `DURING PLOT`, a second setup for one Role (or for `CAST`) in one Phase or at Plot level, or `ROLE <name>` with no Block inside a `DURING`.
+- `R16_07-setup-for-undeclared-role` A Phase setup for a Role the Plot doesn't declare.
+- `R16_08-retired-starts-with` The retired header `ROLE <name> STARTS WITH:` or `CAST STARTS WITH:`. The hint gives `ROLE <name>:` or `CAST:`.
 
 **Warnings**
 
-- `R1605` A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it.
+- `R16_05-pursue-before-assign` A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it.
 
-An unfilled Playbook Role, and the other Mapping errors, are chapter 15's (`R1503`–`R1512`).
+An unfilled Playbook Role, and the other Mapping errors, are chapter 15's (`R15_03-unfilled-receiving-role`, `R15_04-misused-mapping`, `R15_06-misplaced-count-or-share`, `R15_07-director-statement-in-playbook`, `R15_08-misused-assigned-or-removed`, `R15_09-misused-until-exited`, `R15_10-misused-except`, `R15_11-misused-plays`, `R15_12-misused-cast`).
 
 ## Trace entries
 
 **Warnings**
 
-- `T1601` A setup Statement that can't be carried out, skipped.
+- `T16_01-skipped-setup-statement` A setup Statement that can't be carried out, skipped.
 
 ## Reserved words
 

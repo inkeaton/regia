@@ -48,7 +48,7 @@ A Staging is identified by **its Director's Jason agent name**. Nothing else nam
 
 `START SUBPLOT HonorDuel(?offender), MAPPING …` compiles to `!regia_start_subplot__honorDuel__N`, an `[atomic]` plan on the parent:
 
-1. **Work out the arguments**: the list `Args` of the Plot's arguments in parameter order, `[Offender]` for `royal_banquet.regia:92`. They are filled (`R1710`). A Plot without parameters has `[]`.
+1. **Work out the arguments**: the list `Args` of the Plot's arguments in parameter order, `[Offender]` for `royal_banquet.regia:92`. They are filled (`R17_10-wrong-subplot-argument`). A Plot without parameters has `[]`.
 2. **Resolve the cast** (chapter 17): a whole-Role Mapping takes everyone in the parent's `regia_cast(Me, Role, _)` **now**; a counted pick picks at random, no Agent twice in one Statement (chapter 15). A Role with `EXCEPT` is read through `regia_reach` (chapter 30), so `MAPPING Guest EXCEPT ?offended, ?offender AS Spectator` leaves both duellists out of the snapshot. The result is a list `[cast(challenger, alice), cast(spectator, bob), …]`.
 3. **Create the child** with `.create_agent(Regia_director__honorDuel, "directors/HonorDuel.asl", [agentClass("regia.DirectorAgent")])`, and call the bound name `Child`.
 4. **Record it**: `+regia_child(Child, honorDuel, Args, Until)`. `Until` is `phase(feast)` for `START SUBPLOT …, UNTIL EXITED` in a `DURING feast` Plan, and `staging` otherwise, as for `regia_give` (chapter 29). Leaving the Phase ends the child (chapter 30, *`ENTER`*, step 3).
@@ -81,7 +81,7 @@ The Root takes the same second step after its own start (chapter 33).
 
 ### Plot arguments
 
-A Plot's parameter is a Placeholder filled in every Block of the Plot (chapter 17). The child keeps its arguments as one belief, `regia_args([alice])`, added before `!regia_begin`, so the setups already read it. A Plot without parameters has no such belief, and neither does the Root, which takes none (`R2114`).
+A Plot's parameter is a Placeholder filled in every Block of the Plot (chapter 17). The child keeps its arguments as one belief, `regia_args([alice])`, added before `!regia_begin`, so the setups already read it. A Plot without parameters has no such belief, and neither does the Root, which takes none (`R21_14-root-plot-with-parameters`).
 
 Every generated plan whose Block names a parameter reads it at the head of its context, right after the Phase guard. This holds for Trigger plans, `ENTERED`, `EXITED` and `EXITED, BY PARENT` plans, `AFTER` bodies and setups. The parameter becomes the Jason variable chapter 39 names for its Placeholder (`?offender` → `Offender`). The showcase's `HonorDuel` never names `?offender` in its own Blocks: the argument only tells its Stagings apart for the parent. If a Challenger setup did tell the Challenger who to face (`TELL ?offender …`) and a `fighting` Plan waited for `conceded(?offender)`, they would be:
 
@@ -208,7 +208,7 @@ A Subplot's ending is heard like a Goal's (chapter 17, ADR 0030, ADR 0047): the 
 - **An `ENTER` or `END PLOT` in the specific Plan ends that Plan only.** `regia.end_body` drops the frames of the Plan that ran it (chapter 30, *`ENTER`*, step 7), so the dispatcher carries on with `regia_subplot_ended`, which is then picked under the new Phase or `DURING PLOT`. `WHEN Poisoning FINISHED WITH poison_taken: ENTER farewell` (`royal_banquet.regia:137`) would still run a plain `Poisoning ENDED` Plan, under `farewell`. After `END PLOT` the Director has no Phase, and only the catch-all applies.
 - **A catch-all for each goal** does nothing but bind `Heard`. Chapter 17's "the ending is ignored" is that plan.
 
-### `Heard` and `T3802`
+### `Heard` and `T38_02-ending-found-no-plan`
 
 `Heard` is an out-argument. Every generated plan of the four goals binds it to `heard` as its first step, and each catch-all binds it to `unheard`. Jason passes a subgoal's bindings back to the caller when it finishes (`TransitionSystem.java`, `joinRenamedVarsIntoIntentionUnifier`), so the dispatcher reads both:
 
@@ -217,11 +217,11 @@ A Subplot's ending is heard like a Goal's (chapter 17, ADR 0030, ADR 0047): the 
    <- !regia_subplot_specific(P, Args, How, H1);   // the goal for How
       !regia_subplot_ended(P, Args, H2);
       if (H1 == unheard & H2 == unheard & How \== dropped) {
-          regia.trace(unheard, info, "T3802", …)
+          regia.trace(unheard, info, "T38_02-ending-found-no-plan", …)
       }.
 ```
 
-`regia_subplot_specific` is shorthand for the per-kind goal, which the plan chooses by `How` with one clause per kind. `T3802` names the Subplot, its arguments, the Outcome (or says the ending was bare) and the parent's Phase (chapter 38). A `DROPPED` ending nobody hears writes nothing, since the parent caused it (chapter 17). An ending Plan that fails stops and writes `T2002` (chapter 20), and the dispatcher carries on: `regia/director.asl` holds one `-!` plan per goal, as chapter 40's `-!regia_<kind>` catchers, which writes the entry, binds `Heard` to `heard` and succeeds.
+`regia_subplot_specific` is shorthand for the per-kind goal, which the plan chooses by `How` with one clause per kind. `T38_02-ending-found-no-plan` names the Subplot, its arguments, the Outcome (or says the ending was bare) and the parent's Phase (chapter 38). A `DROPPED` ending nobody hears writes nothing, since the parent caused it (chapter 17). An ending Plan that fails stops and writes `T20_02-director-plan-failed` (chapter 20), and the dispatcher carries on: `regia/director.asl` holds one `-!` plan per goal, as chapter 40's `-!regia_<kind>` catchers, which writes the entry, binds `Heard` to `heard` and succeeds.
 
 ## Infrastructure state
 
@@ -251,7 +251,7 @@ Rows added to chapter 28's table, and one retired:
 
 ## Trace entries
 
-None of its own. A failed `EXITED`, `EXITED, BY PARENT` or ending Plan writes chapter 20's `T2002`, and the ending carries on. A Subplot's own ending that no Plan hears writes chapter 38's `T3802` (*`Heard` and `T3802`*).
+None of its own. A failed `EXITED`, `EXITED, BY PARENT` or ending Plan writes chapter 20's `T20_02-director-plan-failed`, and the ending carries on. A Subplot's own ending that no Plan hears writes chapter 38's `T38_02-ending-found-no-plan` (*`Heard` and `T38_02-ending-found-no-plan`*).
 
 ## Regia 1.5
 

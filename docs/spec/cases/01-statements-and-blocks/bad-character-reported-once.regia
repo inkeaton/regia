@@ -1,9 +1,9 @@
 #! case: a character Regia doesn't use is reported by the lexer alone
-#! rule: R0112
+#! rule: R01_12-stray-character
 
 GAME CUE insult_heard
 ACTION glare
 
 PLAYBOOK Guest:
     WHEN insult_heard:
-        DO $glare                        #! error R0112
+        DO $glare                        #! error R01_12-stray-character

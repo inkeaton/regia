@@ -2,7 +2,7 @@
 
 With nothing declared, a Subplot ranks above its parent (ADR 0008). In the showcase, `HonorDuel`'s `PARENT OVER SELF ON scandal` and `RoyalBanquet`'s `HonorDuel OVER Poisoning` together with the default `Poisoning OVER SELF` made a cycle on `scandal`. That cycle was built from one line in each of two files and a line nobody wrote. `RoyalBanquet` could break it only with `SELF OVER Poisoning ON scandal`, which it could write only by knowing what its Subplot had declared.
 
-We decided that a Plot's written relations, its Subplots' `PARENT` relations included, are placed first. Each default is added afterwards, and only if the written relations don't already imply the opposite, directly or through a chain. A default left out is reported as a note (`R1312`) and in the conflict report. A cycle made only of written relations is still an error (`R1301`).
+We decided that a Plot's written relations, its Subplots' `PARENT` relations included, are placed first. Each default is added afterwards, and only if the written relations don't already imply the opposite, directly or through a chain. A default left out is reported as a note (`R13_12-default-left-out`) and in the conflict report. A cycle made only of written relations is still an error (`R13_01-precedence-cycle`).
 
 ## Considered options
 

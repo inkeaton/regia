@@ -5,5 +5,5 @@ GAME CUE music_started
 PLAYBOOK Dancer:
     WHEN music_started:
         DO wave
-        DO curtsy                        #! error R1004
+        DO curtsy                        #! error R10_04-name-out-of-scope
         DO nod

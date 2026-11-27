@@ -1,4 +1,4 @@
-CUE toast_raised
+GAME CUE toast_raised
 ACTION cheer
 
 PLAYBOOK Toasting:

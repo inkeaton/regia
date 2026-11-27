@@ -230,11 +230,11 @@ Each plan that can take an Agent's last Giving of a Playbook goes on into a take
 
 **Checks**
 
-- A `regia_give` for a Playbook the Agent's files don't hold → `T2901` (Trace warning, a Transpiler bug)
-- A `REMOVE` naming one Agent that takes nothing → `T1505` (Trace warning)
-- An `ASSIGN P TO <Role> ?who` with nothing to give back → `T1506` (Trace warning)
-- An `EXCEPT ?who` whose Placeholder holds no Agent → `T1504` (Trace warning, on the Director)
-- A Giving or Mapping to an Agent who has left → `T2001` (Trace warning, on the Director)
+- A `regia_give` for a Playbook the Agent's files don't hold → `T29_01-give-of-missing-playbook` (Trace warning, a Transpiler bug)
+- A `REMOVE` naming one Agent that takes nothing → `T15_05-remove-takes-nothing` (Trace warning)
+- An `ASSIGN P TO <Role> ?who` with nothing to give back → `T15_06-assign-lifts-nothing` (Trace warning)
+- An `EXCEPT ?who` whose Placeholder holds no Agent → `T15_04-except-placeholder-not-agent` (Trace warning, on the Director)
+- A Giving or Mapping to an Agent who has left → `T20_01-giving-after-leaving` (Trace warning, on the Director)
 
 Spec: chapter 29, *Messages between Director and Agent*, *What each Director Statement sends*. For the standing record and giving back, chapter 30; for a Staging's end, chapter 31.
 
@@ -461,8 +461,8 @@ A duel still running at `farewell` ends, and its Director sends `regia_end_stagi
 
 **Checks**
 
-- A `PURSUE` in a closing Plan of a Goal whose only recipe is in the closing Playbook → `T1104` (Trace, Failure)
-- A Signal from a closing Plan with no Plan in the Director's current Phase → `T3801` (Trace, `unheard`)
+- A `PURSUE` in a closing Plan of a Goal whose only recipe is in the closing Playbook → `T11_04-goal-found-no-plan` (Trace, Failure)
+- A Signal from a closing Plan with no Plan in the Director's current Phase → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 29, *Taking a Playbook away*. For the walker, chapter 40; for `regia_end_staging`, chapter 31; for the `giving` entry, chapter 34.
 
@@ -527,10 +527,10 @@ On most items only the defaults and `HonorDuel OVER Poisoning` apply, and both S
 
 **Checks**
 
-- A cycle among the relations collected for an item → `R1301`
-- A Subplot's relation dropped because its parent says the opposite → `R1311` (warning)
-- A competition ordered only by name → `R1305` (warning)
-- `TIES` with no `SUITS` on either side → `R1308` (warning)
+- A cycle among the relations collected for an item → `R13_01-precedence-cycle`
+- A Subplot's relation dropped because its parent says the opposite → `R13_11-overridden-subplot-relation` (warning)
+- A competition ordered only by name → `R13_05-competition-ordered-by-name` (warning)
+- `TIES` with no `SUITS` on either side → `R13_08-ties-without-suits` (warning)
 
 Spec: chapter 32, *Levels: the order is worked out at compile time*. For the relations and defaults, chapter 13.
 
@@ -665,8 +665,8 @@ After step 2 only a `TIES` pool leaves options from different Playbooks, since e
 
 **Checks**
 
-- A ranked option whose Playbook isn't held, so its guard was bypassed → `T3201` (Trace warning; the option is dropped)
-- `SUITS` on a Target with no Selection function → `R1310` (warning)
+- A ranked option whose Playbook isn't held, so its guard was bypassed → `T32_01-unguarded-ranked-option` (Trace warning; the option is dropped)
+- `SUITS` on a Target with no Selection function → `R13_10-suits-without-selection-function` (warning)
 
 Spec: chapter 32, *`selectOption` in Agents*. For the `plan` entry, chapters 34 and 35; for `regia_noop`, chapter 40; for `regia_unheard`, chapter 39.
 

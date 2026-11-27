@@ -12,7 +12,7 @@ An Agent may also play in two running Stagings of the same Plot. Ada fighting tw
 
 ## Consequences
 
-- The Root Plot takes no parameters (`R2114`). A Plot with parameters is always written with them, except in `PRECEDENCE`, which ranks the Plot and not a Staging.
+- The Root Plot takes no parameters (`R21_14-root-plot-with-parameters`). A Plot with parameters is always written with them, except in `PRECEDENCE`, which ranks the Plot and not a Staging.
 - Two Stagings with the same arguments can't be told apart, and a Statement that matches one matches both.
 - The parameters are the one part of a Plot's Interface that is declared (ADR 0015 infers the rest).
 - An Agent in two Stagings of one Plot runs one set of Plans for a Playbook it holds twice. Its Signals reach both Directors and its Playbook Roles reach both bindings, because a Plan doesn't know which Giving it runs for. Giving identity inside the Agent is deferred. The Trace marks the Staging start (`ALSO IN`), and it is not a warning.

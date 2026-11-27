@@ -1,10 +1,10 @@
 #! case: a line dedented to a level that was never opened
-#! rule: R0104
+#! rule: R01_04-dedent-to-unopened-level
 
-CUE insult_heard
+GAME CUE insult_heard
 ACTION complain, frown
 
 PLAYBOOK Guest:
     WHEN insult_heard:
         DO complain.
-      DO frown.                          #! error R0104
+      DO frown.                          #! error R01_04-dedent-to-unopened-level

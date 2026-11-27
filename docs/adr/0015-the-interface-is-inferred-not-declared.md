@@ -11,7 +11,7 @@ The Transpiler always compiles a whole Program, so every mismatch we wanted caug
 
 ## Consequences
 
-- The checks are warnings, not errors (`R3801`–`R3803`, `R1708`): a Playbook given by two Plots, an Agent in two Roles or a recipe held from another Plot make each of them wrong in some correct Program.
-- A Signal handled in some Phases only is not caught at build. The Trace reports a Signal or an ending that finds no Plan (`T3801`, `T3802`).
+- The checks are warnings, not errors (`R38_01-unheard-signal`, `R38_02-cue-never-signalled`, `R38_03-unheard-message`, `R17_08-unheard-subplot-ending`): a Playbook given by two Plots, an Agent in two Roles or a recipe held from another Plot make each of them wrong in some correct Program.
+- A Signal handled in some Phases only is not caught at build. The Trace reports a Signal or an ending that finds no Plan (`T38_01-signal-found-no-plan`, `T38_02-ending-found-no-plan`).
 - A Playbook can't be checked against a Plot that isn't in the Program. If libraries of Playbooks are ever shipped alone, declarations may come back, and they could then be generated from the inferred Interface.
 - The Interface is shown by the tools (the command line and the Visual Editor), since it is nowhere in the source.

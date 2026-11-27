@@ -70,12 +70,12 @@ WHEN insulted, FROM ?foe:
 
 - It goes wherever a Value goes in a Playbook: a Trigger slot, a Context or `IF`, an argument, an Expression's comparison.
 - **It is filled in by the Agent that writes it**, when the Trigger is matched or the Statement runs. In a Message it travels as that Agent: the receiver doesn't read it as itself. At the receiver, `?x = ME` is true exactly when `?x` holds the receiver.
-- It is not a recipient: `TELL ME …` is an error (`R0704`, chapter 07).
+- It is not a recipient: `TELL ME …` is an error (`R07_04-value-as-recipient`, chapter 07).
 - **It is an error anywhere in a Plot**, a Role setup included: a Director is not an Agent, and a setup is the same for every Agent of the Role (chapter 16). Allowing it in a setup is left for later.
 - `FROM ME` on a Trigger means the Agent caused the item itself (chapter 05).
 - "Regia never names an Agent" (chapter 07) still holds: `ME` is not a name from Instancing.
 
-A Role name can't be a Value (`toast(Host)` is `R0303`): Roles are only recipients and `FROM` Senders (chapter 15, `15-roles-and-mappings.md`). Fill a Placeholder with `FROM Host ?h` and use `?h`.
+A Role name can't be a Value (`toast(Host)` is `R03_03-role-as-value`): Roles are only recipients and `FROM` Senders (chapter 15, `15-roles-and-mappings.md`). Fill a Placeholder with `FROM Host ?h` and use `?h`.
 
 A **Placeholder** is a blank the Agent fills in by matching. It is written `?name`, with the same `?` wherever it appears, so a reader never has to look elsewhere to tell it apart from a Value.
 
@@ -163,24 +163,24 @@ When several matches satisfy the Context, the Agent uses **one**, and **the lang
 
 **Errors**
 
-- `R0301` A use with a different number of arguments from the declaration's parameters.
-- `R0302` A `?` in a declaration.
-- `R0303` A Role name used as a Value, as an argument or in an Expression (hint: fill a Placeholder with `FROM Role ?x`).
-- `R0304` A Placeholder used in the Body that was never filled, or used before the Statement that fills it. Its *never filled* part is an absence check (chapter 23).
-- `R0305` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` (the message names the branch).
-- `R0306` A bare `?`, or a `?_name`, in the Body.
-- `R0309` `ME` in a Plot, a Role setup included.
-- `R0310` A Name that isn't declared with `NAME` (the hint names the closest declared Name).
-- `R0311` A `NAME` line with parameters, `AS` or `GAME`, or inside a `PLAYBOOK` or `PLOT`.
+- `R03_01-wrong-argument-count` A use with a different number of arguments from the declaration's parameters.
+- `R03_02-placeholder-in-declaration` A `?` in a declaration.
+- `R03_03-role-as-value` A Role name used as a Value, as an argument or in an Expression (hint: fill a Placeholder with `FROM Role ?x`).
+- `R03_04-unfilled-placeholder` A Placeholder used in the Body that was never filled, or used before the Statement that fills it. Its *never filled* part is an absence check (chapter 23).
+- `R03_05-maybe-unfilled-placeholder` A Placeholder used that isn't certainly filled: filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` (the message names the branch).
+- `R03_06-dont-care-in-body` A bare `?`, or a `?_name`, in the Body.
+- `R03_09-me-in-plot` `ME` in a Plot, a Role setup included.
+- `R03_10-undeclared-name` A Name that isn't declared with `NAME` (the hint names the closest declared Name).
+- `R03_11-misused-name-declaration` A `NAME` line with parameters, `AS` or `GAME`, or inside a `PLAYBOOK` or `PLOT`.
 
 **Warnings**
 
-- `R0307` A named Placeholder that is filled but never used (hint: `?`). What counts as a use is listed under *"Don't care": `?`*. Absence check (chapter 23).
-- `R0308` A named Placeholder that appears only under `NOT` (hint: `?`). Absence check (chapter 23).
+- `R03_07-unused-placeholder` A named Placeholder that is filled but never used (hint: `?`). What counts as a use is listed under *"Don't care": `?`*. Absence check (chapter 23).
+- `R03_08-placeholder-only-under-not` A named Placeholder that appears only under `NOT` (hint: `?`). Absence check (chapter 23).
 
 ## Regia 1.5
 
-All of this chapter is in 1.5 (ADR 0025), the Value `ME` included. `FROM ME` is later: in a 1.5 build it is `R0109` (chapter 01). `ME` in a Plot is still `R0309`.
+All of this chapter is in 1.5 (ADR 0025), the Value `ME` included. `FROM ME` is later: in a 1.5 build it is `R01_09-later-regia-construct` (chapter 01). `ME` in a Plot is still `R03_09-me-in-plot`.
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 

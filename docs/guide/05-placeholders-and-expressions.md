@@ -78,12 +78,12 @@ WHEN scandal(?victim), FROM peer ?speaker:
 
 **Checks**
 
-- A use with a different number of arguments from the declaration → `R0301`
-- A Role name used as a Value → `R0303` (hint: `FROM Role ?x`)
-- `ME` in a Plot, a Role setup included → `R0309`; `ME` as a recipient → `R0704`
-- An Expression in a Trigger slot → `R0402`
-- A Name not declared with `NAME` → `R0310` (hint: the closest declared Name)
-- Two Placeholders of one Plan that differ only in case → `R1007`; a Placeholder starting with `regia_` or holding `__` → `R1008`
+- A use with a different number of arguments from the declaration → `R03_01-wrong-argument-count`
+- A Role name used as a Value → `R03_03-role-as-value` (hint: `FROM Role ?x`)
+- `ME` in a Plot, a Role setup included → `R03_09-me-in-plot`; `ME` as a recipient → `R07_04-value-as-recipient`
+- An Expression in a Trigger slot → `R04_02-expression-in-trigger`
+- A Name not declared with `NAME` → `R03_10-undeclared-name` (hint: the closest declared Name)
+- Two Placeholders of one Plan that differ only in case → `R10_07-case-only-name-clash`; a Placeholder starting with `regia_` or holding `__` → `R10_08-reserved-name-spelling`
 
 Spec: chapter 03, *Declaring parameters*, *Values and Placeholders*, *`ME`*, *Values in a Trigger restrict it*. For the order of Trigger Blocks, chapter 13; for the reserved names, chapter 10.
 
@@ -118,8 +118,8 @@ A Plot's parameters are Placeholders already filled, in every Plan and Role setu
 
 **Checks**
 
-- A Placeholder used in the Body that was never filled, or used before the Statement that fills it → `R0304`
-- A named Placeholder filled and never used → `R0307` (warning; hint: `?`)
+- A Placeholder used in the Body that was never filled, or used before the Statement that fills it → `R03_04-unfilled-placeholder`
+- A named Placeholder filled and never used → `R03_07-unused-placeholder` (warning; hint: `?`)
 
 Spec: chapter 03, *Where Placeholders are filled and used*, *Same name, same value*, *Matching a Context*. For Picks, chapter 26; for a Plot's parameters, chapter 17.
 
@@ -169,8 +169,8 @@ A name starting with `_` is still a `?`. It says what is ignored and fills nothi
 
 **Checks**
 
-- A `?` or a `?_name` in the Body → `R0306`
-- A named Placeholder filled and never used → `R0307` (warning; hint: `?`)
+- A `?` or a `?_name` in the Body → `R03_06-dont-care-in-body`
+- A named Placeholder filled and never used → `R03_07-unused-placeholder` (warning; hint: `?`)
 
 Spec: chapter 03, *"Don't care": `?`*. For `COUNT` and Picks, chapter 26; for `GIVEN` siblings, chapter 06.
 
@@ -207,10 +207,10 @@ Nothing in this condition has to reach the Body: the Trigger filled `?speaker`, 
 
 **Checks**
 
-- A Placeholder used that is filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` → `R0305` (the message names the branch)
-- A named Placeholder that appears only under `NOT` → `R0308` (warning; hint: `?`)
-- A Placeholder filled in an `IF` condition and used outside its branch → `R0604`
-- A Placeholder filled by a `FOR EACH` used after its Block → `R2604`
+- A Placeholder used that is filled only under `NOT`, or in only some branches of an `OR`, an `IF` or a `RANDOMLY` → `R03_05-maybe-unfilled-placeholder` (the message names the branch)
+- A named Placeholder that appears only under `NOT` → `R03_08-placeholder-only-under-not` (warning; hint: `?`)
+- A Placeholder filled in an `IF` condition and used outside its branch → `R06_04-if-placeholder-outside-branch`
+- A Placeholder filled by a `FOR EACH` used after its Block → `R26_04-placeholder-outside-for-each`
 
 Spec: chapter 03, *Only what is certainly filled can be used*. For `IF`, chapter 06; for `FOR EACH`, chapter 26.
 
@@ -243,7 +243,7 @@ The other written Value is a String, `"The feast is over, and the poisoner was n
 
 **Checks**
 
-- A number in a form Regia doesn't have: `.5`, an exponent, digit separators, another base → `R0401`
+- A number in a form Regia doesn't have: `.5`, an exponent, digit separators, another base → `R04_01-unsupported-number-form`
 
 Spec: chapter 04, *Numbers*. For Strings, chapter 03.
 
@@ -293,10 +293,10 @@ It never stands in a Trigger slot, which matches what arrived, or in a declarati
 
 **Checks**
 
-- An Expression in a Trigger slot → `R0402`
-- A chained comparison, `0 < ?h < 20` or `?a = ?b != ?c` → `R0403` (hint: `AND`)
-- Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`roast + 1`, `"hi" < 3`) → `R0406`
-- `%` anywhere but before `OF` → `R1517`
+- An Expression in a Trigger slot → `R04_02-expression-in-trigger`
+- A chained comparison, `0 < ?h < 20` or `?a = ?b != ?c` → `R04_03-chained-comparison` (hint: `AND`)
+- Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`roast + 1`, `"hi" < 3`) → `R04_06-arithmetic-on-non-number`
+- `%` anywhere but before `OF` → `R15_17-misplaced-percent-sign`
 
 Spec: chapter 04, *Expressions*, *Where Expressions can appear*. For `COUNT`, chapter 26; for Durations, chapter 12; for Weights, chapter 09; for counted recipients, chapter 15.
 
@@ -334,7 +334,7 @@ Which rolls a seed covers is in *Randomness*.
 
 **Checks**
 
-- A whole roll with no whole number between its bounds, in a Body → `T0403` (Trace, Failure)
+- A whole roll with no whole number between its bounds, in a Body → `T04_03-empty-whole-roll` (Trace, Failure)
 
 Spec: chapter 04, *Random numbers*. For the setup's rolls, chapter 16; for Propensity rolls and the seed, chapter 21.
 
@@ -399,11 +399,11 @@ After the `UPDATE`, `?gold` still holds the old amount. When the run ends `?gold
 
 **Checks**
 
-- A comparison in a Context or an `IF` with a side that isn't filled yet → `R0404`
-- `LET` on a Placeholder already filled → `R0405` (hint: a new name)
-- `?x = e` as a Body Statement → `R0407` (hint: `LET ?x BE e`)
-- `LET` in a Context or an `IF` condition → `R0408`
-- A Placeholder filled in some branches or Options but not all, used after them → `R0305`
+- A comparison in a Context or an `IF` with a side that isn't filled yet → `R04_04-comparison-with-unfilled-side`
+- `LET` on a Placeholder already filled → `R04_05-let-on-filled-placeholder` (hint: a new name)
+- `?x = e` as a Body Statement → `R04_07-retired-equals-statement` (hint: `LET ?x BE e`)
+- `LET` in a Context or an `IF` condition → `R04_08-let-in-condition`
+- A Placeholder filled in some branches or Options but not all, used after them → `R03_05-maybe-unfilled-placeholder`
 
 Spec: chapter 04, *The Context tests, the Body fills*. For Options, chapter 09; for `IF` branches, chapter 06.
 
@@ -419,9 +419,9 @@ What failing does is in *Goals and Failure*.
 
 **Checks**
 
-- Arithmetic or an ordering comparison on what the source shows isn't a Number → `R0406`
-- Body arithmetic on something that isn't a Number → `T0401` (Trace, Failure)
-- A division by zero → `T0402` (Trace, Failure)
+- Arithmetic or an ordering comparison on what the source shows isn't a Number → `R04_06-arithmetic-on-non-number`
+- Body arithmetic on something that isn't a Number → `T04_01-operand-not-number` (Trace, Failure)
+- A division by zero → `T04_02-division-by-zero` (Trace, Failure)
 
 Spec: chapter 04, *When a Number isn't a Number*. For what a Failure does, chapter 11.
 

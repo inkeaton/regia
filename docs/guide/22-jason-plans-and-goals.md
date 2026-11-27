@@ -61,8 +61,8 @@ A Placeholder becomes a Jason variable with its first letter uppercased and noth
 
 **Checks**
 
-- Two names, Placeholders included, that differ only in case → `R1007`
-- A Placeholder starting with `regia_` or containing `__` → `R1008`
+- Two names, Placeholders included, that differ only in case → `R10_07-case-only-name-clash`
+- A Placeholder starting with `regia_` or containing `__` → `R10_08-reserved-name-spelling`
 
 Spec: chapter 39, *Placeholders and variables*. For the guard, chapter 29; for the rank, chapter 32; for `regia.act`, chapter 37; for when a `regia.*` action is allowed, chapter 28, *Generated ASL is readable*.
 
@@ -170,8 +170,8 @@ WHEN idle:
 
 A Random choice is one step to choose, then Jason's own `if`/`elif` chain on the chosen Option's number.
 
-- `regia_choose(Weights, N)` is an Infrastructure plan of `regia/agent.asl`. It works out the Weights, clamps a negative one to 0 with `T0902`, rolls once with Jason's `.random`, and binds `N` to the chosen Option, from 1. A subgoal hands its bindings back, so `Regia_option__1` is bound when the chain runs.
-- When every Weight is 0, `N` is 0 with `T0903`, and no Option runs.
+- `regia_choose(Weights, N)` is an Infrastructure plan of `regia/agent.asl`. It works out the Weights, clamps a negative one to 0 with `T09_02-weight-below-zero`, rolls once with Jason's `.random`, and binds `N` to the chosen Option, from 1. A subgoal hands its bindings back, so `Regia_option__1` is bound when the chain runs.
+- When every Weight is 0, `N` is 0 with `T09_03-all-weights-zero`, and no Option runs.
 - The roll comes from the Agent's own generator, which `regia-jason` seeds from the run's seed when the Agent starts. Generated code never uses `.shuffle`, which that seed doesn't reach.
 - An Option of only `PASS` is `true`.
 - `RANDOM(1, 100)` is the rule `regia_roll(1, 100, whole, R)`, read with a test goal. `whole` or `decimal` comes from how the bounds are written.
@@ -181,10 +181,10 @@ A Random choice is one step to choose, then Jason's own `if`/`elif` chain on the
 
 **Checks**
 
-- A Weight that isn't a Number → `T0901` (Trace, Failure)
-- A negative Weight, counted as 0 → `T0902` (Trace entry)
-- Every Weight 0 or less, and no Option runs → `T0903` (Trace entry)
-- A whole roll with no whole number between its bounds → `T0403` (Trace, Failure)
+- A Weight that isn't a Number → `T09_01-weight-not-number` (Trace, Failure)
+- A negative Weight, counted as 0 → `T09_02-weight-below-zero` (Trace entry)
+- Every Weight 0 or less, and no Option runs → `T09_03-all-weights-zero` (Trace entry)
+- A whole roll with no whole number between its bounds → `T04_03-empty-whole-roll` (Trace, Failure)
 
 Spec: chapter 39, *Random choice*. For the seeded generator, chapter 35, *Random draws*; for Weights, chapter 09.
 
@@ -232,15 +232,15 @@ regia_random_match(T, F) :- .setof(T, F, L) & .random(L, T).    // in regia/agen
 - Every blank in these templates is a fresh generated variable, so Matches are told apart by every blank.
 - `.setof`, not `.findall`, so the same Match reached through both sides of an `OR` counts once.
 - Jason takes rules in contexts and in `if` conditions alike, so `IF …, RANDOMLY` is written the same way. With no Match, `.random` has nothing to pick and the context doesn't hold.
-- `regia.weighted_pick` stays an internal action, because it writes the Trace from inside a context and a rule never does. It clamps negative Weights to 0. When they sum to 0 it writes `T2601` and fails, so the context doesn't hold. On a `GIVEN`, a Weight that isn't a Number is left out by a `.number(W)` test; on a Body `IF` it is kept, and the arithmetic fails the Plan.
+- `regia.weighted_pick` stays an internal action, because it writes the Trace from inside a context and a rule never does. It clamps negative Weights to 0. When they sum to 0 it writes `T26_01-all-pick-weights-zero` and fails, so the context doesn't hold. On a `GIVEN`, a Weight that isn't a Number is left out by a `.number(W)` test; on a Body `IF` it is kept, and the arithmetic fails the Plan.
 - A Pick builds a list each time it is checked, linear in the matching Facts. A plain condition doesn't.
 
 `poured` is local to `Scheming`, so it is `regia_local__scheming__poured`. With the poison poured, the context fails and Jason looks at the other Playbooks' plans for `+idle`: the Poisoner goes back to small talk.
 
 **Checks**
 
-- Every Match of a weighted Pick weighs 0 or less → `T2601` (Trace entry)
-- A Weight that isn't a Number, on a Body `IF` → `T0901` (Trace, Failure)
+- Every Match of a weighted Pick weighs 0 or less → `T26_01-all-pick-weights-zero` (Trace entry)
+- A Weight that isn't a Number, on a Body `IF` → `T09_01-weight-not-number` (Trace, Failure)
 
 Spec: chapter 39, *Picks, `FOR EACH` and `COUNT`*. For `regia.weighted_pick`, chapter 35; for Picks, chapter 26.
 
@@ -306,11 +306,11 @@ Spec: chapter 39, *Contexts and `GIVEN`*, *Picks, `FOR EACH` and `COUNT`*.
 
 - `LEARN` of a Fact already known raises no event, so no `LEARNED` Plan runs: `regia.RegiaAgent.brf` sees to it (*A told Fact*, below). A Fact held only because someone told it, or the game reported it, is known too.
 - `FORGET` is `.abolish`, never a plain `-f`. A plain `-f` takes away only the `source(self)` annotation, and a Fact told by others or reported by the game would stay. `.abolish` takes the belief with every source and raises one `-f` event, so `FORGOTTEN` fires once. When the Fact isn't known it takes nothing and raises nothing.
-- `UPDATE` is an Infrastructure plan, because it tests, writes the Trace and may fail. It is not `-+`, which matches any arguments. When `f` isn't known it writes `T0801` itself and fails with `regia_because(Seq)`, pointing at that entry, so nobody writes a second cause (*The cause entry*, below).
+- `UPDATE` is an Infrastructure plan, because it tests, writes the Trace and may fail. It is not `-+`, which matches any arguments. When `f` isn't known it writes `T08_01-update-of-unknown-fact` itself and fails with `regia_because(Seq)`, pointing at that entry, so nobody writes a second cause (*The cause entry*, below).
 
 **Checks**
 
-- `UPDATE` when the old Fact isn't known → `T0801` (Trace, Failure)
+- `UPDATE` when the old Fact isn't known → `T08_01-update-of-unknown-fact` (Trace, Failure)
 
 Spec: chapter 39, *Basic Actions on Facts*. For the Statements, chapter 08.
 
@@ -342,7 +342,7 @@ if (not on_plate(_)) { .fail(regia_fail, regia_reason(no_food)) }
 - The time is measured on the run's clock, which stops while the game is paused (*Jason: the Build*, *The clock*). That clock is why `WAIT` is an internal action at all.
 - `regia.wait` writes the `time` entry when the wait ends, `WAIT UNTIL on_plate(?) TIMED OUT` or `… MET`, with how long it waited.
 
-A Duration that isn't constant is worked out first, and `regia.wait` clamps a negative one to 0 with `T1202`. `WAIT RANDOM(1, 3) SECONDS` in `Duelling`'s `TO strike`:
+A Duration that isn't constant is worked out first, and `regia.wait` clamps a negative one to 0 with `T12_02-duration-below-zero`. `WAIT RANDOM(1, 3) SECONDS` in `Duelling`'s `TO strike`:
 
 ```asl
 ?regia_roll(1, 3, whole, Regia_roll__1);
@@ -352,9 +352,9 @@ regia.wait(Regia_wait__1)
 
 **Checks**
 
-- A Placeholder in the condition that isn't certainly filled and isn't a blank → `R1204`
-- A Duration that isn't a Number → `T1201` (Trace, Failure)
-- A negative Duration, counted as 0 → `T1202` (Trace warning)
+- A Placeholder in the condition that isn't certainly filled and isn't a blank → `R12_04-maybe-unfilled-wait-condition`
+- A Duration that isn't a Number → `T12_01-duration-not-number` (Trace, Failure)
+- A negative Duration, counted as 0 → `T12_02-duration-below-zero` (Trace warning)
 
 Spec: chapter 39, *`WAIT`*. For `WAIT … UNTIL`, chapter 12; for the `time` entry, chapter 34.
 
@@ -388,17 +388,17 @@ for (regia_each(m(Dish), craves(Dish))) {
 - A game Cue arrives as the same kind of event, from `percept`. So `WHEN insulted:` hears both, and only `FROM` tells them apart.
 - A local Cue goes under its Generated name: `regia_local__courtesy__greeting`.
 - A `SIGNAL` is the same message as a told Cue, to other recipients.
-- `regia.send` takes one receiver or a list. It stays an internal action because Jason's own `.send` fails the sender's plan on a receiver that has left, and stops there in a list. `regia.send` writes `T1901` for that one and goes on.
+- `regia.send` takes one receiver or a list. It stays an internal action because Jason's own `.send` fails the sender's plan on a receiver that has left, and stops there in a list. `regia.send` writes `T19_01-message-after-leaving` for that one and goes on.
 - `regia_audience` and `regia_directors` are rules of `regia/agent.asl`, read when the Statement runs. An empty Role gives `[]`, and nothing is sent.
-- `regia_draw` is an Infrastructure plan, since it writes the Trace. It draws each time the Statement runs, with `.random` from the Agent's seeded generator, uniformly and without replacement. A share rounds up against the pool, the sender already left out. Asking for more than the pool holds writes `T1502` and sends to what there is. A count that isn't a Number fails the Plan.
+- `regia_draw` is an Infrastructure plan, since it writes the Trace. It draws each time the Statement runs, with `.random` from the Agent's seeded generator, uniformly and without replacement. A share rounds up against the pool, the sender already left out. Asking for more than the pool holds writes `T15_02-count-exceeds-pool` and sends to what there is. A count that isn't a Number fails the Plan.
 
 The Cue is not a plain `tell`: the belief would stay until a Plan removed it, and the same Cue told again meanwhile would raise nothing. Nor is it a generated achieve-goal per Cue, which a Cue no Plan takes would turn into a Goal Failure.
 
 **Checks**
 
-- A recipient Placeholder that doesn't hold an Agent → `T0701` (Trace, Failure)
-- A count asking for more Agents than the pool has → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
-- A `TELL` or `ASK` to an Agent that has left → `T1901` (Trace warning)
+- A recipient Placeholder that doesn't hold an Agent → `T07_01-recipient-not-agent` (Trace, Failure)
+- A count asking for more Agents than the pool has → `T15_02-count-exceeds-pool` (Trace warning); a negative count → `T15_03-count-below-zero` (Trace warning)
+- A `TELL` or `ASK` to an Agent that has left → `T19_01-message-after-leaving` (Trace warning)
 
 Spec: chapter 39, *Sending*. For the Role's union, chapter 29; for the seeded generator, chapter 35; for `regia.send`, chapter 33.
 
@@ -480,21 +480,21 @@ Spec: chapter 39, *`ME`*.
 ```asl
 @regia_unheard__scandal[regia_unheard]
 +scandal(Regia_a__1)[source(S)] : S \== percept
-   <- regia.trace(unheard, info, "T0702", [cue(scandal(Regia_a__1)), sender(S)]).
+   <- regia.trace(unheard, info, "T07_02-cue-found-no-plan", [cue(scandal(Regia_a__1)), sender(S)]).
 ```
 
 Jason runs at most one plan for an event and drops an event no plan takes. So the Transpiler writes one catch-all plan for each Cue some `TELL` of the Program sends, into `asl/unheard.asl`, which every Role file includes.
 
-- It means "no Plan ran", not "no Plan exists". Gossip about a stranger, which falls through both `GIVEN`s of `WHEN scandal(?victim)`, writes `T0702`. So does `scandal` told to a Servant, whose Playbooks never name it.
+- It means "no Plan ran", not "no Plan exists". Gossip about a stranger, which falls through both `GIVEN`s of `WHEN scandal(?victim)`, writes `T07_02-cue-found-no-plan`. So does `scandal` told to a Servant, whose Playbooks never name it.
 - `selectOption` takes a `regia_unheard` plan only when it is the only option, so it never competes with a Playbook's plan.
 - A catch-all on a variable trigger, `+C[source(S)]`, wouldn't do: Jason tries it only when no plan at all is relevant, and would miss a Cue whose plans are all inapplicable.
 - A game Cue no Plan takes is dropped with no entry.
 
 **Checks**
 
-- A told Cue no Plan of the receiver runs for → `T0702` (Trace, `unheard`)
+- A told Cue no Plan of the receiver runs for → `T07_02-cue-found-no-plan` (Trace, `unheard`)
 
-Spec: chapter 39, *Nothing heard: `T0702`*. For the file, chapter 28.
+Spec: chapter 39, *Nothing heard: `T07_02-cue-found-no-plan`*. For the file, chapter 28.
 
 ## Goal Statements
 
@@ -529,13 +529,13 @@ TO fetch(?dish):
 - Every recipe, each `GIVEN` and `ELSE` of a `TO` Plan, binds the Sender and the `Id` in its trigger and ends with `!regia_reach`. A `TO g, FROM …` Plan writes its own Sender variable or test in place of `Regia_sender`.
 - `!g` adds `source(self)` itself. The `Id` variable is one per `PURSUE` Statement.
 - `PURSUE` writes its `PURSUED` entry with `regia.trace`, whose last argument binds the entry's `seq`, the Pursuit's `Id`.
-- The other Statements write no Trace entry. `FAIL`'s `T1103` is written by whoever catches the failure, so it is written once.
+- The other Statements write no Trace entry. `FAIL`'s `T11_03-explicit-fail` is written by whoever catches the failure, so it is written once.
 - `NOT PURSUING g` is `not .intend(…)`.
 - An ending Plan is a plan for a generated goal (*The ending goals*, below).
 
 **Checks**
 
-- `FAIL`, with its Reason → `T1103` (Trace, Failure)
+- `FAIL`, with its Reason → `T11_03-explicit-fail` (Trace, Failure)
 
 Spec: chapter 39, *Goals*. For the Statements, chapters 05, 08 and 11.
 
@@ -649,7 +649,7 @@ sequenceDiagram
     participant J as Jason
     F->>J: .fail(regia_fail, regia_reason(sold_out(roast)))
     J->>F: -!fetch(roast)[regia_reason(…)]
-    Note over F: T1103, GOAL fetch(roast) FAILED<br/>regia_failed (no-op), regia_ended (no-op)<br/>pass_failure fails again
+    Note over F: T11_03-explicit-fail, GOAL fetch(roast) FAILED<br/>regia_failed (no-op), regia_ended (no-op)<br/>pass_failure fails again
     J->>B: -!bring(roast, seat_3)[regia_reason(…), regia_because(…)]
     Note over B: GOAL bring FAILED, no new cause<br/>regia_failed: @regia_plan__serving__3 tells sold_out<br/>regia_ended
     Note over B: bottom of the achieve intention: it ends
@@ -663,14 +663,14 @@ Spec: chapter 40, *What Jason gives, and what it doesn't*, *`FAILED`: the genera
 
 ### No applicable `TO` Plan
 
-A Guest with no `seat` asked to `take_seat` has no applicable `+!take_seat` plan. Jason sees the relevant `-!take_seat` plan and posts `-!take_seat[error(no_applicable), …]`. That is the same generated plan, so the Pursuit writes `T1104` and `GOAL take_seat FAILED`, runs `WHEN take_seat FAILED` (the Guest stands by the wall) and `WHEN take_seat ENDED` (it signals `took_seat`), and the `achieve` intention ends. Its `PURSUED` entry was written when `socAcc` stamped the request, before any recipe was tried.
+A Guest with no `seat` asked to `take_seat` has no applicable `+!take_seat` plan. Jason sees the relevant `-!take_seat` plan and posts `-!take_seat[error(no_applicable), …]`. That is the same generated plan, so the Pursuit writes `T11_04-goal-found-no-plan` and `GOAL take_seat FAILED`, runs `WHEN take_seat FAILED` (the Guest stands by the wall) and `WHEN take_seat ENDED` (it signals `took_seat`), and the `achieve` intention ends. Its `PURSUED` entry was written when `socAcc` stamped the request, before any recipe was tried.
 
 ### The cause entry
 
 Every Failure has exactly one cause entry, written once:
 
-- by the Statement, when it knows its own cause: `UPDATE` (`T0801`), the reply of `regia.act` (`T1101`), and the others that write their own code. It then fails with `regia_because(Seq)`;
-- otherwise by the catcher, the generated `-!g`, a `-!regia_<kind>`, or the hook for a `WHEN` Plan, from the event's annotations: `regia_fail` is `T1103`, with `reason` when there is one; `error(no_applicable)` is `T1104`; Jason's own errors, arithmetic or a failed internal action, map to the codes of the Failure table. The `at` comes from Jason's `code_src` and `code_line`, through the source map.
+- by the Statement, when it knows its own cause: `UPDATE` (`T08_01-update-of-unknown-fact`), the reply of `regia.act` (`T11_01-failed-custom-action`), and the others that write their own code. It then fails with `regia_because(Seq)`;
+- otherwise by the catcher, the generated `-!g`, a `-!regia_<kind>`, or the hook for a `WHEN` Plan, from the event's annotations: `regia_fail` is `T11_03-explicit-fail`, with `reason` when there is one; `error(no_applicable)` is `T11_04-goal-found-no-plan`; Jason's own errors, arithmetic or a failed internal action, map to the codes of the Failure table. The `at` comes from Jason's `code_src` and `code_line`, through the source map.
 
 A catcher that finds `regia_because` writes no cause entry.
 
@@ -682,14 +682,14 @@ WHEN greeting, FROM ?who:
     DO bow_to(?who)
 ```
 
-A `WHEN` Plan with no Goal under it has no `-!` event. If the game refuses `bow_to`, the Plan fails, and Jason would drop the intention with a console warning and nothing else. `regia.RegiaAgent` catches this on the Java side and writes the Plan's cause entry, unless the failure points at one already, as a refused Action's `T1101` does. So the Trace keeps it, and the console shows the Trace line, not Jason's warning. Which Jason hook does it is left to whoever writes `regia-jason`. A `WHEN` Plan waiting on a Goal that fails is `regia.pass_failure`'s, not this hook's.
+A `WHEN` Plan with no Goal under it has no `-!` event. If the game refuses `bow_to`, the Plan fails, and Jason would drop the intention with a console warning and nothing else. `regia.RegiaAgent` catches this on the Java side and writes the Plan's cause entry, unless the failure points at one already, as a refused Action's `T11_01-failed-custom-action` does. So the Trace keeps it, and the console shows the Trace line, not Jason's warning. Which Jason hook does it is left to whoever writes `regia-jason`. A `WHEN` Plan waiting on a Goal that fails is `regia.pass_failure`'s, not this hook's.
 
 **Checks**
 
-- `FAIL`, with its Reason → `T1103` (Trace, Failure)
-- A Goal no recipe takes → `T1104` (Trace, Failure)
-- Arithmetic on a non-Number, a division by zero → `T0401`, `T0402` (Trace, Failure)
-- A Custom Action refused or failed while the `DO` waits → `T1101` (Trace, Failure)
+- `FAIL`, with its Reason → `T11_03-explicit-fail` (Trace, Failure)
+- A Goal no recipe takes → `T11_04-goal-found-no-plan` (Trace, Failure)
+- Arithmetic on a non-Number, a division by zero → `T04_01-operand-not-number`, `T04_02-division-by-zero` (Trace, Failure)
+- A Custom Action refused or failed while the `DO` waits → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 40, *No applicable `TO` Plan*, *The cause entry*, *A `WHEN` Plan that fails on its own*. For the chain's entries, chapter 34.
 

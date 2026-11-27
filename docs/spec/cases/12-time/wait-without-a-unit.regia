@@ -1,8 +1,8 @@
 #! case: a Duration always has its unit word
-#! rule: R1201
+#! rule: R12_01-wrong-duration-unit
 
-CUE bored
+GAME CUE bored
 
 PLAYBOOK Idler:
     WHEN bored:
-        WAIT 3.                          #! error R1201
+        WAIT 3.                          #! error R12_01-wrong-duration-unit

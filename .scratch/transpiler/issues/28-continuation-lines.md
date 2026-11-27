@@ -11,7 +11,7 @@ A line ending in `,` or with a `(` still open continues onto the next, and the b
 
 ## Spec
 
-Chapter 01, *Continuation lines*: the joining part only. The indentation rule and `R0105` are a later ticket.
+Chapter 01, *Continuation lines*: the joining part only. The indentation rule and `R01_05-continuation-not-indented` are a later ticket.
 
 ## Rust
 
@@ -27,4 +27,4 @@ The tests pass; the four checks are clean.
 
 ## Not here
 
-`R0105`.
+`R01_05-continuation-not-indented`.

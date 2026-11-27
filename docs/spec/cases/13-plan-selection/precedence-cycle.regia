@@ -1,7 +1,7 @@
 #! case: two Playbooks ordered over each other form a cycle
-#! rule: R1301
+#! rule: R13_01-precedence-cycle
 
-CUE insult_heard
+GAME CUE insult_heard
 ACTION punch, sing
 
 PLAYBOOK Brawling:
@@ -18,4 +18,4 @@ PLOT Tavern:
 
     PRECEDENCE:
         Brawling OVER Drunkard.
-        Drunkard OVER Brawling.          #! error R1301
+        Drunkard OVER Brawling.          #! error R13_01-precedence-cycle

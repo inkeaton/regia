@@ -18,7 +18,7 @@
 ## Consequences
 
 - Chapter 01's *One sense* rule names the two exceptions. A later ticket that finds `TO` used as a destination elsewhere treats it as a violation.
-- `ENTER`, `UPDATE`, `REMOVE` and `REMOVED` are reserved. The retired spellings are errors with a hint: `CHANGE` (`R0808`), `MAPPING a TO b` (`R1514`), `UNASSIGN` and `UNASSIGNED` (`R1515`), and `TRANSITION TO` (`R2016`).
+- `ENTER`, `UPDATE`, `REMOVE` and `REMOVED` are reserved. The retired spellings are errors with a hint: `CHANGE` (`R08_08-retired-change`), `MAPPING a TO b` (`R15_14-retired-mapping-to`), `UNASSIGN` and `UNASSIGNED` (`R15_15-retired-unassign`), and `TRANSITION TO` (`R20_16-retired-transition-to`).
 - "Transition" stays the name of moving between Phases, and the Phase map's edges keep it. It is no longer a keyword.
 - The Trace's `GIVE … TO … AS …` and `TAKE … FROM …` lines are log output, not Regia, and are unchanged.
 - ADR 0029's shapes of `FROM` carry over to `REMOVE` unchanged.

@@ -20,9 +20,9 @@ On the child's side, `WHEN EXITED BY PARENT` fires before plain `EXITED` when th
 
 ## Consequences
 
-- `R1707` (a plain `ENDED` shadowing a `WITH` Block) is retired. The `ENDED WITH` Blocks still compete among themselves, in written order.
+- `R17_07-shadowed-ended-with` (a plain `ENDED` shadowing a `WITH` Block) is retired. The `ENDED WITH` Blocks still compete among themselves, in written order.
 - `DROPPED` after a Plot's name is a Subplot ending, and after a Goal's name a Goal's (ADR 0006).
-- A `DROPPED` with no Plan writes no Trace entry. An ending the Subplot chose itself with no Plan still writes `T3802`.
+- A `DROPPED` with no Plan writes no Trace entry. An ending the Subplot chose itself with no Plan still writes `T38_02-ending-found-no-plan`.
 - A Statement written right after `END SUBPLOT` runs before the `DROPPED` and `ENDED` Plans.
-- `DROPPED` in a Plot that never ends that Subplot from above is an error (`R1712`). A `DROPPED` or `ENDED` Plan written only in the Phase whose `UNTIL EXITED` ends the Subplot is a warning (`R1713`).
+- `DROPPED` in a Plot that never ends that Subplot from above is an error (`R17_12-subplot-never-dropped`). A `DROPPED` or `ENDED` Plan written only in the Phase whose `UNTIL EXITED` ends the Subplot is a warning (`R17_13-unheard-until-exited-ending`).
 - Waiting for a Subplot in the Plan that started it stays out of 2.0, with Directors that have Goals.

@@ -21,7 +21,7 @@ VEsNA's own message types don't fit Regia. `signal` has a fixed `type(status, re
 | `regia_cue` | `{"name": "insult_thrown", "args": [...]}` | a momentary event `+insult_thrown(…)[source(percept)]`, of Jason's `signal` type: no belief is kept. A told Cue is the same kind of event (chapter 39) |
 | `regia_fact` | `{"op": "add" \| "remove", "name": "door_open", "args": [...]}` | `+door_open(…)[source(percept)]`; or `door_open(…)` removed **with every source**, so a Fact an Agent was also told goes too (chapter 39) |
 
-- `name` is the External name of a game item (chapter 10). `regia-jason` translates it into the Regia name through the receiver's `regia_game` beliefs before anything else, so the table's `insult_thrown` and `door_open` are always Regia names. An Agent drops a name with no entry with `T2801` (chapter 28). A Director translates with its own `regia_game` beliefs, as an Agent does, but never meets a name it has no entry for: the link delivers it only what its `regia_hears` lists (*Hearing the game*, below).
+- `name` is the External name of a game item (chapter 10). `regia-jason` translates it into the Regia name through the receiver's `regia_game` beliefs before anything else, so the table's `insult_thrown` and `door_open` are always Regia names. An Agent drops a name with no entry with `T28_01-unknown-game-name` (chapter 28). A Director translates with its own `regia_game` beliefs, as an Agent does, but never meets a name it has no entry for: the link delivers it only what its `regia_hears` lists (*Hearing the game*, below).
 - `args` is a JSON array of numbers, strings and arrays (chapter 37), turned into Jason terms on the way in.
 - A game Cue and a game Fact are marked **`source(percept)`**. VEsNA's own `signal` messages to itself are marked `source(self)`, and its `addBel` marks beliefs `source(self)`, the same as a Director's own `LEARN`; the explicit source lets a Director tell what the game reported from what it learned itself (below).
 - An Agent receives these by `regia.RegiaAgent` overriding VEsNA-Pro's public `myHandleMsg`. A Director receives them from the game link (chapter 28) through `regia.DirectorAgent`'s own message intake, which runs the same code (*Hearing the game*, below). Custom Actions and their results: chapter 37.
@@ -39,7 +39,7 @@ VEsNA's own message types don't fit Regia. `signal` has a fixed `type(status, re
 - **Facts a Director learned itself** (`LEARN`, `source(self)`) stay its own: Facts belong to one Staging (chapter 20).
 - **Stopping hearing, and detaching.** At the first step of its ending walk (chapter 31, *An ending Director hears nothing*), a Director calls `regia.stop_hearing`, and the link delivers it no more Facts or Cues. It stays attached, so it still gets a leave and keeps its cast right while it ends (chapter 33, *Every Director hears a leave*). It **detaches** only when its agent stops: `regia.DirectorAgent`'s stop hook detaches it, whether it is killed at the end of its walk or dies some other way, so the link never routes to a dead agent. A percept already in the mailbox of an ending Director finds no `regia_phase` and is ignored.
 - **The Root** hears the game the same way. It differs only in attaching as the Root, which is how it alone gets `regia_join` (chapter 33). The Root is always the first Director to attach, since Subplots start only from a running Director. So the Root's request is the first `regia_state` the game sees, and the game sends no `regia_join` before it has answered it (chapter 37).
-- **A missing link.** If the link is down when a Director attaches, or is lost before the reply comes, the attach completes at once with no Facts and nobody left, and the Staging starts. It can't hear the game anyway, and `T2802` or `T2803` says why (chapter 28). A game that is connected but never answers holds that Director unstarted. Avoiding that is the game's job, as for a `DO` with no reply (chapter 37).
+- **A missing link.** If the link is down when a Director attaches, or is lost before the reply comes, the attach completes at once with no Facts and nobody left, and the Staging starts. It can't hear the game anyway, and `T28_02-game-link-connect-failed` or `T28_03-game-link-lost` says why (chapter 28). A game that is connected but never answers holds that Director unstarted. Avoiding that is the game's job, as for a `DO` with no reply (chapter 37).
 - Which Facts and Cues the game sends the link is up to the game. A message no attached Director hears is dropped.
 - **Rejected:** passing percepts down the Staging tree, with a parent's `regia_hears` covering its descendants and a **snapshot** of its own beliefs sent to a starting child. The parent kept game Facts and ran ASL on other Stagings' behalf. **The link caching the game's current Facts**, which would keep game information in Java (chapter 28). **Asking the runtime who has left**: Jason's local `killAgent` stops and removes an agent on a thread of its own, so a just-killed leaver may still look alive.
 
@@ -70,7 +70,7 @@ IF IN arrival AND COUNT(seated(?)) >= COUNT(? PLAYS Guest)
    →  if (regia_phase(arrival) & .count(seated(_), S) & … )
 ```
 
-The hidden `regia_phase__plot` is never named: `IN` in a Plot with no Phases is `R2014`.
+The hidden `regia_phase__plot` is never named: `IN` in a Plot with no Phases is `R20_14-misplaced-in-clause`.
 
 ### `AFTER`
 
@@ -125,12 +125,12 @@ The order of events after a transition from `feast` to `farewell` (`royal_banque
 
 ### A `DO` in `EXITED`
 
-An `EXITED` Plan may `DO` an Action and wait for it (`DO clear_tables`, `royal_banquet.regia:103`). `WAIT` there is still `R2003`: a `DO` is the game's time, not the Plot's.
+An `EXITED` Plan may `DO` an Action and wait for it (`DO clear_tables`, `royal_banquet.regia:103`). `WAIT` there is still `R20_03-wrong-statement-in-exited`: a `DO` is the game's time, not the Plot's.
 
 - **While it waits, the Director runs nothing else.** A suspended `[atomic]` intention holds back every other intention and event (research note *How Jason behaves where the translation waits*, branch `research/jason-facts`). Messages and the game's Cues and Facts are still read, and their events queue. They are heard after the transition, by the new Phase.
 - **Every Director's `DO` resumes from Java.** The game link delivers `regia_action_result` into the mailbox of the Director that sent the Action (chapter 37, *Custom Actions in a Director*). `regia.DirectorAgent`'s Java intake takes it there and resumes `regia.act`, with no ASL plan involved. A suspended atomic intention still wakes on a message (`TransitionSystem.java:1620`), so the reply is read and the `DO` wakes inside the atomic plan. The Root and a Subplot's Director behave the same.
 - **A game that never replies holds the Director forever.** That is the game's to avoid, as for any `DO` (chapter 37).
-- A refused or failed `DO` fails the `EXITED` Plan, which writes `T2002`, and the transition carries on (step 2).
+- A refused or failed `DO` fails the `EXITED` Plan, which writes `T20_02-director-plan-failed`, and the transition carries on (step 2).
 
 ## Starting a Staging
 
@@ -242,7 +242,7 @@ What each Statement does to the record:
 | `ASSIGN P TO Guest ?who` | removes `agent(who)` from the `Except` of those records. For each one where a **written** `EXCEPT` had left `?who` out, it resends `regia_give` to `?who` from the record, before the `regia_restore` (chapter 29) |
 | `REMOVE P FROM ?who`, `FROM CAST ?who` | no change: `FROM CAST ?who` takes `?who`'s Givings, and none of the records was made to it |
 
-- **What giving back lifts.** `ASSIGN P TO Guest ?who` lifts only what was done to `?who`: what `REMOVE … FROM Guest ?who` set aside, and a written `EXCEPT ?who` on a standing Giving. It lifts nothing that a whole-Role `REMOVE P FROM Guest` ended, so a `role(guest)` item on a `cast` record stays. A written `EXCEPT ?who` on a counted Giving isn't lifted either, since a pick never grows. When nothing is lifted, the Agent writes `T1506` (chapter 29).
+- **What giving back lifts.** `ASSIGN P TO Guest ?who` lifts only what was done to `?who`: what `REMOVE … FROM Guest ?who` set aside, and a written `EXCEPT ?who` on a standing Giving. It lifts nothing that a whole-Role `REMOVE P FROM Guest` ended, so a `role(guest)` item on a `cast` record stays. A written `EXCEPT ?who` on a counted Giving isn't lifted either, since a pick never grows. When nothing is lifted, the Agent writes `T15_06-assign-lifts-nothing` (chapter 29).
 - The record holds only what a replay needs (chapter 29): the Director doesn't track who holds which Giving.
 
 ## One Agent
@@ -276,7 +276,7 @@ regia_reach(R, Ex, A) :-
     not (.member(role(XR), Ex) & regia_plays(XR, A)).
 ```
 
-- `Ex` is the list as in a binding (chapter 29): `role(guard)` items, and `agent(alice)` items holding the Agent the Placeholder held when the Statement ran. A Placeholder holding no Agent is left out of the list, with `T1504`.
+- `Ex` is the list as in a binding (chapter 29): `role(guard)` items, and `agent(alice)` items holding the Agent the Placeholder held when the Statement ran. A Placeholder holding no Agent is left out of the list, with `T15_04-except-placeholder-not-agent`.
 - It serves a **recipient** (`TELL Spectator EXCEPT ?offender duel_on`: `.setof(A, regia_reach(spectator, [agent(Offender)], A), L)`), the target of an `ASSIGN`, the pool of a **counted pick** (`ASSIGN Poisoning TO 1 OF Guest EXCEPT Guard`), a joiner's replay (*An Agent joining*), and the **Subplot Mapping** of chapter 31's step 1. `MAPPING Guest EXCEPT ?offended, ?offender AS Spectator` (`royal_banquet.regia:95`) is resolved there into the child's cast, a snapshot that needs no record.
 - A whole-Role Mapping with `EXCEPT` in an `ASSIGN` isn't resolved here: it travels with the Giving as `live(guest, Ex)` and is read by the Agent (chapter 29).
 
@@ -297,14 +297,14 @@ An Agent's `SIGNAL c` reaches the Director as a `signal` message, the same as a 
 - The cast test never rejects a real Signal by mistake. An Agent holds Givings only from Stagings whose cast it is in (*One Agent*, above), so only cast Agents can Signal this Director.
 - A Signal is never `percept`, and a game Cue from the link is (*Hearing the game*, above), so a Sender form never matches the game.
 
-### Nothing heard: `T3801`
+### Nothing heard: `T38_01-signal-found-no-plan`
 
-For each Cue some Agent can Signal to this Plot, the Director file has one catch-all, chosen only when no other plan is (chapter 32), as the Agent's for `T0702` (chapter 39):
+For each Cue some Agent can Signal to this Plot, the Director file has one catch-all, chosen only when no other plan is (chapter 32), as the Agent's for `T07_02-cue-found-no-plan` (chapter 39):
 
 ```
 @regia_unheard__took_seat[regia_unheard]
 +took_seat[source(S)] : S \== percept & regia_phase(Ph)
-   <- regia.trace(unheard, info, "T3801", [cue(took_seat), sender(S), plot(royalBanquet), phase(Ph)]).
+   <- regia.trace(unheard, info, "T38_01-signal-found-no-plan", [cue(took_seat), sender(S), plot(royalBanquet), phase(Ph)]).
 ```
 
 - It writes the entry when no plan of the current Phase or of `DURING PLOT` runs, including when every `GIVEN` fails: `finished_eating` arriving in `farewell` from `Dining`'s closing Plans (`dining.regia:48`), or `insult_thrown` outside `feast` (`noble_socializing.regia:29`).
@@ -367,9 +367,9 @@ Rows filled in or added in chapter 28's table:
 
 **Warnings**
 
-- `T3001` A Giving or Mapping to a `?who` who was never in this Staging (such as an Agent named by a game Cue's argument), dropped.
+- `T30_01-giving-outside-cast` A Giving or Mapping to a `?who` who was never in this Staging (such as an Agent named by a game Cue's argument), dropped.
 
-A Signal no plan takes writes chapter 38's `T3801` (*Signals*, above). A failed `EXITED` Plan writes chapter 20's `T2002`, and the transition carries on; a Giving or Mapping to an Agent who has left writes `T2001`.
+A Signal no plan takes writes chapter 38's `T38_01-signal-found-no-plan` (*Signals*, above). A failed `EXITED` Plan writes chapter 20's `T20_02-director-plan-failed`, and the transition carries on; a Giving or Mapping to an Agent who has left writes `T20_01-giving-after-leaving`.
 
 ## Regia 1.5
 

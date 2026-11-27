@@ -16,7 +16,7 @@ A Director's own Plans get a third, smaller table (*Directors*, below).
 Each table is worked out **once for every Trigger item** named in an `ON` relation of that table, and once for every other item:
 
 1. Collect the relations that apply to the item: those without `ON`, plus those `ON` that item.
-2. Fold in each Subplot's `PARENT` relations, rewritten from the parent's side (`PARENT OVER SELF` in HonorDuel is `SELF OVER HonorDuel` here). Where they contradict the parent's own relations, the parent's win and the Transpiler warns about the dropped relation (`R1311`, chapter 13). A cycle among the relations collected so far is `R1301`.
+2. Fold in each Subplot's `PARENT` relations, rewritten from the parent's side (`PARENT OVER SELF` in HonorDuel is `SELF OVER HonorDuel` here). Where they contradict the parent's own relations, the parent's win and the Transpiler warns about the dropped relation (`R13_11-overridden-subplot-relation`, chapter 13). A cycle among the relations collected so far is `R13_01-precedence-cycle`.
 3. Add the defaults of chapter 13, every Subplot `OVER SELF`, one at a time, each only if the relations already placed don't put `SELF` above that Subplot, directly or through a chain. A default left out is a line of the conflict report. Defaults never close a cycle: each one only adds an edge between two members not yet ordered the other way.
 4. Merge `TIES` pairs into one member. If the item has no `SUITS` on either side, the pair isn't really tied: the members stay separate, ordered by name, and chapter 13's warning applies.
 5. **Topological sort**: repeatedly take the members nothing unplaced is above; when several are free, take the **alphabetically first** name. The position at which a member is placed is its level. Merged `TIES` members share one level.
@@ -144,7 +144,7 @@ Changed from chapter 31:
 
 **Warnings**
 
-- `T3201` A ranked option whose Playbook has no `regia_holds` (neither given nor closing), so its guard was bypassed: the option is dropped.
+- `T32_01-unguarded-ranked-option` A ranked option whose Playbook has no `regia_holds` (neither given nor closing), so its guard was bypassed: the option is dropped.
 
 ## Regia 1.5
 

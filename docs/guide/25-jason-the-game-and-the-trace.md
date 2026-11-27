@@ -36,13 +36,13 @@ Every message between Regia and the game uses VEsNA's JSON envelope: `sender`, `
 - An Agent's messages travel on its own body. Every Director's travel on the game link, whose name on the wire is `regia_game_link`: the game writes it as `receiver`, and the link writes it as `sender` for whichever Director it sends. The game never learns that Directors or Stagings exist.
 - `name` is always the External name: `hall.clock.idle`, not `idle`. `regia-jason` translates it both ways.
 - `args` is a JSON array, encoded the same way in every type and both directions: a Number is a JSON number, a name or an Agent's name a JSON string, a list a JSON array. The game never parses Jason terms.
-- In 1.5 nobody joins. The Root Director ignores every `regia_join` and writes `T1902` (*Jason: the Build*, *Agent kinds*).
+- In 1.5 nobody joins. The Root Director ignores every `regia_join` and writes `T19_02-join-refused` (*Jason: the Build*, *Agent kinds*).
 - VEsNA's own types (`signal`, `sight`, …) pass through as before. On the game link, a type the link doesn't know is ignored with a warning.
 
 **Checks**
 
-- A message of an unknown type on the game link → `T3702` (Trace warning)
-- A spawn reported during a 1.5 run → `T1902` (Trace warning)
+- A message of an unknown type on the game link → `T37_02-unknown-message-type` (Trace warning)
+- A spawn reported during a 1.5 run → `T19_02-join-refused` (Trace warning)
 
 Spec: chapter 37, *The envelope*, *Arguments*.
 
@@ -106,8 +106,8 @@ How long the Statement waits depends on how it is written:
 
 **Checks**
 
-- A `DO` refused, or a waiting `DO` reported as failed, or an Agent with no body → `T1101` (Trace, Failure)
-- A `regia_action_result` with an unknown `id`, or after the final reply → `T3701` (Trace warning)
+- A `DO` refused, or a waiting `DO` reported as failed, or an Agent with no body → `T11_01-failed-custom-action` (Trace, Failure)
+- A `regia_action_result` with an unknown `id`, or after the final reply → `T37_01-stray-action-result` (Trace warning)
 
 Spec: chapter 37, *Sending*, *The game's replies*, *Waiting*. For the Failure, chapter 11.
 
@@ -133,7 +133,7 @@ The game forgets `hungry` while a Guest is in the middle of `DO eat(roast)`. `DR
 ```
 
 - `regia.act` keeps the suspended intention of each waiting Action, and a Jason circumstance listener sees it dropped: a Goal dropped, a Phase's intentions dropped, a Playbook taken away, a Staging ended, an Agent gone.
-- The cancel has no reply. Anything the game sends later under that `id` is dropped silently, with no `T3701`.
+- The cancel has no reply. Anything the game sends later under that `id` is dropped silently, with no `T37_01-stray-action-result`.
 - What calling off means is the game's choice, as `done` is. The Guest puts down its fork.
 - Only a waiting `DO` is called off. One started `WITHOUT WAITING` was set loose and runs to its end. A Plan that fails never has an Action under way.
 
@@ -169,7 +169,7 @@ VEsNA-Pro's own internal actions, `vesna.walk` and the like, are outside Regia. 
 
 **Checks**
 
-- A dotted Action whose class is missing, returns `false` or throws → `T1101` (Trace, Failure)
+- A dotted Action whose class is missing, returns `false` or throws → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 37, *The Target's own code*, *VEsNA-Pro's own actions*. For the `lib/` folder, chapter 28.
 
@@ -240,7 +240,7 @@ WHEN saw_pouring(?who):
 
 **Checks**
 
-- A `regia_cue` or `regia_fact` whose name has no `regia_game` entry in the receiving Agent → `T2801` (Trace warning)
+- A `regia_cue` or `regia_fact` whose name has no `regia_game` entry in the receiving Agent → `T28_01-unknown-game-name` (Trace warning)
 
 Spec: chapter 37, *Game messages in an Agent*. For the message types, chapter 30, *What the game sends*.
 
@@ -298,7 +298,7 @@ A Plot that tested `GIVEN in_stock(pie)` would list `in_stock` in `facts`, and t
 
 **Checks**
 
-- A `regia_state_result` with an unknown `id`, or a second one for the same `id` → `T3703` (Trace warning)
+- A `regia_state_result` with an unknown `id`, or a second one for the same `id` → `T37_03-stray-state-result` (Trace warning)
 
 Spec: chapter 37, *The game's starting state*. For attaching, chapter 30.
 
@@ -326,7 +326,7 @@ A Director writes `DO` as an Agent does, and its `regia.act` hands the Action to
 
 **Checks**
 
-- A Director Action failed for `no game link`, or refused, or reported as failed while it waits → `T1101` (Trace, Failure)
+- A Director Action failed for `no game link`, or refused, or reported as failed while it waits → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 37, *Custom Actions in a Director*. For a `DO` in `EXITED`, chapters 30 and 31.
 
@@ -385,7 +385,7 @@ Every agent of a Jason run lives in one JVM, so every Trace entry goes through o
 Generated ASL reaches the writer through one internal action:
 
 ```asl
-regia.trace(unheard, info, "T3801",
+regia.trace(unheard, info, "T38_01-signal-found-no-plan",
             [cue(insult_thrown(hothead_1)), sender(noble_4), plot(royalBanquet), phase(reception)])
 ```
 
@@ -485,7 +485,7 @@ build/banquet/traces/20261123-201544.jsonl
 
 **Checks**
 
-- A console level written as a Target setting → `R3501` (warning; retired: it is an option of `regia run`)
+- A console level written as a Target setting → `R35_01-console-level-setting` (warning; retired: it is an option of `regia run`)
 
 Spec: chapter 35, *The file*, *The console*. For `regia run`, chapter 23.
 
@@ -514,13 +514,13 @@ Jason gives every agent one random generator, shared by `.random` and `math.rand
 | a weighted Pick | `regia.weighted_pick(L, M)`, which takes the agent's generator from Java |
 | every `n OF` and `n% OF` | the Infrastructure plan `regia_draw`, with `.random` |
 
-- The Transpiler picks `whole` or `decimal` from how the bounds are written. A failed whole roll in a Body is `T0403`.
+- The Transpiler picks `whole` or `decimal` from how the bounds are written. A failed whole roll in a Body is `T04_03-empty-whole-roll`.
 - `regia.RegiaAgent` draws `RANDOM` Propensity values from the same generator (*Jason: the Build*, *Drawing `RANDOM`*).
 - Generated code never uses `.shuffle`, which draws from a source the seed doesn't reach. VEsNA-Pro's own choices use their own source; if one turns out to matter, it is a gap the Target's development closes.
 
 **Checks**
 
-- A whole roll with no whole number between its bounds, in a Body → `T0403` (Trace, Failure)
+- A whole roll with no whole number between its bounds, in a Body → `T04_03-empty-whole-roll` (Trace, Failure)
 
 Spec: chapter 35, *Starting a run*, *Random draws*. For the seed, chapter 21; for why it is per agent, ADR 0050.
 
@@ -538,7 +538,7 @@ java -cp regia-jason.jar:lib/*:… regia.testing.RunCase build/cases/no_seat/no_
 
 `regia test` runs each behaviour case through `RunCase`, a class of `regia-jason`'s `regia.testing` package, with the Project's `lib/` jars on the class path as `regia run` has them. A dotted Action runs the Project's Java for real in a case too. The case itself, the Guest with no seat, is in *The Trace*, *Behaviour cases*.
 
-1. `RunCase` starts `ScriptedGame`, a WebSocket server on every address and port the `.jcm` gives. It speaks the game's envelope and types, and tells its connections apart by port, never by `sender`: the port of the `.jcm`'s `regia.GameLink` line is the link's, every other port is the body of the Agent the `.jcm` gives it. Under `#! game link: none` it doesn't serve the link's port, so the link writes `T2802` at start.
+1. `RunCase` starts `ScriptedGame`, a WebSocket server on every address and port the `.jcm` gives. It speaks the game's envelope and types, and tells its connections apart by port, never by `sender`: the port of the `.jcm`'s `regia.GameLink` line is the link's, every other port is the body of the Agent the `.jcm` gives it. Under `#! game link: none` it doesn't serve the link's port, so the link writes `T28_02-game-link-connect-failed` at start.
 2. It starts the MAS from the Build's `.jcm`, in the same JVM, with Jason's synchronous execution control, so agents step in lockstep reasoning cycles, and with the case's seed, from which each agent seeds its generator. The bodies and the link connect to `ScriptedGame` as they would to the game.
 3. For each `>` step, it waits for the run to settle, plays the step through `ScriptedGame`, and writes a `script` entry.
 4. After the last step, once the run has settled, it writes `RUN ENDED`, stops the MAS and exits. The Trace file is its only output.
@@ -559,10 +559,10 @@ Spec: chapter 35, *Test mode*. For `regia test`, chapter 23; for the matching, c
 | `> pause`, `> resume` | `regia_pause`, `regia_resume` on the link |
 | `> lose link` | nothing: it closes the link's connection from its side |
 
-- The step names our item. `ScriptedGame` sends its External name, read from the receiver's `regia_game` beliefs, or for the link from those of the Build's Director files, Subplots' included. A receiver with no entry for it gets our name as it is, and an Agent writes `T2801`.
+- The step names our item. `ScriptedGame` sends its External name, read from the receiver's `regia_game` beliefs, or for the link from those of the Build's Director files, Subplots' included. A receiver with no entry for it gets our name as it is, and an Agent writes `T28_01-unknown-game-name`.
 - A `*` step sends all its messages before the run is next checked for settling. Its `script` entry lists the receivers, `link` last.
 - A step that names an Agent with no connected body, one the run never had or one that has left, is a case error, and so is a `link` step after `> lose link` or under `#! game link: none`. `RunCase` sends nothing, writes `RUN ENDED`, stops the MAS and exits with a non-zero status naming the step. The Conformance suite fails the case without matching it.
-- `> lose link` makes the link write `T2803` and fail what it has in flight.
+- `> lose link` makes the link write `T28_03-game-link-lost` and fail what it has in flight.
 
 Spec: chapter 35, *Test mode*, step 3. For the steps, chapter 34, *The script*.
 
@@ -592,7 +592,7 @@ Spec: chapter 37, *Test mode*. For the rules, chapter 34.
 - Facts: the instances that `link` steps, and `*` steps that reached the link, have made true and not made false since. `fact` steps to a body don't count, since they say what one body perceives. `> fact link +…` steps before `> start` set the record without sending anything, so the Root's reply carries them.
 - Left: every Agent named by a `> leave` step.
 
-A case can't hold a state reply or send a second one. So `T3305`, a join before the state reply, and `T3703`, which only a misbehaving game causes, can't be scripted.
+A case can't hold a state reply or send a second one. So `T33_05-join-before-root-state`, a join before the state reply, and `T37_03-stray-state-result`, which only a misbehaving game causes, can't be scripted.
 
 Spec: chapter 35, *The game's state*.
 
@@ -630,7 +630,7 @@ A Director's game Facts come from its `regia_state_result` when it attaches, and
 
 ### Jason: Plans and Goals
 
-`DO` is `regia.act`, which suspends the intention as `regia.wait` does, so the walker that drops a Goal finds it there and the cancel follows. A `T1101` from the reply is a cause entry, written once, and the plan fails with `regia_because`. (*Jason: Plans and Goals*)
+`DO` is `regia.act`, which suspends the intention as `regia.wait` does, so the walker that drops a Goal finds it there and the cancel follows. A `T11_01-failed-custom-action` from the reply is a cause entry, written once, and the plan fails with `regia_because`. (*Jason: Plans and Goals*)
 
 ### When an Agent leaves
 

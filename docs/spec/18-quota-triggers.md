@@ -29,7 +29,7 @@ DURING feast:
 - There is no `ANY`. "Any Guest" is plain `FROM Guest` (chapter 05), which reacts to each Cue as it arrives.
 - The quantity is a **Number Expression** (chapter 04) over Values and the Placeholders filled in every Block: a Plot's parameters (chapter 17). `WHEN cheered, FROM ?needed OF Spectator:` in `PLOT HonorDuel(quarrel, needed)`. `RANDOM` is an error: the quantity is worked out again at every check, and a draw per check means nothing. A quantity made of Values only is checked at compile time: more than 0 for `n OF`, and more than 0 and at most 100 for `n% OF`.
 - A quantity that isn't whole **rounds up**, as everywhere a count is taken (chapter 15): `2.5 OF Guest` needs 3.
-- A quantity worked out at runtime to 0 or less, a share above 100%, or something that isn't a Number is a runtime warning in the Trace (`T1801`), and the Quota doesn't fire at that check.
+- A quantity worked out at runtime to 0 or less, a share above 100%, or something that isn't a Number is a runtime warning in the Trace (`T18_01-unusable-quota-quantity`), and the Quota doesn't fire at that check.
 - **`?who` is an error** after a quantity (`FROM ALL Guest ?who`). No single Agent fired the Trigger. Which Agents were counted is read with `SENT` (*What the Plan knows*, below).
 
 ## Where it can be used
@@ -78,7 +78,7 @@ Cues and the endings of asked Goals are all that is counted. A Director never re
 - `ALL` and `n% OF` are measured against the Agents playing the Role **at the time of the check**, live, like a Role recipient (chapter 07).
 - `%` means **at least that share**: 50% of 3 Guests needs 2, and 75% of 10 needs 8. Picks round up the same way (chapter 15, ADR 0031), so a share is one number wherever it is written.
 - In a Playbook, the Agent itself never counts and is left out of `ALL` and `n% OF`: it never receives its own Cues (chapter 07).
-- `n OF` with more than n Agents in the Role is fine. With fewer, it can't be met and never fires until enough join. The language doesn't forbid it: the Plot doesn't know the size of the hall, and in 2.0 the hall can grow. Where the build makes it certain, the Root Plot whose Role the `.regin` caps below n with no kind that joins, it is a warning (`R2115`, chapter 21). The Trace notes a count that is active while its Role is smaller than its quantity (`COUNT … SHORT`, chapter 34).
+- `n OF` with more than n Agents in the Role is fine. With fewer, it can't be met and never fires until enough join. The language doesn't forbid it: the Plot doesn't know the size of the hall, and in 2.0 the hall can grow. Where the build makes it certain, the Root Plot whose Role the `.regin` caps below n with no kind that joins, it is a warning (`R21_15-quota-never-met`, chapter 21). The Trace notes a count that is active while its Role is smaller than its quantity (`COUNT … SHORT`, chapter 34).
 - `ALL` of an **empty Role never fires**: nobody has sent anything. "Nobody came" and "nobody is left" are `EMPTIED`, which is heard for a Role that starts empty too (chapter 19).
 - In a Director the Role may be `CAST`: `WHEN ready, FROM ALL CAST:` waits for every Agent of the Staging, each counted once (chapter 15). `EXCEPT` is not allowed on a Quota.
 - A Quota doesn't know who was asked. After a counted `ASK 1 OF waiter TO g`, `BY ALL waiter` still means every `waiter` (chapter 15).
@@ -109,7 +109,7 @@ WHEN wagered(?), FROM 3 OF Spectator:
 - Only Agents still counted: a sender who has left since is out of `SENT`, as it is out of the count.
 - With a named Placeholder, only the value that fired: in `WHEN voted(?choice), FROM ALL Guest:`, `?g SENT voted(?choice)` gives the Guests who voted for the choice that won, each with `?choice` already filled.
 - It is written wherever a condition goes inside the Block's Plans: a Context, an `IF`, under `NOT`, inside `COUNT(…)`, with Picks and `FOR EACH` (chapter 26). `COUNT(? SENT wagered(?))` is how many wagers were counted.
-- It is an **error** anywhere else: outside the Plans of a Quota Trigger Block, or naming a Cue other than the one the Trigger counts (`R1806`).
+- It is an **error** anywhere else: outside the Plans of a Quota Trigger Block, or naming a Cue other than the one the Trigger counts (`R18_06-misused-sent`).
 - The count's reset after firing (below) happens once the Plan has been chosen and run, so the whole Plan reads the same Signals.
 - Counted Goal endings (`take_seat ENDED, BY ALL Guest`) have no `SENT` in 2.0: which Agents' Pursuits ended is not readable.
 
@@ -125,7 +125,7 @@ The count belongs to the **Trigger**, not to a single Trigger Block:
 ### Firing
 
 - When the quota is reached, the Trigger fires **once**, and that argument value's count **starts again from zero**. Other values' partial counts stay. The Trigger can fire again when the quota is reached anew.
-- Reaching the quota is **momentary**, like a Cue (chapter 05). If no Trigger Block is a candidate (every `GIVEN` fails and there is no `ELSE`), nothing runs and the count still resets. Keeping it would make the next stray Signal fire the Plan. The Trace records a quota met with no Plan to run (`T1802`). Every counted Signal writes a `count` entry, so a Quota two short can be read in the Trace (chapter 34).
+- Reaching the quota is **momentary**, like a Cue (chapter 05). If no Trigger Block is a candidate (every `GIVEN` fails and there is no `ELSE`), nothing runs and the count still resets. Keeping it would make the next stray Signal fire the Plan. The Trace records a quota met with no Plan to run (`T18_02-quota-met-without-block`). Every counted Signal writes a `count` entry, so a Quota two short can be read in the Trace (chapter 34).
 - It fires **every time** the count fills again, for as long as a Block with the Trigger is active: `WHEN complaint, FROM 3 OF Guest` at the 3rd, 6th and 9th complaint. There is no "once": a Plan that should run once leaves the Phase, or records a Fact and tests it with a `GIVEN`. This is meant, and kept.
 
 ## Selection
@@ -148,24 +148,24 @@ DURING reception:
 
 **Errors**
 
-- `R1801` A quantity on a Trigger kind other than a Cue or a Goal's ending with `BY`.
-- `R1802` A quantity in front of something that isn't a Role or, in a Plot, `CAST` (`FROM ALL ?x`, `FROM ALL DIRECTOR`, `BY ALL ?x`).
-- `R1803` `?who` after a quantity.
-- `R1805` A quantity on a `FAILED WITH` Trigger.
-- `R1804` A quantity that isn't a Number Expression, uses `RANDOM`, or reads a Placeholder that isn't filled in every Block; or, made of Values only, is 0 or less for `n OF`, or outside (0, 100] for `n% OF`.
-- `R1806` `SENT` outside the Plans of a Quota Trigger Block, or naming a Cue other than the one its Trigger counts.
+- `R18_01-quantity-on-wrong-trigger` A quantity on a Trigger kind other than a Cue or a Goal's ending with `BY`.
+- `R18_02-quantity-before-non-role` A quantity in front of something that isn't a Role or, in a Plot, `CAST` (`FROM ALL ?x`, `FROM ALL DIRECTOR`, `BY ALL ?x`).
+- `R18_03-who-after-quantity` `?who` after a quantity.
+- `R18_05-quantity-on-failed-with` A quantity on a `FAILED WITH` Trigger.
+- `R18_04-wrong-quantity` A quantity that isn't a Number Expression, uses `RANDOM`, or reads a Placeholder that isn't filled in every Block; or, made of Values only, is 0 or less for `n OF`, or outside (0, 100] for `n% OF`.
+- `R18_06-misused-sent` `SENT` outside the Plans of a Quota Trigger Block, or naming a Cue other than the one its Trigger counts.
 
-A Role that the build caps below an `n OF` is `R2115`, in chapter 21.
+A Role that the build caps below an `n OF` is `R21_15-quota-never-met`, in chapter 21.
 
 ## Trace entries
 
 **Warnings**
 
-- `T1801` A quantity worked out at runtime to 0 or less, a share above 100%, or something that isn't a Number. The Quota doesn't fire at that check.
+- `T18_01-unusable-quota-quantity` A quantity worked out at runtime to 0 or less, a share above 100%, or something that isn't a Number. The Quota doesn't fire at that check.
 
 **Unheard** (`info`, chapter 34)
 
-- `T1802` A quota met with no candidate Block: every `GIVEN` failed and there is no `ELSE`. The entry names the Quota and the argument value; the count has reset.
+- `T18_02-quota-met-without-block` A quota met with no candidate Block: every `GIVEN` failed and there is no `ELSE`. The entry names the Quota and the argument value; the count has reset.
 
 A Quota also writes `count` entries, as each Signal is counted and when it becomes active while its Role is smaller than its quantity, and marks a firing completed by a departure on its `plan` entry (chapter 34).
 
@@ -186,7 +186,7 @@ For *The full ASL mapping* to pick up. For Jason, these are implemented in chapt
 
 ## Regia 1.5
 
-**None of this chapter is in 1.5** (ADR 0025). A quantity after `FROM` or `BY`, and `SENT`, are `R0109` in a 1.5 build (chapter 01). `R1801` to `R1806`, `T1801` and `T1802` are never reported.
+**None of this chapter is in 1.5** (ADR 0025). A quantity after `FROM` or `BY`, and `SENT`, are `R01_09-later-regia-construct` in a 1.5 build (chapter 01). This chapter's checks and Trace codes are never reported.
 
 "Every Guest has done it" is written by hand in 1.5: the Director records each Signal in a Fact of its own and compares `COUNT` over it with `COUNT(? PLAYS Guest)` (chapter 26).
 

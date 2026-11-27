@@ -51,8 +51,8 @@ The lines of a `.regin` follow the rules of every Regia file: indentation for Bl
 
 **Checks**
 
-- A `.regia` file importing a `.regin` → `R2101`
-- A `.regin` declaring a Vocabulary item, a Playbook or a Plot → `R2102`
+- A `.regia` file importing a `.regin` → `R21_01-import-of-instancing-file`
+- A `.regin` declaring a Vocabulary item, a Playbook or a Plot → `R21_02-declaration-in-instancing-file`
 
 Spec: chapter 21, *Instancing files*. For Entry files, chapter 10.
 
@@ -69,9 +69,9 @@ Spec: chapter 21, *Instancing files*. For Entry files, chapter 10.
 
 **Checks**
 
-- A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot started as a Subplot → `R2104`
-- A Root Plot with parameters → `R2114`
-- A Plot the Root Plot never reaches → `R2112` (warning)
+- A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot started as a Subplot → `R21_04-missing-or-wrong-root`
+- A Root Plot with parameters → `R21_14-root-plot-with-parameters`
+- A Plot the Root Plot never reaches → `R21_12-plot-never-reached` (warning)
 
 Spec: chapter 21, *The Root Plot*. For Subplots, chapter 17.
 
@@ -106,13 +106,13 @@ Every Root Plot Role should have someone to play it. A build with no Servant get
 
 **Checks**
 
-- A `PLAYS` Role that isn't a Role of the Root Plot → `R2105`
-- A `COUNT` that isn't a whole, non-negative literal → `R2108`
-- The same name declared twice in one file → `R2109`
-- A first declaration with neither `PLAYS` nor `LIKE` → `R2117`
-- Roles joined with `AND` after `PLAYS` → `R2125` (hint: `PLAYS Guest, Guard`)
-- A Root Plot Role that no kind and no individual Agent plays → `R2110` (warning)
-- A spawn reported by the game during a 1.5 run → `T1902` (Trace warning; the Agent joins nothing)
+- A `PLAYS` Role that isn't a Role of the Root Plot → `R21_05-plays-non-root-role`
+- A `COUNT` that isn't a whole, non-negative literal → `R21_08-wrong-count-or-seed`
+- The same name declared twice in one file → `R21_09-repeated-kind-or-agent`
+- A first declaration with neither `PLAYS` nor `LIKE` → `R21_17-agent-plays-nothing`
+- Roles joined with `AND` after `PLAYS` → `R21_25-retired-and-in-plays` (hint: `PLAYS Guest, Guard`)
+- A Root Plot Role that no kind and no individual Agent plays → `R21_10-root-role-never-played` (warning)
+- A spawn reported by the game during a 1.5 run → `T19_02-join-refused` (Trace warning; the Agent joins nothing)
 
 Spec: chapter 21, *Agent kinds*. For spawning, chapter 19.
 
@@ -158,8 +158,8 @@ The values are what the Labels are measured against. `NobleSocializing` has a Pl
 
 **Checks**
 
-- A Propensity that isn't declared as `TRAIT` or `MOOD` → `R2106`
-- A value or a `RANDOM` bound that isn't a literal, or lies outside [0, 1] for a Trait or [-1, 1] for a Mood → `R2107`
+- A Propensity that isn't declared as `TRAIT` or `MOOD` → `R21_06-undeclared-propensity`
+- A value or a `RANDOM` bound that isn't a literal, or lies outside [0, 1] for a Trait or [-1, 1] for a Mood → `R21_07-wrong-propensity-value`
 
 Spec: chapter 21, *Agent kinds*. For Traits, Moods and the neutral value, chapter 14.
 
@@ -194,8 +194,8 @@ A hothead is a noble with another temper and an old grudge. `LIKE noble` takes e
 
 **Checks**
 
-- A `LIKE` naming something that isn't a kind, or a kind reaching itself → `R2119`
-- Two bases setting the same item differently, with the kind not writing it → `R2120` (the message names both bases)
+- A `LIKE` naming something that isn't a kind, or a kind reaching itself → `R21_19-misused-like`
+- Two bases setting the same item differently, with the kind not writing it → `R21_20-conflicting-bases` (the message names both bases)
 
 Spec: chapter 21, *Building on other kinds: `LIKE`*.
 
@@ -233,11 +233,11 @@ An individual Agent's name can stand as an argument in Instancing's setup lines,
 
 **Checks**
 
-- A `COUNT` in an `AGENT` → `R2118`
-- A kind and an individual Agent with the same name → `R2123`
-- An argument naming an individual Agent this build doesn't have → `R2122`
-- An individual Agent named `<kind>_<digits>` for a kind of the Build → `R3603` (Jason)
-- An individual Agent's name in a `.regia` file → `R0310` (an undeclared Name)
+- A `COUNT` in an `AGENT` → `R21_18-count-in-individual-agent`
+- A kind and an individual Agent with the same name → `R21_23-kind-and-agent-clash`
+- An argument naming an individual Agent this build doesn't have → `R21_22-unknown-agent-argument`
+- An individual Agent named `<kind>_<digits>` for a kind of the Build → `R36_03-kind-numbered-agent-name` (Jason)
+- An individual Agent's name in a `.regia` file → `R03_10-undeclared-name` (an undeclared Name)
 
 Spec: chapter 21, *Individual Agents*, *Instancing names*. For Jason's Agent names, chapter 36.
 
@@ -276,11 +276,11 @@ A kind's lines say more about one Agent than its Role's lines do, so they run la
 
 **Checks**
 
-- A Statement other than `ASSIGN`, `LEARN` or `PURSUE` → `R1602`
-- `TO` on an `ASSIGN`, a counted target or a counted `MAPPING` → `R1603`
-- A Placeholder → `R1604`
-- `ME` → `R0309`
-- A Statement that can't be carried out → `T1601` (Trace warning; skipped)
+- A Statement other than `ASSIGN`, `LEARN` or `PURSUE` → `R16_02-wrong-statement-in-setup`
+- `TO` on an `ASSIGN`, a counted target or a counted `MAPPING` → `R16_03-misused-to-in-setup`
+- A Placeholder → `R16_04-placeholder-in-setup`
+- `ME` → `R03_09-me-in-plot`
+- A Statement that can't be carried out → `T16_01-skipped-setup-statement` (Trace warning; skipped)
 
 Spec: chapter 21, *Setup lines*. For Role setups and their order, chapter 16.
 
@@ -359,9 +359,9 @@ KIND noble:                                  # without this, an error naming bot
 
 **Checks**
 
-- Two sibling files setting the same item differently, with no file above them settling it → `R2103`
-- A `NO KIND` or `NO AGENT` naming nothing the file reaches → `R2121`
-- An argument naming an individual Agent this build doesn't have → `R2122`
+- Two sibling files setting the same item differently, with no file above them settling it → `R21_03-conflicting-sibling-files`
+- A `NO KIND` or `NO AGENT` naming nothing the file reaches → `R21_21-undeclared-name-after-no`
+- An argument naming an individual Agent this build doesn't have → `R21_22-unknown-agent-argument`
 
 Spec: chapter 21, *Overriding*, *Removing a kind: `NO KIND`*.
 
@@ -397,7 +397,7 @@ SEED 42
 
 **Checks**
 
-- A `SEED` that isn't a whole, non-negative literal → `R2108`
+- A `SEED` that isn't a whole, non-negative literal → `R21_08-wrong-count-or-seed`
 
 Spec: chapter 21, *The seed*. For what the seed covers, chapter 34; for the Randomness it drives, *Randomness*.
 
@@ -429,9 +429,9 @@ How much of the Trace the console prints is not a setting: it is `regia run --co
 
 **Checks**
 
-- A setting written `key = value` → `R2124` (hint: `strategy most_similar`)
-- An unknown key under a known Target, or a value outside the set its key takes → `R2113` (warning)
-- A `TARGET` group for a Target the Transpiler doesn't know → `R2116` (warning; the group is skipped)
+- A setting written `key = value` → `R21_24-retired-equals-setting` (hint: `strategy most_similar`)
+- An unknown key under a known Target, or a value outside the set its key takes → `R21_13-unknown-target-setting` (warning)
+- A `TARGET` group for a Target the Transpiler doesn't know → `R21_16-unknown-target` (warning; the group is skipped)
 
 Spec: chapter 21, *Target settings*. For Jason's keys, chapter 36.
 

@@ -107,8 +107,8 @@ Where a 1.5 pattern stands in for a 2.0 construct, a chapter says so in a short 
 
 **Checks**
 
-- A construct of a system 1.5 leaves out, in a 1.5 build → `R0109`
-- A spawn the game reports in a 1.5 run → `T1902` (Trace warning; the Agent joins nothing)
+- A construct of a system 1.5 leaves out, in a 1.5 build → `R01_09-later-regia-construct`
+- A spawn the game reports in a 1.5 run → `T19_02-join-refused` (Trace warning; the Agent joins nothing)
 
 Spec: chapter 27, *Regia 1.5*, which lists where every spec chapter marks its cut. ADR 0025.
 
@@ -139,7 +139,7 @@ Spec: chapter 21, for `banquet.regin`. The showcase's `README.md` is the outline
 
 Every chapter opens with a moment at the banquet and a short table of what the chapter covers. Then one `##` section per construct, from the simple form to the full one. Each section shows an example first and gives the rules after it, as bullets:
 
-- *Checks* lists, at the end of a section, what can go wrong with the construct and the code it gets: `TELL` with a Goal → `R0701` (hint: `ASK … TO`). A code starting with `R` is a Diagnostic code, reported by the Transpiler; one starting with `T` is a Trace code, written at runtime. A section borrows another chapter's codes where the misuse is written in that section. Codes appear only in *Checks*, never in the prose.
+- *Checks* lists, at the end of a section, what can go wrong with the construct and the code it gets: `TELL` with a Goal → `R07_01-tell-with-goal` (hint: `ASK … TO`). A code starting with `R` is a Diagnostic code, reported by the Transpiler; one starting with `T` is a Trace code, written at runtime. A section borrows another chapter's codes where the misuse is written in that section. Codes appear only in *Checks*, never in the prose.
 - The last line of each section, `Spec:`, names the spec chapters it comes from.
 - A chapter ends with *How this combines with…*: the construct next to the others, one short part per chapter it meets.
 - Another chapter is named by its title, in italics.

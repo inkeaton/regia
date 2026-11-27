@@ -71,8 +71,8 @@ Three questions next to this one have a fixed answer and no construct. Several T
 
 **Checks**
 
-- A Cue that no candidate takes → `T0702` (Trace, `unheard`)
-- A Goal that no candidate takes → `T1104` (Trace, Failure)
+- A Cue that no candidate takes → `T07_02-cue-found-no-plan` (Trace, `unheard`)
+- A Goal that no candidate takes → `T11_04-goal-found-no-plan` (Trace, Failure)
 
 Spec: chapter 13, *What this chapter decides*, *Candidates*, *Order*.
 
@@ -117,7 +117,7 @@ WHEN have_dinner FAILED WITH no_food:   # never runs: the Plan above catches it
 
 **Checks**
 
-- A Trigger Block an earlier one in the same Playbook always catches → `R1307` (warning)
+- A Trigger Block an earlier one in the same Playbook always catches → `R13_07-unreachable-trigger-block` (warning)
 
 Spec: chapter 13, *Inside a Playbook*. For a Goal's ending Plans, chapter 11.
 
@@ -171,9 +171,9 @@ PRECEDENCE:
 
 **Checks**
 
-- A cycle in one Plot's written relations → `R1301`
-- A relation naming a Playbook the Plot never gives, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot never started as a Subplot → `R1303`
-- A relation whose two sides share no Trigger → `R1306` (warning)
+- A cycle in one Plot's written relations → `R13_01-precedence-cycle`
+- A relation naming a Playbook the Plot never gives, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot never started as a Subplot → `R13_03-relation-to-absent-item`
+- A relation whose two sides share no Trigger → `R13_06-relation-without-shared-trigger` (warning)
 
 Spec: chapter 13, *Who orders what*, *`PRECEDENCE`*. Why the order is written in the Plot: ADR 0008.
 
@@ -183,12 +183,12 @@ Two Playbooks one Plot gives, sharing a Trigger and ordered by nothing, are rank
 
 - Name order places a Plot's members one at a time: wherever the relations leave several free to come next, the alphabetically first goes.
 - A rename can change behaviour. Name order is kept anyway: every other unwritten order (file order, load order) is just as invisible and changes when files move, and a random pick would make runs irreproducible.
-- The warning appears only for Playbooks that share a Trigger, and that some Agent can hold together. The Transpiler knows which Playbooks an Agent *can* hold, not which it holds at the same time, so two Playbooks given in different Phases can still be warned about. A writer who has checked writes `#@allow: R1305` on the Plot (*Syntax*).
+- The warning appears only for Playbooks that share a Trigger, and that some Agent can hold together. The Transpiler knows which Playbooks an Agent *can* hold, not which it holds at the same time, so two Playbooks given in different Phases can still be warned about. A writer who has checked writes `#@allow: R13_05-competition-ordered-by-name` on the Plot (*Syntax*).
 - The banquet builds without the warning. `Serving` and `NobleSocializing` share `idle`, but no Role of the banquet can be given both.
 
 **Checks**
 
-- A competition ordered only by name → `R1305` (warning)
+- A competition ordered only by name → `R13_05-competition-ordered-by-name` (warning)
 
 Spec: chapter 13, *Defaults*.
 
@@ -254,11 +254,11 @@ For a Guest who holds everything, the two shared Triggers come out like this:
 
 **Checks**
 
-- A cycle in the written relations, the Subplots' `PARENT` relations included → `R1301`
-- `TIES` naming a Subplot, `SELF`, `PARENT` or a Phase → `R1302`
-- `PARENT` in a Plot never started as a Subplot → `R1303`
-- Two sibling Subplots ordered only by name → `R1305` (warning)
-- A Subplot's relation dropped because its parent says the opposite → `R1311` (warning)
+- A cycle in the written relations, the Subplots' `PARENT` relations included → `R13_01-precedence-cycle`
+- `TIES` naming a Subplot, `SELF`, `PARENT` or a Phase → `R13_02-misused-ties`
+- `PARENT` in a Plot never started as a Subplot → `R13_03-relation-to-absent-item`
+- Two sibling Subplots ordered only by name → `R13_05-competition-ordered-by-name` (warning)
+- A Subplot's relation dropped because its parent says the opposite → `R13_11-overridden-subplot-relation` (warning)
 
 Spec: chapter 13, *Who orders what*, *Defaults*, *Instancing*. Why a default gives way: ADR 0032. For Stagings, chapter 17.
 
@@ -295,9 +295,9 @@ PRECEDENCE:
 
 **Checks**
 
-- A `DURING PLOT` Plan fully shadowed by a Phase's → `R1307` (warning)
-- A Label on a Director's Plan, `SHIFT` in a Director → `R1406`
-- `DURING <phase>` naming a Phase the Plot doesn't have → `R1303`
+- A `DURING PLOT` Plan fully shadowed by a Phase's → `R13_07-unreachable-trigger-block` (warning)
+- A Label on a Director's Plan, `SHIFT` in a Director → `R14_06-label-in-director`
+- `DURING <phase>` naming a Phase the Plot doesn't have → `R13_03-relation-to-absent-item`
 
 Spec: chapter 13, *Defaults*, *`PRECEDENCE`*; chapter 20.
 
@@ -327,8 +327,8 @@ KIND hothead, LIKE noble:
 
 **Checks**
 
-- `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT` → `R1407`
-- A declared Propensity that no Label and no `SHIFT` names → `R1409` (warning)
+- `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT` → `R14_07-local-propensity`
+- A declared Propensity that no Label and no `SHIFT` names → `R14_09-unused-propensity` (warning)
 
 Spec: chapter 14, *Propensities*. For values, chapter 21.
 
@@ -381,13 +381,13 @@ A Pick on a `GIVEN` uses the same comma (`GIVEN grudge(?foe, ?size) AND ?foe PLA
 
 **Checks**
 
-- An unknown Label keyword, or a Label twice on one header → `R1401`
-- A Propensity named twice in one Label, or the same Mood in a Trigger's `SHIFTS` and a `GIVEN`'s → `R1402`
-- A name in `SUITS` that isn't a declared Propensity, a name in `SHIFTS` that isn't a declared Mood → `R1403`
-- A Label value that isn't a Number literal, or lies outside its range → `R1404`
-- `SUITS` on a `GIVEN` or `ELSE` → `R1405`
-- A Label on a Director's Plan → `R1406`
-- Propensities joined with `AND` (`SUITS sympathy AT -0.5 AND bravery AT 0.8`) → `R1412` (hint: list them with `,`)
+- An unknown Label keyword, or a Label twice on one header → `R14_01-unknown-or-repeated-label`
+- A Propensity named twice in one Label, or the same Mood in a Trigger's `SHIFTS` and a `GIVEN`'s → `R14_02-repeated-propensity`
+- A name in `SUITS` that isn't a declared Propensity, a name in `SHIFTS` that isn't a declared Mood → `R14_03-undeclared-label-name`
+- A Label value that isn't a Number literal, or lies outside its range → `R14_04-wrong-label-value`
+- `SUITS` on a `GIVEN` or `ELSE` → `R14_05-misplaced-suits`
+- A Label on a Director's Plan → `R14_06-label-in-director`
+- Propensities joined with `AND` (`SUITS sympathy AT -0.5 AND bravery AT 0.8`) → `R14_12-retired-and-in-label` (hint: list them with `,`)
 
 Spec: chapter 14, *Writing Labels*, *The Labels*, *Where Labels go*.
 
@@ -447,8 +447,8 @@ What the language promises about the Selection function:
 
 **Checks**
 
-- `SUITS` on a Target with no Selection function → `R1310` (warning, once per Program)
-- A Label the Target doesn't support → `R1408` (warning, once per Program per Label)
+- `SUITS` on a Target with no Selection function → `R13_10-suits-without-selection-function` (warning, once per Program)
+- A Label the Target doesn't support → `R14_08-unsupported-label` (warning, once per Program per Label)
 
 Spec: chapter 13, *Suits alternatives inside a Playbook*, *What the language promises*; chapter 14, *Suits alternatives*, *Targets without Labels*. Why an unlabelled alternative is neutral: ADR 0033.
 
@@ -487,10 +487,10 @@ Every Mood change is in the Trace (*Reading the order*).
 
 **Checks**
 
-- A name in `SHIFT` that isn't a declared Mood → `R1403`
-- The same Mood twice in one `SHIFT` → `R1411`
-- Moods in a `SHIFT` joined with `AND` → `R1412`
-- `SHIFT` in a Director → `R1406`
+- A name in `SHIFT` that isn't a declared Mood → `R14_03-undeclared-label-name`
+- The same Mood twice in one `SHIFT` → `R14_11-repeated-mood-in-shift`
+- Moods in a `SHIFT` joined with `AND` → `R14_12-retired-and-in-label`
+- `SHIFT` in a Director → `R14_06-label-in-director`
 
 Spec: chapter 14, *The Labels*, *The `SHIFT` Statement*.
 
@@ -528,9 +528,9 @@ Without the first line, the second would build with a warning instead: neither `
 
 **Checks**
 
-- `TIES` between Playbooks already ordered by `OVER` → `R1302`
-- `TIES` with no `SUITS` to choose by → `R1308` (warning)
-- `SUITS` on a Target with no Selection function → `R1310` (warning)
+- `TIES` between Playbooks already ordered by `OVER` → `R13_02-misused-ties`
+- `TIES` with no `SUITS` to choose by → `R13_08-ties-without-suits` (warning)
+- `SUITS` on a Target with no Selection function → `R13_10-suits-without-selection-function` (warning)
 
 Spec: chapter 13, *`TIES` between Playbooks*; chapter 14, *Suits alternatives*.
 

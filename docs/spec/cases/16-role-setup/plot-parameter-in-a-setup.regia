@@ -1,9 +1,11 @@
 #! case: a setup may use the Plot's parameters, and no other Placeholder
-#! rule: R1604
+#! rule: R16_04-placeholder-in-setup
+
+FACT grievance(quarrel), accused(person)
 
 PLOT HonorDuel(quarrel):
     ROLE Challenger:
         LEARN grievance(?quarrel).
     ROLE Defender:
-        LEARN accused(?who).             #! error R1604
+        LEARN accused(?who).             #! error R16_04-placeholder-in-setup
     PHASE standoff INITIAL.

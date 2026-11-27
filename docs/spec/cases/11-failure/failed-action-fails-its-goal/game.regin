@@ -1,5 +1,5 @@
 #! case: a Custom Action the game reports as failed fails its Plan and the Goal the Plan was for
-#! rule: T1101
+#! rule: T11_01-failed-custom-action
 #! rule: 11 How failure spreads
 
 IMPORT "watch".

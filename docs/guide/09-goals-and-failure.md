@@ -58,11 +58,11 @@ However it arrived, it is now the Agent's own Goal, and the Agent's recipes deci
 
 **Checks**
 
-- One name declared as a Goal and as another kind → `R0501`
-- `PURSUE` with a Fact or a Cue → `R0802`
-- A Goal pursued, asked or declared with no `TO` Plan anywhere in the Program → `R1101` (warning)
-- A setup `PURSUE` above the `ASSIGN` that gives the only Playbook with a recipe for it → `R1605` (warning)
-- `PURSUE` in a Director → `R2001`
+- One name declared as a Goal and as another kind → `R05_01-declared-as-two-kinds`
+- `PURSUE` with a Fact or a Cue → `R08_02-wrong-kind-for-action`
+- A Goal pursued, asked or declared with no `TO` Plan anywhere in the Program → `R11_01-goal-without-plan` (warning)
+- A setup `PURSUE` above the `ASSIGN` that gives the only Playbook with a recipe for it → `R16_05-pursue-before-assign` (warning)
+- `PURSUE` in a Director → `R20_01-playbook-statement-in-director`
 
 Spec: chapter 05, *Goals*. For setups, chapter 16; for a Director, chapter 20.
 
@@ -103,8 +103,8 @@ TO fight, FROM DIRECTOR:
 
 **Checks**
 
-- A trailing clause other than `, WITHOUT WAITING` on `PURSUE` → `R0805`
-- A waiting `PURSUE g` inside `TO g`, with the Trigger's own arguments and no `GIVEN` or `IF` around it → `R0806` (warning; hint: `, WITHOUT WAITING`)
+- A trailing clause other than `, WITHOUT WAITING` on `PURSUE` → `R08_05-wrong-trailing-clause`
+- A waiting `PURSUE g` inside `TO g`, with the Trigger's own arguments and no `GIVEN` or `IF` around it → `R08_06-endless-self-pursuit` (warning; hint: `, WITHOUT WAITING`)
 
 Spec: chapter 08, *Pursuing*, *Repeating*; chapter 05, *Waiting for a Goal*.
 
@@ -143,7 +143,7 @@ WHEN idle:
 
 **Checks**
 
-- A Goal no recipe takes, such as a second request a `NOT PURSUING` turns away → `T1104` (Trace, Failure)
+- A Goal no recipe takes, such as a second request a `NOT PURSUING` turns away → `T11_04-goal-found-no-plan` (Trace, Failure)
 
 Spec: chapter 05, *Pursuits*, *Testing Goals in a Context*.
 
@@ -200,9 +200,9 @@ WHEN yielded, FROM opponent:
 
 **Checks**
 
-- `DROP` with a Fact or a Cue, or with a Plot → `R0802` (for a Plot, the hint is `DROP SUBPLOT`)
-- A trailing clause on `DROP` → `R0805`
-- `DROP` in a Director → `R2001`
+- `DROP` with a Fact or a Cue, or with a Plot → `R08_02-wrong-kind-for-action` (for a Plot, the hint is `DROP SUBPLOT`)
+- A trailing clause on `DROP` → `R08_05-wrong-trailing-clause`
+- `DROP` in a Director → `R20_01-playbook-statement-in-director`
 
 Spec: chapter 08, *Dropping*. For a Playbook taken away, chapter 15.
 
@@ -244,9 +244,9 @@ WHEN take_seat ENDED: SIGNAL took_seat   # seated or standing, the Director coun
 
 **Checks**
 
-- A kind word that doesn't suit the item (`WHEN have_dinner LEARNED`) → `R0504`
-- `WITH` on `REACHED`, `DROPPED` or `ENDED` → `R1105`
-- `BY` on a Goal's ending, or a Goal's ending in a Plot, in a 1.5 build → `R0109`
+- A kind word that doesn't suit the item (`WHEN have_dinner LEARNED`) → `R05_04-wrong-trigger-kind`
+- `WITH` on `REACHED`, `DROPPED` or `ENDED` → `R11_05-with-on-wrong-trigger`
+- `BY` on a Goal's ending, or a Goal's ending in a Plot, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 05, *How a Pursuit ends*; chapter 11, *Every Pursuit that ends fires its Triggers*.
 
@@ -288,14 +288,14 @@ Regia never checks the world. A Custom Action fails only when the game says so, 
 
 **Checks**
 
-- A `DO` refused, or a waiting `DO` reported as failed → `T1101` (Trace, Failure)
-- `FAIL`, with its Reason → `T1103` (Trace, Failure)
-- Arithmetic on a non-Number, a division by zero → `T0401`, `T0402` (Trace, Failure)
-- A recipient that isn't an Agent → `T0701` (Trace, Failure)
-- `UPDATE` when the old Fact isn't known → `T0801` (Trace, Failure)
-- A Weight that isn't a Number → `T0901` (Trace, Failure)
-- A Duration that isn't a Number → `T1201` (Trace, Failure)
-- A count or a fraction of a Role that isn't a Number → `T1501` (Trace, Failure)
+- A `DO` refused, or a waiting `DO` reported as failed → `T11_01-failed-custom-action` (Trace, Failure)
+- `FAIL`, with its Reason → `T11_03-explicit-fail` (Trace, Failure)
+- Arithmetic on a non-Number, a division by zero → `T04_01-operand-not-number`, `T04_02-division-by-zero` (Trace, Failure)
+- A recipient that isn't an Agent → `T07_01-recipient-not-agent` (Trace, Failure)
+- `UPDATE` when the old Fact isn't known → `T08_01-update-of-unknown-fact` (Trace, Failure)
+- A Weight that isn't a Number → `T09_01-weight-not-number` (Trace, Failure)
+- A Duration that isn't a Number → `T12_01-duration-not-number` (Trace, Failure)
+- A count or a fraction of a Role that isn't a Number → `T15_01-count-not-number` (Trace, Failure)
 
 Spec: chapter 11, *When a Plan fails*, *What a failed Plan leaves behind*.
 
@@ -358,8 +358,8 @@ Regia never tries again. When a recipe fails, no other recipe for the Goal is tr
 
 **Checks**
 
-- A Goal no recipe takes → `T1104` (Trace, Failure)
-- A Goal with no `TO` Plan anywhere in the Program → `R1101` (warning)
+- A Goal no recipe takes → `T11_04-goal-found-no-plan` (Trace, Failure)
+- A Goal with no `TO` Plan anywhere in the Program → `R11_01-goal-without-plan` (warning)
 
 Spec: chapter 11, *How failure spreads*, *When no Plan applies*. For falling through, chapter 13.
 
@@ -395,9 +395,9 @@ Without the `FAIL`, a Guest with an empty plate after a minute would run the sec
 
 **Checks**
 
-- `FAIL WITH` something other than one declared Cue, or with unfilled arguments → `R1104`
-- Statements after `FAIL` in the same Block → `R1102` (warning)
-- `FAIL`, with its Reason → `T1103` (Trace, Failure)
+- `FAIL WITH` something other than one declared Cue, or with unfilled arguments → `R11_04-misused-fail-with`
+- Statements after `FAIL` in the same Block → `R11_02-statement-after-fail` (warning)
+- `FAIL`, with its Reason → `T11_03-explicit-fail` (Trace, Failure)
 
 Spec: chapter 11, *`FAIL`*, *Reasons*.
 
@@ -425,9 +425,9 @@ When `bring` fails because the dish ran out, the Servant tells the Guest. When i
 
 **Checks**
 
-- A plain `WHEN g FAILED` above a `WHEN g FAILED WITH …` it also matches → `R1106` (warning)
-- `WITH` on any ending but `FAILED` → `R1105`
-- `BY` on a Goal's ending, in a 1.5 build → `R0109`
+- A plain `WHEN g FAILED` above a `WHEN g FAILED WITH …` it also matches → `R11_06-shadowed-failed-with` (warning)
+- `WITH` on any ending but `FAILED` → `R11_05-with-on-wrong-trigger`
+- `BY` on a Goal's ending, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 11, *Reacting: `WHEN g FAILED`*. For `FROM` on an ending, chapter 05.
 
@@ -474,7 +474,7 @@ There is no limit at runtime.
 
 **Checks**
 
-- A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments and no `GIVEN` or `IF` around the `PURSUE` → `R1103` (warning)
+- A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments and no `GIVEN` or `IF` around the `PURSUE` → `R11_03-endless-failure-retry` (warning)
 
 Spec: chapter 11, *Writing a fallback*, *Trying again*.
 
@@ -483,7 +483,7 @@ Spec: chapter 11, *Writing a fallback*, *Trying again*.
 A `FAILED` Plan only reacts. The Trace is the one place that says why. Every Failure leaves entries there, whether or not a Plan reacted: one entry for the cause, then one for each Goal that failed in turn and each waiting `WHEN` Plan that failed with it, all pointing at the cause. The pie, as console lines (source locations left out):
 
 ```
-#81 FAILURE T1103 FAIL WITH sold_out(pie)
+#81 FAILURE T11_03-explicit-fail FAIL WITH sold_out(pie)
 #82 GOAL fetch(pie) FAILED because #81
 #83 GOAL bring(pie, seat_3) FAILED because #81
 #84 PLAN Serving: WHEN bring(pie, seat_3) FAILED WITH sold_out(pie)

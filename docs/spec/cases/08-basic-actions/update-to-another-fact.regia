@@ -1,10 +1,10 @@
 #! case: UPDATE names the same Fact on both sides
-#! rule: R0804
+#! rule: R08_04-update-to-another-fact
 
 FACT health(points), score(points)
-CUE hit(damage)
+GAME CUE hit(damage)
 
 PLAYBOOK Fighter:
     WHEN hit(?d):
         GIVEN health(?h):
-            UPDATE health(?h) TO score(?h - ?d).     #! error R0804
+            UPDATE health(?h) TO score(?h - ?d).     #! error R08_04-update-to-another-fact

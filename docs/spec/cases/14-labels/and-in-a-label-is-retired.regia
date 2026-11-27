@@ -1,10 +1,10 @@
 #! case: the Propensities of a Label are listed with a comma, not AND
-#! rule: R1412
+#! rule: R14_12-retired-and-in-label
 
 TRAIT bravery
 MOOD sympathy
-CUE insult_heard
+GAME CUE insult_heard
 ACTION challenge
 
 PLAYBOOK Noble:
-    WHEN insult_heard, SUITS sympathy AT -0.5 AND bravery AT 0.8: DO challenge.     #! error R1412
+    WHEN insult_heard, SUITS sympathy AT -0.5 AND bravery AT 0.8: DO challenge.     #! error R14_12-retired-and-in-label

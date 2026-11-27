@@ -1,10 +1,10 @@
 #! case: an allow that silences nothing is not reported while the Program has errors
-#! rule: R0205
+#! rule: R02_05-stale-allow
 
 GAME CUE insult_heard(speaker)
 ACTION glare_at(target)
 
-#@allow: R0307
+#@allow: R03_07-unused-placeholder
 PLAYBOOK Guest:
     WHEN insult_heard(?who):
-        DO ) glare_at(?who)              #! error R0115
+        DO ) glare_at(?who)              #! error R01_15-unexpected-text

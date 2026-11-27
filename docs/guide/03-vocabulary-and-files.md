@@ -60,10 +60,10 @@ The kind is the only thing a Cue's declaration says about it. The showcase sorts
 
 **Checks**
 
-- One name declared as two kinds → `R0501`
-- `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT` → `R1407`
-- `ACTION` declared inside a `PLAYBOOK` or `PLOT` → `R1012`
-- A declared Propensity that no Label and no `SHIFT` names → `R1409` (warning)
+- One name declared as two kinds → `R05_01-declared-as-two-kinds`
+- `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT` → `R14_07-local-propensity`
+- `ACTION` declared inside a `PLAYBOOK` or `PLOT` → `R10_12-misplaced-action-or-cue`
+- A declared Propensity that no Label and no `SHIFT` names → `R14_09-unused-propensity` (warning)
 
 Spec: chapter 05, *One name, one kind*; chapter 14, *Propensities*; chapter 10.
 
@@ -83,9 +83,9 @@ The words in parentheses are Parameter names. They say that a grudge has two slo
 
 **Checks**
 
-- A use with more or fewer arguments than the declaration has parameters → `R0301`
-- `?` in a declaration → `R0302`
-- Two declarations of one name with different parameter counts → `R1005`
+- A use with more or fewer arguments than the declaration has parameters → `R03_01-wrong-argument-count`
+- `?` in a declaration → `R03_02-placeholder-in-declaration`
+- Two declarations of one name with different parameter counts → `R10_05-conflicting-redeclaration`
 
 Spec: chapter 03, *Declaring parameters*.
 
@@ -125,12 +125,12 @@ TO fetch(?dish):
 
 **Checks**
 
-- `GAME` on anything but a `FACT` or a `CUE` (`GAME TRAIT`, `GAME GOAL`, …), or on a local declaration → `R1016`; on a `NAME` line it is `R0311`
-- `LEARN`, `FORGET` or `UPDATE` on a game Fact → `R0807` (warning)
-- A Trigger waiting for a Cue that isn't `GAME` and that nothing in the Program sends → `R3807` (warning; hint: `GAME CUE`)
-- A game message for an item that isn't `GAME`, or that the receiver never uses → Trace warning (Jason: `T2801`)
+- `GAME` on anything but a `FACT` or a `CUE` (`GAME TRAIT`, `GAME GOAL`, …), or on a local declaration → `R10_16-game-on-wrong-declaration`; on a `NAME` line it is `R03_11-misused-name-declaration`
+- `LEARN`, `FORGET` or `UPDATE` on a game Fact → `R08_07-edit-of-game-fact` (warning)
+- A Trigger waiting for a Cue that isn't `GAME` and that nothing in the Program sends → `R38_07-cue-never-sent` (warning; hint: `GAME CUE`)
+- A game message for an item that isn't `GAME`, or that the receiver never uses → Trace warning (Jason: `T28_01-unknown-game-name`)
 
-Spec: chapter 10, *What the game produces*. For `R0807`, chapter 08; for `R3807`, chapter 38.
+Spec: chapter 10, *What the game produces*. For `R08_07-edit-of-game-fact`, chapter 08; for `R38_07-cue-never-sent`, chapter 38.
 
 ## External names
 
@@ -175,10 +175,10 @@ A dotted Action is done when the code returns and fails if the code fails. The g
 
 **Checks**
 
-- A dotted name without `AS` → `R1009`
-- `AS` on a `GOAL`, on a local declaration, or on a `FACT` or `CUE` that isn't `GAME` → `R1010`
-- One External name given two Regia names → `R1011`
-- Two declarations of one name with different External names → `R1005`
+- A dotted name without `AS` → `R10_09-dotted-name-without-as`
+- `AS` on a `GOAL`, on a local declaration, or on a `FACT` or `CUE` that isn't `GAME` → `R10_10-as-on-wrong-declaration`
+- One External name given two Regia names → `R10_11-shared-external-name`
+- Two declarations of one name with different External names → `R10_05-conflicting-redeclaration`
 
 Spec: chapter 10, *External names*. For what a dotted Action does when it runs, chapter 08.
 
@@ -222,10 +222,10 @@ What Numbers can do, and Strings, is in *Placeholders and Expressions*.
 
 **Checks**
 
-- A Name not declared with `NAME` → `R0310` (hint: the closest declared Name)
-- A `NAME` line with parameters, `AS` or `GAME`, or inside a `PLAYBOOK` or `PLOT` → `R0311`
-- A Role name used as a Value → `R0303` (hint: `FROM Role ?x`)
-- `ME` in a Plot, a Role setup included → `R0309`
+- A Name not declared with `NAME` → `R03_10-undeclared-name` (hint: the closest declared Name)
+- A `NAME` line with parameters, `AS` or `GAME`, or inside a `PLAYBOOK` or `PLOT` → `R03_11-misused-name-declaration`
+- A Role name used as a Value → `R03_03-role-as-value` (hint: `FROM Role ?x`)
+- `ME` in a Plot, a Role setup included → `R03_09-me-in-plot`
 
 Spec: chapter 03, *Values and Placeholders*, *Names are declared*, *`ME`*. For Numbers and Strings, chapter 04.
 
@@ -258,9 +258,9 @@ What waiting does, and what a Duration that isn't a Number does, are in *Actions
 
 **Checks**
 
-- A Duration without a unit word, or with another word → `R1201`
-- A Duration whose Placeholders aren't certainly filled before the `WAIT` → `R1202`
-- A negative Number written directly as the Duration (`WAIT -2 SECONDS`) → `R1203` (warning)
+- A Duration without a unit word, or with another word → `R12_01-wrong-duration-unit`
+- A Duration whose Placeholders aren't certainly filled before the `WAIT` → `R12_02-maybe-unfilled-duration`
+- A negative Number written directly as the Duration (`WAIT -2 SECONDS`) → `R12_03-negative-duration` (warning)
 
 Spec: chapter 12, *Durations*.
 
@@ -308,11 +308,11 @@ The hint is there only while the declaring file is still in the Program, here th
 
 **Checks**
 
-- An `IMPORT` that isn't at the top of the file → `R1001`
-- An import path that leads to no file → `R1002`
-- An import cycle → `R1003` (the message names every file in the loop)
-- A name the file neither declares nor reaches → `R1004` (hint: the file that declares it, and the `IMPORT`)
-- A `.regia` file importing a `.regin` → `R2101`
+- An `IMPORT` that isn't at the top of the file → `R10_01-misplaced-import`
+- An import path that leads to no file → `R10_02-missing-import-file`
+- An import cycle → `R10_03-import-cycle` (the message names every file in the loop)
+- A name the file neither declares nor reaches → `R10_04-name-out-of-scope` (hint: the file that declares it, and the `IMPORT`)
+- A `.regia` file importing a `.regin` → `R21_01-import-of-instancing-file`
 
 Spec: chapter 10, *Imports*, *The program*. For `.regin` files, chapter 21.
 
@@ -340,8 +340,8 @@ CUE served(plate)                        # in serving.regia: the same Cue as voc
 
 **Checks**
 
-- Two declarations of one name that disagree on kind, parameter count, `GAME` or External name → `R1005` (the message names both)
-- A Playbook or Plot declared twice → `R1006`
+- Two declarations of one name that disagree on parameter count, `GAME` or External name → `R10_05-conflicting-redeclaration` (the message names both); on kind → `R05_01-declared-as-two-kinds`
+- A Playbook or Plot declared twice → `R10_06-duplicate-playbook-or-plot`
 
 Spec: chapter 10, *One namespace*, *Declaration order*.
 
@@ -360,9 +360,9 @@ FACT on__duty                            # error: so is `__`
 
 **Checks**
 
-- Two names that differ only in case, in the namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders → `R1007`
-- A name, a Placeholder's included, that starts with `regia_` or contains `__` → `R1008`
-- A name spelled exactly like a keyword → `R0110`
+- Two names that differ only in case, in the namespace, among one Plot's Roles or Phases, or among one Plan's Placeholders → `R10_07-case-only-name-clash`
+- A name, a Placeholder's included, that starts with `regia_` or contains `__` → `R10_08-reserved-name-spelling`
+- A name spelled exactly like a keyword → `R01_10-keyword-as-name`
 
 Spec: chapter 10, *Name rules*.
 
@@ -400,11 +400,11 @@ A Plot has no local Goals, since its Director never pursues one or writes a reci
 
 **Checks**
 
-- `ACTION` inside a `PLAYBOOK` or `PLOT`, `CUE` inside a `PLOT` → `R1012`
-- `GOAL` inside a `PLOT` → `R1015` (hint: declare it at file level to `ASK` for it)
-- A local name that shadows a name the file can see → `R1013`
-- A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL` → `R1014`
-- `AS` on a local declaration → `R1010`; `GAME` on one → `R1016`
+- `ACTION` inside a `PLAYBOOK` or `PLOT`, `CUE` inside a `PLOT` → `R10_12-misplaced-action-or-cue`
+- `GOAL` inside a `PLOT` → `R10_15-goal-in-plot` (hint: declare it at file level to `ASK` for it)
+- A local name that shadows a name the file can see → `R10_13-shadowing-local-name`
+- A local Fact or Goal sent with `TELL`, `ASK … TO` or `SIGNAL` → `R10_14-local-vocabulary-sent`
+- `AS` on a local declaration → `R10_10-as-on-wrong-declaration`; `GAME` on one → `R10_16-game-on-wrong-declaration`
 
 Spec: chapter 10, *Local Vocabulary*.
 
@@ -433,8 +433,8 @@ A Cue that one Playbook both sends and reacts to may be declared inside it. `cha
 
 **Checks**
 
-- A local Cue sent with `SIGNAL` → `R1014`
-- A local Cue as an Outcome (`END PLOT WITH`, `FINISHED WITH`) → `R1004`: the Plot can't see it
+- A local Cue sent with `SIGNAL` → `R10_14-local-vocabulary-sent`
+- A local Cue as an Outcome (`END PLOT WITH`, `FINISHED WITH`) → `R10_04-name-out-of-scope`: the Plot can't see it
 
 Spec: chapter 10, *Local Cues*.
 

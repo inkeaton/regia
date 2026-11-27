@@ -13,6 +13,6 @@
 ## Consequences
 
 - This amends ADR 0002's spelling. Its decision stands: Placeholders are filled by computed values only in the Body.
-- `LET` and `BE` are reserved (chapter 04). The retired spellings are errors with a hint: `?x = e` (`R0407`), and `key = value` in a `TARGET` group (`R2124`). `LET` in a condition is `R0408`.
+- `LET` and `BE` are reserved (chapter 04). The retired spellings are errors with a hint: `?x = e` (`R04_07-retired-equals-statement`), and `key = value` in a `TARGET` group (`R21_24-retired-equals-setting`). `LET` in a condition is `R04_08-let-in-condition`.
 - "Naming a value" is no longer the name of the concept, because a **Name** is a declared word. The spec says a `LET` Statement **fills** a Placeholder.
 - In Regia 1.5.

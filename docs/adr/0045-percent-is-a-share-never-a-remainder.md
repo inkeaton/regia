@@ -1,8 +1,8 @@
 # `%` is a share, never a remainder
 
-A part of a Role was written with the unit word `PERCENT`: `ASSIGN Brawling TO 30 PERCENT OF Guest`, and in 2.0 the Quota `FROM 50 PERCENT OF Guest`. `%` was unused once `#%` was retired. The syntax review gave it to percentages: `30% OF Guest`, `?share% OF Guest`, `(?n * 10)% OF Guest`. `PERCENT` is the retired spelling `R1516`.
+A part of a Role was written with the unit word `PERCENT`: `ASSIGN Brawling TO 30 PERCENT OF Guest`, and in 2.0 the Quota `FROM 50 PERCENT OF Guest`. `%` was unused once `#%` was retired. The syntax review gave it to percentages: `30% OF Guest`, `?share% OF Guest`, `(?n * 10)% OF Guest`. `PERCENT` is the retired spelling `R15_16-retired-percent`.
 
-`%` goes only between a Number Expression and `OF`. Anywhere else it is `R1517`. Regia has one Number kind, so `50%` is never a Value: `LET ?x BE 50%.` and `WEIGHT 30%` are errors, and a Weight stays relative.
+`%` goes only between a Number Expression and `OF`. Anywhere else it is `R15_17-misplaced-percent-sign`. Regia has one Number kind, so `50%` is never a Value: `LET ?x BE 50%.` and `WEIGHT 30%` are errors, and a Weight stays relative.
 
 Regia has no remainder (chapter 04), and `%` will never be one. A remainder, if Regia ever needs one, will be a word (`MOD`, or a function like `RANDOM(a, b)`), chosen when it is needed and not reserved now.
 
@@ -14,6 +14,6 @@ Regia has no remainder (chapter 04), and `%` will never be one. A remainder, if 
 
 ## Consequences
 
-- A programmer who writes `?n % 3` gets `R1517`, whose hint says `%` writes a share and Regia has no remainder.
+- A programmer who writes `?n % 3` gets `R15_17-misplaced-percent-sign`, whose hint says `%` writes a share and Regia has no remainder.
 - Taking `%` back for a remainder later would break every Plot that writes a share.
 - In Regia 1.5 (counted picks), and the same spelling in 2.0's Quotas.

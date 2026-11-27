@@ -1,10 +1,10 @@
 #! case: JOINED is a Director Trigger kind only
-#! rule: R1901
+#! rule: R19_01-cast-change-in-playbook
 #! regia: 2.0
 
 ACTION wave
 
 PLAYBOOK Greeter:
     ROLE guest.
-    WHEN guest JOINED:                   #! error R1901
+    WHEN guest JOINED:                   #! error R19_01-cast-change-in-playbook
         DO wave.

@@ -108,8 +108,8 @@ Its shape was decided in the ticket *The game link's shape* (`.scratch/director-
 
   JaCaMo builds every platform and calls its `init` before it creates any agent. The link connects to `address`:`base_port` in `init`, waiting a bounded time for the connection, so no Director starts, attaches or sends before the link is up. It lives as long as the MAS, not as long as any Director: it outlives the Root (chapter 31), and it closes in the platform's `stop`. Directors reach it through a static accessor, since a run has one.
 - **Its name in the envelope** is **`regia_game_link`**. The game writes it as `receiver` on every message it sends the link. The link writes it as `sender` on every message it sends the game, a Director's Actions and `regia_story_ended` included. A Director's name never reaches the game. The link doesn't route on `receiver`: it routes on the message's `type` and, for Facts and Cues, the item's name. The Trace still records which Director sent what.
-- **What it holds** is plumbing only (*Infrastructure state*, below): the connection, which Directors are attached, what each hears and whether its state reply has gone through, the state requests in flight, the Actions in flight, and the clock. It keeps **no game information**: a Fact the game reported lives in the game and in the beliefs of the Directors that heard it, never in the link. When the link needs a Regia-shaped answer, it reads it from Jason at that moment instead of keeping it: whether a leaver is an Agent of the Program (`T3302`) is asked of the runtime, and whether the Root Staging has ended (`T3304`) is whether a Root is still attached. The Root attaches *as* the Root, which is all that sets it apart.
-- **A link that fails.** If the connection never opens, or closes mid-run, **the run goes on**: Directors stay attached and keep running their Plans, Signals, `WAIT`s and Staging tree, and simply hear nothing more from the game. Every Director's game Action fails at once as if refused, with the reason `no game link` (chapter 37). A paused clock is started again, with a `CLOCK RESUMED` entry, since no `regia_resume` can come any more. The Trace gets `T2802` or `T2803`. There is no reconnecting in 2.0, and the link never kills a Director (VEsNA's own handler kills its agent on an error).
+- **What it holds** is plumbing only (*Infrastructure state*, below): the connection, which Directors are attached, what each hears and whether its state reply has gone through, the state requests in flight, the Actions in flight, and the clock. It keeps **no game information**: a Fact the game reported lives in the game and in the beliefs of the Directors that heard it, never in the link. When the link needs a Regia-shaped answer, it reads it from Jason at that moment instead of keeping it: whether a leaver is an Agent of the Program (`T33_02-leave-of-unknown-agent`) is asked of the runtime, and whether the Root Staging has ended (`T33_04-join-after-root-ended`) is whether a Root is still attached. The Root attaches *as* the Root, which is all that sets it apart.
+- **A link that fails.** If the connection never opens, or closes mid-run, **the run goes on**: Directors stay attached and keep running their Plans, Signals, `WAIT`s and Staging tree, and simply hear nothing more from the game. Every Director's game Action fails at once as if refused, with the reason `no game link` (chapter 37). A paused clock is started again, with a `CLOCK RESUMED` entry, since no `regia_resume` can come any more. The Trace gets `T28_02-game-link-connect-failed` or `T28_03-game-link-lost`. There is no reconnecting in 2.0, and the link never kills a Director (VEsNA's own handler kills its agent on an error).
 - **Rejected:** a **Jason `Environment`**. JaCaMo 1.2 never creates one and sends every action to CArtAgO (chapter 37), and an `Environment`'s percepts are beliefs, so it can't carry a Cue. **A gateway Root Director**, which forwarded percepts down the Staging tree and relayed Actions: it ran ASL on behalf of other Stagings. **A body per Director**: the game would have to learn about Stagings.
 - **Attaching and hearing.** A Director attaches when it gets its start, registering its name, what its own Plot hears and whether it is the Root. The link asks the game for that Director's starting state (`regia_state`, chapter 37) and delivers it nothing until the reply has gone through. An ending Director stops hearing Facts and Cues at the first step of its walk and detaches when its agent stops. Decided in the ticket *A Director hearing the game for itself* (`.scratch/director-game-link/issues/03-hearing-the-game.md`), in chapter 30, *Hearing the game*.
 - **Acting.** Every Director sends its own Actions through the link. Their `id`s come from the link's one counter, shared with `regia_state`. Replies are routed by `id` into the requesting Director's mailbox. The link calls off a detaching Director's waiting Actions and fails every in-flight Action when it is lost. Decided in the ticket *A Director doing its own Actions* (`.scratch/director-game-link/issues/04-doing-its-own-actions.md`), in chapter 37, *Custom Actions in a Director*.
@@ -155,7 +155,7 @@ Tickets that need a concept missing from this table add a row.
 Revised in the ticket *The Vocabulary and the game* (`.scratch/regia-revision/issues/07-vocabulary-and-the-game.md`), with ADR 0026.
 
 - **A game item's External name never appears in ASL.** Its beliefs and events always use the Regia name. Every Agent's and Director's files carry one initial belief per game item they use, `regia_game(fact, "world.time.is_night", night).` or `regia_game(cue, "engine.combat.hit", hit_by).`, and `regia-jason` translates the `name` of each `regia_cue` and `regia_fact` through them (chapter 30). So an External name may hold dots or any other character.
-- A game message to an Agent whose name has no `regia_game` entry is dropped with a Trace warning (`T2801`): it is either not a game item, or one this Agent never uses. On the game link, a message no attached Director hears is dropped with no entry (chapter 30).
+- A game message to an Agent whose name has no `regia_game` entry is dropped with a Trace warning (`T28_01-unknown-game-name`): it is either not a game item, or one this Agent never uses. On the game link, a message no attached Director hears is dropped with no entry (chapter 30).
 - An Action's External name **with dots** (`engine.security.summon_guards`) is a **Java internal action**, the Jason form of the Target's own code (chapter 10). It is compiled to `regia.act(N, A)` like a game Action, with `N` the External name exactly as written, and `regia.act` runs the Java class of that name instead of sending anything (chapter 37).
 - One **without dots** is a **game Action**, compiled to `regia.act(N, A)`, which sends it to the game through the agent's body and waits for the game's reply (chapter 37). `A` uses the Regia name; `N`, the External name, is a string that travels in the message.
 
@@ -166,20 +166,24 @@ Revised in the ticket *The Vocabulary and the game* (`.scratch/regia-revision/is
 
 ## Transpiler checks
 
-None of its own. `R2801` (a Fact or Cue External name that isn't a Jason atom) is no longer given: External names never reach ASL as beliefs.
+The Target gives none of its own. Its one check is retired:
 
-The names-related checks are in chapter 10 (`R1007`, `R1008`).
+**Errors**
+
+- `R28_01-external-name-not-atom` Retired: a Fact or Cue External name that isn't a Jason atom is no longer an error, since External names never reach ASL as beliefs.
+
+The names-related checks are in chapter 10 (`R10_07-case-only-name-clash`, `R10_08-reserved-name-spelling`).
 
 ## Trace entries
 
 **Errors**
 
-- `T2802` The game link couldn't connect to the game at start. The entry names the address and port. The run starts anyway (*The game link*).
-- `T2803` The game link's connection was lost mid-run. The entry names the address and port. The run goes on.
+- `T28_02-game-link-connect-failed` The game link couldn't connect to the game at start. The entry names the address and port. The run starts anyway (*The game link*).
+- `T28_03-game-link-lost` The game link's connection was lost mid-run. The entry names the address and port. The run goes on.
 
 **Warnings**
 
-- `T2801` A `regia_cue` or `regia_fact` whose name matches no `regia_game` entry of the receiving Agent. The entry names the message's name and the receiver. Nothing else happens. A Director never writes it: the game link delivers a Director only what its `regia_hears` lists, and drops a message no attached Director hears with no entry (chapter 30).
+- `T28_01-unknown-game-name` A `regia_cue` or `regia_fact` whose name matches no `regia_game` entry of the receiving Agent. The entry names the message's name and the receiver. Nothing else happens. A Director never writes it: the game link delivers a Director only what its `regia_hears` lists, and drops a message no attached Director hears with no entry (chapter 30).
 
 ## Regia 1.5
 

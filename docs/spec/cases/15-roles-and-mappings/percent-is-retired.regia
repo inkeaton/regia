@@ -1,7 +1,7 @@
 #! case: n PERCENT OF Role is a retired spelling of n% OF Role
-#! rule: R1516
+#! rule: R15_16-retired-percent
 
-CUE food_served
+GAME CUE food_served
 ACTION brawl
 
 PLAYBOOK Brawling:
@@ -13,4 +13,4 @@ PLOT Banquet:
 
     DURING reception:
         WHEN food_served:
-            ASSIGN Brawling TO 30 PERCENT OF Guest.    #! error R1516
+            ASSIGN Brawling TO 30 PERCENT OF Guest.    #! error R15_16-retired-percent

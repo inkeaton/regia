@@ -1,7 +1,7 @@
 #! case: giving a Playbook must fill every Role it declares
-#! rule: R1503
+#! rule: R15_03-unfilled-receiving-role
 
-CUE food_served, insult_heard
+GAME CUE food_served, insult_heard
 ACTION complain
 
 PLAYBOOK Chatting:
@@ -15,4 +15,4 @@ PLOT Banquet:
 
     DURING reception:
         WHEN food_served:
-            ASSIGN Chatting TO Guest.    #! error R1503
+            ASSIGN Chatting TO Guest.    #! error R15_03-unfilled-receiving-role

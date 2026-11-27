@@ -44,9 +44,9 @@ This is the default style, for code written by hand and for code a tool generate
 
 **Checks**
 
-- Tabs and spaces mixed for indentation in one file → `R0103`
-- A line dedented to a depth that was never opened → `R0104`
-- A line indented further than the one before it, which opens no Block → `R0114`
+- Tabs and spaces mixed for indentation in one file → `R01_03-mixed-tabs-and-spaces`
+- A line dedented to a depth that was never opened → `R01_04-dedent-to-unopened-level`
+- A line indented further than the one before it, which opens no Block → `R01_14-indent-opens-no-block`
 
 Spec: chapter 01.
 
@@ -90,7 +90,7 @@ The fix is to put `TO open_feast, FROM DIRECTOR:` on its own line, indented unde
 
 **Checks**
 
-- A Block header ending a line inside an Inline block → `R0101` (hint: put the header on its own line)
+- A Block header ending a line inside an Inline block → `R01_01-indented-body-after-inline` (hint: put the header on its own line)
 
 Spec: chapter 01.
 
@@ -125,7 +125,7 @@ A `.` at the end of a line does nothing and gets no warning, so `DO sit_down.` m
 
 **Checks**
 
-- A dotted name that contains a keyword, such as `stand_up.SIGNAL` → `R0102` (hint: `. SIGNAL`)
+- A dotted name that contains a keyword, such as `stand_up.SIGNAL` → `R01_02-keyword-in-dotted-name` (hint: `. SIGNAL`)
 
 Spec: chapter 01.
 
@@ -161,7 +161,7 @@ Indentation remains the way to write a Plan. One-line layout is for code that ha
 
 **Checks**
 
-- A `;` that closes no Inline block → `R0108` (hint: a body on later lines is indented under its header)
+- A `;` that closes no Inline block → `R01_08-stray-semicolon` (hint: a body on later lines is indented under its header)
 
 Spec: chapter 01.
 
@@ -185,7 +185,7 @@ The last four lines are one Statement. A line goes on to the next one, forming o
 
 **Checks**
 
-- A continuation line not indented further than its logical line's first line → `R0105`
+- A continuation line not indented further than its logical line's first line → `R01_05-continuation-not-indented`
 
 Spec: chapter 01.
 
@@ -214,9 +214,9 @@ Every line can be parsed from its words alone, without knowing what any name is 
 
 **Checks**
 
-- A clause keyword after the core with no `,` before it → `R0111` (the message names the clause; hint: add the `,`)
-- `AND` between the items of a `SUITS` Label or a `SHIFT` → `R1412` (hint: `,`)
-- `AND` between the Roles after `PLAYS` → `R2125` (hint: `,`)
+- A clause keyword after the core with no `,` before it → `R01_11-clause-without-comma` (the message names the clause; hint: add the `,`)
+- `AND` between the items of a `SUITS` Label or a `SHIFT` → `R14_12-retired-and-in-label` (hint: `,`)
+- `AND` between the Roles after `PLAYS` → `R21_25-retired-and-in-plays` (hint: `,`)
 
 Spec: chapter 01. For Labels, chapter 14; for `PLAYS` in Instancing, chapter 21.
 
@@ -237,7 +237,7 @@ A Block header with no body is allowed, with a warning: it may be a Block we hav
 
 **Checks**
 
-- A Block header with no body → `R0106` (warning)
+- A Block header with no body → `R01_06-block-without-body` (warning)
 
 Spec: chapter 01. For Options, chapter 09.
 
@@ -279,7 +279,7 @@ A comment set apart by a blank line belongs to nothing and stays where it is, li
 
 **Checks**
 
-- A multiline comment never closed, plain (`#[`) or doc (`#@key[`) → `R0201` (pointing at its opener)
+- A multiline comment never closed, plain (`#[`) or doc (`#@key[`) → `R02_01-unclosed-comment` (pointing at its opener)
 
 Spec: chapter 02. For what moves with a construct, chapter 22.
 
@@ -331,8 +331,8 @@ FACT purse(gold), craves(dish), on_duty
 
 **Checks**
 
-- A Doc comment after code on its line → `R0202`
-- A Doc comment directly above no declaration, and not the file's → `R0203` (warning; it is ignored)
+- A Doc comment after code on its line → `R02_02-doc-comment-mid-line`
+- A Doc comment directly above no declaration, and not the file's → `R02_03-detached-doc-comment` (warning; it is ignored)
 
 Spec: chapter 02.
 
@@ -341,12 +341,12 @@ Spec: chapter 02.
 Suppose `Hosting` had a Plan for `idle`, as `NobleSocializing` does. `RoyalBanquet` gives both and orders neither against the other, so the build warns that the two are ordered only by name. The writer knows the king plays no Guest and never holds both, and answers in the source:
 
 ```regia
-#@allow: R1305
+#@allow: R13_05-competition-ordered-by-name
 PLAYBOOK Hosting:
     ...
 ```
 
-`#@allow: <code>, …` silences those warnings wherever their main span lies inside the declaration the Doc comment attaches to, nested declarations included. On a Plot it covers the Plot's Plans; as a file's Doc comment it covers the file.
+`#@allow: <code>, …` silences those warnings wherever their main span lies inside the declaration the Doc comment attaches to, nested declarations included. On a Plot it covers the Plot's Plans; as a file's Doc comment it covers the file. Each code is written whole, number and name, and is matched on its number.
 
 - Only warnings can be allowed. Naming an error's code is itself an error.
 - An `allow` that silences nothing, because the warning went away or the code doesn't exist, gets a warning of its own, so allows don't go stale. That warning can't be allowed.
@@ -356,8 +356,9 @@ It is meant for a warning the writer can't avoid or has chosen not to. A warning
 
 **Checks**
 
-- `#@allow` naming an error's code → `R0204`
-- `#@allow` naming a code that silences no warning in its declaration → `R0205` (warning)
+- `#@allow` naming an error's code → `R02_04-allow-names-error`
+- `#@allow` naming a code without its name, or with a name that isn't its number's → `R02_06-allow-misnames-code` (quick fix: the right name)
+- `#@allow` naming a code that silences no warning in its declaration → `R02_05-stale-allow` (warning)
 
 Spec: chapter 02. For the order by name, chapter 13; for `--all-warnings`, chapter 23.
 
@@ -368,9 +369,9 @@ Spec: chapter 02. For the order by name, chapter 13; for `--all-warnings`, chapt
 
 **Checks**
 
-- A character Regia doesn't use → `R0112`
-- A String not closed on its line, or another escape → `R0113`
-- Text that fits no construct, and that no other check names → `R0115`
+- A character Regia doesn't use → `R01_12-stray-character`
+- A String not closed on its line, or another escape → `R01_13-malformed-string`
+- Text that fits no construct, and that no other check names → `R01_15-unexpected-text`
 
 Spec: chapter 01.
 
@@ -393,8 +394,8 @@ A keyword has one meaning wherever it is written. A reader who knows one use of 
 
 **Checks**
 
-- A name spelled exactly like a keyword → `R0110` (hint: change its case or its spelling)
-- `TOLD`, `AGREED`, `REFUSED` or `REFUSE` used → `R0706`
+- A name spelled exactly like a keyword → `R01_10-keyword-as-name` (hint: change its case or its spelling)
+- `TOLD`, `AGREED`, `REFUSED` or `REFUSE` used → `R07_06-reserved-kind-word`
 
 Spec: chapter 01. For the reserved Message words, chapter 07.
 
@@ -433,7 +434,7 @@ A Transpiler for Regia 1.5 still parses every construct of 2.0. If a Program use
 
 **Checks**
 
-- A construct of a system Regia 1.5 leaves out, in a 1.5 build → `R0109` (the message names it)
+- A construct of a system Regia 1.5 leaves out, in a 1.5 build → `R01_09-later-regia-construct` (the message names it)
 
 Spec: chapter 01. Each construct in chapters 05, 18, 19 and 20.
 
@@ -481,7 +482,7 @@ A header with several Labels is the longest line a Playbook has, and the commas 
 
 ### The Transpiler
 
-Each file is parsed on its own, from its words alone, and a mistake of layout is reported in its file even when an Import beside it is broken. Every error and warning of the build has a code, `R` and the spec chapter's two digits, and a docs page of its own. (*The Transpiler*)
+Each file is parsed on its own, from its words alone, and a mistake of layout is reported in its file even when an Import beside it is broken. Every error and warning of the build has a code, such as `R01_11-clause-without-comma`: `R`, the spec chapter's two digits and the check's number in it, and a name saying what went wrong. Each code has a docs page of its own. (*The Transpiler*)
 
 ### The Visual Editor
 

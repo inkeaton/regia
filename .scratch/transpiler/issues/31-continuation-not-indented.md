@@ -1,4 +1,4 @@
-# Layout: a continuation line not indented further is R0105
+# Layout: a continuation line not indented further is R01_05-continuation-not-indented
 
 Type: implementation
 Status: open
@@ -7,7 +7,7 @@ Blocked by: 30
 
 ## Goal
 
-A continuation line not indented further than its logical line's first line is `R0105`, and starts a new logical line with any open `(` forgotten.
+A continuation line not indented further than its logical line's first line is `R01_05-continuation-not-indented`, and starts a new logical line with any open `(` forgotten.
 
 ## Spec
 
@@ -19,7 +19,7 @@ No new concept.
 
 ## Test first
 
-Unit tests: a forgotten `)` followed by an unindented Plan (one `R0105`, no other Diagnostic, the Plan's tokens as usual); a trailing `,` likewise.
+Unit tests: a forgotten `)` followed by an unindented Plan (one `R01_05-continuation-not-indented`, no other Diagnostic, the Plan's tokens as usual); a trailing `,` likewise.
 
 ## Done when
 
@@ -27,4 +27,4 @@ The tests pass; the four checks are clean.
 
 ## Not here
 
-`R0103`'s silencing of it.
+`R01_03-mixed-tabs-and-spaces`'s silencing of it.

@@ -105,26 +105,26 @@ The same walk is why the four **`-!regia_<kind>` catchers** of `agent.asl` are l
 
 ### No applicable `TO` Plan
 
-A Pursuit no recipe takes (`T1104`): Jason finds no applicable `+!g` plan, sees the relevant `-!g` plan and posts `-!g[error(no_applicable), …]` (`generateGoalDeletionFromEvent`). That is the same generated plan, so the Pursuit fires `FAILED` and `ENDED` and passes the failure on like any other. Its `PURSUED` entry was written when the request was stamped, before any recipe was tried. From `courtesy.regia:9`: a Guest with no `seat` asked to `take_seat` writes `T1104`, `GOAL take_seat FAILED`, runs `WHEN take_seat FAILED` and `WHEN take_seat ENDED`, and the `achieve` intention ends.
+A Pursuit no recipe takes (`T11_04-goal-found-no-plan`): Jason finds no applicable `+!g` plan, sees the relevant `-!g` plan and posts `-!g[error(no_applicable), …]` (`generateGoalDeletionFromEvent`). That is the same generated plan, so the Pursuit fires `FAILED` and `ENDED` and passes the failure on like any other. Its `PURSUED` entry was written when the request was stamped, before any recipe was tried. From `courtesy.regia:9`: a Guest with no `seat` asked to `take_seat` writes `T11_04-goal-found-no-plan`, `GOAL take_seat FAILED`, runs `WHEN take_seat FAILED` and `WHEN take_seat ENDED`, and the `achieve` intention ends.
 
 ### Reasons along the chain
 
 - **`FAIL`** maps to `.fail(regia_fail)`, and **`FAIL WITH r`** to `.fail(regia_fail, regia_reason(r))` (chapter 39).
 - Jason adds every `.fail` argument to the `-!g` event it posts. `regia.goal_failed` reads `regia_reason(R)`, and `regia.pass_failure` passes it on unchanged, so every Goal of the chain fails with the same Reason (chapter 11). Only `FAIL WITH` sets it.
-- From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T1103` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__serving__3` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
+- From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T11_03-explicit-fail` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__serving__3` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
 
 ### The cause entry
 
 Every Failure has **exactly one cause entry** (chapter 34, *The failure chain*), written once:
 
-- **by the Statement**, when it knows its own cause and writes it before failing. It then fails with `regia_because(Seq)`: `UPDATE` (`T0801`, chapter 39), the reply intake of `regia.act` (`T1101`, chapter 37), and the other Statements that already write their code;
-- **otherwise by the catcher** (the generated `-!g`, a `-!regia_<kind>`, or the Java hook for a `WHEN` Plan, below), from the event's annotations: `regia_fail` is `T1103`, with `reason` when there is one; `error(no_applicable)` is `T1104`; Jason's own errors (arithmetic, a failed internal action) map to the code of chapter 11's table. The `at` comes from Jason's `code_src` and `code_line` through the source map (chapter 35).
+- **by the Statement**, when it knows its own cause and writes it before failing. It then fails with `regia_because(Seq)`: `UPDATE` (`T08_01-update-of-unknown-fact`, chapter 39), the reply intake of `regia.act` (`T11_01-failed-custom-action`, chapter 37), and the other Statements that already write their code;
+- **otherwise by the catcher** (the generated `-!g`, a `-!regia_<kind>`, or the Java hook for a `WHEN` Plan, below), from the event's annotations: `regia_fail` is `T11_03-explicit-fail`, with `reason` when there is one; `error(no_applicable)` is `T11_04-goal-found-no-plan`; Jason's own errors (arithmetic, a failed internal action) map to the code of chapter 11's table. The `at` comes from Jason's `code_src` and `code_line` through the source map (chapter 35).
 
 A catcher that finds `regia_because` writes no cause entry.
 
 ### A `WHEN` Plan that fails on its own
 
-A `WHEN` Plan that fails with no Goal under it (`T0401` in `WHEN insulted`, or a `FAIL` there) has no `-!` event, and Jason drops its intention with a console warning. **`regia.RegiaAgent` catches this on the Java side** and writes the Plan's cause entry (*The cause entry*), so chapter 11's "a failed `WHEN` Plan just stops" still leaves its trace, and the console shows the Trace line, not Jason's warning. Which Jason hook it uses (a `CircumstanceListener`, or an override of the failure path through the Agent's `TransitionSystem`) is chosen when `regia-jason` is written. A `WHEN` Plan *waiting* on a Goal that fails is handled by `regia.pass_failure` (above), not by this hook.
+A `WHEN` Plan that fails with no Goal under it (`T04_01-operand-not-number` in `WHEN insulted`, or a `FAIL` there) has no `-!` event, and Jason drops its intention with a console warning. **`regia.RegiaAgent` catches this on the Java side** and writes the Plan's cause entry (*The cause entry*), so chapter 11's "a failed `WHEN` Plan just stops" still leaves its trace, and the console shows the Trace line, not Jason's warning. Which Jason hook it uses (a `CircumstanceListener`, or an override of the failure path through the Agent's `TransitionSystem`) is chosen when `regia-jason` is written. A `WHEN` Plan *waiting* on a Goal that fails is handled by `regia.pass_failure` (above), not by this hook.
 
 ## `DROPPED`: the walker
 

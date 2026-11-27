@@ -12,7 +12,7 @@ The difference is that the receiver of a told local Event can hold the same Play
 
 ## Consequences
 
-- A local Event can't be Signalled or be an Outcome (`R1014`): a Director is outside the Playbook.
+- A local Event can't be Signalled or be an Outcome (`R10_14-local-vocabulary-sent`): a Director is outside the Playbook.
 - A receiver that doesn't hold the Playbook has no Plan for the Event and nothing happens. This is not reported, as for any told Event nobody reacts to.
 - On Jason the Event travels under its Generated name, `regia_local__<Playbook>__<name>`, which is the same on every holder.
-- A Plot now has local Facts only: a local `GOAL` there was never usable and is an error (`R1015`).
+- A Plot now has local Facts only: a local `GOAL` there was never usable and is an error (`R10_15-goal-in-plot`).

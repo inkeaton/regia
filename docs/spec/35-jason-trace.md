@@ -11,9 +11,9 @@ Every Trace entry goes through **one writer** in `regia-jason`. The Jason Target
 
 ASL code reaches it through the internal action **`regia.trace(Kind, Level, Code, Fields)`**, or **`regia.trace(Kind, Level, Code, Fields, Seq)`**, which also binds `Seq` to the entry's `seq` (a `PURSUE` takes its Pursuit's `Id` this way, chapter 39). The `regia-jason` internal actions that already write Trace entries (`regia.stop_playbook`, `regia.send`, `selectOption`'s bypassed guard, and so on, chapters 29–33) call the writer directly.
 
-- `Code` is a string, `""` when the entry has none. `Fields` is a list of `key(Value)` terms, with chapter 34's field names for the kind: `regia.trace(unheard, info, "T3801", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)])`. Java callers pass the same keys.
+- `Code` is a string, `""` when the entry has none. `Fields` is a list of `key(Value)` terms, with chapter 34's field names for the kind: `regia.trace(unheard, info, "T38_01-signal-found-no-plan", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)])`. Java callers pass the same keys.
 - The writer adds `seq`, `t`, `agent`, `kind`, `level` and `code`. It turns atoms and structures into their Regia text, lists into arrays and numbers into numbers, and every Generated name into its designer name through the source map.
-- **`at` comes from the caller's frame**: the ASL file and line of the instruction running on the current intention, through the source map's `lines`. A frame the source map doesn't map (an Infrastructure plan) gives the `at` of the nearest mapped frame below it, which is the Statement that posted it: `T0801` from `regia_update`, `T1502` from `regia_draw` and `REACHED` from `regia_reach` point at the `UPDATE`, the `TELL` and the recipe. An intention with no mapped frame gives no `at`.
+- **`at` comes from the caller's frame**: the ASL file and line of the instruction running on the current intention, through the source map's `lines`. A frame the source map doesn't map (an Infrastructure plan) gives the `at` of the nearest mapped frame below it, which is the Statement that posted it: `T08_01-update-of-unknown-fact` from `regia_update`, `T15_02-count-exceeds-pool` from `regia_draw` and `REACHED` from `regia_reach` point at the `UPDATE`, the `TELL` and the recipe. An intention with no mapped frame gives no `at`.
 - **`agent`** is the source map's name for the Jason agent. A Subplot Director's `#<n>` is added by the writer (*Staging numbers*, below).
 
 | Kind | Written by |
@@ -21,7 +21,7 @@ ASL code reaches it through the internal action **`regia.trace(Kind, Level, Code
 | `run` | the writer itself: `RUN STARTED` at start-up; `RUN ENDED` when the Root ends the story (`regia.end_story`, chapter 37), or from a JVM shutdown hook, `how: stopped`, if the run stops first (Ctrl-C, or the MAS is closed). In test mode, `RunCase` (below) |
 | `action` | `regia.act` when it sends, and the reply intake of `regia.RegiaAgent` and `regia.DirectorAgent` when the outcome comes back; the game link for a detached Director's call-offs and late outcomes, and for Actions failed when it is lost (chapter 37) |
 | `time` | `regia.wait` when a `WAIT … UNTIL` ends, met or timed out (chapter 39); the game link for `CLOCK PAUSED` and `CLOCK RESUMED` (chapter 37) |
-| `message` | `regia.send` (chapter 33), which every generated and Infrastructure send goes through: a `TELL`, an `ASK`, a `SIGNAL` (one entry for the Statement, listing every Director it went to, and in `ended` those whose Staging had ended, which `regia.send` finds when the delivery fails: `info`, not `T3303`), and a setup's `LEARN` and `PURSUE` sent by the Director (chapter 30) |
+| `message` | `regia.send` (chapter 33), which every generated and Infrastructure send goes through: a `TELL`, an `ASK`, a `SIGNAL` (one entry for the Statement, listing every Director it went to, and in `ended` those whose Staging had ended, which `regia.send` finds when the delivery fails: `info`, not `T33_03-send-to-missing-agent`), and a setup's `LEARN` and `PURSUE` sent by the Director (chapter 30) |
 | `plan` | `RegiaAgent.selectOption` and `DirectorAgent.selectOption`, when they choose the option (*The `plan` entry*, below); a stopped one by the walker and `regia.stop_playbook` (chapters 29 and 40), a failed one by `regia.pass_failure` (chapter 40) |
 | `goal` | `regia.trace` for a `PURSUE` and `RegiaAgent.socAcc` (`PURSUED`), `regia_reach`, `regia.goal_failed` in the generated `-!g` (`FAILED`, at `error`), and the drop walker (chapter 40) |
 | `fact` | `regia.trace` after each `LEARN`/`FORGET`/`UPDATE`, in the Infrastructure plan that takes in a told Fact, in the Java intake of a game Fact, Agents' and Directors' alike, and, for a Director's starting game Facts, in `regia_begin` (chapter 30) |
@@ -111,14 +111,14 @@ java -cp regia-jason.jar:lib/*:… regia.testing.RunCase build/<Entry path> case
 
 `regia test` puts the Project's `lib/` jars on the class path as `regia run` does, so a case runs the project's own Java (dotted Actions) for real (chapter 37, *Test mode*).
 
-1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (chapter 37's table). It tells the connections apart **by port**: the port of the `.jcm`'s `platform: regia.GameLink(address, base_port)` line is the game link's (chapter 28), and every other port is the body of the Agent the `.jcm` gives it. It never looks at `sender` to tell them apart. With `#! game link: none` (chapter 34), it doesn't serve the link's port, so the link writes `T2802` at start.
+1. `RunCase` starts **`ScriptedGame`**: a WebSocket server (Java-WebSocket's `WebSocketServer`) on every address and port the `.jcm` gives. It speaks the same JSON envelope `{sender, receiver, type, data}` and message types as the game (chapter 37's table). It tells the connections apart **by port**: the port of the `.jcm`'s `platform: regia.GameLink(address, base_port)` line is the game link's (chapter 28), and every other port is the body of the Agent the `.jcm` gives it. It never looks at `sender` to tell them apart. With `#! game link: none` (chapter 34), it doesn't serve the link's port, so the link writes `T28_02-game-link-connect-failed` at start.
 2. It starts the MAS from the Build's `.jcm`, in the same JVM, with **Jason's synchronous execution control**, so agents step in lockstep reasoning cycles, and with the case's **seed** given to `regia-jason`, from which every agent seeds its own generator. Every draw chapter 34 lists comes from the drawing agent's generator (*Random draws*, below). Agents have chapter 34's names, which chapter 36 gives the Jason agents. The game link and the Agents' bodies connect to `ScriptedGame` exactly as they would to Godot.
 3. For each `>` step of the `.trace` file, it waits for the run to **settle**, plays the step through `ScriptedGame`, and writes a `script` entry.
-   - A `cue` or `fact` step to an Agent goes out as one `regia_cue` or `regia_fact`, on the WebSocket of the body the step names, with `receiver` set to that body. Its `name` is the item's External name, which `ScriptedGame` reads from that receiver's `regia_game` beliefs (chapter 28). If the receiver has no entry for the item, the Regia name is sent as it is, and the receiver writes `T2801`.
+   - A `cue` or `fact` step to an Agent goes out as one `regia_cue` or `regia_fact`, on the WebSocket of the body the step names, with `receiver` set to that body. Its `name` is the item's External name, which `ScriptedGame` reads from that receiver's `regia_game` beliefs (chapter 28). If the receiver has no entry for the item, the Regia name is sent as it is, and the receiver writes `T28_01-unknown-game-name`.
    - A `link` step goes out once on the link's connection, with `receiver: "regia_game_link"`. Its External name comes from the `regia_game` beliefs of the Build's Director files (`asl/directors/`, Subplots' included); if none lists the item, the Regia name is sent. The link delivers it to every attached Director that hears it, and drops it with no entry if none does (chapter 30).
    - A `*` step sends one message to each body whose `regia_game` beliefs list the item, in Trace order, then one on the link if any Director file lists it, all before the run is next checked for settling. The `script` entry lists the receivers reached, `link` last.
    - A receiver with no connected body (an Agent the run never had, or one that has left), and a `link` step (or a `*` step that would reach the link) after `> lose link` or under `#! game link: none`, is a case error. `RunCase` sends nothing, writes `RUN ENDED`, stops the MAS, and exits with a non-zero status naming the step. The Conformance suite fails the case without matching it.
-   - `> lose link` closes the link's connection from `ScriptedGame`'s side. The link writes `T2803` and fails what it has in flight (chapter 37).
+   - `> lose link` closes the link's connection from `ScriptedGame`'s side. The link writes `T28_03-game-link-lost` and fails what it has in flight (chapter 37).
 4. **Settled** means: for every agent, no intention is running except ones paused in `regia.wait` or waiting in `regia.act` on an Action `ScriptedGame` holds, the mailbox and event queue are empty, `ScriptedGame` has nothing left to send, and nothing it sent is still on its way on any connection, the link's included, for one whole cycle. A Director waiting for its state reply needs no rule of its own: `ScriptedGame` answers every `regia_state` at once (*The game's state*, below), so it is never settled while one is unanswered. If the run has settled and something is paused in `regia.wait`, the virtual clock jumps to the earliest wake-up instead of the next step.
 5. `ScriptedGame` answers each Action with a single **`done`**, unless a standing rule (`> action fails`, `refused`, `holds`) matches it (chapter 37).
 6. After the last step, and once the run has settled, `RunCase` writes `RUN ENDED`, stops the MAS and exits. The Trace file is the only output.
@@ -130,7 +130,7 @@ java -cp regia-jason.jar:lib/*:… regia.testing.RunCase build/<Entry path> case
 - **Facts**: the instances that `link` steps (and `*` steps that reached the link) have made true and not since made false. `fact` steps to Agents' bodies don't count: they say what one body perceives. `> fact link +…` steps written before `> start` set the record without sending anything, so the Root's reply carries them.
 - **Left**: every Agent named by a `> leave` step.
 
-A case can't hold a state reply or send a second one, so `T3305` and `T3703`, which only a misbehaving game causes, aren't scriptable.
+A case can't hold a state reply or send a second one, so `T33_05-join-before-root-state` and `T37_03-stray-state-result`, which only a misbehaving game causes, aren't scriptable.
 
 **Matching is done in Rust**, in the Transpiler's Conformance suite, which builds the case, runs `RunCase`, reads the `.jsonl` and applies chapter 34's matching. `RunCase` itself never reads the expected lines.
 
@@ -142,7 +142,7 @@ A case can't hold a state reply or send a second one, so `T3305` and `T3703`, wh
 - So a case is reproducible: under synchronous execution each agent's draws come in the same order, and one agent's draws don't depend on how the others are scheduled.
 - Every draw goes through it: generated code uses `.random` and `math.random`, the Infrastructure plans `regia_choose` and `regia_draw` and the rules of Picks use `.random` (chapter 39), and `regia.weighted_pick` and `RegiaAgent`'s `RANDOM` Propensity values (chapter 36) take the same generator from Java.
 - Generated code never uses `.shuffle`, which draws from an unseeded source. VEsNA-Pro's own `new Random()` (chapter 14) is a gap for the development effort to close.
-- **`RANDOM a TO b`** is the rule **`regia_roll(A, B, whole | decimal, R)`** of `regia/agent.asl`, read with a test goal, built on `math.random`. The `whole` roll is from `A` to `B` (bounds in either order, rounded inward), and fails when there is no whole number between them, which the cause entry maps to `T0403` (chapter 04). The Transpiler picks `whole` or `decimal` from how the bounds are written.
+- **`RANDOM a TO b`** is the rule **`regia_roll(A, B, whole | decimal, R)`** of `regia/agent.asl`, read with a test goal, built on `math.random`. The `whole` roll is from `A` to `B` (bounds in either order, rounded inward), and fails when there is no whole number between them, which the cause entry maps to `T04_03-empty-whole-roll` (chapter 04). The Transpiler picks `whole` or `decimal` from how the bounds are written.
 
 ## `regia-jason` additions
 
@@ -156,7 +156,7 @@ A case can't hold a state reply or send a second one, so `T3305` and `T3703`, wh
 
 **Warnings**
 
-- `R3501` Retired: the console level is an option of `regia run`, not a Target setting.
+- `R35_01-console-level-setting` Retired: the console level is an option of `regia run`, not a Target setting.
 
 ## Regia 1.5
 

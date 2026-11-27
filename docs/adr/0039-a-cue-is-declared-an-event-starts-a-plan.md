@@ -2,7 +2,7 @@
 
 Until now `EVENT` declared a Vocabulary item: something that happens in the world and is over once noticed (`EVENT insult_heard(speaker)`). There was then no word for the wider idea, "whatever can start a Plan" (a Fact learned, a Goal over, a Phase entered, a Playbook given), and the glossary had to list *triggering event* under *Avoid*. In Jason, the Target, an *event* is exactly that wider idea (`+b`, `-b`, `+!g`, `-!g`), so the spec's word and the Target's word meant different things.
 
-We decided that the Vocabulary item is a **Cue**, declared with `CUE` (`GAME CUE`, local `CUE`, and a Signal is a Cue an Agent sends to its Directors), and that **Event** is the general word: anything that happens to an Agent or a Director and can start a Plan. A Trigger names one Event, and each sort of Event is a Trigger kind. Cue fits the theatre words Regia already uses (Director, Role, Plot, Staging): a cue is what tells an actor to act. The old keyword `EVENT` is an error with the hint "renamed `CUE`" (`R0513`), not a second spelling.
+We decided that the Vocabulary item is a **Cue**, declared with `CUE` (`GAME CUE`, local `CUE`, and a Signal is a Cue an Agent sends to its Directors), and that **Event** is the general word: anything that happens to an Agent or a Director and can start a Plan. A Trigger names one Event, and each sort of Event is a Trigger kind. Cue fits the theatre words Regia already uses (Director, Role, Plot, Staging): a cue is what tells an actor to act. The old keyword `EVENT` is an error with the hint "renamed `CUE`" (`R05_13-retired-event`), not a second spelling.
 
 ## Considered options
 

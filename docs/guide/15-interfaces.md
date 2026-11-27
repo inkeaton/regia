@@ -44,7 +44,7 @@ The `SIGNAL` line is all that `Keeping_watch` says about `culprit_seized`. The T
 
 **Checks**
 
-- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R3801` (warning)
+- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R38_01-unheard-signal` (warning)
 
 Spec: chapter 38, *Nothing is declared*. For `regia explain`, chapter 23.
 
@@ -88,7 +88,7 @@ TO fetch(?dish):
 
 **Checks**
 
-- `BY` on a Goal's ending, in a 1.5 build → `R0109`
+- `BY` on a Goal's ending, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 38, *The Interface of a Playbook*. For local Goals and Cues, chapter 10; for `FROM`, chapter 05.
 
@@ -170,7 +170,7 @@ Each arrow is one line of one side's Interface meeting a line of the other's. Th
 
 **Checks**
 
-- A Goal's ending Trigger in a Plot, with or without `BY`, in a 1.5 build → `R0109`
+- A Goal's ending Trigger in a Plot, with or without `BY`, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 38, *The Interface of a Plot*. For parameters, chapter 17; for Phases and the Director, chapter 20.
 
@@ -227,7 +227,7 @@ Now nothing in the Program sends `insulted`, and it isn't a `GAME CUE`. No Plan 
 
 **Checks**
 
-- A Trigger on a Cue that isn't `GAME` and that nothing in the Program sends → `R3807` (warning; hint: declare it `GAME CUE`)
+- A Trigger on a Cue that isn't `GAME` and that nothing in the Program sends → `R38_07-cue-never-sent` (warning; hint: declare it `GAME CUE`)
 
 Spec: chapter 38, *Who sends a Cue*, *A Cue nothing sends*. For `GAME`, chapter 10.
 
@@ -298,9 +298,9 @@ DURING PLOT:
 
 **Checks**
 
-- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R3801` (warning)
-- `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e` → `R3802` (warning)
-- A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T3801` (Trace, `unheard`)
+- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R38_01-unheard-signal` (warning)
+- `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e` → `R38_02-cue-never-signalled` (warning)
+- A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 38, *A Signal the giving Plot never handles*, *A Signal handled in some Phases only*, *A Director Plan no Signal can reach*, *Trace entries*. For where a Signal goes, chapter 07.
 
@@ -360,10 +360,10 @@ A recipe that has to take a Director's request and the Agent's own `PURSUE` both
 
 **Checks**
 
-- A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R3803` (warning)
-- A Goal with no recipe that applies, its `FROM` included → `T1104` (Trace, Failure)
-- `FROM ME`, `FROM GAME` or `FROM` with `OR`, in a 1.5 build → `R0109`
-- An Agent's own `PURSUE` no recipe admits, an `ASK` to a Goal whose every recipe is the Agent's own → `R3805`, `R3806` (warnings, 2.0 only: a 1.5 build never reports them)
+- A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R38_03-unheard-message` (warning)
+- A Goal with no recipe that applies, its `FROM` included → `T11_04-goal-found-no-plan` (Trace, Failure)
+- `FROM ME`, `FROM GAME` or `FROM` with `OR`, in a 1.5 build → `R01_09-later-regia-construct`
+- An Agent's own `PURSUE` no recipe admits, an `ASK` to a Goal whose every recipe is the Agent's own → `R38_05-pursue-without-me-recipe`, `R38_06-ask-only-me-recipes` (warnings, 2.0 only: a 1.5 build never reports them)
 
 Spec: chapter 38, *An `ASK` or `TELL` that no `FROM` admits*, *A request no recipe's `FROM` admits*. For Mappings, chapter 15; for `FROM`, chapter 05; for a Goal with no recipe, chapter 11.
 
@@ -393,7 +393,7 @@ WHEN have_dinner FAILED WITH sold_out(?dish):    # warning: have_dinner never fa
 
 **Checks**
 
-- `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r` → `R3804` (warning)
+- `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r` → `R38_04-reason-never-given` (warning)
 
 Spec: chapter 38, *A Reason the Goal never fails with*. For Reasons and waiting Goals, chapter 11.
 
@@ -419,9 +419,9 @@ At run time the parent may be in a Phase with no Plan for the ending. The Trace 
 
 **Checks**
 
-- `WHEN P FINISHED WITH e` where `P` never ends with `e` → `R1706` (warning)
-- An ending of `P` that no Plan of the starting Plot hears in any Phase → `R1708` (warning)
-- A Subplot's ending with no Plan in the parent's current Phase or `DURING PLOT` → `T3802` (Trace, `unheard`)
+- `WHEN P FINISHED WITH e` where `P` never ends with `e` → `R17_06-unknown-subplot-outcome` (warning)
+- An ending of `P` that no Plan of the starting Plot hears in any Phase → `R17_08-unheard-subplot-ending` (warning)
+- A Subplot's ending with no Plan in the parent's current Phase or `DURING PLOT` → `T38_02-ending-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 38, *Trace entries*. For endings and how the parent matches them, chapter 17.
 

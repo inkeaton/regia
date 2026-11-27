@@ -11,7 +11,7 @@ A kind with `COUNT n` gives starting Agents named **`<kind>_1` … `<kind>_n`**,
 - Always numbered, even for `COUNT 1`, so a name doesn't change when a count does. Behaviour cases rely on these names (chapter 35).
 - Names can't collide. A kind's Agents are its name followed by `_` and digits, so kind `noble_1`'s first Agent is `noble_1_1`, which kind `noble` never makes. Kind names can't start with `regia_` or contain `__` (chapter 10), so they never meet Generated names.
 - An **individual Agent** (`AGENT percival …`, chapter 21) keeps its own name, first letter lowercased: `percival`. It is the name the game knows the character by.
-- An individual Agent's name can't have the form `<kind>_<digits>` for a kind of the Build, whatever the kind's `COUNT`, so a count never makes two Agents share a name (`R3603`).
+- An individual Agent's name can't have the form `<kind>_<digits>` for a kind of the Build, whatever the kind's `COUNT`, so a count never makes two Agents share a name (`R36_03-kind-numbered-agent-name`).
 - A name the game reports for a joiner (chapter 33) is the game's own and is checked there.
 
 ## Ports and addresses
@@ -215,11 +215,11 @@ New rows for chapter 28's table:
 
 **Errors**
 
-- `R3601` A port past 65535: `base_port` plus the number of starting Agents is too large.
-- `R3602` `base_port` that isn't a whole number in 1–65535.
-- `R3603` An individual Agent named `<kind>_<digits>` for a kind of the Build.
+- `R36_01-last-port-too-high` A port past 65535: `base_port` plus the number of starting Agents is too large.
+- `R36_02-wrong-base-port` `base_port` that isn't a whole number in 1–65535.
+- `R36_03-kind-numbered-agent-name` An individual Agent named `<kind>_<digits>` for a kind of the Build.
 
-An unknown key in the `jason` group, or a value outside the set its key takes, is chapter 21's `R2113`. The known keys are `strategy` (`most_similar` or `random`), `address` and `base_port`. The console level is not a setting: it is `regia run --console` (chapter 35).
+An unknown key in the `jason` group, or a value outside the set its key takes, is chapter 21's `R21_13-unknown-target-setting`. The known keys are `strategy` (`most_similar` or `random`), `address` and `base_port`. The console level is not a setting: it is `regia run --console` (chapter 35).
 
 ## Regia 1.5
 

@@ -75,10 +75,10 @@ The parts of a Plan are in *Plans*, the names in *Vocabulary and files*, `TELL` 
 
 **Checks**
 
-- A Cue tested in a Context or an `IF` → `R0502`
-- `LEARN` or `FORGET` with a Cue or a Goal, `PURSUE` or `DROP` with a Fact or a Cue → `R0802`
-- A Director Statement in a Playbook (`ASSIGN`, `ENTER`, …) → `R1507`
-- A Goal pursued, asked or declared with no `TO` Plan anywhere in the Program → `R1101` (warning)
+- A Cue tested in a Context or an `IF` → `R05_02-cue-tested-in-condition`
+- `LEARN` or `FORGET` with a Cue or a Goal, `PURSUE` or `DROP` with a Fact or a Cue → `R08_02-wrong-kind-for-action`
+- A Director Statement in a Playbook (`ASSIGN`, `ENTER`, …) → `R15_07-director-statement-in-playbook`
+- A Goal pursued, asked or declared with no `TO` Plan anywhere in the Program → `R11_01-goal-without-plan` (warning)
 
 Spec: chapter 05.
 
@@ -122,12 +122,12 @@ Setups are in *Plots and Directors*, and Roles, `CAST` and binding by name in *P
 
 **Checks**
 
-- A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup → `R1602`
-- A Block on a Playbook's `ROLE` → `R1601`
-- A Playbook Role left unfilled, with no `MAPPING` and no Plot Role of the same name → `R1503` (hint: a `MAPPING`)
-- A Role name used as a Value → `R0303` (hint: `FROM Role ?x`)
-- A setup `PURSUE` above the `ASSIGN` that gives the only Playbook with a recipe for it → `R1605` (warning)
-- The retired `ROLE r STARTS WITH:` → `R1608` (hint: `ROLE r:`)
+- A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup → `R16_02-wrong-statement-in-setup`
+- A Block on a Playbook's `ROLE` → `R16_01-block-on-playbook-role`
+- A Playbook Role left unfilled, with no `MAPPING` and no Plot Role of the same name → `R15_03-unfilled-receiving-role` (hint: a `MAPPING`)
+- A Role name used as a Value → `R03_03-role-as-value` (hint: `FROM Role ?x`)
+- A setup `PURSUE` above the `ASSIGN` that gives the only Playbook with a recipe for it → `R16_05-pursue-before-assign` (warning)
+- The retired `ROLE r STARTS WITH:` → `R16_08-retired-starts-with` (hint: `ROLE r:`)
 
 Spec: chapter 16. For binding by name, chapter 15.
 
@@ -169,10 +169,10 @@ Givings, Mappings and `REMOVE` are in *Playbooks and Roles*; the weighted `RANDO
 
 **Checks**
 
-- Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the Playbook doesn't declare → `R1504`
-- A giving Role the Plot doesn't declare → `R1502`
-- The retired `MAPPING a TO b` → `R1514` (hint: `MAPPING a AS b`)
-- The retired `UNASSIGN` → `R1515` (hint: `REMOVE`)
+- Two `MAPPING`s to one receiving Role in one Statement, or a `MAPPING` to a Role the Playbook doesn't declare → `R15_04-misused-mapping`
+- A giving Role the Plot doesn't declare → `R15_02-undeclared-role`
+- The retired `MAPPING a TO b` → `R15_14-retired-mapping-to` (hint: `MAPPING a AS b`)
+- The retired `UNASSIGN` → `R15_15-retired-unassign` (hint: `REMOVE`)
 
 Spec: chapter 15.
 
@@ -238,13 +238,13 @@ Phases, `ENTER`, `AFTER` and what a Director perceives and does are in *Plots an
 
 **Checks**
 
-- A Plot with Phases and no `INITIAL`, or several → `R2007`
-- `DURING`, `ENTER` or `IN` naming a Phase the Plot doesn't declare → `R2008`
-- `Role DO …` or `WORLD DO …` → `R2006`
-- `PURSUE`, `DROP g` or `SIGNAL` in a Director → `R2001`
-- The retired `TRANSITION TO p` → `R2016` (hint: `ENTER p`)
-- `FROM ALL Guest` or another quantity after `FROM`, or a Goal's ending in a Plot, in a 1.5 build → `R0109`
-- A Signal with no Plan in the current Phase or `DURING PLOT` → `T3801` (Trace, `unheard`)
+- A Plot with Phases and no `INITIAL`, or several → `R20_07-missing-or-repeated-initial`
+- `DURING`, `ENTER` or `IN` naming a Phase the Plot doesn't declare → `R20_08-undeclared-phase`
+- `Role DO …` or `WORLD DO …` → `R20_06-do-with-subject`
+- `PURSUE`, `DROP g` or `SIGNAL` in a Director → `R20_01-playbook-statement-in-director`
+- The retired `TRANSITION TO p` → `R20_16-retired-transition-to` (hint: `ENTER p`)
+- `FROM ALL Guest` or another quantity after `FROM`, or a Goal's ending in a Plot, in a 1.5 build → `R01_09-later-regia-construct`
+- A Signal with no Plan in the current Phase or `DURING PLOT` → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 20.
 
@@ -283,10 +283,10 @@ Kinds, individual Agents, `LIKE`, starting Propensities and the seed are in *Ins
 
 **Checks**
 
-- A `.regin` Entry that reaches no `ROOT` → `R2104`
-- A `PLAYS` Role that isn't a Role of the Root Plot → `R2105`
-- A `.regia` file importing a `.regin` → `R2101`
-- A Root Plot Role that no kind and no individual Agent plays → `R2110` (warning)
+- A `.regin` Entry that reaches no `ROOT` → `R21_04-missing-or-wrong-root`
+- A `PLAYS` Role that isn't a Role of the Root Plot → `R21_05-plays-non-root-role`
+- A `.regia` file importing a `.regin` → `R21_01-import-of-instancing-file`
+- A Root Plot Role that no kind and no individual Agent plays → `R21_10-root-role-never-played` (warning)
 
 Spec: chapter 21.
 
@@ -331,8 +331,8 @@ How a run is recorded is in *The Trace*, and how a Program becomes one in *The T
 
 **Checks**
 
-- A setup Statement that can't be carried out, skipped → `T1601` (Trace warning)
-- A Director Plan that failed → `T2002` (Trace warning, after the entry of its cause)
+- A setup Statement that can't be carried out, skipped → `T16_01-skipped-setup-statement` (Trace warning)
+- A Director Plan that failed → `T20_02-director-plan-failed` (Trace warning, after the entry of its cause)
 
 Spec: chapter 20, *What starting a Staging does*. For the order of setups and kind lines, chapter 16 and chapter 21, *Setup lines*.
 

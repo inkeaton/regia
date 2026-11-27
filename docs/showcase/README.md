@@ -94,18 +94,18 @@ Guide: [Syntax](../guide/02-syntax.md)
 | Two styles | indentation, and the explicit style (`:` then the body, `.`, `;`) | everywhere; Inline blocks for one-line Plans (`WHEN take_seat ENDED: SIGNAL took_seat`); several Statements on one line, and `IF x: DO a; ELSE: DO b`: snippet |
 | Block headers | `:` on every header | everywhere |
 | Where a Block's body starts | indentation Block, Inline block | everywhere |
-| No Block without indentation across lines | a `;` that closes nothing (`R0108`) | snippet |
+| No Block without indentation across lines | a `;` that closes nothing (`R01_08-stray-semicolon`) | snippet |
 | Headers inside an Inline block | error | snippet |
 | When `.` ends a Statement | `.` vs dotted names | `voc` (`ACTION hall.music.fanfare AS play_fanfare`); a `.` between two Statements: snippet |
 | Indentation rules | | everywhere; mixing tabs is a snippet |
 | Continuation lines | a Statement split after `,` | `pl/royal_banquet` the two `START SUBPLOT`s |
 | Parsing never depends on declarations | | — |
 | One meaning per word; Keywords; What syntax can be dropped | | — (rules of the syntax) |
-| Clauses and the comma | `, FROM`, `, SUITS`, `, WITHOUT WAITING`, …; `,` in a list | everywhere; `pb/noble_socializing` `WHEN insulted, FROM peer ?who, SUITS aggressiveness AT 0.8, bravery AT 0.8:`; a clause without its `,` (`R0111`): snippet |
+| Clauses and the comma | `, FROM`, `, SUITS`, `, WITHOUT WAITING`, …; `,` in a list | everywhere; `pb/noble_socializing` `WHEN insulted, FROM peer ?who, SUITS aggressiveness AT 0.8, bravery AT 0.8:`; a clause without its `,` (`R01_11-clause-without-comma`): snippet |
 | Where condition words go | `?x PLAYS r`, `P RUNNING`, `PURSUING g`, `IN phase` | `pb/noble_socializing` `?foe PLAYS peer`; `pl/royal_banquet` `HonorDuel(?offender) RUNNING`, `IN arrival`; `pb/dining` `PURSUING have_dinner` |
 | Empty Blocks | `PASS` | `pb/noble_socializing` small talk: `OPTION, WEIGHT 5: PASS` |
 | Retired spellings | an old spelling and its error | snippet |
-| A word of 2.0 in a 1.5 build | `R0109` | snippet, once, among the Variations ("In 2.0" notes show no 2.0 code) |
+| A word of 2.0 in a 1.5 build | `R01_09-later-regia-construct` | snippet, once, among the Variations ("In 2.0" notes show no 2.0 code) |
 
 ### 02 Comments
 
@@ -116,7 +116,7 @@ Guide: [Syntax](../guide/02-syntax.md)
 | Plain comments | `#`, `#[ … ]#` | everywhere; one `#[ … ]#` in `pl/royal_banquet` (counting by hand) |
 | Doc comments: Form, Keys | `#@key:`, `#@desc[ … ]#`, `desc`/`version` | file Doc comment on `pl/royal_banquet` (`#@version`, `#@desc[ … ]#`) |
 | Attachment | on Plot, Playbook, Role, Phase, Plan, item | every Plot and Playbook; Role `Guest` and Phase `feast` in `pl/royal_banquet`; Phase `betting` in `pl/honor_duel`; the scowling Plan in `pb/noble_socializing`; items in `voc` (`seize`, `eat`, …) |
-| Allowing a warning: `#@allow` | `#@allow: R1305` | `snippet` (an order by name between two Playbooks never held together, chapter 02's own case) |
+| Allowing a warning: `#@allow` | `#@allow: R13_05-competition-ordered-by-name` | `snippet` (an order by name between two Playbooks never held together, chapter 02's own case) |
 | Instancing | (no comment form) | — |
 
 ### 03 Parameters and placeholders
@@ -252,7 +252,7 @@ Guide: [Goals and Failure](../guide/09-goals-and-failure.md)
 | Reacting; Writing a fallback | `WHEN g FAILED WITH r` above plain `FAILED`; a fallback Goal; an `IF` before the risky step | `pb/serving`; `pb/dining` `FAILED WITH no_food` pursues `make_do`; `pb/serving` `fetch` |
 | Trying again | | snippet |
 | Every Pursuit that ends fires its Triggers | | — |
-| The trace | | every run in `runs/`; the `T1104` of a knight with no seat in `runs/evening` |
+| The trace | | every run in `runs/`; the `T11_04-goal-found-no-plan` of a knight with no seat in `runs/evening` |
 
 ### 12 Time
 
@@ -316,7 +316,7 @@ Guide: [The logic of Regia](../guide/01-the-logic-of-regia.md), [Plots and Direc
 | Section | Construct | Place |
 |---|---|---|
 | A Role's Block; What it means; Sender | `ROLE r:` | `pl/royal_banquet` Role setups; `TO take_seat, FROM DIRECTOR` in `pb/courtesy` |
-| Order and trouble | `ASSIGN` before `PURSUE` | `pl/royal_banquet` (`R1605` in a snippet) |
+| Order and trouble | `ASSIGN` before `PURSUE` | `pl/royal_banquet` (`R16_05-pursue-before-assign` in a snippet) |
 | A setup for a Phase | `DURING feast` setups | `pl/royal_banquet` `Dining`, `Serving` |
 | A setup for the whole Cast | `CAST:` | `pl/royal_banquet` `ASSIGN Courtesy` |
 | Mappings | same names bind ignoring case | `pl/royal_banquet` (`Courtesy`'s `host` is `Host`) |
@@ -412,7 +412,7 @@ Guide: [Interfaces](../guide/15-interfaces.md)
 |---|---|---|
 | Nothing is declared; The Interface of a Playbook / a Plot | | the guide prints `Keeping_watch` (`runs/evening`) and `HonorDuel` (`runs/two_duels`) |
 | Who sends a Cue | | — (every Cue in `voc` has a sender or is `GAME`) |
-| Checks (`R3801`–`R3807`) | | the Program is clean; each check shown in a snippet; `R3805`/`R3806` are 2.0 |
+| Checks (every check of chapter 38) | | the Program is clean; each check shown in a snippet; `R38_05-pursue-without-me-recipe`/`R38_06-ask-only-me-recipes` are 2.0 |
 
 ## Gaps that stay gaps
 

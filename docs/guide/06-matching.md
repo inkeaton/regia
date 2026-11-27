@@ -111,9 +111,9 @@ Two Guests resented equally little are a tie, and the language doesn't say which
 
 **Checks**
 
-- `HIGHEST` with `LOWEST`, or a Pick clause written twice → `R2601`
-- A ranked Placeholder not filled by the same condition → `R2602`
-- `, AT RANDOM` → `R2606` (hint: `, RANDOMLY`)
+- `HIGHEST` with `LOWEST`, or a Pick clause written twice → `R26_01-conflicting-pick-clauses`
+- A ranked Placeholder not filled by the same condition → `R26_02-rank-on-unmatched-placeholder`
+- `, AT RANDOM` → `R26_06-retired-at-random` (hint: `, RANDOMLY`)
 
 Spec: chapter 26, *Picks*, *The ranked Placeholder*. For a comparison with a non-Number, chapter 04; for sibling `GIVEN`s, chapter 06.
 
@@ -150,11 +150,11 @@ With no Match, `TO vent` has no `ELSE` to fall back on, and the Goal fails. A Gu
 
 **Checks**
 
-- `WEIGHT` with `HIGHEST`, `LOWEST` or `RANDOMLY` → `R2601`
-- A Weight using a Placeholder neither filled by the condition nor certainly filled before it → `R2605`
-- `WEIGHT 30%` → `R1517`
-- Every Match weighs 0 or less → `T2601` (Trace entry)
-- A Weight that isn't a Number on a Body `IF` or `ELSE IF` → `T0901` (Trace, Failure)
+- `WEIGHT` with `HIGHEST`, `LOWEST` or `RANDOMLY` → `R26_01-conflicting-pick-clauses`
+- A Weight using a Placeholder neither filled by the condition nor certainly filled before it → `R26_05-maybe-unfilled-pick-weight`
+- `WEIGHT 30%` → `R15_17-misplaced-percent-sign`
+- Every Match weighs 0 or less → `T26_01-all-pick-weights-zero` (Trace entry)
+- A Weight that isn't a Number on a Body `IF` or `ELSE IF` → `T09_01-weight-not-number` (Trace, Failure)
 
 Spec: chapter 26, *A weighted Pick*. For Weights, chapter 09; for `%`, chapter 15.
 
@@ -173,7 +173,7 @@ A Trigger matches one Cue, one Fact change or one Goal, so it never has a choice
 
 **Checks**
 
-- A Pick, `WEIGHT` included, on `FOR EACH`, a Trigger, `COUNT(…)` or `ELSE` → `R2603`
+- A Pick, `WEIGHT` included, on `FOR EACH`, a Trigger, `COUNT(…)` or `ELSE` → `R26_03-misplaced-pick`
 
 Spec: chapter 26, *Where Picks are allowed*.
 
@@ -239,9 +239,9 @@ A Spectator who walks out of the hall can't drop the handkerchief, so the duel's
 
 **Checks**
 
-- A blank in a Basic Action → `R0801` (for `FORGET`, the hint suggests `FOR EACH`)
-- A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block → `R2604`
-- A Pick on `FOR EACH` → `R2603`
+- A blank in a Basic Action → `R08_01-unfilled-action-argument` (for `FORGET`, the hint suggests `FOR EACH`)
+- A Placeholder filled by a `FOR EACH` condition or inside its Block, used after the Block → `R26_04-placeholder-outside-for-each`
+- A Pick on `FOR EACH` → `R26_03-misplaced-pick`
 
 Spec: chapter 26, *`FOR EACH`*, *Forgetting everything that matches*. For blanks in Basic Actions, chapter 08; for `IF` branches, chapter 06.
 
@@ -291,10 +291,10 @@ A Director counts only its own Facts, never an Agent's. That is why `RoyalBanque
 
 **Checks**
 
-- A Pick inside `COUNT(…)` → `R2603`
-- A Placeholder filled inside `COUNT(…)` used outside it → `R0304`
-- `n OF` in a Context (`GIVEN 3 OF …`) → `R2607` (hint: `COUNT(…) >= n`)
-- `FROM ALL Guest` or any other quantity after `FROM` or `BY`, in a 1.5 build → `R0109`
+- A Pick inside `COUNT(…)` → `R26_03-misplaced-pick`
+- A Placeholder filled inside `COUNT(…)` used outside it → `R03_04-unfilled-placeholder`
+- `n OF` in a Context (`GIVEN 3 OF …`) → `R26_07-quantity-in-condition` (hint: `COUNT(…) >= n`)
+- `FROM ALL Guest` or any other quantity after `FROM` or `BY`, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 26, *`COUNT`*. For Expressions, chapter 04; for `PLAYS`, chapter 15; for `RUNNING`, chapter 17; for a Director's conditions, chapter 20.
 

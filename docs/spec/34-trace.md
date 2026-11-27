@@ -39,10 +39,10 @@ Every entry has a **kind**:
 
 | Code | Nothing ran for |
 | --- | --- |
-| `T0702` | a Cue told to an Agent, for which no Plan of the Agent's given Playbooks runs (chapter 07) |
-| `T1802` | a Quota met with no candidate: every `GIVEN` failed and there is no `ELSE` (chapter 18) |
-| `T3801` | a Signal at a Director, with no Plan in the current Phase or in `DURING PLOT` (chapter 38) |
-| `T3802` | a Subplot's own ending that no Plan of the parent hears (chapter 38) |
+| `T07_02-cue-found-no-plan` | a Cue told to an Agent, for which no Plan of the Agent's given Playbooks runs (chapter 07) |
+| `T18_02-quota-met-without-block` | a Quota met with no candidate: every `GIVEN` failed and there is no `ELSE` (chapter 18) |
+| `T38_01-signal-found-no-plan` | a Signal at a Director, with no Plan in the current Phase or in `DURING PLOT` (chapter 38) |
+| `T38_02-ending-found-no-plan` | a Subplot's own ending that no Plan of the parent hears (chapter 38) |
 
 - **It is not a warning.** A Phase that ignores a Signal, or a Playbook taken away before its Cue arrives, is often what the writer meant. A behaviour case may list an `unheard` entry and need not.
 - **Game percepts, the ending of an asked Goal, and a `DROPPED` Subplot write none.** Most asked Goals are not listened to, and a parent caused the drop it hears.
@@ -85,9 +85,9 @@ plus the fields of its kind:
 | `run` | `event: started`, `entry`, `seed` · `event: ended`, `how: story_ended \| stopped` |
 | `action` | when sent: `action`, `waiting: true \| false` (`false` for `WITHOUT WAITING`) · when its outcome comes back or it is called off: `of`, `outcome: done \| failed \| refused \| cancelled`, `reason` when the game or the Target gave one. No id: the outcome links by `of` |
 | `time` | `condition`, `outcome: met \| timed_out`, `waited` · or `clock: paused \| resumed` |
-| `message` | `form: tell \| ask \| signal`, `to` (a list of names), `content`; for a `SIGNAL`, `ended` (the Directors in `to` whose Staging had already ended); `dropped: true` with `T1901` |
+| `message` | `form: tell \| ask \| signal`, `to` (a list of names), `content`; for a `SIGNAL`, `ended` (the Directors in `to` whose Staging had already ended); `dropped: true` with `T19_01-message-after-leaving` |
 | `plan` | `block` (`owner`, `trigger`, and `given` or `else` when the Block has one), `values` (each Placeholder, `?name`, with its value), `by`, `over` (a list of blocks), `fits` (a list of `block` and `fit`), `outcome: started \| stopped \| failed`, `because` |
-| `unheard` | by code: `T0702` `cue`, `sender` · `T3801` `cue`, `sender`, `plot`, `phase` · `T3802` `plot`, `args`, `outcome` (absent for a bare ending), `phase` (the parent's) · `T1802` `quota` |
+| `unheard` | by code: `T07_02-cue-found-no-plan` `cue`, `sender` · `T38_01-signal-found-no-plan` `cue`, `sender`, `plot`, `phase` · `T38_02-ending-found-no-plan` `plot`, `args`, `outcome` (absent for a bare ending), `phase` (the parent's) · `T18_02-quota-met-without-block` `quota` |
 | `goal` | `goal`, `event: pursued \| reached \| dropped \| failed`, `sender` (on `pursued`, when there is one), `of`, `because` |
 | `fact` | `change: + \| -`, `fact`, `from` when told |
 | `phase` | `from` (absent for the initial Phase), `to`, `plan` (the `seq` of the `plan` entry of the Plan that ran the `ENTER`) |
@@ -109,7 +109,7 @@ plus the fields of its kind:
 
 Chapter 11 requires the Trace to say what failed, why, and what failed in turn because of it. Failure spreads one level at a time, so the Trace writes **one cause, then one entry per level, linked**, the same way a drop is written (below):
 
-- The **cause** is the Failure's one `failure` entry, written once: the Statement by `at`, and the cause from chapter 11's table (or "no applicable `TO` Plan") by its `code`. A `FAIL WITH r` adds the field `reason`, the Reason with its arguments. `FAILURE T1103 FAIL WITH sold_out(pie)`, `FAILURE T1104 GOAL take_seat: no applicable TO Plan`.
+- The **cause** is the Failure's one `failure` entry, written once: the Statement by `at`, and the cause from chapter 11's table (or "no applicable `TO` Plan") by its `code`. A `FAIL WITH r` adds the field `reason`, the Reason with its arguments. `FAILURE T11_03-explicit-fail FAIL WITH sold_out(pie)`, `FAILURE T11_04-goal-found-no-plan GOAL take_seat: no applicable TO Plan`.
 - **Each Pursuit that fails**, the one where the cause happened included, writes its `goal` entry, `GOAL … FAILED`, at level `error`, with `because: <seq of the cause>`. A failing `TO` Plan is its Goal's recipe, so it has no entry of its own: the Goal's is its entry.
 - **A waiting `WHEN` Plan that fails in turn** has no Goal: it writes a `plan` entry, `PLAN … FAILED`, at level `error`, with the same `because`.
 - The Reason is not repeated: it is read from the cause.
@@ -128,9 +128,10 @@ All are at level `info`. Two Pursuits of one Goal are told apart by `of`, which 
 
 ## Trace codes
 
-Every runtime warning, every Failure cause and every kind of `unheard` entry has a stable **Trace code**: `T`, the chapter's two digits, then two digits numbering it within the chapter (`T0902` is a negative Weight). It follows the same rules as the Diagnostic codes of chapter 27: codes are never reused, and a dropped one is marked retired.
+Every runtime warning, every Failure cause and every kind of `unheard` entry has a stable **Trace code**, such as `T09_02-weight-below-zero`. It has the shape of a Diagnostic code (chapter 27), with `T` for its letter: the number (chapter 09's second entry) and a Code name saying what happened. It follows the same rules. The number is the identity. The name is unique across all codes and frozen at the Regia 1.5 release. A code is never reused, and a dropped one keeps its line, marked retired.
 
-- Every chapter that defines a runtime warning, a Failure cause or an `unheard` entry lists its codes in a `## Trace entries` section.
+- Every chapter that defines a runtime warning, a Failure cause or an `unheard` entry lists its codes in a `## Trace entries` section. That list is the only place that names them.
+- An entry's `code` field, the console line and a `.trace` file write the whole code. A `.trace` line whose code has no name, or a name that isn't its number's, is a case error, as in chapter 27.
 - Target chapters (28–37) number their own Target-only entries: a Giving for a Playbook the Agent's files don't hold, a guard bypassed in `selectOption`, a send caught by `regia.send`, and so on.
 - Behaviour cases match on codes, not on message wording, so wording can improve without breaking cases.
 
@@ -138,10 +139,10 @@ Where the codes are:
 
 | Chapters | Codes |
 | --- | --- |
-| Failure causes (chapter 11's table) | `T0401`, `T0402` arithmetic; `T0701` recipient; `T0801` `UPDATE`; `T0901` Weight; `T1101`–`T1104` Custom Action, waited-on Goal that fails, `FAIL`, no applicable `TO` Plan; `T1201` Duration; `T1501` count |
-| Runtime warnings | `T0902`, `T0903` Weights; `T1202` Duration; `T1502`, `T1503` counts; `T1504` an `EXCEPT` with no Agent; `T1505`, `T1506` a `REMOVE` or `ASSIGN` for one Agent that does nothing; `T1601` setup Statement; `T1801` a Quota quantity that isn't a usable Number; `T1901` dropped Message; `T1902` a spawn refused in 1.5; `T2001`, `T2002` Directors |
-| `unheard` entries | `T0702` a told Cue; `T1802` a Quota met; `T3801` a Signal; `T3802` a Subplot's ending |
-| Jason Target entries | `T2801`–`T2803` (28); `T2901` (29; `T2902` retired); `T3001` (30); `T3201` (32); `T3301`–`T3305` (33); `T3701`–`T3703` (37) |
+| Failure causes (chapter 11's table) | `T04_01-operand-not-number`, `T04_02-division-by-zero` arithmetic; `T07_01-recipient-not-agent` recipient; `T08_01-update-of-unknown-fact` `UPDATE`; `T09_01-weight-not-number` Weight; every Trace code of chapter 11: Custom Action, waited-on Goal that fails, `FAIL`, no applicable `TO` Plan; `T12_01-duration-not-number` Duration; `T15_01-count-not-number` count |
+| Runtime warnings | `T09_02-weight-below-zero`, `T09_03-all-weights-zero` Weights; `T12_02-duration-below-zero` Duration; `T15_02-count-exceeds-pool`, `T15_03-count-below-zero` counts; `T15_04-except-placeholder-not-agent` an `EXCEPT` with no Agent; `T15_05-remove-takes-nothing`, `T15_06-assign-lifts-nothing` a `REMOVE` or `ASSIGN` for one Agent that does nothing; `T16_01-skipped-setup-statement` setup Statement; `T18_01-unusable-quota-quantity` a Quota quantity that isn't a usable Number; `T19_01-message-after-leaving` dropped Message; `T19_02-join-refused` a spawn refused in 1.5; `T20_01-giving-after-leaving`, `T20_02-director-plan-failed` Directors |
+| `unheard` entries | `T07_02-cue-found-no-plan` a told Cue; `T18_02-quota-met-without-block` a Quota met; `T38_01-signal-found-no-plan` a Signal; `T38_02-ending-found-no-plan` a Subplot's ending |
+| Jason Target entries | every Trace code of chapters 28, 33 and 37; `T29_01-give-of-missing-playbook` (29; `T29_02-plan-stopped-by-take` retired); `T30_01-giving-outside-cast` (30); `T32_01-unguarded-ranked-option` (32) |
 
 ## The console line
 
@@ -151,7 +152,7 @@ Every entry is also shown as one line of text, the **console line**, as it is wr
 #42 DO halt(thief_1)  watch.regia:12:5
 #43 GOAL chase(thief_1) PURSUED  watch.regia:13:5
 #56 DO chase(thief_1) FAILED  watch.regia:14:9
-#57 FAILURE T1101 DO chase(thief_1) failed  watch.regia:14:9
+#57 FAILURE T11_01-failed-custom-action DO chase(thief_1) failed  watch.regia:14:9
 #58 GOAL chase(thief_1) FAILED because #57  watch.regia:20:1
 ```
 
@@ -164,7 +165,7 @@ Every entry is also shown as one line of text, the **console line**, as it is wr
 | `time` | `WAIT UNTIL <condition> MET`, `WAIT UNTIL <condition> TIMED OUT`, `CLOCK PAUSED`, `CLOCK RESUMED` |
 | `message` | `TELL <to> <fact>`, `ASK <to> TO <goal>`, `SIGNAL <cue> TO <director>, …`, prefixed `DROPPED` when dropped. A Director whose Staging had ended is followed by ` ENDED`, at level `info`: `SIGNAL finished_eating TO director:RoyalBanquet, director:HonorDuel#1 ENDED` |
 | `plan` | `PLAN <owner>: <trigger>`, then ` GIVEN <context>` or ` ELSE` when the Block has one, then ` OVER <block>, … BY <how>` when it had rivals, and ` ON DEPARTURE` for a Quota completed by a departure. `PLAN Courtly: WHEN insulted(gawain) GIVEN hates(gawain) OVER Rude: WHEN insulted(gawain) BY PRECEDENCE`, `PLAN Alarm: WHEN ENTERED`. A waiting Plan stopped or failed in turn: `PLAN <block> STOPPED because #<seq>`, `PLAN <block> FAILED because #<seq>` |
-| `unheard` | `UNHEARD <code> <what>`. `T3802`: `UNHEARD T3802 HonorDuel(gawain) FINISHED WITH conceded IN betting` |
+| `unheard` | `UNHEARD <code> <what>`. `T38_02-ending-found-no-plan`: `UNHEARD T38_02-ending-found-no-plan HonorDuel(gawain) FINISHED WITH conceded IN betting` |
 | `goal` | `GOAL <goal> PURSUED` / `REACHED` / `DROPPED` / `FAILED`, with ` because #<seq>` when it ended in turn |
 | `fact` | `FACT +<fact>`, `FACT -<fact>`, with `FROM <agent>` when told |
 | `phase` | `PHASE <old> -> <new> ON <trigger>`, where `<trigger>` is the Trigger of the Plan that ran the `ENTER`, as its `plan` entry writes it: `ON WHEN handkerchief_dropped`, `ON AFTER 2 MINUTES`, `ON ENTERED`. `PHASE -> <initial>` when a Staging starts |
@@ -206,10 +207,10 @@ Lines starting with `>` are **script steps**. The game is played by a stand-in d
 
 - **A Cue or a Fact names who receives it.** The game reports Cues and Facts to one Agent's body at a time, or to the Directors as a whole, so a step names its receiver right after `cue` or `fact`: an Agent as the Trace writes it, or `link`. `> cue noble_2 idle`, `> fact noble_1 +hungry`, `> cue link poison_drunk`. `<name>` is the item's Regia name.
 - **The game never names a Director.** A `link` step reaches every running Director whose own Plot hears the item, and none that doesn't. One that no running Director hears is dropped with no entry, as in a real run: game percepts nobody takes leave none. It isn't a case error, since the game doesn't know which Stagings are running.
-- **`*` reaches every receiver that uses the item**: each Agent whose files list that Cue or Fact, and `link` if any Director's Plot lists it, all within the one step. A body that doesn't use it is skipped, so `*` never causes `T2801`. A step with no receiver is a case error.
-- **Naming an Agent the run doesn't have** (one that never existed, or one that has left) is a case error. The case is wrong, so nothing is sent, the run stops, and nothing is matched. Naming an Agent that is there but doesn't use the item still sends the step, and the receiver writes `T2801` as in a real run. A `link` step, or a `*` step that would reach the link, after `> lose link` or in a case with no game link (below) is a case error too.
+- **`*` reaches every receiver that uses the item**: each Agent whose files list that Cue or Fact, and `link` if any Director's Plot lists it, all within the one step. A body that doesn't use it is skipped, so `*` never causes `T28_01-unknown-game-name`. A step with no receiver is a case error.
+- **Naming an Agent the run doesn't have** (one that never existed, or one that has left) is a case error. The case is wrong, so nothing is sent, the run stops, and nothing is matched. Naming an Agent that is there but doesn't use the item still sends the step, and the receiver writes `T28_01-unknown-game-name` as in a real run. A `link` step, or a `*` step that would reach the link, after `> lose link` or in a case with no game link (below) is a case error too.
 - **The game's state.** The game remembers the Facts it has reported to the Directors and the Agents that have left, and answers from them when a Director starts (the Target's state request, chapter 37). **`> fact link ±…` steps written before `> start`** send nothing: they set the Facts true when the run starts, so the first Director starts with them, and `LEARNED` doesn't fire for them (chapter 19). Any other step before `> start` is a case error.
-- **A lost link.** `> lose link` closes the connection: the Target writes its lost-link entry (`T2803`), every Director Action still in flight fails with the reason `no game link`, a paused clock starts again, and every later Director `DO` fails at once (chapter 37). `#! game link: none` in the header starts the run with nothing on the game's side of the link, so the Target writes `T2802` at start, and every Director starts with no game Facts. Agents' bodies are never lost in a case.
+- **A lost link.** `> lose link` closes the connection: the Target writes its lost-link entry (`T28_03-game-link-lost`), every Director Action still in flight fails with the reason `no game link`, a paused clock starts again, and every later Director `DO` fails at once (chapter 37). `#! game link: none` in the header starts the run with nothing on the game's side of the link, so the Target writes `T28_02-game-link-connect-failed` at start, and every Director starts with no game Facts. Agents' bodies are never lost in a case.
 - **Actions are done at once by default.** A case makes one fail with `action fails` or `action refused`, and holds one open with `action holds` to test what happens while a `DO` waits, or after a `DO … , WITHOUT WAITING` has moved on. Each standing rule replaces the previous one for its pattern.
 - **The rules script the game's side only.** They match game Actions. An Action with a dotted External name is the Target's own code (chapter 10), part of what the case tests: it runs for real, and no rule holds it or makes it fail.
 - **Patterns match an Action's name and arguments, never who sent it.** An Agent's and a Director's Action, or two Directors' Actions, that match the same pattern are held and finished together. A Director's Action called off when it ends, or whose outcome arrives after it has ended, is still written under that Director's name (chapter 37), so a case expects it like any other: `director:Duel#1: DO strike(gawain) CANCELLED`.
@@ -234,7 +235,7 @@ director:Watch: PHASE Calm -> Alarm ON intruder_seen(thief_1)
 > action fails chase(*)
 > cue guard_1 intruder_fled(thief_1)
 guard_1: DO chase(thief_1) FAILED
-guard_1: FAILURE T1101 DO chase(thief_1) failed
+guard_1: FAILURE T11_01-failed-custom-action DO chase(thief_1) failed
 guard_1: GOAL chase(thief_1) FAILED
 ```
 
@@ -258,9 +259,9 @@ None. The Trace is written at run time; a behaviour case that doesn't match is a
 
 ## Regia 1.5
 
-In 1.5 (ADR 0025), except what belongs to later systems: `count` entries, `T1801`, `T1802`, ` ON DEPARTURE` and `departure: true`, and `JOINED` in `cast` entries.
+In 1.5 (ADR 0025), except what belongs to later systems: `count` entries, `T18_01-unusable-quota-quantity`, `T18_02-quota-met-without-block`, ` ON DEPARTURE` and `departure: true`, and `JOINED` in `cast` entries.
 
-`> join` is still a step of the script. In a 1.5 run, it shows `T1902`. A behaviour case that has an Agent join is marked `#! regia: 2.0` (chapter 27), unless it is checking that refusal.
+`> join` is still a step of the script. In a 1.5 run, it shows `T19_02-join-refused`. A behaviour case that has an Agent join is marked `#! regia: 2.0` (chapter 27), unless it is checking that refusal.
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 

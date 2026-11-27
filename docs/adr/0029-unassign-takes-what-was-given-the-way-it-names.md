@@ -18,6 +18,6 @@ Across Stagings nothing changes: a Giving belongs to the Staging that made it, a
 ## Consequences
 
 - The `<Role> ?who` shape already used by `FROM` now also follows `UNASSIGN` and `ASSIGN … TO`.
-- An `UNASSIGN` or `ASSIGN` for one Agent that finds nothing does nothing, with a Trace warning (`T1505`, `T1506`). Director Statements never fail.
+- An `UNASSIGN` or `ASSIGN` for one Agent that finds nothing does nothing, with a Trace warning (`T15_05-remove-takes-nothing`, `T15_06-assign-lifts-nothing`). Director Statements never fail.
 - Taking a Playbook from the duellists for the length of a duel is written by the parent, before `START SUBPLOT` and in the `ENDED` Plan. Pausing it is deferred.
 - Respelled by ADR 0043 (`0043-to-introduces-a-goal-with-two-closed-exceptions.md`): `UNASSIGN` is now `REMOVE`, and `UNASSIGNED` is `REMOVED`. The decision and the `FROM` shapes stand.

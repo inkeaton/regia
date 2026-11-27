@@ -84,16 +84,17 @@ A key may repeat. Two `#@author:` lines give two authors. Values are plain text.
 ### Allowing a warning: `#@allow`
 
 ```regia
-#@allow: R1305
+#@allow: R13_05-competition-ordered-by-name
 PLAYBOOK Gossip:
     ...
 ```
 
 A warning the writer has seen and accepts is answered in the source, where a reviewer sees it:
 
-- `#@allow: <code>, …` lists Diagnostic codes. It silences those warnings when their primary span lies inside the declaration it attaches to, nested declarations included: on a Plot it covers the Plot's Plans, and as a file's doc comment it covers the whole file.
-- Only warnings can be allowed. Naming an error's code is an error (`R0204`).
-- An `allow` that silences nothing, because the warning went away or the code is unknown, gets a warning of its own (`R0205`), so allows don't go stale. `R0205` can't itself be allowed, and it is reported only when the Program has no errors: an error can silence the warning the allow was written for.
+- `#@allow: <code>, …` lists Diagnostic codes, each written whole (chapter 27). It silences those warnings when their primary span lies inside the declaration it attaches to, nested declarations included: on a Plot it covers the Plot's Plans, and as a file's doc comment it covers the whole file.
+- Only warnings can be allowed. Naming an error's code is an error (`R02_04-allow-names-error`).
+- A code is matched on its number. A code written without its Code name, or with a name that isn't its number's, is an error (`R02_06-allow-misnames-code`), with a quick fix that writes the right name. An unknown number gets `R02_05-stale-allow`, below.
+- An `allow` that silences nothing, because the warning went away or the code is unknown, gets a warning of its own (`R02_05-stale-allow`), so allows don't go stale. `R02_05-stale-allow` can't itself be allowed, and it is reported only when the Program has no errors: an error can silence the warning the allow was written for.
 - An allowed warning isn't gone: `regia check --all-warnings` shows it marked *allowed*, and the Visual Editor shows it faded (chapters 23, 24).
 
 It is for a warning the writer can't, or chooses not to, avoid, such as an order by name between two Playbooks that are never held together (chapter 13). A warning the language could avoid by itself is fixed in the language instead, as `?_name` does for an ignored Placeholder (chapter 03).
@@ -106,14 +107,15 @@ Instancing has no comment form. It is written only in `.regin` Instancing files 
 
 **Errors**
 
-- `R0201` An unclosed multiline comment, plain (`#[`) or doc (`#@key[`), pointing at its opener.
-- `R0202` A doc comment that doesn't start its own line.
-- `R0204` An `#@allow` naming the code of an error.
+- `R02_01-unclosed-comment` An unclosed multiline comment, plain (`#[`) or doc (`#@key[`), pointing at its opener.
+- `R02_02-doc-comment-mid-line` A doc comment that doesn't start its own line.
+- `R02_04-allow-names-error` An `#@allow` naming the code of an error.
+- `R02_06-allow-misnames-code` An `#@allow` code without its Code name, or with a name that isn't its number's (quick fix: the right name).
 
 **Warnings**
 
-- `R0203` A detached doc comment: not directly above a declaration, and not a file's doc comment. It is ignored.
-- `R0205` An `#@allow` code that silences no warning in its declaration. Absence check (chapter 23).
+- `R02_03-detached-doc-comment` A detached doc comment: not directly above a declaration, and not a file's doc comment. It is ignored.
+- `R02_05-stale-allow` An `#@allow` code that silences no warning in its declaration. Absence check (chapter 23).
 
 ## Regia 1.5
 

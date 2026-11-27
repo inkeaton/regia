@@ -100,7 +100,7 @@ KIND hothead, PLAYS Guest:
 KIND servant, PLAYS Servant         # only ever spawned by the game
 ```
 
-- **`KIND <kind>[, LIKE <kind>, …][, PLAYS <Role>, …]`** names the kind, the kinds it starts from, and its Roles **in the Root Plot**. Each list ends at the next clause keyword (`LIKE`, `PLAYS`) or at the `:` (chapter 01). Roles joined with `AND` are the retired spelling (`R2125`). Every Agent of the kind plays **every** Role the kind ends up with, from the start and when it joins. To mix (5 guests, 2 of them drunk), write two kinds. Instancing makes no random picks. Random casting belongs to the Plot (`n OF`, chapter 15).
+- **`KIND <kind>[, LIKE <kind>, …][, PLAYS <Role>, …]`** names the kind, the kinds it starts from, and its Roles **in the Root Plot**. Each list ends at the next clause keyword (`LIKE`, `PLAYS`) or at the `:` (chapter 01). Roles joined with `AND` are the retired spelling (`R21_25-retired-and-in-plays`). Every Agent of the kind plays **every** Role the kind ends up with, from the start and when it joins. To mix (5 guests, 2 of them drunk), write two kinds. Instancing makes no random picks. Random casting belongs to the Plot (`n OF`, chapter 15).
 - **`COUNT <n>`** is how many Agents of the kind exist when the Program starts. A whole, non-negative literal. Left out, it means 0: the kind only enters by **joining** (chapter 19). It is the same noun as the Expression `COUNT(…)` (chapter 26), "how many", here of the kind's Agents.
 - **`<propensity> AT <value>`** gives a starting Propensity value (chapter 14), worded like `SUITS … AT`. The value is a literal or `RANDOM(a, b)` with literal bounds, in [0, 1] for a Trait and [-1, 1] for a Mood, drawn **once per Agent** when it is created, so a spawned Agent gets its own draw too. A Propensity roll is **always a decimal**, however its bounds are written: `aggressiveness AT RANDOM(-1, 1)` is any aggressiveness from -1 to 1, not one of three. This is the one place chapter 04's rule for a roll's kind doesn't apply, since a Propensity value is never meant to be whole. Traits and Moods are written the same way.
 - **Setup lines**: `ASSIGN`, `LEARN` and `PURSUE`, under the rules of a Role setup (below, *Setup lines*).
@@ -119,7 +119,7 @@ KIND hot_knight, LIKE knight, hothead:
 
 - The kind takes **every item of its bases except `COUNT`**, then its own lines replace the items they write, as a later file does (*Overriding*).
 - The `PLAYS` lists of the bases are **joined**, and their setup lines are **joined** in `LIKE` order. A `PLAYS` or a setup line of the kind's own replaces what it took.
-- **Two bases that set any other item differently are an error**, unless the kind writes that item itself. This is the rule for sibling files (`R2103`) in one declaration.
+- **Two bases that set any other item differently are an error**, unless the kind writes that item itself. This is the rule for sibling files (`R21_03-conflicting-sibling-files`) in one declaration.
 - A base may itself build on others. A kind can't reach itself through `LIKE`.
 - A kind's first declaration needs `PLAYS` or `LIKE`, so that it plays something. A redeclaration in a later file may leave both out and keep what it had.
 
@@ -200,7 +200,7 @@ TARGET python:
 ```
 
 - `TARGET <name>:` groups the settings of one Target. The name is written as the command line writes it, in lowercase. A build reads only its own group and ignores the others, so one `.regin` can configure several Targets.
-- Settings are `key value`, a lowercase key defined by the Target followed by its value, the shape of `SEED 42` and `COUNT 2`. Values are a word, a Number or a string. A setting is not a `LET` (chapter 04): it fills no Placeholder, and a later `.regin` may override it. The retired spelling `key = value` is an error with the hint `key value` (`R2124`).
+- Settings are `key value`, a lowercase key defined by the Target followed by its value, the shape of `SEED 42` and `COUNT 2`. Values are a word, a Number or a string. A setting is not a `LET` (chapter 04): it fills no Placeholder, and a later `.regin` may override it. The retired spelling `key = value` is an error with the hint `key value` (`R21_24-retired-equals-setting`).
 - The Transpiler **warns** about a group for a Target it doesn't know, about an unknown key under a Target it knows, and about a value outside the set a known key takes (such as `strategy`: `most_similar` or `random`).
 - **Every setting has a default.** Mechanical details (Jason's `ag-class`, addresses, ports, Agent names) never have to be written. A setting with no natural default gets one from the Transpiler: VEsNA-Pro's `strategy` defaults to `most_similar`.
 - The ASL encoding of control flow (chapter 06: native `if` or subgoal plans) is **implied by the Target**, not set. The `ASL_VERSION` comment is retired: Jason gets native `if`, the in-house interpreters get subgoal plans. If an interpreter gains native `if`, its Target changes, not the designer's files.
@@ -213,36 +213,36 @@ Checks on kinds and individual Agents run only when at least one exists.
 
 **Errors**
 
-- `R2101` A `.regia` file importing a `.regin`.
-- `R2102` A `.regin` declaring anything other than Imports and Instancing.
-- `R2103` Two sibling files setting the same item differently, with no file above them settling it.
-- `R2104` A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot that is started as a Subplot.
-- `R2105` A `PLAYS` Role that isn't a Role of the Root Plot.
-- `R2106` A Propensity that isn't declared as `TRAIT` or `MOOD`.
-- `R2107` A value, or a `RANDOM` bound, that isn't a literal, or lies outside [0, 1] for a Trait or [-1, 1] for a Mood.
-- `R2108` A `COUNT` or a `SEED` that isn't a whole, non-negative literal.
-- `R2109` The same name declared twice in one file, as a kind or an individual Agent.
-- `R2114` A Root Plot with parameters: Instancing has nothing to pass them (chapter 17).
-- `R2117` A kind or an individual Agent that plays nothing: a first declaration with neither `PLAYS` nor `LIKE`. Absence check (chapter 23).
-- `R2118` A `COUNT` in an `AGENT`.
-- `R2119` A `LIKE` naming something that isn't a kind, or a kind reaching itself through `LIKE`.
-- `R2120` Two bases setting the same item differently, with the kind or Agent not writing it (the message names both bases).
-- `R2121` A `NO KIND` or `NO AGENT` naming nothing declared in the files the file reaches. Absence check (chapter 23).
-- `R2122` An argument naming an individual Agent this build doesn't have.
-- `R2123` A kind and an individual Agent with the same name.
-- `R2124` A Target setting written with the retired `=` (`strategy = random`; hint: `strategy random`).
-- `R2125` Roles after `PLAYS` joined with the retired `AND` (`PLAYS Guest AND Drunkard`; hint: `PLAYS Guest, Drunkard`).
+- `R21_01-import-of-instancing-file` A `.regia` file importing a `.regin`.
+- `R21_02-declaration-in-instancing-file` A `.regin` declaring anything other than Imports and Instancing.
+- `R21_03-conflicting-sibling-files` Two sibling files setting the same item differently, with no file above them settling it.
+- `R21_04-missing-or-wrong-root` A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot that is started as a Subplot.
+- `R21_05-plays-non-root-role` A `PLAYS` Role that isn't a Role of the Root Plot.
+- `R21_06-undeclared-propensity` A Propensity that isn't declared as `TRAIT` or `MOOD`.
+- `R21_07-wrong-propensity-value` A value, or a `RANDOM` bound, that isn't a literal, or lies outside [0, 1] for a Trait or [-1, 1] for a Mood.
+- `R21_08-wrong-count-or-seed` A `COUNT` or a `SEED` that isn't a whole, non-negative literal.
+- `R21_09-repeated-kind-or-agent` The same name declared twice in one file, as a kind or an individual Agent.
+- `R21_14-root-plot-with-parameters` A Root Plot with parameters: Instancing has nothing to pass them (chapter 17).
+- `R21_17-agent-plays-nothing` A kind or an individual Agent that plays nothing: a first declaration with neither `PLAYS` nor `LIKE`. Absence check (chapter 23).
+- `R21_18-count-in-individual-agent` A `COUNT` in an `AGENT`.
+- `R21_19-misused-like` A `LIKE` naming something that isn't a kind, or a kind reaching itself through `LIKE`.
+- `R21_20-conflicting-bases` Two bases setting the same item differently, with the kind or Agent not writing it (the message names both bases).
+- `R21_21-undeclared-name-after-no` A `NO KIND` or `NO AGENT` naming nothing declared in the files the file reaches. Absence check (chapter 23).
+- `R21_22-unknown-agent-argument` An argument naming an individual Agent this build doesn't have.
+- `R21_23-kind-and-agent-clash` A kind and an individual Agent with the same name.
+- `R21_24-retired-equals-setting` A Target setting written with the retired `=` (`strategy = random`; hint: `strategy random`).
+- `R21_25-retired-and-in-plays` Roles after `PLAYS` joined with the retired `AND` (`PLAYS Guest AND Drunkard`; hint: `PLAYS Guest, Drunkard`).
 
-A setup line that breaks chapter 16's rules gets chapter 16's code (`R1602`, `R1603`, `R1604`) or chapter 03's `R0309` for `ME`, as in a Role setup.
+A setup line that breaks chapter 16's rules gets chapter 16's code (`R16_02-wrong-statement-in-setup`, `R16_03-misused-to-in-setup`, `R16_04-placeholder-in-setup`) or chapter 03's `R03_09-me-in-plot` for `ME`, as in a Role setup.
 
 **Warnings**
 
-- `R2110` A Root Plot Role that no kind and no individual Agent plays. Absence check (chapter 23).
-- `R2111` Retired (ADR 0033): a missing value is neutral.
-- `R2112` A Plot the Root Plot never reaches. Absence check (chapter 23).
-- `R2113` An unknown key in the group of a known Target, or a value outside the set its key takes.
-- `R2115` A Quota `FROM n OF Role` or `BY n OF Role` in the Root Plot, with n made of Values only, where the individual Agents that play the Role plus the `COUNT`s of the kinds that play it add up to fewer than n, and none of those kinds has a `COUNT` of 0 (which only enters by joining). The Role can never be that large in this build, so the Quota can never be met (chapter 18).
-- `R2116` A `TARGET` group for a Target the Transpiler doesn't know. It is skipped.
+- `R21_10-root-role-never-played` A Root Plot Role that no kind and no individual Agent plays. Absence check (chapter 23).
+- `R21_11-missing-propensity-value` Retired (ADR 0033): a missing value is neutral.
+- `R21_12-plot-never-reached` A Plot the Root Plot never reaches. Absence check (chapter 23).
+- `R21_13-unknown-target-setting` An unknown key in the group of a known Target, or a value outside the set its key takes.
+- `R21_15-quota-never-met` A Quota `FROM n OF Role` or `BY n OF Role` in the Root Plot, with n made of Values only, where the individual Agents that play the Role plus the `COUNT`s of the kinds that play it add up to fewer than n, and none of those kinds has a `COUNT` of 0 (which only enters by joining). The Role can never be that large in this build, so the Quota can never be met (chapter 18).
+- `R21_16-unknown-target` A `TARGET` group for a Target the Transpiler doesn't know. It is skipped.
 
 ## ASL mapping notes
 
@@ -258,7 +258,7 @@ For *The full ASL mapping* to pick up:
 
 ## Regia 1.5
 
-Instancing is in 1.5 as this chapter describes it (ADR 0025), with one exception: joining. In 1.5 the game can't spawn an Agent while the run goes on, and a spawn is refused with `T1902` (chapter 19). Every Agent is in the starting cast. A kind that only the game would spawn has no Agents in 1.5, and a spawned Agent running its kind's lines comes with joining, later. Revised in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
+Instancing is in 1.5 as this chapter describes it (ADR 0025), with one exception: joining. In 1.5 the game can't spawn an Agent while the run goes on, and a spawn is refused with `T19_02-join-refused` (chapter 19). Every Agent is in the starting cast. A kind that only the game would spawn has no Agents in 1.5, and a spawned Agent running its kind's lines comes with joining, later. Revised in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 
 ## Not decided here
 

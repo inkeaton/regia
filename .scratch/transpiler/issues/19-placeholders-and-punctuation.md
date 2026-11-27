@@ -19,7 +19,7 @@ Book ch 6.2 patterns: `|` and ranges such as `b'a'..=b'z'` in a `match` (ranges 
 
 ## Test first
 
-A dump snapshot of `?h-10 <= ?_x, (?)` and unit tests for `? x` (a lone `?` then a name) and `!` alone (`R0112`).
+A dump snapshot of `?h-10 <= ?_x, (?)` and unit tests for `? x` (a lone `?` then a name) and `!` alone (`R01_12-stray-character`).
 
 ## Done when
 

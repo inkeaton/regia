@@ -1,11 +1,11 @@
 #! case: a doc comment set apart from the declaration below it by a blank line is detached
-#! rule: R0203
+#! rule: R02_03-detached-doc-comment
 
-CUE insult_heard
+GAME CUE insult_heard
 ACTION complain
 
 #@desc: how guests react to insults
-#!^ warning R0203
+#!^ warning R02_03-detached-doc-comment
 
 PLAYBOOK Guest:
     WHEN insult_heard: DO complain.

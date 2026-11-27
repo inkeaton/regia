@@ -68,7 +68,7 @@ Every entry has a kind. These are the kinds a 1.5 run writes:
 | `time` | a `WAIT … UNTIL` ends; the game pauses or resumes the clock | `WAIT UNTIL on_plate(?) MET`, `… TIMED OUT`, `CLOCK PAUSED`, `CLOCK RESUMED` |
 | `message` | a `TELL`, `ASK` or `SIGNAL` is sent, a setup's `LEARN` and `PURSUE` included | `TELL king greeting`, `ASK noble_1 TO take_seat`, `SIGNAL took_seat TO director:RoyalBanquet` |
 | `plan` | a Plan is chosen to run; a waiting Plan is stopped or fails in turn | `PLAN Courtesy: WHEN greeting` |
-| `unheard` | something arrived and no Plan ran for it | `UNHEARD T0702 scandal(noble_2) FROM hothead_1` |
+| `unheard` | something arrived and no Plan ran for it | `UNHEARD T07_02-cue-found-no-plan scandal(noble_2) FROM hothead_1` |
 | `goal` | a Pursuit starts, and when it is reached, dropped or failed | `GOAL take_seat PURSUED`, `… REACHED` |
 | `fact` | an Agent or a Director learns or forgets a Fact | `FACT +seated(noble_1)`, `FACT -on_duty` |
 | `phase` | a Director enters its initial Phase, or changes Phase | `PHASE -> arrival`, `PHASE arrival -> reception ON WHEN took_seat` |
@@ -76,8 +76,8 @@ Every entry has a kind. These are the kinds a 1.5 run writes:
 | `giving` | an Agent receives or loses one Giving of a Playbook | `GIVE Hosting TO king AS Host IN director:RoyalBanquet` |
 | `cast` | an Agent starts with its Propensity values, or leaves the Program | `TEMPER noble_1 bravery 0.53 sympathy 0.12 aggressiveness -0.2`, `LEFT noble_4` |
 | `mood` | a Mood changes, by a `SHIFT` Statement or a `SHIFTS` Label | `MOOD sympathy 0.12 -> -0.08 BY SHIFT` |
-| `failure` | the cause of a Failure | `FAILURE T1101 DO open_doors refused` |
-| `warning` | a runtime warning: the Plan carries on | `WARNING T1901 …` |
+| `failure` | the cause of a Failure | `FAILURE T11_01-failed-custom-action DO open_doors refused` |
+| `warning` | a runtime warning: the Plan carries on | `WARNING T19_01-message-after-leaving …` |
 | `script` | a behaviour case plays a `>` step | `> cue noble_2 idle` |
 
 The console line of each kind, in full:
@@ -119,7 +119,7 @@ and the fields of its kind:
 | `time` | `condition`, `outcome: met` or `timed_out`, `waited` (milliseconds); or `clock: paused` or `resumed` |
 | `message` | `form: tell`, `ask` or `signal`, `to` (a list of names), `content`; for a `SIGNAL`, `ended` (the Directors in `to` whose Staging had ended); `dropped: true` |
 | `plan` | `block` (`owner`, `trigger`, and `given` or `else`), `values` (each Placeholder with its value), `by`, `over`, `fits`, `outcome: started`, `stopped` or `failed`, `because` |
-| `unheard` | by code: `T0702` `cue`, `sender`; `T3801` `cue`, `sender`, `plot`, `phase`; `T3802` `plot`, `args`, `outcome` (absent for a bare ending), `phase` (the parent's) |
+| `unheard` | by code: `T07_02-cue-found-no-plan` `cue`, `sender`; `T38_01-signal-found-no-plan` `cue`, `sender`, `plot`, `phase`; `T38_02-ending-found-no-plan` `plot`, `args`, `outcome` (absent for a bare ending), `phase` (the parent's) |
 | `goal` | `goal`, `event: pursued`, `reached`, `dropped` or `failed`, `sender` (on `pursued`, when there is one), `of`, `because` |
 | `fact` | `change: +` or `-`, `fact`, `from` when told |
 | `phase` | `from` (absent for the initial Phase), `to`, `plan` (the `seq` of the `plan` entry that ran the `ENTER`) |
@@ -200,19 +200,19 @@ TO vent:
 `TELL EVERYONE` reaches the Servants too. `Serving` has no Plan for `scandal`, so each Servant writes one entry and does nothing else:
 
 ```
-UNHEARD T0702 scandal(noble_2) FROM hothead_1
+UNHEARD T07_02-cue-found-no-plan scandal(noble_2) FROM hothead_1
 ```
 
 A Director writes the same kind of entry for a Signal its current Phase doesn't hear. `insult_thrown` is Signalled from `NobleSocializing`, which the Guests hold from `reception` on, but `RoyalBanquet` has a Plan for it only in `feast`. An insult during the reception is written down and nothing follows:
 
 ```
-UNHEARD T3801 insult_thrown(hothead_1) FROM noble_4 IN reception
+UNHEARD T38_01-signal-found-no-plan insult_thrown(hothead_1) FROM noble_4 IN reception
 ```
 
 The third case is a Subplot's own ending that no Plan of the parent hears. The banquet hears every duel's ending with `WHEN HonorDuel(?) ENDED`, so it never writes one. Without that Plan, a duel abandoned would be:
 
 ```
-UNHEARD T3802 HonorDuel(hothead_1) FINISHED WITH duel_abandoned IN feast
+UNHEARD T38_02-ending-found-no-plan HonorDuel(hothead_1) FINISHED WITH duel_abandoned IN feast
 ```
 
 - An `unheard` entry is not a warning. A Phase that ignores a Signal, or a Playbook taken away before its Cue arrives, is often what the writer meant. A behaviour case may list the entry, and need not.
@@ -221,9 +221,9 @@ UNHEARD T3802 HonorDuel(hothead_1) FINISHED WITH duel_abandoned IN feast
 
 **Checks**
 
-- A told Cue for which no Plan of the receiver's given Playbooks runs → `T0702` (Trace, `unheard`)
-- A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T3801` (Trace, `unheard`)
-- A Subplot's own ending with no `FINISHED` or `ENDED` Plan in the parent's current Phase or `DURING PLOT` → `T3802` (Trace, `unheard`)
+- A told Cue for which no Plan of the receiver's given Playbooks runs → `T07_02-cue-found-no-plan` (Trace, `unheard`)
+- A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T38_01-signal-found-no-plan` (Trace, `unheard`)
+- A Subplot's own ending with no `FINISHED` or `ENDED` Plan in the parent's current Phase or `DURING PLOT` → `T38_02-ending-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 34, *What didn't run*. For each case, chapters 07 and 38.
 
@@ -245,7 +245,7 @@ WHEN take_seat FAILED:
 ```
 
 ```
-#44 FAILURE T1104 GOAL take_seat: no applicable TO Plan
+#44 FAILURE T11_04-goal-found-no-plan GOAL take_seat: no applicable TO Plan
 #45 GOAL take_seat FAILED because #44
 #46 PLAN Courtesy: WHEN take_seat FAILED
 #47 DO stand_by(wall)
@@ -253,7 +253,7 @@ WHEN take_seat FAILED:
 
 A Failure spreads one level at a time, and the Trace writes it the same way: one cause, then one entry per level, each pointing at the cause.
 
-- The cause is the Failure's one `failure` entry, written once. Its `at` is the Statement, and its `code` is the cause. A `FAIL WITH` adds the Reason with its arguments: `FAILURE T1103 FAIL WITH sold_out(pie)`.
+- The cause is the Failure's one `failure` entry, written once. Its `at` is the Statement, and its `code` is the cause. A `FAIL WITH` adds the Reason with its arguments: `FAILURE T11_03-explicit-fail FAIL WITH sold_out(pie)`.
 - Each Pursuit that fails, the one where the cause happened included, writes `GOAL … FAILED` at level `error`, with `because` pointing at the cause. A failing recipe has no entry of its own: its Goal's is its entry.
 - A waiting `WHEN` Plan that fails in turn has no Goal, so it writes `PLAN … FAILED` at level `error`, with the same `because`.
 - The Reason is written once, on the cause, and read from there.
@@ -269,8 +269,8 @@ A Director Plan that fails stops there, and its Phase and Staging are untouched.
 ```
 #40 DO open_doors
 #41 DO open_doors REFUSED
-#42 FAILURE T1101 DO open_doors refused
-#43 WARNING T2002 PLAN arrival: WHEN ENTERED
+#42 FAILURE T11_01-failed-custom-action DO open_doors refused
+#43 WARNING T20_02-director-plan-failed PLAN arrival: WHEN ENTERED
 ```
 
 The banquet stays in `arrival` and goes on counting seats.
@@ -300,51 +300,51 @@ A `DROP` stops Pursuits below and above the dropped one, and none of them writes
 
 **Checks**
 
-- A Goal no recipe takes → `T1104` (Trace, Failure)
-- `FAIL`, with its Reason → `T1103` (Trace, Failure)
-- A `DO` the game refuses, or a waiting `DO` it reports as failed → `T1101` (Trace, Failure)
-- A Director Plan that failed → `T2002` (Trace warning, after the entry of its cause)
+- A Goal no recipe takes → `T11_04-goal-found-no-plan` (Trace, Failure)
+- `FAIL`, with its Reason → `T11_03-explicit-fail` (Trace, Failure)
+- A `DO` the game refuses, or a waiting `DO` it reports as failed → `T11_01-failed-custom-action` (Trace, Failure)
+- A Director Plan that failed → `T20_02-director-plan-failed` (Trace warning, after the entry of its cause)
 
 Spec: chapter 34, *The failure chain*, *A drop is not a Failure*. For what fails and how it spreads, chapter 11; for Directors, chapter 20.
 
 ## Trace codes
 
-Every runtime warning, every Failure cause and every kind of `unheard` entry has a stable Trace code: `T`, the spec chapter's two digits, then two digits numbering it within the chapter. `T0902` is chapter 09's second. Codes follow the rules of Diagnostic codes (*The Transpiler*): a code is never reused, and one that is dropped is marked retired.
+Every runtime warning, every Failure cause and every kind of `unheard` entry has a stable Trace code, with the shape of a Diagnostic code and `T` for its letter: `T09_02-weight-below-zero` is chapter 09's second. Codes follow the rules of Diagnostic codes (*The Transpiler*): the number is the identity, the name is unique, a code is never reused, and one that is dropped is marked retired.
 
 - Each spec chapter that defines a runtime warning, a Failure cause or an `unheard` entry lists its codes in a `## Trace entries` section.
 - A Target numbers its own entries in its own chapters: a lost game link, a Giving for a Playbook the Agent's files don't hold, and so on (*Jason: the game and the Trace*).
 - A behaviour case matches codes, not wording, so a message can be improved without breaking a case.
-- Three codes are entries that are neither Failures nor warnings, because what they mark can be meant: `T0902`, `T0903` and `T2601`. Like an `unheard` entry, they need not be listed in a case.
+- Three codes are entries that are neither Failures nor warnings, because what they mark can be meant: `T09_02-weight-below-zero`, `T09_03-all-weights-zero` and `T26_01-all-pick-weights-zero`. Like an `unheard` entry, they need not be listed in a case.
 
 The codes a 1.5 run can write, from the language chapters:
 
 **Checks**
 
-- Body arithmetic on something that isn't a Number → `T0401` (Trace, Failure); a division by zero → `T0402` (Trace, Failure)
-- A whole roll with no whole number between its bounds, in a Body → `T0403` (Trace, Failure)
-- A recipient Placeholder that doesn't hold an Agent → `T0701` (Trace, Failure)
-- A told Cue no Plan runs for → `T0702` (Trace, `unheard`)
-- `UPDATE f TO f2` when `f` isn't known → `T0801` (Trace, Failure)
-- A Weight that isn't a Number → `T0901` (Trace, Failure)
-- A negative Weight, counted as 0 → `T0902` (Trace entry); every Weight 0 or less, no Option runs → `T0903` (Trace entry)
-- A `DO` refused, or reported as failed while it waits → `T1101` (Trace, Failure)
-- `FAIL` → `T1103` (Trace, Failure)
-- A Goal no recipe takes → `T1104` (Trace, Failure)
-- A Duration that isn't a Number → `T1201` (Trace, Failure); a negative one, counted as 0 → `T1202` (Trace warning)
-- A count or share that isn't a Number → `T1501` (Trace, Failure)
-- A count asking for more Agents than are left → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
-- An `EXCEPT ?who` that doesn't hold an Agent → `T1504` (Trace warning)
-- A `REMOVE` for one Agent that takes nothing → `T1505` (Trace warning); an `ASSIGN P TO <Role> ?who` with nothing to lift → `T1506` (Trace warning)
-- A setup Statement that can't be carried out, skipped → `T1601` (Trace warning)
-- A `TELL` or `ASK` to an Agent that has left, dropped → `T1901` (Trace warning)
-- A spawn the game reports in a 1.5 run, refused → `T1902` (Trace warning)
-- A Giving or Mapping that reaches an Agent who has left → `T2001` (Trace warning)
-- A Director Plan that failed → `T2002` (Trace warning)
-- Every Match of a weighted Pick weighs 0 or less → `T2601` (Trace entry)
-- A Signal no Plan in the current Phase hears → `T3801` (Trace, `unheard`)
-- A Subplot's own ending no Plan of the parent hears → `T3802` (Trace, `unheard`)
+- Body arithmetic on something that isn't a Number → `T04_01-operand-not-number` (Trace, Failure); a division by zero → `T04_02-division-by-zero` (Trace, Failure)
+- A whole roll with no whole number between its bounds, in a Body → `T04_03-empty-whole-roll` (Trace, Failure)
+- A recipient Placeholder that doesn't hold an Agent → `T07_01-recipient-not-agent` (Trace, Failure)
+- A told Cue no Plan runs for → `T07_02-cue-found-no-plan` (Trace, `unheard`)
+- `UPDATE f TO f2` when `f` isn't known → `T08_01-update-of-unknown-fact` (Trace, Failure)
+- A Weight that isn't a Number → `T09_01-weight-not-number` (Trace, Failure)
+- A negative Weight, counted as 0 → `T09_02-weight-below-zero` (Trace entry); every Weight 0 or less, no Option runs → `T09_03-all-weights-zero` (Trace entry)
+- A `DO` refused, or reported as failed while it waits → `T11_01-failed-custom-action` (Trace, Failure)
+- `FAIL` → `T11_03-explicit-fail` (Trace, Failure)
+- A Goal no recipe takes → `T11_04-goal-found-no-plan` (Trace, Failure)
+- A Duration that isn't a Number → `T12_01-duration-not-number` (Trace, Failure); a negative one, counted as 0 → `T12_02-duration-below-zero` (Trace warning)
+- A count or share that isn't a Number → `T15_01-count-not-number` (Trace, Failure)
+- A count asking for more Agents than are left → `T15_02-count-exceeds-pool` (Trace warning); a negative count → `T15_03-count-below-zero` (Trace warning)
+- An `EXCEPT ?who` that doesn't hold an Agent → `T15_04-except-placeholder-not-agent` (Trace warning)
+- A `REMOVE` for one Agent that takes nothing → `T15_05-remove-takes-nothing` (Trace warning); an `ASSIGN P TO <Role> ?who` with nothing to lift → `T15_06-assign-lifts-nothing` (Trace warning)
+- A setup Statement that can't be carried out, skipped → `T16_01-skipped-setup-statement` (Trace warning)
+- A `TELL` or `ASK` to an Agent that has left, dropped → `T19_01-message-after-leaving` (Trace warning)
+- A spawn the game reports in a 1.5 run, refused → `T19_02-join-refused` (Trace warning)
+- A Giving or Mapping that reaches an Agent who has left → `T20_01-giving-after-leaving` (Trace warning)
+- A Director Plan that failed → `T20_02-director-plan-failed` (Trace warning)
+- Every Match of a weighted Pick weighs 0 or less → `T26_01-all-pick-weights-zero` (Trace entry)
+- A Signal no Plan in the current Phase hears → `T38_01-signal-found-no-plan` (Trace, `unheard`)
+- A Subplot's own ending no Plan of the parent hears → `T38_02-ending-found-no-plan` (Trace, `unheard`)
 
-> **In 2.0** a Quota Trigger has two codes of its own: a warning for a quantity that works out unusable at runtime, and an `unheard` entry for a Quota met with no candidate Block. `T1902` is retired, since a 2.0 run lets the Agent join. Spec chapter 18, *Trace entries*; chapter 19, *Regia 1.5*.
+> **In 2.0** a Quota Trigger has two codes of its own: a warning for a quantity that works out unusable at runtime, and an `unheard` entry for a Quota met with no candidate Block. `T19_02-join-refused` is retired, since a 2.0 run lets the Agent join. Spec chapter 18, *Trace entries*; chapter 19, *Regia 1.5*.
 
 Spec: chapter 34, *Trace codes*. Each code's chapter, in its `## Trace entries` section.
 
@@ -389,8 +389,8 @@ KIND noble, PLAYS Guest:
 #! case: with no seat laid, a Guest stands by the wall and is counted all the same
 #! rule: 11 When no Plan applies
 > start
-king: FAILURE T1104 GOAL take_seat: no applicable TO Plan
-noble_1: FAILURE T1104 GOAL take_seat: no applicable TO Plan
+king: FAILURE T11_04-goal-found-no-plan GOAL take_seat: no applicable TO Plan
+noble_1: FAILURE T11_04-goal-found-no-plan GOAL take_seat: no applicable TO Plan
 noble_1: GOAL take_seat FAILED
 noble_1: DO stand_by(wall)
 > action done stand_by(*)
@@ -448,7 +448,7 @@ The game is played by a stand-in during a case, and each step tells it what to d
 - A step with no receiver, such as a `*` step for an item nobody uses → case error
 - A step before `> start` other than `> fact link` → case error
 - A `link` step, or a `*` step that would reach the link, after `> lose link` or under `#! game link: none` → case error
-- `> join` in a 1.5 run → `T1902` (Trace warning)
+- `> join` in a 1.5 run → `T19_02-join-refused` (Trace warning)
 
 Spec: chapter 34, *The script*. For the stand-in game and the Target's entries, chapter 35.
 
@@ -466,7 +466,7 @@ Spec: chapter 34, *The script*. For the seed, chapter 21.
 
 ```
 #! case: an insult during the reception starts no duel
-#! rule: T3801
+#! rule: T38_01-signal-found-no-plan
 #! seed: 7
 ```
 

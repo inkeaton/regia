@@ -1,5 +1,5 @@
 #! case: a misplaced Plan is reported once and left out, so its Statements cause nothing
-#! rule: R1508
+#! rule: R15_08-misused-assigned-or-removed
 
 GAME CUE food_served
 CUE welcome
@@ -15,5 +15,5 @@ PLOT Banquet:
     DURING reception:
         WHEN food_served:
             ASSIGN Dining TO Guest.
-        WHEN ASSIGNED:                   #! error R1508
+        WHEN ASSIGNED:                   #! error R15_08-misused-assigned-or-removed
             TELL Guest welcome.

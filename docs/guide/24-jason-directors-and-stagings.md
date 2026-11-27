@@ -63,7 +63,7 @@ The Root has no `regia_parent` and no `regia_args`: a Root Plot takes no paramet
 
 **Checks**
 
-- A Root Plot with parameters → `R2114`
+- A Root Plot with parameters → `R21_14-root-plot-with-parameters`
 
 Spec: chapter 31, *One Director agent per Staging*, *A Director's records*.
 
@@ -112,8 +112,8 @@ At the first step of its ending (*Ending a Staging*, below), a Director calls `r
 
 **Checks**
 
-- The link couldn't connect at start → `T2802` (Trace error; the run starts anyway)
-- The link's connection was lost during the run → `T2803` (Trace error; the run goes on)
+- The link couldn't connect at start → `T28_02-game-link-connect-failed` (Trace error; the run starts anyway)
+- The link's connection was lost during the run → `T28_03-game-link-lost` (Trace error; the run goes on)
 
 Spec: chapter 30, *What the game sends*, *Hearing the game*. For the link, chapter 28; for `regia_state`, chapter 37.
 
@@ -181,8 +181,8 @@ IF IN arrival AND COUNT(seated(?)) >= COUNT(? PLAYS Guest):
 
 **Checks**
 
-- `IN` naming a Phase the Plot doesn't declare → `R2008`
-- `IN` in a Playbook, or in a Plot that declares no Phases → `R2014`
+- `IN` naming a Phase the Plot doesn't declare → `R20_08-undeclared-phase`
+- `IN` in a Playbook, or in a Plot that declares no Phases → `R20_14-misplaced-in-clause`
 
 Spec: chapter 30, *Phases*, *The current Phase*, *`IN`*. For the rank, chapter 32.
 
@@ -259,7 +259,7 @@ WHEN EXITED:                         # however the feast ends
 ```
 
 1. Stop the old Phase's Plans. `regia.stop_phase(Old)` drops every intention running a plan annotated `regia_phase(Old)`. It drops them silently: Directors have no Goals, so nothing fires and nothing is traced. It skips the intention running the `ENTER`. It also drops the old Phase's queued entry events, `+!regia_entered(phase(Old))` and `+!regia_after(phase(Old), _)`: an `ENTERED` Plan that entered another Phase at once would otherwise leave its `AFTER`s queued, and a re-entry would start them twice. Queued Signals, Cues and `LEFT` events stay in the queue, for the new Phase to hear.
-2. Run `EXITED` to completion, as a subgoal inside the atomic plan. If it fails, a `-!regia_exited` plan writes `T2002` and the transition carries on: a Director Statement never fails.
+2. Run `EXITED` to completion, as a subgoal inside the atomic plan. If it fails, a `-!regia_exited` plan writes `T20_02-director-plan-failed` and the transition carries on: a Director Statement never fails.
 3. Take away what was given for the old Phase. Every cast Agent gets `regia_take_phase(Old)`, and the standing records made for the Phase go (*The standing-Giving record*, below). A re-entered Phase's Givings are taken here and given again at step 5, so its Agents hear `REMOVED` and then `ASSIGNED`. Each `UNTIL EXITED` Subplot is ended: its record removed, `regia_end` sent to its Director, and `!!regia_subplot_endings(P, Args, dropped)` posted, as `DROP SUBPLOT` does. The transition doesn't wait for the child.
 4. Change the Phase, and write the `phase` entry.
 5. Run the new Phase's setups, inside the atomic plan. Every setup Giving is in place before any of the Phase's Plans starts.
@@ -295,7 +295,7 @@ The events start in the order they were queued: any Signal that came in while `E
 - While it waits, the Director runs nothing else. A suspended `[atomic]` intention holds back every other intention and event. Messages and the game's Cues and Facts are still read, and their events queue for the new Phase.
 - The reply reaches the Director that sent the Action, through the game link, and `regia.DirectorAgent`'s Java intake resumes `regia.act` with no ASL plan involved. A suspended atomic intention still wakes on a message, so the `DO` wakes inside the atomic plan.
 - A game that never replies holds the Director forever. That is the game's to avoid, as for any `DO`.
-- A refused or failed `DO` fails the `EXITED` Plan, which writes `T2002`, and the transition carries on.
+- A refused or failed `DO` fails the `EXITED` Plan, which writes `T20_02-director-plan-failed`, and the transition carries on.
 
 `WAIT` in `EXITED` is still an error: a `DO` is the game's time, not the Plot's.
 
@@ -303,8 +303,8 @@ The events start in the order they were queued: any Signal that came in while `E
 
 **Checks**
 
-- `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan → `R2003`
-- An `EXITED` Plan that fails, a refused `DO` included → `T2002` (Trace warning; the transition carries on)
+- `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan → `R20_03-wrong-statement-in-exited`
+- An `EXITED` Plan that fails, a refused `DO` included → `T20_02-director-plan-failed` (Trace warning; the transition carries on)
 
 Spec: chapter 30, *`ENTER`*, *A `DO` in `EXITED`*. For the language's six steps, chapter 20; for `regia_take_phase`, chapter 29.
 
@@ -355,7 +355,7 @@ regia_reach(R, Ex, A) :-
 
 **Checks**
 
-- An `EXCEPT ?who` whose Placeholder holds no Agent → `T1504` (Trace warning)
+- An `EXCEPT ?who` whose Placeholder holds no Agent → `T15_04-except-placeholder-not-agent` (Trace warning)
 
 Spec: chapter 30, *Who plays a Role here*, *A Role with `EXCEPT`*. For counted picks, chapter 39.
 
@@ -458,7 +458,7 @@ Running the `EMPTIED` Plans to completion before posting `ENTERED` was rejected:
 
 **Checks**
 
-- A `START SUBPLOT` argument that isn't filled, or is a Role → `R1710`
+- A `START SUBPLOT` argument that isn't filled, or is a Role → `R17_10-wrong-subplot-argument`
 
 Spec: chapter 30, *Starting a Staging*; chapter 31, *Starting a Subplot*, *Plot arguments*; chapter 33, *The Root Director's starting cast*.
 
@@ -500,7 +500,7 @@ ROLE Guard:
    <- ?regia_roll(5, 20, whole, Regia_roll__1);
       regia.send(A, tell, purse(Regia_roll__1)).
 -!regia_setup_line__1(_)
-   <- regia.trace(warning, warning, "T1601", […]).
+   <- regia.trace(warning, warning, "T16_01-skipped-setup-statement", […]).
 
 +!regia_setup(_, _, _).                          // catch-all
 ```
@@ -525,14 +525,14 @@ A setup sends its Statements to the Agent in the order written:
 
 - The Agent sees the Director as `source`, so `TO take_seat, FROM DIRECTOR:` in `Courtesy` matches.
 - Every send goes through `regia.send`, so a `LEARN` writes a `TELL` entry and a `PURSUE` an `ASK` entry on the Director, with the setup line as `at`. A setup is not a Plan and writes no `plan` entry; its `ASSIGN` shows as the Agent's `GIVE` entry.
-- A Statement whose arguments use Body arithmetic, the only kind that can go wrong, is its own subgoal with a `-!` plan that writes `T1601` and returns. That is the language's "skipped": the next line still runs. Its Expressions are worked out inside the plan, for this Agent, so each Guest rolls its own purse.
+- A Statement whose arguments use Body arithmetic, the only kind that can go wrong, is its own subgoal with a `-!` plan that writes `T16_01-skipped-setup-statement` and returns. That is the language's "skipped": the next line still runs. Its Expressions are worked out inside the plan, for this Agent, so each Guest rolls its own purse.
 - A setup's Givings are not standing (*The standing-Giving record*, below). A Phase setup's are taken away on leaving the Phase, by their `Until`.
 
 The setup lines of kinds and individual Agents, `banquet.regin`'s `LEARN grudge(percival, 2)` for the hotheads, are plans of `regia_instance_setup(Source, A)` in the Root's file, and are sent the same way (*Jason: the Build*, *Setup lines*). An `ASSIGN` among them is a Giving to that one Agent, `agent(a)`.
 
 **Checks**
 
-- A setup Statement that can't be carried out, skipped → `T1601` (Trace warning)
+- A setup Statement that can't be carried out, skipped → `T16_01-skipped-setup-statement` (Trace warning)
 
 Spec: chapter 30, *Setups*, *Setup lines of kinds and individual Agents*. For the language, chapter 16.
 
@@ -602,7 +602,7 @@ WHEN Poisoning FINISHED WITH poisoner_caught(?culprit):
 
 When the Watchmen catch the Poisoner, say `noble_2`, the record becomes `regia_standing(1, nobleSocializing, guest, [agent(noble_2)], …)`, and `noble_2` gets `regia_set_aside(nobleSocializing, guest)`. At `farewell`, `REMOVE NobleSocializing FROM Guest` removes the record, and every Agent of the cast gets `regia_take(nobleSocializing, role(guest))`.
 
-Giving back lifts only what was done to `?who`: what `REMOVE … FROM Guest ?who` set aside, and a written `EXCEPT ?who` on a standing Giving. It lifts nothing a whole-Role `REMOVE P FROM Guest` ended, and nothing on a counted Giving, since a pick never grows. When nothing is lifted, the Agent writes `T1506`.
+Giving back lifts only what was done to `?who`: what `REMOVE … FROM Guest ?who` set aside, and a written `EXCEPT ?who` on a standing Giving. It lifts nothing a whole-Role `REMOVE P FROM Guest` ended, and nothing on a counted Giving, since a pick never grows. When nothing is lifted, the Agent writes `T15_06-assign-lifts-nothing`.
 
 > **In 2.0** the standing record is what an Agent that joins later receives: the Root replays the records of its Roles and of `CAST`, in `Seq` order, after the joiner's cast copy and setups, skipping each one whose `Except` leaves it out, and then runs `JOINED`. Spec chapter 30, *An Agent joining*. In 1.5 nobody joins, and the record serves `REMOVE`, leaving a Phase and giving back.
 
@@ -625,10 +625,10 @@ A duel's winner is a Guest of the banquet, so the check passes. A winner who has
 
 **Checks**
 
-- A Giving or Mapping to an Agent who has left → `T2001` (Trace warning)
-- A Giving or Mapping to an Agent who was never in this Staging → `T3001` (Trace warning)
-- A `REMOVE` naming one Agent that takes nothing → `T1505` (Trace warning, on the Agent)
-- An `ASSIGN P TO <Role> ?who` with nothing to give back → `T1506` (Trace warning, on the Agent)
+- A Giving or Mapping to an Agent who has left → `T20_01-giving-after-leaving` (Trace warning)
+- A Giving or Mapping to an Agent who was never in this Staging → `T30_01-giving-outside-cast` (Trace warning)
+- A `REMOVE` naming one Agent that takes nothing → `T15_05-remove-takes-nothing` (Trace warning, on the Agent)
+- An `ASSIGN P TO <Role> ?who` with nothing to give back → `T15_06-assign-lifts-nothing` (Trace warning, on the Agent)
 
 Spec: chapter 30, *The standing-Giving record*, *One Agent*. For the Agent's side, chapter 29.
 
@@ -663,7 +663,7 @@ An Agent's `SIGNAL wagered(?stake)` reaches the Director as a `signal` message, 
 ```asl
 @regia_unheard__finished_eating[regia_unheard]
 +finished_eating[source(S)] : S \== percept & regia_phase(Ph)
-   <- regia.trace(unheard, info, "T3801", [cue(finished_eating), sender(S), plot(royalBanquet), phase(Ph)]).
+   <- regia.trace(unheard, info, "T38_01-signal-found-no-plan", [cue(finished_eating), sender(S), plot(royalBanquet), phase(Ph)]).
 ```
 
 For each Cue some Agent can Signal to this Plot, the Director file has one catch-all, chosen only when no other plan is. It writes the entry whenever no plan of the current Phase or of `DURING PLOT` runs, a plan whose `GIVEN`s all fail included. `finished_eating` from `Dining`'s closing Plans, arriving in `farewell`, is one; `insult_thrown` outside `feast` is another.
@@ -673,9 +673,9 @@ For each Cue some Agent can Signal to this Plot, the Director file has one catch
 
 **Checks**
 
-- A Signal no plan of the current Phase or `DURING PLOT` runs for → `T3801` (Trace, `unheard`)
+- A Signal no plan of the current Phase or `DURING PLOT` runs for → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
-Spec: chapter 30, *Signals*, *Nothing heard: `T3801`*. For `regia_unheard` in `selectOption`, chapter 32.
+Spec: chapter 30, *Signals*, *Nothing heard: `T38_01-signal-found-no-plan`*. For `regia_unheard` in `selectOption`, chapter 32.
 
 ## Messages and Actions from a Director
 
@@ -706,8 +706,8 @@ Every Director sends its own Actions through the game link, the Root included. `
 
 **Checks**
 
-- A `TELL` or `ASK` to an Agent who has left → `T1901` (Trace warning)
-- A Director Action refused for `no game link` → `T1101` (Trace, Failure)
+- A `TELL` or `ASK` to an Agent who has left → `T19_01-message-after-leaving` (Trace warning)
+- A Director Action refused for `no game link` → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 30, *Messages from a Director*, *`EVERYONE`*, *Custom Actions in a Director*. For Actions, chapter 37.
 
@@ -730,7 +730,7 @@ WHEN EXITED, BY PARENT:              # the banquet called the duel off
 
 Every ending follows one path, the walk, whether the Staging ended itself with `END PLOT`, its parent ended it, or it is the Root. On Director `D`, with Outcome `O` (`none`, or the Cue of `END PLOT WITH`, such as `duel_settled(noble_4)`) and `By` (`self` for its own `END PLOT`, `parent` for `regia_end`):
 
-1. Stop and exit, in one `[atomic]` plan, `!regia_end_plot(O, By)`. Stop the current Phase's Plans, as `ENTER`'s step 1 does. Run the exit Plans, each to completion: with `By = parent`, `EXITED, BY PARENT` of the Phase, its `EXITED`, `EXITED, BY PARENT` of `DURING PLOT`, then `DURING PLOT`'s `EXITED`; with `By = self`, only the two `EXITED`. A failing one writes `T2002`, and the ending carries on. Then remove `regia_phase`, call `regia.stop_hearing`, stop every other intention of the Director, add `regia_ending(O)`, and write the `staging` entry: `ENDED BY PARENT`, or `FINISHED WITH O`, or `FINISHED` when `O` is `none`.
+1. Stop and exit, in one `[atomic]` plan, `!regia_end_plot(O, By)`. Stop the current Phase's Plans, as `ENTER`'s step 1 does. Run the exit Plans, each to completion: with `By = parent`, `EXITED, BY PARENT` of the Phase, its `EXITED`, `EXITED, BY PARENT` of `DURING PLOT`, then `DURING PLOT`'s `EXITED`; with `By = self`, only the two `EXITED`. A failing one writes `T20_02-director-plan-failed`, and the ending carries on. Then remove `regia_phase`, call `regia.stop_hearing`, stop every other intention of the Director, add `regia_ending(O)`, and write the `staging` entry: `ENDED BY PARENT`, or `FINISHED WITH O`, or `FINISHED` when `O` is `none`.
 2. End the children: send `regia_end` to every `regia_child`, then wait for a `regia_ended` from each.
 3. Take the Givings away: send `regia_end_staging` to every Agent of the cast.
 4. Tell the parent: send `regia_ended(Plot, O)` to `regia_parent`, if there is one.
@@ -839,7 +839,7 @@ The Root ends by the same walk, so every Staging ends and every Agent loses ever
 
 **Checks**
 
-- An `EXITED` or `EXITED, BY PARENT` Plan that fails → `T2002` (Trace warning; the ending carries on)
+- An `EXITED` or `EXITED, BY PARENT` Plan that fails → `T20_02-director-plan-failed` (Trace warning; the ending carries on)
 
 Spec: chapter 31, *Ending a Staging*. For `regia_end_staging`'s take step, chapter 29; for `regia_story_ended`, chapter 37.
 
@@ -893,14 +893,14 @@ A Subplot's ending is heard like a Goal's: the specific Plan, then the plain `EN
 - An `ENTER` or `END PLOT` in the specific Plan ends that Plan only. `regia.end_body` drops its frames, and the dispatcher goes on with `regia_subplot_ended`, picked under the new Phase. `WHEN Poisoning FINISHED WITH poison_taken: ENTER farewell` would still run a plain `Poisoning ENDED` Plan, under `farewell`. After `END PLOT` only the catch-all applies.
 - Each Goal has a catch-all that does nothing but bind `Heard`. The language's "the ending is ignored" is that plan.
 
-### `Heard` and `T3802`
+### `Heard` and `T38_02-ending-found-no-plan`
 
 ```asl
 +!regia_subplot_endings(P, Args, How)
    <- !regia_subplot_specific(P, Args, How, H1);   // the Goal for How
       !regia_subplot_ended(P, Args, H2);
       if (H1 == unheard & H2 == unheard & How \== dropped) {
-          regia.trace(unheard, info, "T3802", …)
+          regia.trace(unheard, info, "T38_02-ending-found-no-plan", …)
       }.
 ```
 
@@ -908,14 +908,14 @@ A Subplot's ending is heard like a Goal's: the specific Plan, then the plain `EN
 
 - A duel that finishes `WITH duel_abandoned` matches no `FINISHED` Block of the banquet, but `HonorDuel(?) ENDED` hears it, so nothing is written.
 - A `DROPPED` ending nobody hears writes nothing: the parent caused it.
-- An ending Plan that fails writes `T2002`. `regia/director.asl` holds one `-!` plan per Goal, which writes the entry, binds `Heard` to `heard`, and succeeds, so the dispatcher carries on.
+- An ending Plan that fails writes `T20_02-director-plan-failed`. `regia/director.asl` holds one `-!` plan per Goal, which writes the entry, binds `Heard` to `heard`, and succeeds, so the dispatcher carries on.
 
 **Checks**
 
-- A Subplot's own ending that no Plan of the parent hears → `T3802` (Trace, `unheard`)
-- An ending Plan that fails → `T2002` (Trace warning)
+- A Subplot's own ending that no Plan of the parent hears → `T38_02-ending-found-no-plan` (Trace, `unheard`)
+- An ending Plan that fails → `T20_02-director-plan-failed` (Trace warning)
 
-Spec: chapter 31, *The parent's ending Plans*, *`Heard` and `T3802`*. For the language, chapter 17; for the ending goals of a Goal, chapter 40.
+Spec: chapter 31, *The parent's ending Plans*, *`Heard` and `T38_02-ending-found-no-plan`*. For the language, chapter 17; for the ending goals of a Goal, chapter 40.
 
 ## Leaving
 
@@ -969,14 +969,14 @@ One broadcast from the Root to every Agent was rejected: it races with Givings s
 
 ### Nobody joins
 
-In 1.5 the game can't add an Agent during the run. A `regia_join` that reaches the Root Director is ignored, with `T1902`; the body the game started for it is never given a cast. The Root's starting cast is the largest the run will have, and every Staging's cast only shrinks.
+In 1.5 the game can't add an Agent during the run. A `regia_join` that reaches the Root Director is ignored, with `T19_02-join-refused`; the body the game started for it is never given a cast. The Root's starting cast is the largest the run will have, and every Staging's cast only shrinks.
 
 > **In 2.0** the Root Director creates a joiner's agent with `regia.spawn_agent`, from its `regia_kind`, adds it to its cast, sends `regia_cast_joined` to the rest of the cast, then runs the join: the joiner's cast copy, its setups and its kind's lines, the standing Givings replayed, then `JOINED`. Joiners join only the Root Plot. Spec chapter 33, *Joining*, and chapter 30, *An Agent joining*.
 
 **Checks**
 
-- A `regia_leave` for an Agent that isn't in the Program → `T3302` (Trace warning; the link ignores it)
-- A spawn the game reports in a 1.5 run, refused → `T1902` (Trace warning)
+- A `regia_leave` for an Agent that isn't in the Program → `T33_02-leave-of-unknown-agent` (Trace warning; the link ignores it)
+- A spawn the game reports in a 1.5 run, refused → `T19_02-join-refused` (Trace warning)
 
 Spec: chapter 33, *What the game reports*, *Leaving*, *Regia 1.5*. For the language, chapter 19.
 
@@ -996,8 +996,8 @@ It is Java because checking `.all_names` first in ASL leaves a window in which t
 
 **Checks**
 
-- A `TELL` or `ASK` of ours to an Agent who has left → `T1901` (Trace warning)
-- An Infrastructure send to an agent that doesn't exist → `T3303` (Trace warning)
+- A `TELL` or `ASK` of ours to an Agent who has left → `T19_01-message-after-leaving` (Trace warning)
+- An Infrastructure send to an agent that doesn't exist → `T33_03-send-to-missing-agent` (Trace warning)
 
 Spec: chapter 33, *Sends to agents that are gone*.
 

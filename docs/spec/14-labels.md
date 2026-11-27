@@ -35,7 +35,7 @@ WHEN insult_heard, SUITS sympathy AT -0.5, SHIFTS aggressiveness BY 0.2:
 ```
 
 - Labels can come **in any order**. Each Label appears **at most once** on a header.
-- A Label naming several Propensities lists them with **`,`**: `SUITS sympathy AT -0.5, bravery AT 0.8`. After a `,`, a Propensity name continues the list and a Label keyword (or `FROM`, `BY`) starts the next clause (chapter 01). Propensities joined with `AND` are the retired spelling (`R1412`): `AND` is only the Context operator.
+- A Label naming several Propensities lists them with **`,`**: `SUITS sympathy AT -0.5, bravery AT 0.8`. After a `,`, a Propensity name continues the list and a Label keyword (or `FROM`, `BY`) starts the next clause (chapter 01). Propensities joined with `AND` are the retired spelling (`R14_12-retired-and-in-label`): `AND` is only the Context operator.
 - Naming the same Propensity twice in one Label is an error.
 - A long header wraps after any `,` (chapter 01):
 
@@ -120,22 +120,23 @@ A Target that doesn't support a Label **ignores** it, with **one warning per Pro
 
 **Errors**
 
-- `R1401` An unknown Label keyword, or a Label repeated on one header.
-- `R1402` A Propensity named twice in one Label, or in both a Trigger's `SHIFTS` and a `GIVEN`'s.
-- `R1403` A name in `SUITS` that isn't a declared Propensity, or a name in `SHIFTS` or `SHIFT` that isn't a declared Mood.
-- `R1404` A Label value that isn't a Number literal, or that lies outside its range ([0, 1] for a Trait in `SUITS`, [-1, 1] otherwise).
-- `R1405` `SUITS` on a `GIVEN` or `ELSE`.
-- `R1406` Any Label on a Director's Plan, or `SHIFT` in a Director's Body.
-- `R1407` A `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT`.
-- `R1411` The same Mood named twice in one `SHIFT`.
-- `R1412` Propensities in a `SUITS` or `SHIFTS` Label, or Moods in a `SHIFT`, joined with the retired `AND` (hint: list them with `,`).
+- `R14_01-unknown-or-repeated-label` An unknown Label keyword, or a Label repeated on one header.
+- `R14_02-repeated-propensity` A Propensity named twice in one Label, or in both a Trigger's `SHIFTS` and a `GIVEN`'s.
+- `R14_03-undeclared-label-name` A name in `SUITS` that isn't a declared Propensity, or a name in `SHIFTS` or `SHIFT` that isn't a declared Mood.
+- `R14_04-wrong-label-value` A Label value that isn't a Number literal, or that lies outside its range ([0, 1] for a Trait in `SUITS`, [-1, 1] otherwise).
+- `R14_05-misplaced-suits` `SUITS` on a `GIVEN` or `ELSE`.
+- `R14_06-label-in-director` Any Label on a Director's Plan, or `SHIFT` in a Director's Body.
+- `R14_07-local-propensity` A `TRAIT` or `MOOD` declared inside a `PLAYBOOK` or `PLOT`.
+- `R14_11-repeated-mood-in-shift` The same Mood named twice in one `SHIFT`.
+- `R14_12-retired-and-in-label` Propensities in a `SUITS` or `SHIFTS` Label, or Moods in a `SHIFT`, joined with the retired `AND` (hint: list them with `,`).
 
 **Warnings**
 
-- `R1408` A Label the Target doesn't support (once per Program per Label).
-- `R1409` A declared Propensity that no Label and no `SHIFT` names. Absence check (chapter 23).
+- `R14_08-unsupported-label` A Label the Target doesn't support (once per Program per Label).
+- `R14_09-unused-propensity` A declared Propensity that no Label and no `SHIFT` names. Absence check (chapter 23).
+- `R14_10-inapplicable-shifts-label` Retired: a `SHIFTS` Label always applies when its Plan is chosen (*Moods and Labels on VEsNA-Pro*).
 
-`R1304` and `R1309` (mixing labelled and unlabelled candidates) are retired, ADR 0033. `R1410` (a `SHIFTS` Label the Target can never apply) is retired: a `SHIFTS` Label now always applies when its Plan is chosen (*Moods and Labels on VEsNA-Pro*).
+`R13_04-mixed-suits-trigger-blocks` and `R13_09-unlabelled-ties-candidate` (mixing labelled and unlabelled candidates) are retired, ADR 0033. `R14_10-inapplicable-shifts-label` (a `SHIFTS` Label the Target can never apply) is retired: a `SHIFTS` Label now always applies when its Plan is chosen (*Moods and Labels on VEsNA-Pro*).
 
 ## Reserved words
 

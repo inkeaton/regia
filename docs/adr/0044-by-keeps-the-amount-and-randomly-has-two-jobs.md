@@ -16,6 +16,6 @@ The syntax review's one-meaning rule (chapter 01, ADR 0041) allows a keyword one
 ## Consequences
 
 - Chapter 01's list of exceptions names `TO` (ADR 0043), `BY` as an amount and `RANDOMLY`. The list is closed: no other construct may cite them as a precedent.
-- `EXITED BY PARENT` became the clause `WHEN EXITED, BY PARENT:`, like the `BY` of a Goal's ending. The old spelling is `R0111`, and `R0506` lost its exception: `BY PARENT` goes only on `EXITED`.
-- `, AT RANDOM` is the retired spelling `R2606` (hint: `, RANDOMLY`). `RANDOM` is now only the function `RANDOM(a, b)`, which `bravery AT RANDOM(a, b)` in Instancing still uses.
+- `EXITED BY PARENT` became the clause `WHEN EXITED, BY PARENT:`, like the `BY` of a Goal's ending. The old spelling is `R01_11-clause-without-comma`, and `R05_06-by-on-wrong-trigger` lost its exception: `BY PARENT` goes only on `EXITED`.
+- `, AT RANDOM` is the retired spelling `R26_06-retired-at-random` (hint: `, RANDOMLY`). `RANDOM` is now only the function `RANDOM(a, b)`, which `bravery AT RANDOM(a, b)` in Instancing still uses.
 - In Regia 1.5, and the same spellings in 2.0.

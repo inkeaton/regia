@@ -100,19 +100,19 @@ The Director gives and takes away with `achieve` messages. The Agent handles the
 +!regia_take(P, What)[source(D)]
    <- // remove every regia_given(P, D, T, …) and regia_aside(P, D, T, …) that What matches:
       //   role(R)  T includes R (role(R), or role(cast) while regia_cast(D, R, Me))
-      //   agent    T = agent(Me); only regia_given. Nothing matched: T1505
+      //   agent    T = agent(Me); only regia_given. Nothing matched: T15_05-remove-takes-nothing
       //   all      any T
       // if no regia_given(P, …) remains: stop P (below)
 
 @regia_set_aside[atomic]
 +!regia_set_aside(P, R)[source(D)]
-   <- // move every regia_given(P, D, T, …) whose T includes R to regia_aside. Nothing moved: T1505
+   <- // move every regia_given(P, D, T, …) whose T includes R to regia_aside. Nothing moved: T15_05-remove-takes-nothing
       // if no regia_given(P, …) remains: stop P (below)
 
 @regia_restore[atomic]
 +!regia_restore(P, R, Resent)[source(D)]
    <- // move every regia_aside(P, D, T, …) whose T includes R back to regia_given
-      // nothing moved and Resent = false: T1506
+      // nothing moved and Resent = false: T15_06-assign-lifts-nothing
       // if P was neither held nor closing just before: !!regia_assigned(P) (Opening, below)
 
 @regia_take_phase[atomic]
@@ -139,14 +139,14 @@ The Director gives and takes away with `achieve` messages. The Agent handles the
 | `REMOVE P FROM Guest` | each Agent in the Staging's cast | `regia_take(p, role(guest))`: a Guest loses its `role(guest)` Givings and its `role(cast)` ones, so the `CAST` Givings are narrowed |
 | `REMOVE P FROM CAST` | each Agent in the Staging's cast | `regia_take(p, all)` |
 | `REMOVE P FROM ?who` | that Agent | `regia_take(p, agent)`: only the Givings made to it. A Guard setup's Giving stays (chapter 15) |
-| `REMOVE P FROM Guest ?who` | that Agent, if it plays `Guest`; else `T1505` on the Director | `regia_set_aside(p, guest)` |
+| `REMOVE P FROM Guest ?who` | that Agent, if it plays `Guest`; else `T15_05-remove-takes-nothing` on the Director | `regia_set_aside(p, guest)` |
 | `REMOVE P FROM CAST ?who` | that Agent | `regia_take(p, all)` |
-| `ASSIGN P TO Guest ?who` | that Agent, if it plays `Guest`; else `T1506` on the Director | any resent `regia_give`s (chapter 30), then `regia_restore(p, guest, Resent)` |
+| `ASSIGN P TO Guest ?who` | that Agent, if it plays `Guest`; else `T15_06-assign-lifts-nothing` on the Director | any resent `regia_give`s (chapter 30), then `regia_restore(p, guest, Resent)` |
 | Leaving a Phase (chapter 30) | each Agent in the Staging's cast | `regia_take_phase(feast)` |
 | A Staging ending (chapter 17) | each Agent in its cast | `regia_end_staging`, which takes away every Giving from that Director, set aside or not, and its cast copy (chapter 31) |
 
 - **The `Until` argument** of `regia_give` is `phase(feast)` for a Giving from `feast`'s setup or with `UNTIL EXITED` in a `DURING feast` Plan, and `staging` otherwise.
-- **Only the Agent knows what it holds**, so it writes the `T1505` and `T1506` that depend on that: a `FROM ?who` with no Giving to it, a `FROM Guest ?who` with nothing to set aside, and an `ASSIGN … TO Guest ?who` with nothing to give back. `Resent` is `true` when the Director resent a standing Giving whose written `EXCEPT` left `?who` out (chapter 30). Per-sender ordering means that Giving has already arrived, and the Agent doesn't warn then.
+- **Only the Agent knows what it holds**, so it writes the `T15_05-remove-takes-nothing` and `T15_06-assign-lifts-nothing` that depend on that: a `FROM ?who` with no Giving to it, a `FROM Guest ?who` with nothing to set aside, and an `ASSIGN … TO Guest ?who` with nothing to give back. `Resent` is `true` when the Director resent a standing Giving whose written `EXCEPT` left `?who` out (chapter 30). Per-sender ordering means that Giving has already arrived, and the Agent doesn't warn then.
 
 The Director doesn't track which Agents hold which Givings. A take-away goes to the whole cast, and each Agent removes whatever matches in its own record. Sending to an Agent that has left is caught and traced (chapter 19): every send goes through `regia.send`, not `.send` (chapter 33).
 
@@ -185,7 +185,7 @@ regia_excepted(D, Ex, A) :- .member(role(XR), Ex) & regia_cast(D, XR, A).
 A whole-Role binding always carries a list: `live(Role, Except)`, which is `[]` when nothing is left out. `MAPPING Guest EXCEPT Guard, ?who AS spectator` is `bind(spectator, live(guest, [role(guard), agent(alice)]))`.
 
 - A `role(guard)` item is read **live**, from the same cast copy as the Role it narrows. An `agent(alice)` item is the Agent the Placeholder held **when the Statement ran** (chapter 15), so the Director writes the name in.
-- A Placeholder holding no Agent is left out of the list by the Director, which writes `T1504`. The list's other items still apply.
+- A Placeholder holding no Agent is left out of the list by the Director, which writes `T15_04-except-placeholder-not-agent`. The list's other items still apply.
 - A counted Mapping with `EXCEPT` is drawn by the Director from what is left (chapter 30), and arrives as `fixed`.
 
 ### What reads it
@@ -254,9 +254,9 @@ Goals started `WITHOUT WAITING` from a Plan of P run on their own intention. If 
 **The closing is that intention.** P is closing from the take step until it ends. Running one step after the other is what keeps chapter 15's order, each drop's `DROPPED` and `ENDED`, then `REMOVED`. A `WAIT` in one closing Plan delays the steps after it.
 
 - **The guard.** The endings of step 1 carry `C`, so P's `DROPPED` and `ENDED` plans pass their guard through `regia_closing(C, p, …)` (*The guard*, above). Any other ending of P's Goals while P is closing carries `none` and finds no plan of P: a still-given Playbook reaching `have_dinner` on its own recipe runs neither `Dining`'s `REACHED` nor its `ENDED`. The still-given Playbooks' ending plans run through their own `regia_given`.
-- **What a closing Plan can start.** It is an ordinary Plan. A `PURSUE` of a Goal whose only recipe is in P finds no plan (`T1104`, chapter 40), and its endings carry `none`, so P's `FAILED` Plan doesn't run (chapter 15).
-- **What a closing Plan speaks through**: `regia_holds`, the snapshot included (*Reading the record*). From `dining.regia:48`, `WHEN have_dinner ENDED: SIGNAL finished_eating` runs in the closing of `Dining` that leaving `feast` started, and reaches `banquet`, whose `farewell` ignores it (`T3801`, chapter 30).
-- **A Staging that has ended.** `regia_end_staging` removes that Staging's cast copy, and its Director is gone (chapter 31). A live binding through it reaches nobody, and a `fixed` one still reaches its Agents. A `SIGNAL` to its Director is caught by `regia.send` (chapter 33), which is not `T3303`'s warning: chapter 15 promises that such a Director hears nothing. The `SIGNAL`'s `message` entry lists that Director as `ENDED`, at `info` (chapter 34). From `royal_banquet.regia:107`, `DROP SUBPLOT HonorDuel(?)` closes `Duelling`, and `WHEN REMOVED` (`duelling.regia:56`) forgets `stamina`.
+- **What a closing Plan can start.** It is an ordinary Plan. A `PURSUE` of a Goal whose only recipe is in P finds no plan (`T11_04-goal-found-no-plan`, chapter 40), and its endings carry `none`, so P's `FAILED` Plan doesn't run (chapter 15).
+- **What a closing Plan speaks through**: `regia_holds`, the snapshot included (*Reading the record*). From `dining.regia:48`, `WHEN have_dinner ENDED: SIGNAL finished_eating` runs in the closing of `Dining` that leaving `feast` started, and reaches `banquet`, whose `farewell` ignores it (`T38_01-signal-found-no-plan`, chapter 30).
+- **A Staging that has ended.** `regia_end_staging` removes that Staging's cast copy, and its Director is gone (chapter 31). A live binding through it reaches nobody, and a `fixed` one still reaches its Agents. A `SIGNAL` to its Director is caught by `regia.send` (chapter 33), which is not `T33_03-send-to-missing-agent`'s warning: chapter 15 promises that such a Director hears nothing. The `SIGNAL`'s `message` entry lists that Director as `ENDED`, at `info` (chapter 34). From `royal_banquet.regia:107`, `DROP SUBPLOT HonorDuel(?)` closes `Duelling`, and `WHEN REMOVED` (`duelling.regia:56`) forgets `stamina`.
 - **A failing step** is caught by its kind's `-!` catcher (chapter 40, *Opening* above), and the closing goes on with the next step.
 - **P's local Facts stay** (chapter 10), unless a closing Plan forgets them. The guard hides the Plans that read them; they are there again if P is given back.
 
@@ -282,11 +282,12 @@ Rows filled in or added in chapter 28's table:
 
 **Warnings**
 
-- `T2901` A `regia_give` for a Playbook the Agent's files don't hold (a Transpiler bug), ignored.
+- `T29_01-give-of-missing-playbook` A `regia_give` for a Playbook the Agent's files don't hold (a Transpiler bug), ignored.
+- `T29_02-plan-stopped-by-take` Retired: a Plan stopped because its Playbook was taken away writes chapter 40's `plan … stopped` instead.
 
-A Plan stopped because its Playbook was taken away is not a warning: it writes chapter 40's `plan … stopped` at `info`, `because:` the `TAKE` entry. `T2902`, which used to be that warning, is retired; its number is not reused.
+A Plan stopped because its Playbook was taken away is not a warning: it writes chapter 40's `plan … stopped` at `info`, `because:` the `TAKE` entry. `T29_02-plan-stopped-by-take`, which used to be that warning, is retired; its number is not reused.
 
-Chapter 15's `T1505` and `T1506` are written by the Agent when its record holds nothing to take, set aside or give back (*What each Director Statement sends*), and `T1504` by the Director.
+Chapter 15's `T15_05-remove-takes-nothing` and `T15_06-assign-lifts-nothing` are written by the Agent when its record holds nothing to take, set aside or give back (*What each Director Statement sends*), and `T15_04-except-placeholder-not-agent` by the Director.
 
 ## Regia 1.5
 

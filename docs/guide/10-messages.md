@@ -39,9 +39,9 @@ Once seated, a Guest tells the Host `greeting`. `host` is a Role of the Playbook
 
 **Checks**
 
-- `TELL` with a Goal → `R0701` (hint: `ASK … TO`)
-- `TELL` or `ASK … TO` with a local Fact or Goal, `SIGNAL` with a local Cue → `R1014`
-- A told Cue for which no Plan of the receiver runs → `T0702` (Trace, `unheard`)
+- `TELL` with a Goal → `R07_01-tell-with-goal` (hint: `ASK … TO`)
+- `TELL` or `ASK … TO` with a local Fact or Goal, `SIGNAL` with a local Cue → `R10_14-local-vocabulary-sent`
+- A told Cue for which no Plan of the receiver runs → `T07_02-cue-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 07.
 
@@ -92,13 +92,13 @@ The last can't be caught at build. `grudge(person, size)` promises a person only
 
 **Checks**
 
-- A Value in the recipient position, `ME` included → `R0704`
-- A recipient Placeholder not filled, or not certainly filled → `R0304`, `R0305`
-- A Role the Playbook or Plot doesn't declare → `R1502`
-- A count on `EVERYONE`, `EXCEPT` in a Playbook → `R1506`, `R1510`
-- A count asking for more Agents than the Role has left → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
-- A recipient that has left the Program → `T1901` (Trace warning)
-- A recipient that isn't an Agent at runtime → `T0701` (Trace, Failure)
+- A Value in the recipient position, `ME` included → `R07_04-value-as-recipient`
+- A recipient Placeholder not filled, or not certainly filled → `R03_04-unfilled-placeholder`, `R03_05-maybe-unfilled-placeholder`
+- A Role the Playbook or Plot doesn't declare → `R15_02-undeclared-role`
+- A count on `EVERYONE`, `EXCEPT` in a Playbook → `R15_06-misplaced-count-or-share`, `R15_10-misused-except`
+- A count asking for more Agents than the Role has left → `T15_02-count-exceeds-pool` (Trace warning); a negative count → `T15_03-count-below-zero` (Trace warning)
+- A recipient that has left the Program → `T19_01-message-after-leaving` (Trace warning)
+- A recipient that isn't an Agent at runtime → `T07_01-recipient-not-agent` (Trace, Failure)
 
 Spec: chapter 07. For Roles in a Playbook and counted recipients, chapter 15. For leaving, chapter 19.
 
@@ -131,8 +131,8 @@ A Message arrives with its Sender, and a Trigger restricts or names it with `FRO
 
 **Checks**
 
-- `FROM GAME`, `FROM ME`, or `FROM` with `OR`, in a 1.5 build → `R0109`
-- `FROM <Role>` or `FROM ?who` in a Plot where no Playbook the Plot gives Signals that Cue → `R3802` (warning)
+- `FROM GAME`, `FROM ME`, or `FROM` with `OR`, in a 1.5 build → `R01_09-later-regia-construct`
+- `FROM <Role>` or `FROM ?who` in a Plot where no Playbook the Plot gives Signals that Cue → `R38_02-cue-never-signalled` (warning)
 
 Spec: chapter 05, chapter 07.
 
@@ -189,8 +189,8 @@ WHEN REMOVED:
 
 **Checks**
 
-- A Fact Trigger without `LEARNED` or `FORGOTTEN` → `R0503`
-- `FROM` on `FORGOTTEN` → `R0505` (nobody sends a forgetting)
+- A Fact Trigger without `LEARNED` or `FORGOTTEN` → `R05_03-fact-trigger-without-kind`
+- `FROM` on `FORGOTTEN` → `R05_05-from-on-forgotten` (nobody sends a forgetting)
 
 Spec: chapter 07. For `LEARNED` and `FROM`, chapter 05. For `REMOVED`, chapter 15.
 
@@ -250,9 +250,9 @@ sequenceDiagram
 
 **Checks**
 
-- `ASK … TO` with a Fact or a Cue → `R0702` (hint: `TELL`)
-- A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R3803` (warning)
-- `BY` on a Goal's ending, in a 1.5 build → `R0109`
+- `ASK … TO` with a Fact or a Cue → `R07_02-ask-with-non-goal` (hint: `TELL`)
+- A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R38_03-unheard-message` (warning)
+- `BY` on a Goal's ending, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 07. For Pursuits, chapter 05; for what a failed Goal does, chapter 11.
 
@@ -299,10 +299,10 @@ A Signal that finds no Plan in the Director's current Phase is dropped with an u
 
 **Checks**
 
-- `SIGNAL` with something that isn't a Cue → `R0703`
-- `SIGNAL` in a Director → `R2001`
-- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R3801` (warning)
-- A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T3801` (Trace, `unheard`)
+- `SIGNAL` with something that isn't a Cue → `R07_03-signal-with-non-cue`
+- `SIGNAL` in a Director → `R20_01-playbook-statement-in-director`
+- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for in any Phase → `R38_01-unheard-signal` (warning)
+- A Signal with no Plan in the Director's current Phase or `DURING PLOT` → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 07. For the Director's side, chapter 20; for what a Plot and a Playbook must agree on, chapter 38.
 
@@ -336,8 +336,8 @@ A Message Statement takes no trailing clause: `ASK ?who TO fight, AND WAIT` is a
 
 **Checks**
 
-- A trailing clause on `TELL`, `ASK` or `SIGNAL` → `R0705`
-- `TOLD`, `AGREED`, `REFUSED` or `REFUSE` used → `R0706`
+- A trailing clause on `TELL`, `ASK` or `SIGNAL` → `R07_05-clause-on-message`
+- `TOLD`, `AGREED`, `REFUSED` or `REFUSE` used → `R07_06-reserved-kind-word`
 
 Spec: chapter 07.
 

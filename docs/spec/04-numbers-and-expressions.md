@@ -70,7 +70,7 @@ Comparisons don't chain. `0 < ?h < 20` is an error, and the Transpiler suggests 
 A whole roll gives one of the whole numbers from `a` to `b`. With 13 coins, `RANDOM(1, ?gold / 2)` is a roll from 1 to 6.5, so it gives 1 to 6. This is the only place a Number is rounded by a roll.
 
 - **Bounds in either order** mean the same range: `RANDOM(6, 1)` is `RANDOM(1, 6)`.
-- **A whole roll with no whole number between its bounds** (`RANDOM(1, ?gold / 2)` with 1 coin, a range from 1 to 0.5) has nothing to give. In a Body it **fails the Plan** (`T0403`), like a division by zero. In a Context the comparison that holds it is false. A guard avoids it: `IF ?gold >= 2:`.
+- **A whole roll with no whole number between its bounds** (`RANDOM(1, ?gold / 2)` with 1 coin, a range from 1 to 0.5) has nothing to give. In a Body it **fails the Plan** (`T04_03-empty-whole-roll`), like a division by zero. In a Context the comparison that holds it is false. A guard avoids it: `IF ?gold >= 2:`.
 - A starting Propensity value in Instancing is always a decimal roll, whatever its bounds look like (chapter 21).
 
 Every `RANDOM(…)` is a fresh roll. To use the same roll twice, fill a Placeholder with it in the Body (`LET`, below). Which rolls a seed covers is in chapter 34.
@@ -122,7 +122,7 @@ A Placeholder filled by `LET` follows the same rules as any other (chapter 03): 
 - **`LET` goes only in a Body**, as a Statement of its own, one-line Options included (`OPTION: LET ?stake BE ?gold / 2`, chapter 09). It is an error in a Context or an `IF` condition.
 - **The spelling without `LET`**, `?x = e` as a Statement, is retired: it is an error, with the hint `LET ?x BE e`.
 - **Order matters.** A Placeholder filled by `LET` can be used only by the Statements after it.
-- **Branches.** A Placeholder filled inside a Body `IF` branch can be used after the `IF` only if every branch fills it, just as with `OR` in a Context. The same holds for the Options of a Random choice (chapter 09): a Placeholder filled in every Option outlives the choice. Using one that some branch or Option leaves unfilled is `R0305` (chapter 03).
+- **Branches.** A Placeholder filled inside a Body `IF` branch can be used after the `IF` only if every branch fills it, just as with `OR` in a Context. The same holds for the Options of a Random choice (chapter 09): a Placeholder filled in every Option outlives the choice. Using one that some branch or Option leaves unfilled is `R03_05-maybe-unfilled-placeholder` (chapter 03).
 
 ```regia
 WHEN gift_received(?giver):
@@ -162,22 +162,22 @@ Parameters are untyped (chapter 03), so a slot can hold a name where a Number wa
 
 **Errors**
 
-- `R0401` A number written in a form Regia doesn't have: `.5`, an exponent, digit separators, another base.
-- `R0402` An Expression in a Trigger slot.
-- `R0403` A chained comparison, such as `0 < ?h < 20` or `?a = ?b != ?c` (hint: `0 < ?h AND ?h < 20`).
-- `R0404` A comparison in a Context or an `IF` condition with a side that isn't filled yet (a comparison never fills).
-- `R0405` `LET` on a Placeholder that is already filled (`LET ?h BE ?h - 1`; hint: `LET ?new BE ?h - 1`).
-- `R0406` Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`host + 1`, `"hi" < 3`).
-- `R0407` The retired spelling `?x = e` as a Body Statement (hint: `LET ?x BE e`).
-- `R0408` `LET` in a Context or an `IF` condition.
+- `R04_01-unsupported-number-form` A number written in a form Regia doesn't have: `.5`, an exponent, digit separators, another base.
+- `R04_02-expression-in-trigger` An Expression in a Trigger slot.
+- `R04_03-chained-comparison` A chained comparison, such as `0 < ?h < 20` or `?a = ?b != ?c` (hint: `0 < ?h AND ?h < 20`).
+- `R04_04-comparison-with-unfilled-side` A comparison in a Context or an `IF` condition with a side that isn't filled yet (a comparison never fills).
+- `R04_05-let-on-filled-placeholder` `LET` on a Placeholder that is already filled (`LET ?h BE ?h - 1`; hint: `LET ?new BE ?h - 1`).
+- `R04_06-arithmetic-on-non-number` Arithmetic, or `<` `>` `<=` `>=`, on something the source shows isn't a Number (`host + 1`, `"hi" < 3`).
+- `R04_07-retired-equals-statement` The retired spelling `?x = e` as a Body Statement (hint: `LET ?x BE e`).
+- `R04_08-let-in-condition` `LET` in a Context or an `IF` condition.
 
 ## Trace entries
 
 **Failures**
 
-- `T0401` Body arithmetic on something that isn't a Number.
-- `T0402` A division by zero.
-- `T0403` A whole roll with no whole number between its bounds.
+- `T04_01-operand-not-number` Body arithmetic on something that isn't a Number.
+- `T04_02-division-by-zero` A division by zero.
+- `T04_03-empty-whole-roll` A whole roll with no whole number between its bounds.
 
 ## Reserved words
 

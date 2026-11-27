@@ -19,7 +19,7 @@ A Subplot that ends by itself now fires **`FINISHED`**. It is the Subplot's coun
 ## Consequences
 
 - `END PLOT` fires `FINISHED`, not a word of its own: the Action and its Trigger no longer share a word, unlike `DROP`/`DROPPED`.
-- The retired `ENDED WITH e`, `ENDED WITHOUT OUTCOME` and `ENDED` with any complement are `R1715`. The retired `END SUBPLOT` is `R1717`. A bare `DROP P` on a Plot is `R0802`, with the hint `DROP SUBPLOT P`. `OUTCOME` stays reserved for `R1715`'s hint.
-- A plain `FINISHED` above a `FINISHED WITH` it shadows is a warning (`R1716`), as `R1106` is for `FAILED`. `R1706` keeps only the unknown Outcome, and `R1708` counts a plain `FINISHED` as hearing every ending the Subplot chose itself.
+- The retired `ENDED WITH e`, `ENDED WITHOUT OUTCOME` and `ENDED` with any complement are `R17_15-retired-ended-with`. The retired `END SUBPLOT` is `R17_17-retired-end-subplot`. A bare `DROP P` on a Plot is `R08_02-wrong-kind-for-action`, with the hint `DROP SUBPLOT P`. `OUTCOME` stays reserved for `R17_15-retired-ended-with`'s hint.
+- A plain `FINISHED` above a `FINISHED WITH` it shadows is a warning (`R17_16-shadowed-finished-with`), as `R11_06-shadowed-failed-with` is for `FAILED`. `R17_06-unknown-subplot-outcome` keeps only the unknown Outcome, and `R17_08-unheard-subplot-ending` counts a plain `FINISHED` as hearing every ending the Subplot chose itself.
 - In Jason, `ENDED WITH` and `ENDED WITHOUT OUTCOME` become one generated goal, `regia_subplot_finished(p, Args, O, Heard)`, with `O` being `none` for a bare ending (chapter 31). The Trace writes `FINISHED WITH o` and `FINISHED` (chapter 34).
 - ADR 0030 still says `ENDED WITH`, `ENDED WITHOUT OUTCOME` and `END SUBPLOT`, and is left as the historical record. Its decision, a specific Trigger first and then `ENDED`, stands.

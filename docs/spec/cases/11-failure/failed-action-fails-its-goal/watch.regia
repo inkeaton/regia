@@ -1,4 +1,4 @@
-CUE intruder_seen(who)
+GAME CUE intruder_seen(who)
 ACTION chase(who)
 GOAL catch(who)
 

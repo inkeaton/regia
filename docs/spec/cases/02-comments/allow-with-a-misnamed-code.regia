@@ -1,0 +1,11 @@
+#! case: an allow code is matched on its number, and a wrong name is an error
+#! rule: R02_06-allow-misnames-code
+
+GAME CUE insult_heard(speaker)
+ACTION glare_at(target)
+
+#@allow: R03_07-ignored-placeholder
+#!^ error R02_06-allow-misnames-code
+PLAYBOOK Guest:
+    WHEN insult_heard(?who):
+        DO glare_at(?who)

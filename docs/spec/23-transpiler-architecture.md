@@ -30,7 +30,7 @@ There is no preprocess pass. 1.0 merged files and stripped comments before parsi
 - **`.`** ending a Statement is its own kind (STOP), told apart in `scan` by the character after it. A dotted name is one token.
 - **A Placeholder** is one token, the `?` included. **A `-`** is always a token of its own, which the parser joins to a number where a Value starts.
 - **Every reserved word** has a kind of its own, with the 2.0, later and retired words included. Context never decides whether a word is a keyword.
-- **Diagnostics** come back as a list beside the tokens. The lexer reports `R0103`, `R0104`, `R0105`, `R0112`, `R0113`, `R0201`, `R0202` and `R0401`; everything else about a file's syntax is the parser's, `R0101`, `R0102`, `R0106`, `R0108`, `R0114` and `R0115` included.
+- **Diagnostics** come back as a list beside the tokens. The lexer reports `R01_03-mixed-tabs-and-spaces`, `R01_04-dedent-to-unopened-level`, `R01_05-continuation-not-indented`, `R01_12-stray-character`, `R01_13-malformed-string`, `R02_01-unclosed-comment`, `R02_02-doc-comment-mid-line` and `R04_01-unsupported-number-form`; everything else about a file's syntax is the parser's, `R01_01-indented-body-after-inline`, `R01_02-keyword-in-dotted-name`, `R01_06-block-without-body`, `R01_08-stray-semicolon`, `R01_14-indent-opens-no-block` and `R01_15-unexpected-text` included.
 - **Malformed text keeps the kind it was meant to have:** an unclosed String is a String up to the end of its line, an unclosed comment a comment up to the end of the file, `0xFF` a number. A stray character is an ERROR token, which the parser steps over silently. So no mistake is reported by both, and printing every token gives back the source.
 
 For example, with whitespace left out:
@@ -49,10 +49,10 @@ WHEN idle:                        WHEN NAME COLON NEWLINE
 - **The parser** writes a flat list of events: open a node, take a token, close a node. It sees neither whitespace nor comments. Wrapping a node already finished (`1 + 2`) is an edit to the list.
 - **The tree builder** turns the events and the full token list into the tree. It alone applies the Extent rules (chapter 22) and it alone builds rowan nodes. It drops zero-width tokens: INDENT, DEDENT and an end-of-file NEWLINE are never in the tree.
 - **The grammar is loose about places.** Any declaration, Plan or Statement parses in any ordinary body, whatever the file's extension, and a later check reports one that is misplaced. Only bodies whose lines start with a name have a grammar of their own, chosen by the header: `PRECEDENCE`, `KIND`, `AGENT` and `TARGET`.
-- **A soft error** is reported and nothing is skipped: a missing `,` (`R0111`), `)`, or `:` before NEWLINE INDENT, or a keyword used as a name (`R0110`). Nothing stands in the tree for what is missing.
+- **A soft error** is reported and nothing is skipped: a missing `,` (`R01_11-clause-without-comma`), `)`, or `:` before NEWLINE INDENT, or a keyword used as a name (`R01_10-keyword-as-name`). Nothing stands in the tree for what is missing.
 - **A hard error** puts the unexpected tokens in one Error node, up to the first STOP, SEMI, NEWLINE, INDENT, DEDENT or end of file, or a token the current rule was waiting for (`:` in a header, `,` or `)` in arguments). A Statement keyword doesn't end it, since `TO` also appears inside Statements. A Statement or a header has at most one, and a broken header keeps its body.
 - **A retired spelling** is reported with its code and becomes the same node as the new spelling, so nothing cascades: `CHANGE f TO f2` is an `UPDATE_STMT` whose first token is `CHANGE`. One with no counterpart is an Error node with the retired code.
-- **A 2.0 construct** is parsed in full into ordinary nodes. The parser reports `R0109` where the tokens show it. A Goal's ending in a Plot needs the name's kind (`WHEN take_seat ENDED:` and `WHEN HonorDuel ENDED:` have the same tokens), so Model build reports that one. The enclosing Plan or Statement is left out of the Model, so it gets no other diagnostic (*From files to the Model*). Which version this build is, is tested in one function.
+- **A 2.0 construct** is parsed in full into ordinary nodes. The parser reports `R01_09-later-regia-construct` where the tokens show it. A Goal's ending in a Plot needs the name's kind (`WHEN take_seat ENDED:` and `WHEN HonorDuel ENDED:` have the same tokens), so Model build reports that one. The enclosing Plan or Statement is left out of the Model, so it gets no other diagnostic (*From files to the Model*). Which version this build is, is tested in one function.
 - **`parse(text)`** returns a `Parse`: the root, and the diagnostics. `syntax` wraps rowan in its own newtypes, with only the methods the core needs, and nothing stores a tree node: the Model keeps a file and a range. So it doesn't matter that rowan's nodes can't be shared between threads.
 
 **Accessors** return an `Option` for one part and an iterator for several. `None` means that the part isn't there, whether it is optional or was lost to an error; an accessor doesn't look inside Error nodes, invents nothing, never panics and reports nothing. A name is returned as its token, so its text and range go together.
@@ -110,11 +110,11 @@ One function takes the parsed file set and an Entry, and returns the Model and i
 **Ids and names**
 
 - There is one list per sort of item, and an id is a position in it. `RoleId` is Program-wide, and a Role records its owner, a Plot or a Playbook.
-- There is one name table per Program, and one per owner for local names. A lookup finds the item, then checks that the file reaches one of its declaring files. An item found but not reached is `R1004` with its hint.
+- There is one name table per Program, and one per owner for local names. A lookup finds the item, then checks that the file reaches one of its declaring files. An item found but not reached is `R10_04-name-out-of-scope` with its hint.
 - An item declared several times has a list of origins, in file order: the Entry, then its imports depth-first as written.
-- After an `R1005` the first declaration keeps the name and the item is marked *conflicted*: checks that read what may conflict (kind, parameter count, External name, `GAME`) skip it. After an `R1006` the second Playbook or Plot has an id of its own, so that its body is checked, and the name leads to the first.
+- After an `R05_01-declared-as-two-kinds` or an `R10_05-conflicting-redeclaration` the first declaration keeps the name and the item is marked *conflicted*: checks that read what may conflict (kind, parameter count, External name, `GAME`) skip it. After an `R10_06-duplicate-playbook-or-plot` the second Playbook or Plot has an id of its own, so that its body is checked, and the name leads to the first.
 
-**Faulty imports.** A misplaced import (`R1001`) and one in a cycle (`R1003`) are followed. A `.regia` importing a `.regin` (`R2101`) is not, and isn't missing either, since a `.regin` declares no names a `.regia` could use. An import that leads to no file (`R1002`) or has no readable path is a **missing import**.
+**Faulty imports.** A misplaced import (`R10_01-misplaced-import`) and one in a cycle (`R10_03-import-cycle`) are followed. A `.regia` importing a `.regin` (`R21_01-import-of-instancing-file`) is not, and isn't missing either, since a `.regin` declares no names a `.regia` could use. An import that leads to no file (`R10_02-missing-import-file`) or has no readable path is a **missing import**.
 
 **What is kept of broken code**
 
@@ -122,37 +122,37 @@ One function takes the parsed file set and an Entry, and returns the Model and i
 - **A Statement** missing a part it can't mean anything without is left out, and its neighbours stay.
 - **A Plan** whose Trigger is missing or broken is left out with its body. A broken Statement doesn't remove its Plan.
 - **A Playbook, Plot, Role or Phase** with a readable name is always kept. One without a name is left out, contents included.
-- **A refused Goal's ending in a Plot** (`R0109`): once the Trigger resolves to a Goal, the Plan is left out and its body is never visited.
+- **A refused Goal's ending in a Plot** (`R01_09-later-regia-construct`): once the Trigger resolves to a Goal, the Plan is left out and its body is never visited.
 
-**Absence checks.** An absence check reports that nothing in some scope, a Plan, a Playbook or Plot, or the Program, does something: nothing declares a name (`R1004`), nothing fills a Placeholder (`R0304`), nothing sends a Cue (`R3807`), nothing uses a Placeholder (`R0307`). Adding the missing thing anywhere in that scope would make it go away. A check that a Statement or Plan can never run because of what is written above it (`R1102`, `R1307`) is not one: all it reads is there. It is silent when what it looks for may be in text that wasn't read, so that one mistake gives one report:
+**Absence checks.** An absence check reports that nothing in some scope, a Plan, a Playbook or Plot, or the Program, does something: nothing declares a name (`R10_04-name-out-of-scope`), nothing fills a Placeholder (`R03_04-unfilled-placeholder`), nothing sends a Cue (`R38_07-cue-never-sent`), nothing uses a Placeholder (`R03_07-unused-placeholder`). Adding the missing thing anywhere in that scope would make it go away. A check that a Statement or Plan can never run because of what is written above it (`R11_02-statement-after-fail`, `R13_07-unreachable-trigger-block`) is not one: all it reads is there. It is silent when what it looks for may be in text that wasn't read, so that one mistake gives one report:
 
 - The Model keeps the **unread names**: every name and Placeholder written in an Error node or in a left-out construct, as text, compared ignoring case. An absence check skips a name in that set, and a Placeholder only within its own Plan.
-- A file that reaches a missing import gets no `R1004` for a file-level name. A name that is always local, such as a Plot's Role or Phase, is still reported. Absence checks over the whole Program don't run.
+- A file that reaches a missing import gets no `R10_04-name-out-of-scope` for a file-level name. A name that is always local, such as a Plot's Role or Phase, is still reported. Absence checks over the whole Program don't run.
 
 The absence checks are a closed list. Each is marked in its own chapter:
 
 | Scope | Checks |
 | --- | --- |
-| Plan | `R0304` (its *never filled* part), `R0307`, `R0308` |
-| Playbook or Plot | `R0508`, `R1303` (its *never* parts), `R1306`, `R1409`, `R1704`, `R1705`, `R1706`, `R1708`, `R1712`, `R1713`, `R1905`, `R2011`, `R2012`, `R2015`, `R3801`, `R3802`, `R3803` |
-| Program | `R0205`, `R1004`, `R2110`, `R2112`, `R2117`, `R2121`, `R3804`, `R3805`, `R3806`, `R3807` |
+| Plan | `R03_04-unfilled-placeholder` (its *never filled* part), `R03_07-unused-placeholder`, `R03_08-placeholder-only-under-not` |
+| Playbook or Plot | `R05_08-by-for-unasked-goal`, `R13_03-relation-to-absent-item` (its *never* parts), `R13_06-relation-without-shared-trigger`, `R14_09-unused-propensity`, `R17_04-subplot-never-started`, `R17_05-ignored-end-plot-with`, `R17_06-unknown-subplot-outcome`, `R17_08-unheard-subplot-ending`, `R17_12-subplot-never-dropped`, `R17_13-unheard-until-exited-ending`, `R19_05-joined-outside-root-plot`, `R20_11-unreachable-phase`, `R20_12-goal-never-asked`, `R20_15-ignored-exited-by-parent`, `R38_01-unheard-signal`, `R38_02-cue-never-signalled`, `R38_03-unheard-message` |
+| Program | `R02_05-stale-allow`, `R10_04-name-out-of-scope`, `R21_10-root-role-never-played`, `R21_12-plot-never-reached`, `R21_17-agent-plays-nothing`, `R21_21-undeclared-name-after-no`, `R38_04-reason-never-given`, `R38_05-pursue-without-me-recipe`, `R38_06-ask-only-me-recipes`, `R38_07-cue-never-sent` |
 
 For example, with no `lost.regia`:
 
 ```text
 hub.regia     IMPORT "scene"           reaches scene, moves, and a missing import
-              IMPORT "lost"            R1002
+              IMPORT "lost"            R10_02-missing-import-file
 
 scene.regia   IMPORT "moves"           reaches moves only
               DO wave                  silent: `wave` is an unread name
-              DO curtsy                R1004: this file reaches no missing import
+              DO curtsy                R10_04-name-out-of-scope: this file reaches no missing import
               DO nod                   DO_STMT with Some(nod)
 
 moves.regia   ACTION ) wave            a syntax error; `wave` is unread
               ACTION nod
 ```
 
-**A `.regia` Entry** is built by the same code. The Root Plot is an `Option`, `None` here: there is no cast and no ranking across Plots, while each Plot's own `PRECEDENCE` relations are kept. Checks that need a Root Plot step over the `None`. A `.regin` Entry whose `ROOT` is missing or bad (`R2104`) has the same `None`, so nothing cascades. The Model records the Entry's extension, since only a `.regin` owes a `ROOT`.
+**A `.regia` Entry** is built by the same code. The Root Plot is an `Option`, `None` here: there is no cast and no ranking across Plots, while each Plot's own `PRECEDENCE` relations are kept. Checks that need a Root Plot step over the `None`. A `.regin` Entry whose `ROOT` is missing or bad (`R21_04-missing-or-wrong-root`) has the same `None`, so nothing cascades. The Model records the Entry's extension, since only a `.regin` owes a `ROOT`.
 
 ## Parsing never depends on declarations
 
@@ -178,7 +178,7 @@ One diagnostic type is shared by every pass. It is plain data, the core's own (n
 ```rust
 Diagnostic {
     severity,                       // Error, Warning
-    code,                           // stable, e.g. "R0412"; each code has a docs page
+    code,                           // the whole code, e.g. "R13_01-precedence-cycle"; each code has a docs page
     message,
     primary: Span,                  // file + byte range
     labels: Vec<(Span, String)>,    // other places that explain the problem
@@ -194,22 +194,22 @@ A check belongs to the first pass that has everything it reads:
 | Pass | Reads | Reports |
 | --- | --- | --- |
 | Lex | the characters of one line | the codes listed under *What the lexer hands to the parser* |
-| Parse | the tokens of one construct, not where it sits | grammar errors, retired spellings, `R0109` where the tokens show it, `R0203` and `R0204` on the finished tree |
-| Model build | where a construct sits, and what its names mean | what can't enter the Model as written: a misplaced construct (`R1508`, `R1714`, `R0309`), a name that leads nowhere or to the wrong kind or count (`R1004`, `R0301`), duplicates (`R1005`), import faults, a precedence cycle (`R1301`, since ranks can't be computed), the late `R0109`, `R2104` |
-| Validate | the built Model | everything else: flow (`R0304`, `R1702`), absence checks (`R0307`, `R3807`), the whole Program, the Target's checks |
+| Parse | the tokens of one construct, not where it sits | grammar errors, retired spellings, `R01_09-later-regia-construct` where the tokens show it, `R02_03-detached-doc-comment` and `R02_04-allow-names-error` on the finished tree |
+| Model build | where a construct sits, and what its names mean | what can't enter the Model as written: a misplaced construct (`R15_08-misused-assigned-or-removed`, `R17_14-running-in-playbook`, `R03_09-me-in-plot`), a name that leads nowhere or to the wrong kind or count (`R10_04-name-out-of-scope`, `R03_01-wrong-argument-count`), duplicates (`R10_05-conflicting-redeclaration`), import faults, a precedence cycle (`R13_01-precedence-cycle`, since ranks can't be computed), the late `R01_09-later-regia-construct`, `R21_04-missing-or-wrong-root` |
+| Validate | the built Model | everything else: flow (`R03_04-unfilled-placeholder`, `R17_02-statement-after-end-plot`), absence checks (`R03_07-unused-placeholder`, `R38_07-cue-never-sent`), the whole Program, the Target's checks |
 
-A construct Model build reports is left out, and its names become unread (*From files to the Model*). So a check that "needs only one Plan", such as `R0307`, still runs in Validate.
+A construct Model build reports is left out, and its names become unread (*From files to the Model*). So a check that "needs only one Plan", such as `R03_07-unused-placeholder`, still runs in Validate.
 
 **Passes hand diagnostics over as return values.** `parse` returns them in its `Parse`, Model build beside the Model, `validate` as its result. One function, `check`, gathers them, applies allows, removes exact duplicates and sorts.
 
-**The code** is a Rust enum with one variant per code, named after it (`Code::R0307`). Its severity comes from the enum alone, so a check can't report a warning's code as an error. A message takes arguments and is written where the check reports. A test compares the enum with every chapter's *Transpiler checks*.
+**The code** is a Rust enum with one variant per code. The enum alone gives each code's number, Code name and severity, so a check can't report a warning's code as an error, or print a name that isn't its number's. A message takes arguments and is written where the check reports. A test compares the enum with every chapter's *Transpiler checks*.
 
 - **Two severities**: an error stops the Build, a warning doesn't. There is no third. What used to be a note is either a warning (something written has no effect) or a line of a report (the language doing what it says, such as a default left out, chapter 13).
-- Codes follow chapter 27: `R`, the defining chapter's two digits, and the check's number in that chapter's `Transpiler checks` section. The severity is always printed beside the code (`warning[R1305]`), never read from it. The Conformance cases in `docs/spec/cases/` pin down which code each Program gets.
+- Codes follow chapter 27: `R`, the number (the defining chapter's two digits, `_`, the check's number in that chapter's `Transpiler checks` section), then `-` and the Code name. A code is printed whole, and the severity is always printed beside it (`warning[R13_05-competition-ordered-by-name]`), never read from it. The Conformance cases in `docs/spec/cases/` pin down which code each Program gets.
 - Every pass collects diagnostics and none stops early, so all problems come back from one run.
 - Diagnostics are returned in one list, sorted by file and position. Exact duplicates (same code, same primary span) are removed.
 - **Cascades are prevented where they would start, never filtered afterwards**: a stray character is stepped over by the parser, a reference that leads nowhere is `None`, a broken construct is left out and its names are unread, a conflicted item is skipped. A Conformance case that shows a cascade is a bug in the check that made it.
-- **Allowed warnings** (`#@allow`, chapter 02). Each `Parse` carries its file's allow scopes: the range of the declaration, and each code with where it is written. After validation, `check` marks a warning *allowed* when its primary span lies in a scope naming its code. The CLI hides allowed warnings unless `--all-warnings` is given, the Visual Editor shows them faded, and Conformance cases match them (chapter 27). `R0205` is reported only when the Program has no errors, since an error can silence the warning an allow was written for.
+- **Allowed warnings** (`#@allow`, chapter 02). Each `Parse` carries its file's allow scopes: the range of the declaration, and each code with where it is written. After validation, `check` marks a warning *allowed* when its primary span lies in a scope naming its code. The CLI hides allowed warnings unless `--all-warnings` is given, the Visual Editor shows them faded, and Conformance cases match them (chapter 27). `R02_05-stale-allow` is reported only when the Program has no errors, since an error can silence the warning an allow was written for.
 - **Emit runs only when there are no errors.** Warnings don't block it.
 - The CLI renders diagnostics with `annotate-snippets` (rustc's renderer).
 
@@ -239,7 +239,7 @@ Text edits are LSP `TextEdit`s grouped per file as a `WorkspaceEdit`. Semantic t
 
 A Target is a Rust trait with two jobs:
 
-- **check**: given the Model, return the Target's own diagnostics (`R1310`, `R1408`, chapter 36's port and name checks). It runs in validate, so `regia check` and `regia build` always report the same diagnostics, and a Program that passes `check` never fails to build with an error that was there all along.
+- **check**: given the Model, return the Target's own diagnostics (`R13_10-suits-without-selection-function`, `R14_08-unsupported-label`, chapter 36's port and name checks). It runs in validate, so `regia check` and `regia build` always report the same diagnostics, and a Program that passes `check` never fails to build with an error that was there all along.
 - **emit**: given the Model, return output files as `(relative path, text)` pairs. It runs only when there are no errors and reports nothing of its own.
 
 The core never writes files: the CLI writes them into the Build folder (below), and the Visual Editor gets the same list from `build()`. The Target is chosen on the command line (`--target`, default `jason`) or in the Visual Editor's project settings, and Instancing only configures it (chapter 21). 2.0 has one Target, Jason.
@@ -372,4 +372,4 @@ Each pass is tested in the form that shows its output best:
 
 All of this chapter is in 1.5 (ADR 0025), the command line and the Build folder included. *What the lexer hands to the parser* was decided in the ticket *Review: text to tokens* (`.scratch/transpiler/issues/01-text-to-tokens.md`), *From tokens to the tree* in *Review: tokens to tree to accessors* (`.scratch/transpiler/issues/02-tokens-to-tree.md`), *From files to the Model* in *Review: files to Model* (`.scratch/transpiler/issues/03-files-to-model.md`), *Where a check lives*, cascades and allows in *Review: Diagnostics and where checks live* (`.scratch/transpiler/issues/04-diagnostics.md`), the `Target` trait and *How the Jason Target emits* in *Review: Model to Target* (`.scratch/transpiler/issues/05-model-to-target.md`), and *Tests* in *Review: how we test* (`.scratch/transpiler/issues/06-how-we-test.md`). The command line, the two severities and the Build folder were decided in the ticket *The command line, Programs and Diagnostics* (`.scratch/regia-revision/issues/16-command-line-and-diagnostics.md`).
 
-A Transpiler build has one version. `regia --version` prints it, and no option picks 1.5 or 2.0: a 1.5 Program is valid in 2.0, so a 2.0 build needs no 1.5 mode. A 1.5 build reports `R0109` for what is later (chapter 01). `regia test` runs only the cases whose `regia:` line fits its version (chapter 27). Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
+A Transpiler build has one version. `regia --version` prints it, and no option picks 1.5 or 2.0: a 1.5 Program is valid in 2.0, so a 2.0 build needs no 1.5 mode. A 1.5 build reports `R01_09-later-regia-construct` for what is later (chapter 01). `regia test` runs only the cases whose `regia:` line fits its version (chapter 27). Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).

@@ -1,14 +1,15 @@
 #! case: % writes the share of a count, only before OF; it is never a Value or a remainder
-#! rule: R1517
+#! rule: R15_17-misplaced-percent-sign
 
-CUE bored
+GAME CUE bored
 ACTION wave, yawn
 
 PLAYBOOK Host:
     WHEN bored:
-        LET ?half BE 50%.          #! error R1517
+        LET ?half BE 50%.          #! error R15_17-misplaced-percent-sign
+        PRINT("half", ?half).
         RANDOMLY:
-            OPTION, WEIGHT 30%:    #! error R1517
+            OPTION, WEIGHT 30%:    #! error R15_17-misplaced-percent-sign
                 DO wave.
             OPTION:
                 DO yawn.

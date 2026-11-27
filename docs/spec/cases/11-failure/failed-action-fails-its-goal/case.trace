@@ -4,5 +4,5 @@
 guard_1: GOAL catch(thief_1) PURSUED
 guard_1: DO chase(thief_1)
 guard_1: DO chase(thief_1) FAILED
-guard_1: FAILURE T1101 DO chase(thief_1) failed
+guard_1: FAILURE T11_01-failed-custom-action DO chase(thief_1) failed
 guard_1: GOAL catch(thief_1) FAILED

@@ -71,7 +71,7 @@ Plans that neither transition nor end the Plot appear only through the layers ab
 
 - Clicking a node, a Plan card or an edge label **selects** it and calls `reveal(span)` (chapter 24). Moving the text cursor into a construct selects it on the graph. Clicking empty canvas clears the selection.
 - The graph pane has a side panel with two tabs:
-  - **Inspector**: the selection's kind, structural key and file position; its doc comments; its Body or Plans; a **Names used** table giving each name's kind, its `#@desc`, and where it comes from; and buttons for the edit operations that apply to it. With nothing selected it shows the Plot itself (doc comments, `PRECEDENCE`, a "+ Phase" button). A selected `ASSIGN` or `START SUBPLOT` also shows the Interface check between the two sides (chapter 38), with any `R3801`, `R3802`, `R3803` or `R1708` in place.
+  - **Inspector**: the selection's kind, structural key and file position; its doc comments; its Body or Plans; a **Names used** table giving each name's kind, its `#@desc`, and where it comes from; and buttons for the edit operations that apply to it. With nothing selected it shows the Plot itself (doc comments, `PRECEDENCE`, a "+ Phase" button). A selected `ASSIGN` or `START SUBPLOT` also shows the Interface check between the two sides (chapter 38), with any `R38_01-unheard-signal`, `R38_02-cue-never-signalled`, `R38_03-unheard-message` or `R17_08-unheard-subplot-ending` in place.
   - **Docs**: a read-only documentation page, generated live from doc comments, the graph view and the Interfaces (chapter 38). It exists for **every `.regia` file**, Plot or not, and for a file with no Plot the pane shows only this tab.
 
 ### The Docs page
@@ -167,7 +167,7 @@ A new Cue made from the Trigger picker is a Signal, so the Plot and the Playbook
 2. It offers the files that **both** this Plot's file and that Playbook's file reach, and that already declare Cues (for the banquet, `vocabulary.regia`). If several qualify, it lists them. If none does, it says so and offers a file the Playbook reaches, adding the `IMPORT` to the Plot's file.
 3. In the chosen file it lists the **comment sections**: a run of comment lines that belongs to no construct (chapter 22) followed by declarations. The line goes at the end of the chosen section. The default is the section holding the most Cues this Plot already uses; a file with no section gets the line after its last `CUE`, or after its imports.
 
-The new Cue is declared and the transition drawn; the `SIGNAL` that sends it is written by hand in the Playbook. Until then the Plan carries the Interface warning `R3802` (chapter 38).
+The new Cue is declared and the transition drawn; the `SIGNAL` that sends it is written by hand in the Playbook. Until then the Plan carries the Interface warning `R38_02-cue-never-signalled` (chapter 38).
 
 The same rule serves any later operation that needs a new declaration.
 

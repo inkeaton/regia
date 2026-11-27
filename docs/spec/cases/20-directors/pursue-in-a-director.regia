@@ -1,7 +1,7 @@
 #! case: a Director has no Goals
-#! rule: R2001
+#! rule: R20_01-playbook-statement-in-director
 
-CUE alarm
+GAME CUE alarm
 GOAL hide
 ACTION crouch
 
@@ -13,4 +13,4 @@ PLOT Watch:
 
     DURING calm:
         WHEN alarm:
-            PURSUE hide.                 #! error R2001
+            PURSUE hide.                 #! error R20_01-playbook-statement-in-director

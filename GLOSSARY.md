@@ -36,6 +36,10 @@ _Avoid_: Spawning, arriving, entering (a Plot)
 An Agent leaving the Program while it runs. It stops playing every Role in every Staging at once. An Agent that is dead but still in the world has not left.
 _Avoid_: Despawning, dying, exiting (a Plot)
 
+**Cast change**:
+A Director's Trigger for an Agent joining or leaving a Role of its Staging, or for the Role being left with no one: `WHEN Guest ?who JOINED`, `WHEN Guest ?who LEFT`, `WHEN Guest EMPTIED`.
+_Avoid_: Spawn event, membership change
+
 **Root Plot**:
 The one Plot every Agent starts in; every other Plot is a Subplot below it. Instancing names it with `ROOT`; it is never guessed. Baseline behaviour is a Playbook the Root Plot gives out.
 _Avoid_: Default story, main plot, world plot
@@ -390,8 +394,12 @@ An error or a warning the Transpiler reports about a Program, pointing at the pl
 _Avoid_: Compile error, lint, message
 
 **Diagnostic code**:
-The stable name of one kind of Diagnostic, such as `R1301`: `R`, the spec chapter that defines it, and its number in that chapter. It never changes meaning and is never reused.
+The stable identity of one kind of Diagnostic, such as `R01_11-clause-without-comma`: `R`, a number (the spec chapter that defines it, `_`, its place in that chapter), and a Code name. The number is what tools match on. A code never changes meaning and is never reused.
 _Avoid_: Error number, error id
+
+**Code name**:
+The words after a Diagnostic or Trace code's number, such as `clause-without-comma`, saying what the mistake or event is. It is unique across all codes, and is there for people: tools match on the number.
+_Avoid_: Slug, alias, short name
 
 **Allowed warning**:
 A warning the writer has seen and accepts, marked with `#@allow` on the declaration it falls in. It is hidden but not gone: it can be shown again on request.
@@ -406,7 +414,7 @@ The list, per Role and Trigger, of the Plans that compete for it in the order th
 _Avoid_: Precedence table, priority list
 
 **Trace code**:
-The stable name of one kind of runtime warning, Failure cause, or thing that didn't run in the Trace, such as `T0901`: `T`, the spec chapter that defines it, and its number in that chapter. Like a Diagnostic code, it never changes meaning and is never reused.
+The stable name of one kind of runtime warning, Failure cause, or thing that didn't run in the Trace, such as `T09_02-weight-below-zero`: `T`, a number (the spec chapter that defines it, `_`, its place in that chapter), and a Code name. Like a Diagnostic code, it never changes meaning and is never reused.
 _Avoid_: Error number, warning id
 
 **Conformance case**:

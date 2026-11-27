@@ -43,8 +43,8 @@ These reports are **ignored** with a Trace warning, never a failure:
 
 - a `regia_join` whose name starts with `regia_` (chapter 31: Generated names start with it), or which names an Agent already in the Program: checked by the Root Director;
 - a `regia_join` for a kind that isn't declared, or was removed with `NO KIND` (chapter 21): checked by the Root Director;
-- a `regia_join` that arrives after the Root Staging has ended: dropped by the link, since there is no Program left to join and no Root Director to spawn it (`T3304`);
-- a `regia_join` that arrives before the game has answered the Root's state request (chapter 30, *Hearing the game*): dropped by the link (`T3305`). The Root is the first Director to attach, so the game knows the story has begun once it has answered the first `regia_state`;
+- a `regia_join` that arrives after the Root Staging has ended: dropped by the link, since there is no Program left to join and no Root Director to spawn it (`T33_04-join-after-root-ended`);
+- a `regia_join` that arrives before the game has answered the Root's state request (chapter 30, *Hearing the game*): dropped by the link (`T33_05-join-before-root-state`). The Root is the first Director to attach, so the game knows the story has begun once it has answered the first `regia_state`;
 - a `regia_leave` for an Agent that isn't in the Program: checked by the link, which delivers it to no Director.
 
 ## Joining
@@ -61,7 +61,7 @@ The new agent is created before any message reaches it, so Jason queues the cast
 
 - Joining never triggers a Quota check (chapter 19). It only raises the denominator of `ALL` and `n% OF`, which the next check reads live.
 - Joiners join only the Root Plot (chapter 19), so no `regia_cast_joined` goes down the tree.
-- After the Root Staging has ended (chapter 31), the Root Director's agent is gone, and the link drops every `regia_join` with `T3304`. No agent is created: an Agent with no cast and no Director would do nothing for the Program. The game's character is left without a Jason agent.
+- After the Root Staging has ended (chapter 31), the Root Director's agent is gone, and the link drops every `regia_join` with `T33_04-join-after-root-ended`. No agent is created: an Agent with no cast and no Director would do nothing for the Program. The game's character is left without a Jason agent.
 
 ## Leaving
 
@@ -119,7 +119,7 @@ It covers:
 
 - a `TELL` or `ASK` to a Placeholder holding an Agent that has left (chapter 19);
 - a send racing with a leave: a Director that hasn't run its leave walk yet, or a body that closed before the game reported the leave;
-- a `SIGNAL` or any message to a Director that has ended with `.kill_agent` (chapter 31). For example, an Agent signals before its `regia_end_staging` arrives. A closing Plan's `SIGNAL` to a Director whose Staging has ended is expected (chapter 15), so it is not `T3303`: the `SIGNAL`'s own `message` entry lists that Director as `ENDED`, at `info` (chapters 29 and 34).
+- a `SIGNAL` or any message to a Director that has ended with `.kill_agent` (chapter 31). For example, an Agent signals before its `regia_end_staging` arrives. A closing Plan's `SIGNAL` to a Director whose Staging has ended is expected (chapter 15), so it is not `T33_03-send-to-missing-agent`: the `SIGNAL`'s own `message` entry lists that Director as `ENDED`, at `info` (chapters 29 and 34).
 
 `.broadcast` (for `EVERYONE`, chapter 30) never targets a missing agent and stays as it is.
 
@@ -172,11 +172,11 @@ Jason handles one plan per event, but chapter 18 needs both the plain Trigger an
 
 // nothing applicable, or no plain Block at all: the unheard entry for a Signal or a told Cue,
 // and silence for a game Cue (chapters 30 and 39)
-// (in a Director file; an Agent's Role file writes "T0702" with no plot and phase)
+// (in a Director file; an Agent's Role file writes "T07_02-cue-found-no-plan" with no plot and phase)
 -!regia_when__ready(S)[error(no_applicable)] : S \== percept & regia_phase(Ph)
-   <- regia.trace(unheard, info, "T3801", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)]).
+   <- regia.trace(unheard, info, "T38_01-signal-found-no-plan", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)]).
 -!regia_when__ready(S)[error(no_relevant)] : S \== percept & regia_phase(Ph)
-   <- regia.trace(unheard, info, "T3801", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)]).
+   <- regia.trace(unheard, info, "T38_01-signal-found-no-plan", [cue(ready), sender(S), plot(royalBanquet), phase(Ph)]).
 -!regia_when__ready(_)[error(no_applicable)].
 -!regia_when__ready(_)[error(no_relevant)].
 ```
@@ -217,7 +217,7 @@ For a Trigger and an `Args` value, with `n` counted senders that are still membe
 When it is met, remove every `regia_quota(Owner, Cue, Quantity, Role, Args, _)`, so that value's count starts again from zero (chapter 18). Then post `!!regia_quota_met(Owner, Cue, Quantity, Role, Args)`.
 
 - The designer's Quota Blocks are plans for `+!regia_quota_met(…)`, with the usual `regia_phase` guard (Director) or `regia_given` guard (Agent) and `regia_rank`. Placeholders in the Cue's arguments are filled from `Args`.
-- The count is reset **before** any Block is chosen, and `regia_quota_met` has the two empty failure plans of `regia_when__<e>`, and no entry-writing pair: a Quota met with no Block writes chapter 18's `T1802` from the check. If no Block is a candidate, nothing runs and the count is still reset (chapter 18).
+- The count is reset **before** any Block is chosen, and `regia_quota_met` has the two empty failure plans of `regia_when__<e>`, and no entry-writing pair: a Quota met with no Block writes chapter 18's `T18_02-quota-met-without-block` from the check. If no Block is a candidate, nothing runs and the count is still reset (chapter 18).
 - Checks run on a count (above) and on a leave (the walk's step 5 in Directors, `regia_cast_left` in Agents). They never run on a join.
 
 ### Clearing counts
@@ -266,24 +266,24 @@ Rows filled in or added in chapter 28's table:
 
 **Warnings**
 
-- `T3301` A `regia_join` that makes no sense: a name starting with `regia_`, an Agent already in the Program, a kind that isn't declared or was removed, or a missing or invalid `port` (chapter 36). It is ignored.
-- `T3302` A `regia_leave` for an Agent that isn't in the Program, ignored by the link.
-- `T3303` An Infrastructure send to an agent that doesn't exist, caught by `regia.send`. A designer's `TELL` or `ASK` to an Agent who has left writes chapter 19's `T1901` instead.
-- `T3304` A join after the Root Staging has ended, dropped by the link: no agent is created.
-- `T3305` A join before the game has answered the Root's state request, dropped by the link: no agent is created. The game must send no `regia_join` before it has answered the first `regia_state` (chapter 37).
+- `T33_01-invalid-join` A `regia_join` that makes no sense: a name starting with `regia_`, an Agent already in the Program, a kind that isn't declared or was removed, or a missing or invalid `port` (chapter 36). It is ignored.
+- `T33_02-leave-of-unknown-agent` A `regia_leave` for an Agent that isn't in the Program, ignored by the link.
+- `T33_03-send-to-missing-agent` An Infrastructure send to an agent that doesn't exist, caught by `regia.send`. A designer's `TELL` or `ASK` to an Agent who has left writes chapter 19's `T19_01-message-after-leaving` instead.
+- `T33_04-join-after-root-ended` A join after the Root Staging has ended, dropped by the link: no agent is created.
+- `T33_05-join-before-root-state` A join before the game has answered the Root's state request, dropped by the link: no agent is created. The game must send no `regia_join` before it has answered the first `regia_state` (chapter 37).
 
 ## Regia 1.5
 
 In 1.5 (ADR 0025): the Root Director's starting cast, `regia_leave` and the leave walk without step 4's Quota counts, the link killing a leaver, and catching sends to agents that are gone.
 
-Later: *Joining*, `regia.spawn_agent`, `T3304`, and all of *Quota counts*. In 1.5 the Root Director answers every `regia_join` by ignoring it, as with a report that makes no sense, and writes `T1902` (chapter 19). The body the game started for it is never given a cast.
+Later: *Joining*, `regia.spawn_agent`, `T33_04-join-after-root-ended`, and all of *Quota counts*. In 1.5 the Root Director answers every `regia_join` by ignoring it, as with a report that makes no sense, and writes `T19_02-join-refused` (chapter 19). The body the game started for it is never given a cast.
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 
 ## Not decided here
 
 - The `regia_join` body fields, the kind's settings and Propensity values in the Root Director's file (`regia_kind`), and the `.jcm` names of starting Agents: chapter 36.
-- The game link itself: chapter 28, *The game link*. It keeps no list of the Program's Agents: whether a leaver is one (`T3302`) is asked of the Jason runtime, and a join is dropped when no Root is attached with its reply through: `T3305` before the Root's reply has passed, `T3304` once the Root has detached.
+- The game link itself: chapter 28, *The game link*. It keeps no list of the Program's Agents: whether a leaver is one (`T33_02-leave-of-unknown-agent`) is asked of the Jason runtime, and a join is dropped when no Root is attached with its reply through: `T33_05-join-before-root-state` before the Root's reply has passed, `T33_04-join-after-root-ended` once the Root has detached.
 - How a Subplot's attaching is ordered with its `regia_start`, so it can reconcile its cast: ticket *A Director hearing the game for itself* (`.scratch/director-game-link/issues/03-hearing-the-game.md`).
 - The Trace entries for nonsensical reports, caught sends, and joins after the Root Staging has ended: chapters 34 and 35.
 - How a Conformance case scripts joins and leaves: `> join` and `> leave` steps, played by `ScriptedGame` as `regia_join`/`regia_leave` (chapters 34 and 35).

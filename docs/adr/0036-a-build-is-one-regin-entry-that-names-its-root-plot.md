@@ -14,7 +14,7 @@ Amended by ADR 0049: a `.regia` Entry can be built too, without a Root Plot. Eve
 
 ## Consequences
 
-- Every `.regin` that is built must reach a `ROOT`. Existing ones gain one line (`R2104` is narrowed to that).
+- Every `.regin` that is built must reach a `ROOT`. Existing ones gain one line (`R21_04-missing-or-wrong-root` is narrowed to that).
 - Building ASL alone from a Plot file goes away: even a Build with no cast is a `.regin` with a `ROOT`.
 - The Visual Editor's Build menu lists `.regin` files only. A `.regia` file no `.regin` reaches is still checked as its own Entry.
 - A behaviour case is always a folder with a `.regin` (chapter 27).

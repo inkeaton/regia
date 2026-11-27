@@ -40,7 +40,7 @@ WHEN insult_thrown(?insult), FROM Guest ?offended:
 - **A parameter is a Placeholder filled in every Block of the Plot**: its Role setups (the one Placeholder a setup may use, chapter 16), `DURING PLOT` and every Phase. `quarrel` is read as `?quarrel`. It is fixed for the Staging: a Plan can't fill it again, and a Trigger that names it tests it, as any filled Placeholder (chapter 03).
 - **The arguments must be filled** when `START SUBPLOT` runs: Values or filled Placeholders, as for `END PLOT WITH`. An Agent is allowed, and the Subplot can send it Messages and test it with `PLAYS`. A Role is not a Value and can't be an argument (ADR 0023).
 - **A Plot has one parameter count** (ADR 0006). A Plot with parameters is always written with them in `START SUBPLOT`, its ending Triggers and `DROP SUBPLOT`, with `?` where any value will do. A Plot without parameters is written bare. `PRECEDENCE` names the Plot bare either way: it ranks the Plot, and all its Stagings share that rank (*Precedence*, below).
-- **The Root Plot takes none.** Instancing starts it with nothing to pass (chapter 21, `R2114`).
+- **The Root Plot takes none.** Instancing starts it with nothing to pass (chapter 21, `R21_14-root-plot-with-parameters`).
 - The parameters are part of the Plot's Interface, and are declared, not inferred: the header says them (chapter 38).
 
 ### Casting
@@ -54,7 +54,7 @@ A Subplot's Roles are **played**, unlike a Playbook's Roles, which are only addr
 - Role setups run for this cast, per chapter 16.
 - **A Role that starts empty fires `EMPTIED`**, after the setups and before the initial Phase's entry Plans, in Role declaration order, `CAST` last (chapter 19). It happens when the parent's Role was empty at that moment, or a counted pick found nobody. The Subplot's `EMPTIED` Plan handles it as it handles the last Agent leaving: a duel with no Defender ends itself instead of waiting.
 - Agents joining the parent's Role **don't** carry through to a running Subplot. An Agent leaving the Program leaves every Staging, the Subplot's included, and its Director hears `LEFT`/`EMPTIED` (chapter 19).
-- **A Plot doesn't say whether it is the Root Plot.** It is written the same either way, and Instancing names the Root, never infers it (chapter 21, ADR 0036). A `JOINED` Plan in a Plot that is never the Root can't fire, and is a warning (`R1905`, chapter 19).
+- **A Plot doesn't say whether it is the Root Plot.** It is written the same either way, and Instancing names the Root, never infers it (chapter 21, ADR 0036). A `JOINED` Plan in a Plot that is never the Root can't fire, and is a warning (`R19_05-joined-outside-root-plot`, chapter 19).
 
 ### Being in both
 
@@ -99,13 +99,13 @@ WHEN guards_arrived:
 - It is written wherever a condition goes: a Context, an `IF`, under `NOT`, inside `COUNT(…)`, with Picks and `FOR EACH` (chapter 26). Its Matches are distinct, as every condition's are (chapter 26): one per distinct set of arguments, not one per Staging. Two duels over the same quarrel are one Match, so `COUNT(HonorDuel(?) RUNNING)` counts the quarrels being fought, and `COUNT(Poisoning RUNNING)`, with no blanks, is 1 or 0. This is the same limit as everywhere else: Stagings with the same arguments can't be told apart (*Stagings*, above).
 - A Staging is running from its `START SUBPLOT` until it ends: by itself, from above, or with its parent. It no longer counts **before** its ending is heard, so a `WHEN HonorDuel ENDED` Plan already sees it gone.
 - Only the Stagings this Staging started. A Subplot can't ask about its parent, its siblings, or Stagings its own Subplots started.
-- Naming a Plot this Plot never starts is an error (`R1704`), as for `DROP SUBPLOT`. `RUNNING` is for Directors only; in a Playbook it is an error (`R1714`).
+- Naming a Plot this Plot never starts is an error (`R17_04-subplot-never-started`), as for `DROP SUBPLOT`. `RUNNING` is for Directors only; in a Playbook it is an error (`R17_14-running-in-playbook`).
 
 ## A Subplot outlives its Phase
 
 A Subplot belongs to the parent's **Staging**, not to the Phase that started it. When RoyalBanquet moves from `duel_interruption` to `feast`, HonorDuel keeps running. It stops only when it ends itself, when the parent drops it with `DROP SUBPLOT`, or when the parent ends.
 
-A Subplot meant to last a Phase says so where it is started: `START SUBPLOT HonorDuel, …, UNTIL EXITED` in a Plan of that Phase. It is then ended when the Phase is left, as by `DROP SUBPLOT` (chapter 15), and the parent hears it as `DROPPED` (below). The Phase that started it has been left by then, so its Plans can't hear it: the ending is heard by the new Phase's Plan, else by `DURING PLOT`. A `DROPPED` or `ENDED` Plan for it written only in the Phase that started it is a warning (`R1713`).
+A Subplot meant to last a Phase says so where it is started: `START SUBPLOT HonorDuel, …, UNTIL EXITED` in a Plan of that Phase. It is then ended when the Phase is left, as by `DROP SUBPLOT` (chapter 15), and the parent hears it as `DROPPED` (below). The Phase that started it has been left by then, so its Plans can't hear it: the ending is heard by the new Phase's Plan, else by `DURING PLOT`. A `DROPPED` or `ENDED` Plan for it written only in the Phase that started it is a warning (`R17_13-unheard-until-exited-ending`).
 
 ## Ending
 
@@ -133,8 +133,8 @@ PLOT HonorDuel:
 
 - `END PLOT WITH <event>` takes exactly one Cue declared in the Vocabulary. Different endings use different Cues (`duel_settled`, `duel_abandoned`).
 - Its arguments must be filled: Values or filled Placeholders, as for any Action (chapter 08). An Agent is allowed (`?winner`); the parent's Director can send it Messages, give it Playbooks and map it onto Roles (chapter 20).
-- The child declares no list of its endings: they are part of its Interface, worked out by the Transpiler (chapter 38). The Transpiler warns when a parent matches an Outcome the child never ends with, and when the child has an ending that no Plan of the parent hears (`R1706`, `R1708`).
-- A local Cue of a Playbook can't be an Outcome: a Plot can't see it (`R1004`, chapter 10).
+- The child declares no list of its endings: they are part of its Interface, worked out by the Transpiler (chapter 38). The Transpiler warns when a parent matches an Outcome the child never ends with, and when the child has an ending that no Plan of the parent hears (`R17_06-unknown-subplot-outcome`, `R17_08-unheard-subplot-ending`).
+- A local Cue of a Playbook can't be an Outcome: a Plot can't see it (`R10_04-name-out-of-scope`, chapter 10).
 - A plain `END PLOT` ends with no Outcome. In a Plot that isn't a Subplot, `WITH` has no one to tell and is ignored with a warning.
 
 ### The parent's Triggers: `FINISHED`, `DROPPED`, `ENDED`
@@ -164,14 +164,14 @@ DURING PLOT:
 - **The words are shared with Goals, each with one meaning** (chapter 01, ADR 0047). `FINISHED` is the Subplot's own word for "ended by itself", as `REACHED` and `FAILED` are a Goal's: a Subplot has no success or failure, and its Outcome says how it went. `DROPPED` is "stopped on purpose by whoever started it", for a Goal and a Subplot alike. `ENDED` is "over, however it went", never takes a complement, and always fires after the specific Trigger.
 - A Plot with parameters is written with them: `WHEN HonorDuel(?q) FINISHED WITH duel_settled(?w):`. The arguments are matched as a Trigger's always are, filling Placeholders or testing filled ones, so the Plan knows which Staging ended.
 - **`WITH <event>` after `FINISHED` matches an Outcome**, filling Placeholders as any Trigger does (chapter 03), as `WITH` after `FAILED` matches a Reason (chapter 11).
-- **One Trigger, first match wins.** The `FINISHED` Plans of one Phase (or of `DURING PLOT`), with and without `WITH`, share a Trigger and are tried in written order; the first that matches runs, as for `FAILED` (chapter 11). A plain `FINISHED` matches every ending the Subplot chose itself, with an Outcome or without, so it goes last: written above a `FINISHED WITH` Plan it also matches, it shadows it, with a warning (`R1716`). A bare `END PLOT` is heard only by a plain `FINISHED`.
+- **One Trigger, first match wins.** The `FINISHED` Plans of one Phase (or of `DURING PLOT`), with and without `WITH`, share a Trigger and are tried in written order; the first that matches runs, as for `FAILED` (chapter 11). A plain `FINISHED` matches every ending the Subplot chose itself, with an Outcome or without, so it goes last: written above a `FINISHED WITH` Plan it also matches, it shadows it, with a warning (`R17_16-shadowed-finished-with`). A bare `END PLOT` is heard only by a plain `FINISHED`.
 - **The specific Trigger fires first, then `ENDED`.** A Plan for each runs, in that order, as for a Goal's `REACHED` and `ENDED` (chapter 05). Tidying shared by every ending goes in the plain `ENDED` Plan, once. A specific Trigger with no Plan doesn't stop `ENDED` from firing.
 - They fire **once per Staging** that ends.
 - They are heard like any Director Trigger: the current Phase's Plan, else the `DURING PLOT` Plan, with the precedence of chapter 13.
-- **An ending the Subplot chose itself, that neither a `FINISHED` Plan nor `ENDED` has a Plan for, is ignored, and the Trace says so** (`T3802`, chapter 38). A `DROPPED` ending with no Plan is silent: the parent caused it.
+- **An ending the Subplot chose itself, that neither a `FINISHED` Plan nor `ENDED` has a Plan for, is ignored, and the Trace says so** (`T38_02-ending-found-no-plan`, chapter 38). A `DROPPED` ending with no Plan is silent: the parent caused it.
 - **A Subplot that ends because its parent is ending reports nothing**: the parent is going too.
-- `WHEN P FINISHED`, `WHEN P DROPPED` or `WHEN P ENDED` in a Plot that never starts `P` is a compile-time error (`R1704`). `WHEN P DROPPED` in a Plot that starts `P` but never ends it from above, with no `DROP SUBPLOT P` and no `UNTIL EXITED` on a `START SUBPLOT P`, can never fire, and is an error (`R1712`).
-- The retired spellings `WHEN P ENDED WITH e:` and `WHEN P ENDED WITHOUT OUTCOME:` are an error with a hint (`R1715`): `FINISHED WITH e`, and a plain `FINISHED` written after the `FINISHED WITH` Plans. `ENDED` with any complement is the same error.
+- `WHEN P FINISHED`, `WHEN P DROPPED` or `WHEN P ENDED` in a Plot that never starts `P` is a compile-time error (`R17_04-subplot-never-started`). `WHEN P DROPPED` in a Plot that starts `P` but never ends it from above, with no `DROP SUBPLOT P` and no `UNTIL EXITED` on a `START SUBPLOT P`, can never fire, and is an error (`R17_12-subplot-never-dropped`).
+- The retired spellings `WHEN P ENDED WITH e:` and `WHEN P ENDED WITHOUT OUTCOME:` are an error with a hint (`R17_15-retired-ended-with`): `FINISHED WITH e`, and a plain `FINISHED` written after the `FINISHED WITH` Plans. `ENDED` with any complement is the same error.
 
 Waiting for a Subplot in the Plan that started it (`START SUBPLOT …` and then the next line) is not in 2.0: a Director's Plan has nothing to wait on, as it has no Goals (chapter 20, *Handed off*). What follows a Subplot is written in these Plans, which know the Staging by its arguments.
 
@@ -188,8 +188,8 @@ DURING PLOT:
 - **The parent hears it**: `WHEN HonorDuel DROPPED`, then `WHEN HonorDuel ENDED`, once per Staging ended, with its arguments (above). The Plans run **after** the Body that ran `DROP SUBPLOT`, like any Trigger's: a Statement written after `DROP SUBPLOT` runs before them.
 - It doesn't stop the Body.
 - With no such Staging running, it does nothing, without a warning, like the other no-ops (chapter 08).
-- Naming a Plot this Plot never starts is a compile-time error (`R1704`).
-- `SUBPLOT` is required: `DROP HonorDuel` is an error whose hint gives `DROP SUBPLOT HonorDuel` (`R0802`, chapter 08). The retired spelling `END SUBPLOT <Plot>` is an error with the same hint (`R1717`). `END` is left only in `END PLOT`, a Staging's own ending.
+- Naming a Plot this Plot never starts is a compile-time error (`R17_04-subplot-never-started`).
+- `SUBPLOT` is required: `DROP HonorDuel` is an error whose hint gives `DROP SUBPLOT HonorDuel` (`R08_02-wrong-kind-for-action`, chapter 08). The retired spelling `END SUBPLOT <Plot>` is an error with the same hint (`R17_17-retired-end-subplot`). `END` is left only in `END PLOT`, a Staging's own ending.
 
 ## Precedence
 
@@ -207,26 +207,26 @@ A Plot may not start itself, directly or through other Plots (A starts B starts 
 
 **Errors**
 
-- `R1701` A cycle among `START SUBPLOT` Statements (the message names the cycle).
-- `R1702` A Statement after `END PLOT` in the same branch.
-- `R1703` `END PLOT WITH` something other than one declared Cue, or with unfilled arguments.
-- `R1704` `WHEN P FINISHED` (any form), `WHEN P DROPPED`, `WHEN P ENDED`, `DROP SUBPLOT P` or `P RUNNING` where this Plot never starts `P`. Absence check (chapter 23).
-- `R1709` A Plot written with the wrong number of arguments: a Plot with parameters written bare, or one without written with arguments, in `START SUBPLOT`, `WHEN … FINISHED`, `WHEN … DROPPED`, `WHEN … ENDED`, `DROP SUBPLOT` or `RUNNING`; or a Plot written with arguments in `PRECEDENCE`.
-- `R1710` A `START SUBPLOT` argument that isn't filled, or is a Role.
-- `R1711` A Plan that fills a Plot parameter again (`LET ?quarrel BE …`), or two parameters of one Plot with the same name.
-- `R1712` `WHEN P DROPPED` in a Plot that never ends `P` from above: no `DROP SUBPLOT P`, and no `UNTIL EXITED` on a `START SUBPLOT P`. Absence check (chapter 23).
-- `R1714` `RUNNING` in a Playbook.
-- `R1715` The retired `WHEN P ENDED WITH e:` or `WHEN P ENDED WITHOUT OUTCOME:`, or `ENDED` with any other complement (hint: `FINISHED WITH e`, or a plain `FINISHED` after the `FINISHED WITH` Plans).
-- `R1717` The retired `END SUBPLOT P` (hint: `DROP SUBPLOT P`).
+- `R17_01-subplot-cycle` A cycle among `START SUBPLOT` Statements (the message names the cycle).
+- `R17_02-statement-after-end-plot` A Statement after `END PLOT` in the same branch.
+- `R17_03-misused-end-plot-with` `END PLOT WITH` something other than one declared Cue, or with unfilled arguments.
+- `R17_04-subplot-never-started` `WHEN P FINISHED` (any form), `WHEN P DROPPED`, `WHEN P ENDED`, `DROP SUBPLOT P` or `P RUNNING` where this Plot never starts `P`. Absence check (chapter 23).
+- `R17_09-wrong-plot-argument-count` A Plot written with the wrong number of arguments: a Plot with parameters written bare, or one without written with arguments, in `START SUBPLOT`, `WHEN … FINISHED`, `WHEN … DROPPED`, `WHEN … ENDED`, `DROP SUBPLOT` or `RUNNING`; or a Plot written with arguments in `PRECEDENCE`.
+- `R17_10-wrong-subplot-argument` A `START SUBPLOT` argument that isn't filled, or is a Role.
+- `R17_11-repeated-plot-parameter` A Plan that fills a Plot parameter again (`LET ?quarrel BE …`), or two parameters of one Plot with the same name.
+- `R17_12-subplot-never-dropped` `WHEN P DROPPED` in a Plot that never ends `P` from above: no `DROP SUBPLOT P`, and no `UNTIL EXITED` on a `START SUBPLOT P`. Absence check (chapter 23).
+- `R17_14-running-in-playbook` `RUNNING` in a Playbook.
+- `R17_15-retired-ended-with` The retired `WHEN P ENDED WITH e:` or `WHEN P ENDED WITHOUT OUTCOME:`, or `ENDED` with any other complement (hint: `FINISHED WITH e`, or a plain `FINISHED` after the `FINISHED WITH` Plans).
+- `R17_17-retired-end-subplot` The retired `END SUBPLOT P` (hint: `DROP SUBPLOT P`).
 
 **Warnings**
 
-- `R1705` `END PLOT WITH` in a Plot never started as a Subplot: `WITH` is ignored. Absence check (chapter 23).
-- `R1706` `WHEN P FINISHED WITH e` where `P` never ends with `e`. Absence check (chapter 23).
-- `R1707` Retired: with the specific Trigger firing before `ENDED`, a plain `ENDED` shadows nothing (ADR 0030).
-- `R1708` An ending of `P`, with an Outcome or bare, that no Plan of the starting Plot hears in any Phase: no `FINISHED WITH` for that Outcome, no plain `FINISHED`, and no `ENDED`. Reported on the `START SUBPLOT`, once per unmatched ending. Endings from above are not checked. Absence check (chapter 23).
-- `R1713` A `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, where the Plot has a `DROPPED` or `ENDED` Plan for `P` in `p` and none in `DURING PLOT` or another Phase: the ending from above arrives after `p` is left, and nothing hears it. Absence check (chapter 23).
-- `R1716` A plain `WHEN P FINISHED` Plan written above a `WHEN P FINISHED WITH …` Plan it also matches, which can then never run.
+- `R17_05-ignored-end-plot-with` `END PLOT WITH` in a Plot never started as a Subplot: `WITH` is ignored. Absence check (chapter 23).
+- `R17_06-unknown-subplot-outcome` `WHEN P FINISHED WITH e` where `P` never ends with `e`. Absence check (chapter 23).
+- `R17_07-shadowed-ended-with` Retired: with the specific Trigger firing before `ENDED`, a plain `ENDED` shadows nothing (ADR 0030).
+- `R17_08-unheard-subplot-ending` An ending of `P`, with an Outcome or bare, that no Plan of the starting Plot hears in any Phase: no `FINISHED WITH` for that Outcome, no plain `FINISHED`, and no `ENDED`. Reported on the `START SUBPLOT`, once per unmatched ending. Endings from above are not checked. Absence check (chapter 23).
+- `R17_13-unheard-until-exited-ending` A `START SUBPLOT P …, UNTIL EXITED` in Phase `p`, where the Plot has a `DROPPED` or `ENDED` Plan for `P` in `p` and none in `DURING PLOT` or another Phase: the ending from above arrives after `p` is left, and nothing hears it. Absence check (chapter 23).
+- `R17_16-shadowed-finished-with` A plain `WHEN P FINISHED` Plan written above a `WHEN P FINISHED WITH …` Plan it also matches, which can then never run.
 
 `START SUBPLOT` Mappings get chapter 15's checks.
 
@@ -246,7 +246,7 @@ For *The full ASL mapping* to pick up (for Jason, decided in chapter 31, `31-jas
 
 ## Regia 1.5
 
-All of this chapter is in 1.5 (ADR 0025). With no joiners, the `R1905` warning about `JOINED` in a Plot that is never the Root has nothing to warn about, and isn't reported.
+All of this chapter is in 1.5 (ADR 0025). With no joiners, the `R19_05-joined-outside-root-plot` warning about `JOINED` in a Plot that is never the Root has nothing to warn about, and isn't reported.
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 

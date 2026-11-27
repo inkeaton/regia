@@ -68,7 +68,7 @@ Each `GIVEN` Block, and the `ELSE` Block, is **one Plan**. The rules:
 - **`ELSE` is optional** and must come last. Without it, if no Context holds, none of these Plans applies, and the Trigger **falls through** to the next candidate in the order of chapter 13, whatever its kind. This is one rule for every Trigger: only what happens at the end of the order differs, where a Cue or a Fact change that nobody takes is dropped and a Goal that nobody takes fails (chapter 11). An `ELSE`, like a Trigger Block with no Context, stops the Trigger: nothing ranked after it sees it. An `ELSE` with no `GIVEN` before it is an error.
 - **A Trigger Block holds either a Body or `GIVEN`/`ELSE` Blocks, never both.** A `WHEN` whose Statements come straight after it is a single Plan with no Context. Statements before, between or after `GIVEN` Blocks are an error, and the message explains that the Context is checked before any Statement runs. 1.0's "prefix" Statements, which were copied into every branch, are gone: write the Statement in each Plan, or use one Plan with an `IF`.
 - **A `GIVEN` chain with an `ELSE` does what an `IF` chain filling the Body does.** The chain is worth writing when some case should let the Trigger fall through (no `ELSE`), or when a case needs its own `SHIFTS` Label or its own `PLAN` entry in the Trace. Otherwise one Plan with an `IF` says the same, and Statements shared by every case are written once after it. Both are accepted without a warning. Confirmed in the ticket *Which Plan runs* (`.scratch/regia-revision/issues/12-which-plan-runs.md`); ADR 0004 stands.
-- **What the Plans share.** Everything in the Trigger: the item, its kind word, the Placeholders it fills, `FROM`, and the Labels on the Trigger's header. Each Plan fills its own Context Placeholders, so sibling `GIVEN` Blocks may reuse a name. A Trigger Placeholder that only some of the Blocks use gets no "never used" warning (`R0307`, chapter 03): the Trigger is written once for all of them, so it can't say `?` for one Block alone. A single `GIVEN` or `ELSE` may add its own `SHIFTS` Label, never `SUITS` (chapter 14, `14-labels.md`).
+- **What the Plans share.** Everything in the Trigger: the item, its kind word, the Placeholders it fills, `FROM`, and the Labels on the Trigger's header. Each Plan fills its own Context Placeholders, so sibling `GIVEN` Blocks may reuse a name. A Trigger Placeholder that only some of the Blocks use gets no "never used" warning (`R03_07-unused-placeholder`, chapter 03): the Trigger is written once for all of them, so it can't say `?` for one Block alone. A single `GIVEN` or `ELSE` may add its own `SHIFTS` Label, never `SUITS` (chapter 14, `14-labels.md`).
 - **Doc comments** (chapter 02). A doc comment above the Trigger documents every Plan under it. A doc comment above a `GIVEN` or `ELSE` documents only that Plan.
 - **A `GIVEN` that can never run** gets a **warning**: one an earlier `GIVEN` always catches first, such as `GIVEN a AND b:` after `GIVEN a:`. The Transpiler checks this as far as it can (fully for plain Facts, best effort with Placeholders and comparisons). The fix is usually to move the narrower case up.
 - The same rules apply to `TO` Triggers (Goal recipes), and to Plans in Playbooks and in Plots.
@@ -119,14 +119,14 @@ There are no `WHILE` or counted loops in 2.0. Repetition comes from a recipe tha
 
 **Errors**
 
-- `R0601` `AND` and `OR` mixed at one level without parentheses (hint: both groupings).
-- `R0602` An `ELSE` with no `GIVEN` before it, or a `GIVEN` after the `ELSE`.
-- `R0603` Statements before, between or after the `GIVEN` Blocks of a Trigger Block (the message explains that the Context is checked before any Statement runs).
-- `R0604` A Placeholder filled in an `IF` condition reused outside its branch: in a later `IF`, or as a Placeholder filled in the Trigger or Context (hint: a different name).
+- `R06_01-and-or-without-parentheses` `AND` and `OR` mixed at one level without parentheses (hint: both groupings).
+- `R06_02-misplaced-else` An `ELSE` with no `GIVEN` before it, or a `GIVEN` after the `ELSE`.
+- `R06_03-statement-outside-given` Statements before, between or after the `GIVEN` Blocks of a Trigger Block (the message explains that the Context is checked before any Statement runs).
+- `R06_04-if-placeholder-outside-branch` A Placeholder filled in an `IF` condition reused outside its branch: in a later `IF`, or as a Placeholder filled in the Trigger or Context (hint: a different name).
 
 **Warnings**
 
-- `R0605` A `GIVEN` that can never run, because an earlier `GIVEN` always catches it first.
+- `R06_05-unreachable-given` A `GIVEN` that can never run, because an earlier `GIVEN` always catches it first.
 
 ## ASL mapping notes
 

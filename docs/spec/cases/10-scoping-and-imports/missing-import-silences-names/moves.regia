@@ -1,2 +1,2 @@
-ACTION ) wave                            #! error R0115
+ACTION ) wave                            #! error R01_15-unexpected-text
 ACTION nod

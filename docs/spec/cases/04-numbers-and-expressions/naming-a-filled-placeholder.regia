@@ -1,11 +1,11 @@
 #! case: LET on a Placeholder the Context already filled is an error, not a reassignment
-#! rule: R0405
+#! rule: R04_05-let-on-filled-placeholder
 
 FACT health(points)
-CUE hit
+GAME CUE hit
 
 PLAYBOOK Fighter:
     WHEN hit:
         GIVEN health(?h):
-            LET ?h BE ?h - 1.            #! error R0405
+            LET ?h BE ?h - 1.            #! error R04_05-let-on-filled-placeholder
             PRINT("health", ?h).

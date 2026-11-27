@@ -132,11 +132,11 @@ An allowed warning is shown faded, not hidden (*Syntax*). Each Diagnostic links 
 
 **Checks**
 
-- A name not declared in the file or anything it reaches → `R1004` (fix: the `IMPORT`)
-- A Plot with Phases and no `INITIAL`, or several → `R2007` (fix: mark one)
-- `#@allow` naming an error's code → `R0204`; naming a code that silences nothing → `R0205` (warning)
+- A name not declared in the file or anything it reaches → `R10_04-name-out-of-scope` (fix: the `IMPORT`)
+- A Plot with Phases and no `INITIAL`, or several → `R20_07-missing-or-repeated-initial` (fix: mark one)
+- `#@allow` naming an error's code → `R02_04-allow-names-error`; naming a code that silences nothing → `R02_05-stale-allow` (warning)
 
-Spec: chapter 24, *Highlighting*, *Quick fixes*, *Instancing and builds*. For `#@allow`, chapter 02; for `R2007`, chapter 20.
+Spec: chapter 24, *Highlighting*, *Quick fixes*, *Instancing and builds*. For `#@allow`, chapter 02; for `R20_07-missing-or-repeated-initial`, chapter 20.
 
 ## Building
 
@@ -203,7 +203,7 @@ We never arrange the drawing. It is laid out by elkjs, top to bottom with right-
 
 **Checks**
 
-- `ENTER p` naming a Phase the Plot doesn't declare → `R2008` (drawn to a placeholder node)
+- `ENTER p` naming a Phase the Plot doesn't declare → `R20_08-undeclared-phase` (drawn to a placeholder node)
 
 Spec: chapter 25, *Two views*, *Layout*, *The Phase map*. For Phases and `ENTER`, chapter 20.
 
@@ -408,10 +408,10 @@ A selected `ASSIGN` or `START SUBPLOT` also shows the Interface check between it
 
 **Checks**
 
-- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for → `R3801` (warning)
-- `WHEN e` with any `FROM` where no Playbook the Plot gives Signals `e` → `R3802` (warning)
-- Mappings that leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R3803` (warning)
-- A Subplot ending no Plan of the parent hears → `R1708` (warning)
+- A Plot gives a Playbook that Signals a Cue the Plot has no Plan for → `R38_01-unheard-signal` (warning)
+- `WHEN e` with any `FROM` where no Playbook the Plot gives Signals `e` → `R38_02-cue-never-signalled` (warning)
+- Mappings that leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role → `R38_03-unheard-message` (warning)
+- A Subplot ending no Plan of the parent hears → `R17_08-unheard-subplot-ending` (warning)
 
 Spec: chapter 25, *Selection, the Inspector and the Docs tab*. For keys, chapter 22; for the checks, chapters 38 and 17.
 
@@ -591,8 +591,8 @@ The Cue is declared and the edge is drawn. The `SIGNAL feast_cancelled` that sen
 
 **Checks**
 
-- A Trigger on a Cue that isn't `GAME` and that nothing in the Program sends → `R3807` (warning, until the `SIGNAL` is written)
-- `WHEN e` with any `FROM` where no Playbook the Plot gives Signals `e` → `R3802` (warning)
+- A Trigger on a Cue that isn't `GAME` and that nothing in the Program sends → `R38_07-cue-never-sent` (warning, until the `SIGNAL` is written)
+- `WHEN e` with any `FROM` where no Playbook the Plot gives Signals `e` → `R38_02-cue-never-signalled` (warning)
 
 Spec: chapter 25, *Adding a transition*, *Where a new declaration lands*. For where a `CUE` may stand, chapter 10; for the checks, chapter 38.
 
@@ -661,8 +661,8 @@ References are left in place, and they become errors for us to fix: the two `ENT
 
 **Checks**
 
-- An `ENTER`, `IN` or `DURING` left naming a deleted Phase → `R2008`
-- A Phase no `ENTER` reaches any more → `R2011` (warning)
+- An `ENTER`, `IN` or `DURING` left naming a deleted Phase → `R20_08-undeclared-phase`
+- A Phase no `ENTER` reaches any more → `R20_11-unreachable-phase` (warning)
 
 Spec: chapter 22, *Extent: what moves with a construct*, *What the syntax tree holds*; chapter 25, *Deleting a Phase*. For `UNTIL EXITED`, chapters 16 and 17.
 

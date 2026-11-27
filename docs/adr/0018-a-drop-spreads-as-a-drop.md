@@ -14,4 +14,4 @@ A `FAILED` Plan can't read why its Goal failed, so it reacts as if something wen
 - Dropping a small sub-Goal stops the Goal above it without a Failure in the Trace. The Trace links each stopped Pursuit to the `DROP` with `because`, at level `info`.
 - A recipe that wants to give up one step and go on can't do it with `DROP`. It wasn't possible before either.
 - Cleanup for "over, however it went" is written under `WHEN g ENDED`, which fires after `REACHED`, `DROPPED` or `FAILED`.
-- `T1102` now covers only a waited-on Goal that fails.
+- `T11_02-pursued-goal-failed` now covers only a waited-on Goal that fails.

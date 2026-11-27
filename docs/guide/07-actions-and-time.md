@@ -40,11 +40,11 @@ A dish a Servant brings goes on the plate as a Fact. A dish the kitchen has run 
 
 **Checks**
 
-- A blank in the argument of `LEARN`, `FORGET` or `UPDATE` → `R0801` (for `FORGET`, the hint suggests `FOR EACH`)
-- `LEARN`, `FORGET` or `UPDATE` with a Cue or a Goal → `R0802`
-- `DO LEARN …` → `R0803`
-- `LEARN`, `FORGET` or `UPDATE` on a game Fact → `R0807` (warning)
-- A Placeholder in an argument not certainly filled → `R0304`, `R0305`
+- A blank in the argument of `LEARN`, `FORGET` or `UPDATE` → `R08_01-unfilled-action-argument` (for `FORGET`, the hint suggests `FOR EACH`)
+- `LEARN`, `FORGET` or `UPDATE` with a Cue or a Goal → `R08_02-wrong-kind-for-action`
+- `DO LEARN …` → `R08_03-misused-do`
+- `LEARN`, `FORGET` or `UPDATE` on a game Fact → `R08_07-edit-of-game-fact` (warning)
+- A Placeholder in an argument not certainly filled → `R03_04-unfilled-placeholder`, `R03_05-maybe-unfilled-placeholder`
 
 Spec: chapter 08.
 
@@ -96,9 +96,9 @@ TO resent(?who):
 
 **Checks**
 
-- `UPDATE f TO f2` with two different Facts → `R0804`
-- The retired `CHANGE f TO f2` → `R0808` (hint: `UPDATE f TO f2`)
-- `UPDATE` when the old Fact isn't known → `T0801` (Trace, Failure)
+- `UPDATE f TO f2` with two different Facts → `R08_04-update-to-another-fact`
+- The retired `CHANGE f TO f2` → `R08_08-retired-change` (hint: `UPDATE f TO f2`)
+- `UPDATE` when the old Fact isn't known → `T08_01-update-of-unknown-fact` (Trace, Failure)
 
 Spec: chapter 08, *Updating a Fact*.
 
@@ -142,10 +142,10 @@ The same Goal pursued twice, what dropping stops and in which order, and how Fai
 
 **Checks**
 
-- `PURSUE` or `DROP` with a Fact or a Cue, `DROP` with a Plot → `R0802` (for a Plot, the hint is `DROP SUBPLOT`)
-- A trailing clause other than `, WITHOUT WAITING`, or on a Statement other than `PURSUE` and `DO` → `R0805`
-- A waiting `PURSUE g` inside `TO g`, with the Trigger's own arguments and no `GIVEN` or `IF` around it → `R0806` (warning; hint: `, WITHOUT WAITING`)
-- `PURSUE` or `DROP` in a Director → `R2001`
+- `PURSUE` or `DROP` with a Fact or a Cue, `DROP` with a Plot → `R08_02-wrong-kind-for-action` (for a Plot, the hint is `DROP SUBPLOT`)
+- A trailing clause other than `, WITHOUT WAITING`, or on a Statement other than `PURSUE` and `DO` → `R08_05-wrong-trailing-clause`
+- A waiting `PURSUE g` inside `TO g`, with the Trigger's own arguments and no `GIVEN` or `IF` around it → `R08_06-endless-self-pursuit` (warning; hint: `, WITHOUT WAITING`)
+- `PURSUE` or `DROP` in a Director → `R20_01-playbook-statement-in-director`
 
 Spec: chapter 08, *Goals*. For Pursuits, chapter 05; for Failure, chapter 11.
 
@@ -202,9 +202,9 @@ stateDiagram-v2
 
 **Checks**
 
-- A Custom Action without `DO`, or `DO` before a Basic Action → `R0803`
-- `DO` with anything but a Custom Action → `R0802`
-- A `DO` the game refuses, or a waiting `DO` it reports as failed → `T1101` (Trace, Failure)
+- A Custom Action without `DO`, or `DO` before a Basic Action → `R08_03-misused-do`
+- `DO` with anything but a Custom Action → `R08_02-wrong-kind-for-action`
+- A `DO` the game refuses, or a waiting `DO` it reports as failed → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 08, *Custom Actions*. For the game's replies, chapter 37; for the Failure, chapter 11.
 
@@ -281,8 +281,8 @@ An Action whose External name has a dot isn't the game's. It is code of the Targ
 
 **Checks**
 
-- A dotted name without `AS` → `R1009`
-- The code fails, or isn't there → `T1101` (Trace, Failure)
+- A dotted name without `AS` → `R10_09-dotted-name-without-as`
+- The code fails, or isn't there → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 08, *Custom Actions*; chapter 10, *External names*. For Jason, chapter 37, *The Target's own code*.
 
@@ -335,12 +335,12 @@ A duellist lunges every one to three seconds while it has stamina left. `WAIT RA
 
 **Checks**
 
-- A Duration without a unit word, or with another word → `R1201`
-- A Duration whose Placeholders aren't certainly filled before the `WAIT` → `R1202`
-- A negative Number written as the Duration → `R1203` (warning)
-- A Duration that isn't a Number → `T1201` (Trace, Failure)
-- A negative Duration, counted as 0 → `T1202` (Trace warning)
-- `WAIT` in a Director's `EXITED` Plan → `R2003`
+- A Duration without a unit word, or with another word → `R12_01-wrong-duration-unit`
+- A Duration whose Placeholders aren't certainly filled before the `WAIT` → `R12_02-maybe-unfilled-duration`
+- A negative Number written as the Duration → `R12_03-negative-duration` (warning)
+- A Duration that isn't a Number → `T12_01-duration-not-number` (Trace, Failure)
+- A negative Duration, counted as 0 → `T12_02-duration-below-zero` (Trace warning)
+- `WAIT` in a Director's `EXITED` Plan → `R20_03-wrong-statement-in-exited`
 
 Spec: chapter 12, *`WAIT`*.
 
@@ -384,7 +384,7 @@ The plate is filled by another Plan of the same Guest. That works because `WAIT`
 | `WAIT 1 MINUTE, UNTIL on_plate(?)` | the condition holds, or the minute is over |
 | `WAIT UNTIL NOT guard_near` | the condition holds, however long that takes |
 
-- `, UNTIL` belongs to `WAIT`'s own form. It is not a trailing clause, so `R0805` doesn't apply to it.
+- `, UNTIL` belongs to `WAIT`'s own form. It is not a trailing clause, so `R08_05-wrong-trailing-clause` doesn't apply to it.
 - The condition is anything an `IF` could test at that point: the Agent's Facts, or in a Director its own Facts, `IN`, `PLAYS` and `RUNNING`.
 - It is tested when the Body reaches the `WAIT`, and again whenever what it tests changes. If it holds already, the Body goes on at once.
 - Running out of time isn't a failure. The Body goes on either way, and an `IF` tells the endings apart. Here the recipe chooses to `FAIL WITH no_food`; another might go on with what it has.
@@ -395,8 +395,8 @@ The plate is filled by another Plan of the same Guest. That works because `WAIT`
 
 **Checks**
 
-- A Placeholder in the condition that isn't certainly filled before the `WAIT` and isn't a blank → `R1204`
-- The Duration's own checks, as for `WAIT` → `R1201`, `R1202`, `R1203`, `T1201`, `T1202`
+- A Placeholder in the condition that isn't certainly filled before the `WAIT` and isn't a blank → `R12_04-maybe-unfilled-wait-condition`
+- The Duration's own checks, as for `WAIT` → `R12_01-wrong-duration-unit`, `R12_02-maybe-unfilled-duration`, `R12_03-negative-duration`, `T12_01-duration-not-number`, `T12_02-duration-below-zero`
 
 Spec: chapter 12, *`WAIT … UNTIL`*. For what a condition can test, chapter 06.
 
@@ -445,8 +445,8 @@ Phases, `ENTER` and the order of a transition are in *Plots and Directors*. The 
 
 **Checks**
 
-- `AFTER` in a Playbook → `R1205` (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`)
-- The Duration's own checks, as for `WAIT` → `R1201`, `R1202`, `R1203`, `T1201`, `T1202`
+- `AFTER` in a Playbook → `R12_05-after-in-playbook` (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`)
+- The Duration's own checks, as for `WAIT` → `R12_01-wrong-duration-unit`, `R12_02-maybe-unfilled-duration`, `R12_03-negative-duration`, `T12_01-duration-not-number`, `T12_02-duration-below-zero`
 
 Spec: chapter 12, *`AFTER`*. For the transition it starts with, chapter 20.
 

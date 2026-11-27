@@ -1,10 +1,10 @@
 # A Role's Block is its setup
 
-A Plot's Role setup was written `ROLE Guest STARTS WITH:`, and the Cast's `CAST STARTS WITH:`. The syntax review found that `WITH` there ("begins by doing") fails chapter 01's one-meaning rule, since everywhere else it introduces the Cue an ending carries. We dropped the phrase: a setup is the Role's own Block, `ROLE Guest:` and `CAST:`, at Plot level and inside `DURING <phase>`. The old header is the retired spelling `R1608`, and `STARTS` stays reserved for its hint.
+A Plot's Role setup was written `ROLE Guest STARTS WITH:`, and the Cast's `CAST STARTS WITH:`. The syntax review found that `WITH` there ("begins by doing") fails chapter 01's one-meaning rule, since everywhere else it introduces the Cue an ending carries. We dropped the phrase: a setup is the Role's own Block, `ROLE Guest:` and `CAST:`, at Plot level and inside `DURING <phase>`. The old header is the retired spelling `R16_08-retired-starts-with`, and `STARTS` stays reserved for its hint.
 
 This matches Instancing, where `KIND noble, PLAYS Guest:` carries the lines each of its Agents starts with. "Starts with" is what a Role's Block means, not a keyword.
 
-Inside `DURING`, `ROLE Guest:` names a Role the Plot already declares and declares nothing, as `DURING PLOT` names the Plot. `ROLE` passes chapter 01's rule for nouns: every use refers to a Role. A Playbook keeps `ROLE` for its addresses for the same reason, and a Mapping reads well only because both sides are Roles. A Playbook's `ROLE` takes no Block (`R1601`).
+Inside `DURING`, `ROLE Guest:` names a Role the Plot already declares and declares nothing, as `DURING PLOT` names the Plot. `ROLE` passes chapter 01's rule for nouns: every use refers to a Role. A Playbook keeps `ROLE` for its addresses for the same reason, and a Mapping reads well only because both sides are Roles. A Playbook's `ROLE` takes no Block (`R16_01-block-on-playbook-role`).
 
 `LEARN` and `PURSUE` stay in setups and on `KIND`/`AGENT`. Their gloss, read from the Agent's side ("comes to know", "takes on"), is the one they have in a Body. Only the source differs, and it follows from where the line is written.
 
@@ -17,5 +17,5 @@ Inside `DURING`, `ROLE Guest:` names a Role the Plot already declares and declar
 ## Consequences
 
 - `ROLE Guest:` with a Block, an error before, is now the only way to write a setup.
-- A setup may use the Plot's parameters, which are filled when the Staging starts. Any other Placeholder is still `R1604`.
+- A setup may use the Plot's parameters, which are filled when the Staging starts. Any other Placeholder is still `R16_04-placeholder-in-setup`.
 - The 1.5 showcase rewrites its setup headers when it is brought up to the reviewed syntax.

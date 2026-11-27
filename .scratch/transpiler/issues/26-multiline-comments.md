@@ -1,4 +1,4 @@
-# Scan: multiline comments and R0201
+# Scan: multiline comments and R02_01-unclosed-comment
 
 Type: implementation
 Status: open
@@ -7,7 +7,7 @@ Blocked by: 25
 
 ## Goal
 
-`#[ … ]#` and `#@key[ … ]#` are one comment token each, nesting, and an unclosed one is `R0201` at its opener.
+`#[ … ]#` and `#@key[ … ]#` are one comment token each, nesting, and an unclosed one is `R02_01-unclosed-comment` at its opener.
 
 ## Spec
 
@@ -15,11 +15,11 @@ Chapter 02: multiline comments nest, every opener (`#[`, `#@key[`) counts a leve
 
 ## Rust
 
-Book ch 8.1: a `Vec` of opener positions as a stack, so `R0201` can point at the opener left open.
+Book ch 8.1: a `Vec` of opener positions as a stack, so `R02_01-unclosed-comment` can point at the opener left open.
 
 ## Test first
 
-Unit tests and a dump snapshot: a comment across lines, `#[ a #[ b ]# c ]# DO x`, an unclosed nested one (`R0201` at the outer opener).
+Unit tests and a dump snapshot: a comment across lines, `#[ a #[ b ]# c ]# DO x`, an unclosed nested one (`R02_01-unclosed-comment` at the outer opener).
 
 ## Done when
 

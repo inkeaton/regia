@@ -69,7 +69,7 @@ DURING PLOT:
             FORGET wager(?who, ?stake)
 ```
 
-Without it, a Pick over `wager` can choose the leaver, and the `ASK` to it is dropped with `T1901`.
+Without it, a Pick over `wager` can choose the leaver, and the `ASK` to it is dropped with `T19_01-message-after-leaving`.
 
 ### Quota Triggers
 
@@ -108,7 +108,7 @@ DURING PLOT:
 - They are **Director Trigger kinds only**. A Playbook doesn't know Plot Roles, and can only test its own (`PLAYS`, chapter 15). In a Playbook they are an error.
 - `JOINED` and `LEFT` are **not** heard for a Staging's starting Cast. Starting is not joining: the starting Cast gets its Role setups and the initial Phase's entry Plans (chapter 16).
 - `EMPTIED` **is** heard for a Role that starts empty, once, after the Role setups and before the initial Phase's entry Plans, in Role declaration order and `CAST` last (chapter 17). A Plan written for "nobody is left" then also covers "nobody came".
-- Only the Root Plot has joiners, so `JOINED` in a Plot that is never the Root never fires (`R1905`).
+- Only the Root Plot has joiners, so `JOINED` in a Plot that is never the Root never fires (`R19_05-joined-outside-root-plot`).
 - They follow chapter 13 like any Trigger: blocks in a Phase and in `DURING PLOT` compete, with the Phase winning by default.
 
 ### Order when leaving
@@ -144,21 +144,21 @@ A Challenger left alone stops telling `hit` because `Duelling` is taken from it,
 
 **Errors**
 
-- `R1901` `JOINED`, `LEFT` or `EMPTIED` in a Playbook.
-- `R1902` `JOINED`, `LEFT` or `EMPTIED` after something that isn't a Role of this Plot or `CAST`.
-- `R1903` `?who` after `EMPTIED`.
-- `R1904` A quantity on them (`WHEN ALL Guest LEFT`).
+- `R19_01-cast-change-in-playbook` `JOINED`, `LEFT` or `EMPTIED` in a Playbook.
+- `R19_02-wrong-cast-change-subject` `JOINED`, `LEFT` or `EMPTIED` after something that isn't a Role of this Plot or `CAST`.
+- `R19_03-who-after-emptied` `?who` after `EMPTIED`.
+- `R19_04-quantity-on-cast-change` A quantity on them (`WHEN ALL Guest LEFT`).
 
 **Warnings**
 
-- `R1905` `JOINED` in a Plot that is never the Root Plot: it can't fire. Absence check (chapter 23).
+- `R19_05-joined-outside-root-plot` `JOINED` in a Plot that is never the Root Plot: it can't fire. Absence check (chapter 23).
 
 ## Trace entries
 
 **Warnings**
 
-- `T1901` A `TELL` or `ASK` to an Agent that has left the Program, dropped.
-- `T1902` A spawn the game reported in a 1.5 run, refused: joining is Regia 2.0 (*Regia 1.5*, below). Reported by a 1.5 run only; retired in 2.0.
+- `T19_01-message-after-leaving` A `TELL` or `ASK` to an Agent that has left the Program, dropped.
+- `T19_02-join-refused` A spawn the game reported in a 1.5 run, refused: joining is Regia 2.0 (*Regia 1.5*, below). Reported by a 1.5 run only; retired in 2.0.
 
 ## Reserved words
 
@@ -175,13 +175,13 @@ For *The full ASL mapping* to pick up (for Jason, the Director's side of joining
 
 ## Regia 1.5
 
-In 1.5 (ADR 0025): **leaving**, `LEFT` and `EMPTIED`, a leaver's Givings taken away, its picks and bindings dropped, and `T1901`.
+In 1.5 (ADR 0025): **leaving**, `LEFT` and `EMPTIED`, a leaver's Givings taken away, its picks and bindings dropped, and `T19_01-message-after-leaving`.
 
-**Joining is later.** In 1.5 the game can't spawn an Agent while the run goes on. A spawn is refused: the Agent joins nothing, and the Trace writes `T1902`. Every Agent comes from the starting Instancing, so a Staging's cast is fixed when it starts and only shrinks. Where the text says "later joiners", it doesn't apply.
+**Joining is later.** In 1.5 the game can't spawn an Agent while the run goes on. A spawn is refused: the Agent joins nothing, and the Trace writes `T19_02-join-refused`. Every Agent comes from the starting Instancing, so a Staging's cast is fixed when it starts and only shrinks. Where the text says "later joiners", it doesn't apply.
 
-- `JOINED` is `R0109` in a 1.5 build (chapter 01). `R1901` and `R1902` still cover `LEFT` and `EMPTIED`. `R1905` is never reported.
+- `JOINED` is `R01_09-later-regia-construct` in a 1.5 build (chapter 01). `R19_01-cast-change-in-playbook` and `R19_02-wrong-cast-change-subject` still cover `LEFT` and `EMPTIED`. `R19_05-joined-outside-root-plot` is never reported.
 - What Quota Triggers do on a leave is later, with chapter 18.
-- `T1902` is reported by a 1.5 run only, and is retired in 2.0, where the same spawn joins.
+- `T19_02-join-refused` is reported by a 1.5 run only, and is retired in 2.0, where the same spawn joins.
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 

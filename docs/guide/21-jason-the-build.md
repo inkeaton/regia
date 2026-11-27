@@ -206,10 +206,10 @@ Actions work differently, because their External name decides who carries them o
 
 **Checks**
 
-- Two names that differ only in case → `R1007`
-- A name, a Placeholder's included, starting with `regia_` or containing `__` → `R1008`
-- A dotted name without `AS` → `R1009`
-- A game Fact or Cue whose name matches no `regia_game` entry of the receiving Agent → `T2801` (Trace warning)
+- Two names that differ only in case → `R10_07-case-only-name-clash`
+- A name, a Placeholder's included, starting with `regia_` or containing `__` → `R10_08-reserved-name-spelling`
+- A dotted name without `AS` → `R10_09-dotted-name-without-as`
+- A game Fact or Cue whose name matches no `regia_game` entry of the receiving Agent → `T28_01-unknown-game-name` (Trace warning)
 
 Spec: chapter 28, *Names*. For name rules, chapter 10; for Placeholders as variables, chapter 39; for `regia.act`, chapter 37.
 
@@ -241,9 +241,9 @@ If the connection never opens, or closes during the run, the run goes on. The Di
 
 **Checks**
 
-- The link couldn't connect at start → `T2802` (Trace error, naming the address and port; the run starts anyway)
-- The link's connection was lost during the run → `T2803` (Trace error; the run goes on)
-- A Director's Action refused for `no game link` → `T1101` (Trace, Failure)
+- The link couldn't connect at start → `T28_02-game-link-connect-failed` (Trace error, naming the address and port; the run starts anyway)
+- The link's connection was lost during the run → `T28_03-game-link-lost` (Trace error; the run goes on)
+- A Director's Action refused for `no game link` → `T11_01-failed-custom-action` (Trace, Failure)
 
 Spec: chapter 28, *The game link*. For the messages it carries, chapter 37; for attaching and hearing, chapter 30.
 
@@ -367,10 +367,10 @@ The order never depends on import order or on where a kind is declared. A test c
 
 **Checks**
 
-- `base_port` that isn't a whole number in 1–65535 → `R3602`
-- `base_port` plus the number of starting Agents past 65535 → `R3601`
-- An individual Agent named `<kind>_<digits>` for a kind of the Build → `R3603`
-- An unknown key under `TARGET jason:`, or a `strategy` other than `most_similar` or `random` → `R2113` (warning)
+- `base_port` that isn't a whole number in 1–65535 → `R36_02-wrong-base-port`
+- `base_port` plus the number of starting Agents past 65535 → `R36_01-last-port-too-high`
+- An individual Agent named `<kind>_<digits>` for a kind of the Build → `R36_03-kind-numbered-agent-name`
+- An unknown key under `TARGET jason:`, or a `strategy` other than `most_similar` or `random` → `R21_13-unknown-target-setting` (warning)
 
 Spec: chapter 36, *Ports and addresses*, *Transpiler checks*.
 
@@ -509,13 +509,13 @@ regia_kind(servant, [servant], "roles/Servant.asl",
 
 The Root Director's file also holds one `regia_kind(Kind, Roles, File, Settings)` per declared kind: its Roles, its top-level file, and the user parameters a `.jcm` entry of the kind gets, without the port. Kinds with no `COUNT` are listed; kinds removed with `NO KIND` aren't. Setup lines aren't in it: they are the plans above. `Settings` is a list of `key(value)` terms, so a new `TARGET jason` key adds an entry and leaves the belief's shape alone.
 
-The belief is what the Root Director would create a joiner from. In 1.5 the game can't add an Agent during the run: the Root Director ignores every `regia_join` and writes `T1902`, so `regia_kind` is written and nothing reads it.
+The belief is what the Root Director would create a joiner from. In 1.5 the game can't add an Agent during the run: the Root Director ignores every `regia_join` and writes `T19_02-join-refused`, so `regia_kind` is written and nothing reads it.
 
 > **In 2.0** the game reports a joiner with `{"type": "regia_join", "kind": "noble", "name": "noble_7", "port": 9107}`. The Root Director creates its agent from the kind's `regia_kind`, with the port from the report and a `temper` drawn for it, and runs the kind's setup lines after its Role setups. A report with a missing or invalid `port` makes no sense and is ignored with a warning. Spec chapter 36, *The `regia_join` body fields*, and chapter 33, *Joining*.
 
 **Checks**
 
-- A spawn reported by the game during a 1.5 run → `T1902` (Trace warning)
+- A spawn reported by the game during a 1.5 run → `T19_02-join-refused` (Trace warning)
 
 Spec: chapter 36, *Agent kinds in the Root Director: `regia_kind`*. For the 1.5 refusal, chapter 33, *Regia 1.5*.
 
@@ -527,7 +527,7 @@ Spec: chapter 36, *Agent kinds in the Root Director: `regia_kind`*. For the 1.5 
 
 ### The Transpiler
 
-`regia build` writes this folder, replacing everything in it except `traces/`. The Jason checks, `R3601` to `R3603`, are Target checks: `regia check` reports them as well, and `--target none` skips them. (*The Transpiler*)
+`regia build` writes this folder, replacing everything in it except `traces/`. The Jason checks, the three under *Ports*, are Target checks: `regia check` reports them as well, and `--target none` skips them. (*The Transpiler*)
 
 ### Precedence and Labels
 

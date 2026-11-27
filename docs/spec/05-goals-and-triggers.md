@@ -94,7 +94,7 @@ A Fact lasts until it is forgotten, and a Context can test it at any time. Both 
 
 A Signal is a Cue that an Agent sends to a Director. The Director reacts to it like any other Cue.
 
-`CUE` is the keyword that declares one. `EVENT`, its spelling before 2.0, is an error with the hint "renamed `CUE`" (`R0513`).
+`CUE` is the keyword that declares one. `EVENT`, its spelling before 2.0, is an error with the hint "renamed `CUE`" (`R05_13-retired-event`).
 
 ## Events
 
@@ -292,7 +292,7 @@ WHEN hates(?h) LEARNED, FROM ?teller, SUITS sympathy AT -0.5:
 WHEN bring(?dish) FAILED WITH sold_out(?dish), BY waiter ?s:
 ```
 
-The kind words, `WITH`, `FROM` and `BY` are reserved, so the parser always knows where the item ends. `DIRECTOR`, `GAME` and `ME` are reserved too. `FROM` or `BY` written without its `,` (`WHEN e FROM DIRECTOR:`) is `R0111` (chapter 01).
+The kind words, `WITH`, `FROM` and `BY` are reserved, so the parser always knows where the item ends. `DIRECTOR`, `GAME` and `ME` are reserved too. `FROM` or `BY` written without its `,` (`WHEN e FROM DIRECTOR:`) is `R01_11-clause-without-comma` (chapter 01).
 
 A Trigger has no Context clause: the Context is a `GIVEN` Block under the Trigger (chapter 06), and `WHEN e, GIVEN c:` is a parse error.
 
@@ -301,33 +301,33 @@ A Trigger has no Context clause: the Context is a `GIVEN` Block under the Trigge
 
 **Errors**
 
-- `R0501` One name declared as two kinds (`FACT fed` and `GOAL fed`).
-- `R0502` A Cue tested in a Context or an `IF` (`IF food_served`).
-- `R0503` A Fact Trigger without a kind word (`WHEN hates(?h):`, hint: `LEARNED` or `FORGOTTEN`).
-- `R0504` A kind word that doesn't suit the item (`WHEN food_served LEARNED`, `WHEN find_food LEARNED`).
-- `R0505` `FROM` on a `FORGOTTEN` Trigger.
-- `R0506` `BY` on a Trigger that isn't a Goal's ending (a Cue, a Fact, a `TO` recipe, a Subplot's `ENDED`), except `, BY PARENT` on `EXITED` (chapter 20). `BY PARENT` on any other Trigger, and `BY` with anything but `PARENT` on `EXITED`, are this error too.
-- `R0507` `FROM` and `BY` on the same Trigger.
-- `R0508` `WHEN g … BY` in a Playbook that never asks `g`: no `ASK … TO g`. In a Plot it is `R2012` (chapter 20). Absence check (chapter 23).
-- `R0509` `FROM GAME` on a `TO` recipe or a Goal's ending (no Goal comes from the game).
-- `R0510` `FROM ME` on a Cue Trigger (an Agent never sends to itself).
-- `R0511` A Placeholder or a quantity after `GAME` or `ME`, or anywhere in a `FROM … OR …` list.
-- `R0512` `GAME`, `ME` or `OR` after `BY`.
-- `R0513` The retired keyword `EVENT` (hint: renamed `CUE`).
+- `R05_01-declared-as-two-kinds` One name declared as two kinds (`FACT fed` and `GOAL fed`).
+- `R05_02-cue-tested-in-condition` A Cue tested in a Context or an `IF` (`IF food_served`).
+- `R05_03-fact-trigger-without-kind` A Fact Trigger without a kind word (`WHEN hates(?h):`, hint: `LEARNED` or `FORGOTTEN`).
+- `R05_04-wrong-trigger-kind` A kind word that doesn't suit the item (`WHEN food_served LEARNED`, `WHEN find_food LEARNED`).
+- `R05_05-from-on-forgotten` `FROM` on a `FORGOTTEN` Trigger.
+- `R05_06-by-on-wrong-trigger` `BY` on a Trigger that isn't a Goal's ending (a Cue, a Fact, a `TO` recipe, a Subplot's `ENDED`), except `, BY PARENT` on `EXITED` (chapter 20). `BY PARENT` on any other Trigger, and `BY` with anything but `PARENT` on `EXITED`, are this error too.
+- `R05_07-both-from-and-by` `FROM` and `BY` on the same Trigger.
+- `R05_08-by-for-unasked-goal` `WHEN g … BY` in a Playbook that never asks `g`: no `ASK … TO g`. In a Plot it is `R20_12-goal-never-asked` (chapter 20). Absence check (chapter 23).
+- `R05_09-from-game-on-goal` `FROM GAME` on a `TO` recipe or a Goal's ending (no Goal comes from the game).
+- `R05_10-from-me-on-cue` `FROM ME` on a Cue Trigger (an Agent never sends to itself).
+- `R05_11-placeholder-without-sender` A Placeholder or a quantity after `GAME` or `ME`, or anywhere in a `FROM … OR …` list.
+- `R05_12-from-word-after-by` `GAME`, `ME` or `OR` after `BY`.
+- `R05_13-retired-event` The retired keyword `EVENT` (hint: renamed `CUE`).
 
-`ME` in a Plot, `FROM ME` included, is `R0309` (chapter 03). A `PURSUE` or an `ASK` that no recipe's `FROM` admits is `R3805` or `R3806` (chapter 38).
+`ME` in a Plot, `FROM ME` included, is `R03_09-me-in-plot` (chapter 03). A `PURSUE` or an `ASK` that no recipe's `FROM` admits is `R38_05-pursue-without-me-recipe` or `R38_06-ask-only-me-recipes` (chapter 38).
 
 ## Regia 1.5
 
 In 1.5 (ADR 0025): Goals, Cues and Events, every Trigger kind but `JOINED` (chapter 19), how a Pursuit ends with `REACHED`, `DROPPED`, `FAILED` and `ENDED` for the Agent's **own** Pursuits, and `FROM` with a Role, `?who`, `Role ?who` and `DIRECTOR`. A Trigger with no `FROM` still matches anything, and an Agent's own `PURSUE` still has no Sender.
 
-Later, each `R0109` in a 1.5 build (chapter 01):
+Later, each `R01_09-later-regia-construct` in a 1.5 build (chapter 01):
 
 - `FROM GAME`, `FROM ME`, and `FROM` with `OR` alternatives.
 - All of *Who pursued it: `BY`*: nobody hears how a Goal it asked ended. A recipe whose asker must know writes a `TELL` or a `SIGNAL` back.
 - A quantity after `FROM` or `BY` (chapter 18).
 
-`R0507`, `R0508`, `R0509`, `R0510`, `R0511` and `R0512` are about those words, and a 1.5 build never reports them. `R0506` stays: `BY` on a Trigger that isn't a Goal's ending is wrong in 2.0 too. `R3805` and `R3806` are later (chapter 38).
+`R05_07-both-from-and-by`, `R05_08-by-for-unasked-goal`, `R05_09-from-game-on-goal`, `R05_10-from-me-on-cue`, `R05_11-placeholder-without-sender` and `R05_12-from-word-after-by` are about those words, and a 1.5 build never reports them. `R05_06-by-on-wrong-trigger` stays: `BY` on a Trigger that isn't a Goal's ending is wrong in 2.0 too. `R38_05-pursue-without-me-recipe` and `R38_06-ask-only-me-recipes` are later (chapter 38).
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 

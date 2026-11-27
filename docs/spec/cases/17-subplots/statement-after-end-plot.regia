@@ -1,7 +1,7 @@
 #! case: END PLOT ends its Body
-#! rule: R1702
+#! rule: R17_02-statement-after-end-plot
 
-CUE guards_arrived
+GAME CUE guards_arrived
 ACTION stop_music
 
 PLOT Banquet:
@@ -10,4 +10,4 @@ PLOT Banquet:
     DURING PLOT:
         WHEN guards_arrived:
             END PLOT.
-            DO stop_music.               #! error R1702
+            DO stop_music.               #! error R17_02-statement-after-end-plot

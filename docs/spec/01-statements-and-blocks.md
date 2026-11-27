@@ -86,10 +86,10 @@ A `;` closes only an Inline block. Taking the indentation out of a multi-line Bl
 WHEN hit, FROM opponent:          # an empty Block: the next line isn't indented further
 GIVEN stamina(?now):              # a sibling of the WHEN, not its body
 ...
-;                                 # error R0108: no Inline block is open
+;                                 # error R01_08-stray-semicolon: no Inline block is open
 ```
 
-Earlier drafts had **Flat blocks**, closed by `;` across lines. They were removed: a Block header whose body was forgotten swallowed the rest of the file, and a generator gets the same result from indentation or from Inline blocks. A `;` that would have closed one is `R0108`, and its hint says so.
+Earlier drafts had **Flat blocks**, closed by `;` across lines. They were removed: a Block header whose body was forgotten swallowed the rest of the file, and a generator gets the same result from indentation or from Inline blocks. A `;` that would have closed one is `R01_08-stray-semicolon`, and its hint says so.
 
 ### Headers inside an Inline block
 
@@ -110,12 +110,12 @@ So `DO complain.SIGNAL insult_thrown` reads as one dotted name and is an error; 
 
 ## Redundant terminators
 
-A `.` at the end of a line, or a `;` closing an Inline block right at the end of a line, does nothing and is allowed without a warning. The Visual Editor and formatters never write either. A `;` at the end of a line that isn't inside an Inline block is not redundant: it closes nothing, and is an error (`R0108`). This keeps most pasted 1.0 code parsing. The Visual Editor keeps it when it writes edits back: it never normalises text an edit doesn't touch (chapter 22, `22-bidirectional-editing.md`).
+A `.` at the end of a line, or a `;` closing an Inline block right at the end of a line, does nothing and is allowed without a warning. The Visual Editor and formatters never write either. A `;` at the end of a line that isn't inside an Inline block is not redundant: it closes nothing, and is an error (`R01_08-stray-semicolon`). This keeps most pasted 1.0 code parsing. The Visual Editor keeps it when it writes edits back: it never normalises text an edit doesn't touch (chapter 22, `22-bidirectional-editing.md`).
 
 ## Indentation rules
 
-- Tabs or spaces, at any width, but consistent within a file. Each tab or space counts as one column. The first indented line sets which of the two the file uses, and using the other one to indent is an error (`R0103`), reported once per file, at the first such line. Continuation lines count for this; comment-only lines don't. After it, `R0104` and `R0105` are not reported in that file, since its columns can't be trusted.
-- A line indented further than the one before it, when that one isn't a Block header, is an error (`R0114`).
+- Tabs or spaces, at any width, but consistent within a file. Each tab or space counts as one column. The first indented line sets which of the two the file uses, and using the other one to indent is an error (`R01_03-mixed-tabs-and-spaces`), reported once per file, at the first such line. Continuation lines count for this; comment-only lines don't. After it, `R01_04-dedent-to-unopened-level` and `R01_05-continuation-not-indented` are not reported in that file, since its columns can't be trusted.
+- A line indented further than the one before it, when that one isn't a Block header, is an error (`R01_14-indent-opens-no-block`).
 - Dedenting to a level that was never opened is an error ("this line is indented less than the Block it's in, but more than the one outside"). The line is read as belonging to the Block outside.
 - Blank lines and comment-only lines don't count for indentation: they never open or close a Block. Which Block a comment line falls in is in chapter 22 (*Which Block a comment is in*).
 - Code after a multiline comment that started its line has the indentation of the line the comment opened on.
@@ -127,7 +127,7 @@ A physical line continues onto the next one, forming one logical line, when:
 - it ends with `,`: a `,` always says that something more follows (*Clauses and the comma*, below), so it never ends a logical line; or
 - it has a `(` that isn't closed yet.
 
-Continuation lines must be indented further than the logical line's first line. A line that isn't is an error (`R0105`) and starts a new logical line, with any open `(` forgotten, so a missing `)` or a stray `,` never swallows the rest of the file. What the broken line lacks, such as its `)`, is not reported too. Physical lines are joined into logical lines before any of the rules above apply, so an Inline block can continue this way too.
+Continuation lines must be indented further than the logical line's first line. A line that isn't is an error (`R01_05-continuation-not-indented`) and starts a new logical line, with any open `(` forgotten, so a missing `)` or a stray `,` never swallows the rest of the file. What the broken line lacks, such as its `)`, is not reported too. Physical lines are joined into logical lines before any of the rules above apply, so an Inline block can continue this way too.
 
 ```regia
 WHEN hates(?h) LEARNED, FROM ?teller,
@@ -179,7 +179,7 @@ A Block header or a Statement has a **core** and, after it, optional **clauses**
 - A **list** separates its items with `,` too: arguments, a Multi-definition, `EXCEPT ?a, ?b`, `LIKE a, b`. A list ends at the first token that can't be one of its items: a clause keyword after a `,`, or the next word of the core (`MAPPING Guest EXCEPT ?a, ?b AS Spectator`).
 - So **`,` means "something more follows"**: either a clause or the next item of a list. The token after the `,` tells which: a clause keyword starts a clause, anything else is the next item. No list item may start with a clause keyword.
 - **Clauses come in any order.** Each appears at most once unless its chapter allows several (Labels). The Visual Editor and any formatter write them in the order their chapter lists them.
-- **A clause keyword without its `,`** after the core is an error, `R0111`, whose hint adds the `,`: `WHEN e FROM DIRECTOR:` is `WHEN e, FROM DIRECTOR:`. The same word may introduce the required item itself, as part of the core: `WAIT UNTIL c` (the condition is what `WAIT` waits for) next to `WAIT d, UNTIL c` (a limit added to a Duration).
+- **A clause keyword without its `,`** after the core is an error, `R01_11-clause-without-comma`, whose hint adds the `,`: `WHEN e FROM DIRECTOR:` is `WHEN e, FROM DIRECTOR:`. The same word may introduce the required item itself, as part of the core: `WAIT UNTIL c` (the condition is what `WAIT` waits for) next to `WAIT d, UNTIL c` (a limit added to a Duration).
 - **A `,` never joins conditions.** Two conditions that must both hold are joined with `AND`: `GIVEN gold(?g) AND price(?item, ?p):`. Alternatives, either of which may hold, are joined with `OR`, also in `FROM a OR b` (chapter 05).
 - **`AND` and `OR` are only the condition operators.** They never join the items of a list: the Propensities of a Label (`SUITS sympathy AT -0.5, bravery AT 0.8`), the Moods of a `SHIFT`, the Roles after `PLAYS` (`PLAYS Guest, Drunkard`). `OR` is never a Block header: a Random choice is `RANDOMLY:` with `OPTION:` Blocks (chapter 09).
 
@@ -192,12 +192,12 @@ The word after a written subject is what tells a condition item apart from a Fac
 ### Keywords
 
 - **Keywords are UPPERCASE, and case matters for them.** An all-caps word that is a keyword is always the keyword. `count` or `Wait` is an ordinary name.
-- **Every keyword is reserved.** A name spelled exactly like a keyword is an error (`R0110`). Names still compare ignoring case among themselves (chapter 10). The keywords are listed in one place, *Reserved words* (below).
+- **Every keyword is reserved.** A name spelled exactly like a keyword is an error (`R01_10-keyword-as-name`). Names still compare ignoring case among themselves (chapter 10). The keywords are listed in one place, *Reserved words* (below).
 - **A keyword is reused only if the new use passes *One meaning per word*.** Otherwise the new use gets a new word, even though the vocabulary grows. A plain English word is preferred to an invented compound.
 
 ### What syntax can be dropped
 
-A spelling is removed only when **all** of these hold: nobody writes it by hand, a generator gains nothing from it, and the Visual Editor doesn't need it. Two spellings of one thing become one. The exception is an explicit spelling of layout (`.` for a new line, `;` for a dedent), which stays because generated code uses it. A retired spelling becomes an error with a hint that names the new one, not a silent synonym (as `EVENT` became `CUE`, `R0513`):
+A spelling is removed only when **all** of these hold: nobody writes it by hand, a generator gains nothing from it, and the Visual Editor doesn't need it. Two spellings of one thing become one. The exception is an explicit spelling of layout (`.` for a new line, `;` for a dedent), which stays because generated code uses it. A retired spelling becomes an error with a hint that names the new one, not a silent synonym (as `EVENT` became `CUE`, `R05_13-retired-event`):
 
 - **The error lives in the chapter that owns the construct**, numbered like any other check of that chapter (chapter 27). *Retired spellings* (below) lists them all in one place.
 - **It stays for ever.** Its code is never marked retired, and its hint keeps naming the new spelling. Regia is generated as well as written, and a generator that learned from older text can produce an old spelling long after writers have stopped.
@@ -219,15 +219,15 @@ Every keyword of the language, in one list. All of them are reserved (*Keywords*
 - **Structure:** `IMPORT`, `AS` (10, and `MAPPING … AS`, 15), `PLAYBOOK`, `PLOT`, `ROLE`, `CAST` (15), `PHASE`, `INITIAL`, `DURING` (16, 20), `PRECEDENCE`, `OVER`, `TIES`, `ON`, `SELF`, `PARENT` (13; `PARENT` also in `EXITED, BY PARENT`, 20).
 - **Vocabulary:** `FACT`, `CUE`, `GOAL`, `ACTION` (05), `NAME` (03), `GAME` (10, and `FROM GAME`, 05), `TRAIT`, `MOOD` (14).
 - **Plan headers:** `WHEN`, `TO` (05; also the two closed exceptions `ASSIGN … TO` and `UPDATE … TO`), `AFTER` (12), `GIVEN`, `ELSE` (06).
-- **Trigger kind words:** `LEARNED`, `FORGOTTEN`, `REACHED`, `DROPPED`, `FAILED`, `ENDED` (05, 11), `FINISHED` (17), `ENTERED`, `EXITED` (20), `ASSIGNED`, `REMOVED` (15), `JOINED`, `LEFT`, `EMPTIED` (19). Reserved for later and not yet usable (`R0706`): `TOLD`, `AGREED`, `REFUSED` (07).
+- **Trigger kind words:** `LEARNED`, `FORGOTTEN`, `REACHED`, `DROPPED`, `FAILED`, `ENDED` (05, 11), `FINISHED` (17), `ENTERED`, `EXITED` (20), `ASSIGNED`, `REMOVED` (15), `JOINED`, `LEFT`, `EMPTIED` (19). Reserved for later and not yet usable (`R07_06-reserved-kind-word`): `TOLD`, `AGREED`, `REFUSED` (07).
 - **Clauses and complements:** `FROM`, `BY` (05; `BY` also the amount of `SHIFT`, 14), `WITH` (11, 17), `WITHOUT`, `WAITING` (08), `UNTIL` (12, and `UNTIL EXITED`, 15), `SUITS`, `SHIFTS`, `AT` (14), `WEIGHT` (09, 26), `HIGHEST`, `LOWEST` (26), `MAPPING`, `EXCEPT`, `OF` (15), `ALL` (18).
 - **Values and units:** `ME` (03), `DIRECTOR` (05), `EVERYONE` (07), `SECOND`, `SECONDS`, `MINUTE`, `MINUTES` (12), `RANDOM` (04, only the function `RANDOM(a, b)`), `COUNT` (26, and the Instancing line `COUNT n`, 21).
 - **Conditions:** `NOT`, `AND`, `OR` (06; `OR` also in `FROM a OR b`, 05), `PURSUING` (06), `IN` (20), `RUNNING` (17), `PLAYS` (15, and Instancing, 21), `SENT` (18).
-- **Agent Statements:** `DO`, `LEARN`, `FORGET`, `UPDATE`, `PURSUE`, `DROP`, `PRINT`, `WAIT` (08), `TELL`, `ASK`, `SIGNAL` (07), `FAIL` (11), `SHIFT` (14), `LET`, `BE` (04), `PASS` (this chapter). Reserved for later (`R0706`): `REFUSE` (07).
+- **Agent Statements:** `DO`, `LEARN`, `FORGET`, `UPDATE`, `PURSUE`, `DROP`, `PRINT`, `WAIT` (08), `TELL`, `ASK`, `SIGNAL` (07), `FAIL` (11), `SHIFT` (14), `LET`, `BE` (04), `PASS` (this chapter). Reserved for later (`R07_06-reserved-kind-word`): `REFUSE` (07).
 - **Control flow:** `IF` (06), `RANDOMLY`, `OPTION` (09; `RANDOMLY` also the Pick `, RANDOMLY`, 26), `FOR`, `EACH` (26).
 - **Director Statements:** `ASSIGN`, `REMOVE` (15), `START`, `SUBPLOT`, `END` (17), `ENTER` (20).
 - **Instancing (`.regin`, chapter 21):** `ROOT`, `KIND`, `AGENT`, `LIKE`, `NO`, `SEED`, `TARGET`.
-- **Retired keywords**, reserved for ever so their error can name the new spelling (*What syntax can be dropped*, above): `EVENT` (`R0513`, 05), `CHANGE` (`R0808`, 08), `EITHER` (`R0906`, 09), `UNASSIGN`, `UNASSIGNED` (`R1515`, 15), `PERCENT` (`R1516`, 15), `STARTS` (`R1608`, 16), `OUTCOME` (`R1715`, 17), `TRANSITION` (`R2016`, 20).
+- **Retired keywords**, reserved for ever so their error can name the new spelling (*What syntax can be dropped*, above): `EVENT` (`R05_13-retired-event`, 05), `CHANGE` (`R08_08-retired-change`, 08), `EITHER` (`R09_06-retired-either`, 09), `UNASSIGN`, `UNASSIGNED` (`R15_15-retired-unassign`, 15), `PERCENT` (`R15_16-retired-percent`, 15), `STARTS` (`R16_08-retired-starts-with`, 16), `OUTCOME` (`R17_15-retired-ended-with`, 17), `TRANSITION` (`R20_16-retired-transition-to`, 20).
 
 `BELIEVE`, `ACHIEVE`, `PRIORITY`, `TEMPER`, `EFFECTS`, `ENDS`, `WORLD` and `GROUP` from Regia 1.0, earlier drafts and the primer are not words of the language and are not reserved.
 
@@ -237,27 +237,27 @@ Every spelling this spec once had and has since replaced, with the error that na
 
 | Retired spelling | Write instead | Code |
 |---|---|---|
-| `EVENT e` | `CUE e` | `R0513` (05) |
-| `?x = e` as a Statement | `LET ?x BE e` | `R0407` (04) |
-| `CHANGE f TO f2` | `UPDATE f TO f2` | `R0808` (08) |
-| `EITHER:` … `OR:` | `RANDOMLY:` with `OPTION:` Blocks | `R0906` (09) |
-| `SUITS a AT x AND b AT y`, `SHIFT m AND n …` | `,` between the items | `R1412` (14) |
-| `MAPPING a TO b` | `MAPPING a AS b` | `R1514` (15) |
-| `UNASSIGN`, `UNASSIGNED` | `REMOVE`, `REMOVED` | `R1515` (15) |
-| `n PERCENT OF Role` | `n% OF Role` | `R1516` (15) |
-| `ROLE r STARTS WITH:`, `CAST STARTS WITH:` | `ROLE r:`, `CAST:` | `R1608` (16) |
-| `ENDED WITH e`, `ENDED WITHOUT OUTCOME` | `FINISHED WITH e`, `FINISHED` | `R1715` (17) |
-| `END SUBPLOT P` | `DROP SUBPLOT P` | `R1717` (17) |
-| `TRANSITION TO p` | `ENTER p` | `R2016` (20) |
-| `key = value` in `.regin` | `key value` | `R2124` (21) |
-| `PLAYS a AND b` | `PLAYS a, b` | `R2125` (21) |
-| `, AT RANDOM` | `, RANDOMLY` | `R2606` (26) |
+| `EVENT e` | `CUE e` | `R05_13-retired-event` (05) |
+| `?x = e` as a Statement | `LET ?x BE e` | `R04_07-retired-equals-statement` (04) |
+| `CHANGE f TO f2` | `UPDATE f TO f2` | `R08_08-retired-change` (08) |
+| `EITHER:` … `OR:` | `RANDOMLY:` with `OPTION:` Blocks | `R09_06-retired-either` (09) |
+| `SUITS a AT x AND b AT y`, `SHIFT m AND n …` | `,` between the items | `R14_12-retired-and-in-label` (14) |
+| `MAPPING a TO b` | `MAPPING a AS b` | `R15_14-retired-mapping-to` (15) |
+| `UNASSIGN`, `UNASSIGNED` | `REMOVE`, `REMOVED` | `R15_15-retired-unassign` (15) |
+| `n PERCENT OF Role` | `n% OF Role` | `R15_16-retired-percent` (15) |
+| `ROLE r STARTS WITH:`, `CAST STARTS WITH:` | `ROLE r:`, `CAST:` | `R16_08-retired-starts-with` (16) |
+| `ENDED WITH e`, `ENDED WITHOUT OUTCOME` | `FINISHED WITH e`, `FINISHED` | `R17_15-retired-ended-with` (17) |
+| `END SUBPLOT P` | `DROP SUBPLOT P` | `R17_17-retired-end-subplot` (17) |
+| `TRANSITION TO p` | `ENTER p` | `R20_16-retired-transition-to` (20) |
+| `key = value` in `.regin` | `key value` | `R21_24-retired-equals-setting` (21) |
+| `PLAYS a AND b` | `PLAYS a, b` | `R21_25-retired-and-in-plays` (21) |
+| `, AT RANDOM` | `, RANDOMLY` | `R26_06-retired-at-random` (26) |
 
-A clause keyword written without its `,` (`WHEN e FROM DIRECTOR:`) is reported as `R0111` (this chapter). It isn't listed above, because it is a missing comma rather than an old word. Flat blocks were removed outright: `R0107` is retired, and a stray `;` is `R0108`.
+A clause keyword written without its `,` (`WHEN e FROM DIRECTOR:`) is reported as `R01_11-clause-without-comma` (this chapter). It isn't listed above, because it is a missing comma rather than an old word. Flat blocks were removed outright: `R01_07-unclosed-flat-block` is retired, and a stray `;` is `R01_08-stray-semicolon`.
 
 ## A word of Regia 2.0 in a 1.5 build
 
-A Transpiler built for Regia 1.5 (ADR 0025) still parses every construct of 2.0. If a Program uses one from a system that 1.5 leaves out, the build reports **`R0109`**. The error names the construct and says it is Regia 2.0, so a writer doesn't get a parse error for it. The constructs are:
+A Transpiler built for Regia 1.5 (ADR 0025) still parses every construct of 2.0. If a Program uses one from a system that 1.5 leaves out, the build reports **`R01_09-later-regia-construct`**. The error names the construct and says it is Regia 2.0, so a writer doesn't get a parse error for it. The constructs are:
 
 - `FROM GAME`, `FROM ME`, and `FROM` with `OR` alternatives (chapter 05);
 - `BY` on a Goal's ending (chapter 05), and a Goal's ending in a Plot, with or without `BY` (chapter 20): in 1.5 nobody hears how a Goal it asked ended;
@@ -266,33 +266,33 @@ A Transpiler built for Regia 1.5 (ADR 0025) still parses every construct of 2.0.
 
 `WHEN EXITED, BY PARENT:` (chapter 20) and the `BY` of `SHIFT` and `SHIFTS` (chapter 14) are not a Goal's ending, and are in 1.5.
 
-A construct reported with `R0109` gets no other Diagnostic: the checks of its own chapter aren't run on it. A 2.0 build never reports `R0109`. The code is retired there, and keeps its number. A Program that builds in 1.5 builds in 2.0 and does the same thing there.
+A construct reported with `R01_09-later-regia-construct` gets no other Diagnostic: the checks of its own chapter aren't run on it. A 2.0 build never reports `R01_09-later-regia-construct`. The code is retired there, and keeps its number. A Program that builds in 1.5 builds in 2.0 and does the same thing there.
 
 ## Transpiler checks
 
 **Errors**
 
-- `R0101` A Block header ending a line inside an Inline block, whose indented body has no valid parent (hint: put the header on its own line).
-- `R0102` A dotted name that contains a keyword, such as `complain.SIGNAL` (hint: `. SIGNAL`).
-- `R0103` Tabs and spaces mixed for indentation in one file.
-- `R0104` A line dedented to a level that was never opened.
-- `R0105` A continuation line not indented further than the first line of its logical line.
-- `R0107` Retired with Flat blocks; the number is not reused.
-- `R0108` A `;` that closes no Inline block (hint: a Block's body on later lines is indented under its header; Flat blocks closed by `;` no longer exist).
-- `R0109` A construct of a system Regia 1.5 leaves out, in a 1.5 build (the message names it and says it is Regia 2.0). Reported by a 1.5 build only; retired in 2.0.
-- `R0110` A name spelled exactly like a keyword (the message says the word is a keyword; hint: change its case or its spelling).
-- `R0111` A clause keyword after the core of a header or Statement with no `,` before it, such as `WHEN e FROM DIRECTOR:` (the message names the clause; hint: `WHEN e, FROM DIRECTOR:`).
-- `R0112` A character Regia doesn't use outside a String or a comment.
-- `R0113` A String not closed on its line, or an escape other than `\"` and `\\`.
-- `R0114` A line indented further than the one before it, which opens no Block.
-- `R0115` Text that fits no construct, and that no other check names (the message says what was found and what was expected).
+- `R01_01-indented-body-after-inline` A Block header ending a line inside an Inline block, whose indented body has no valid parent (hint: put the header on its own line).
+- `R01_02-keyword-in-dotted-name` A dotted name that contains a keyword, such as `complain.SIGNAL` (hint: `. SIGNAL`).
+- `R01_03-mixed-tabs-and-spaces` Tabs and spaces mixed for indentation in one file.
+- `R01_04-dedent-to-unopened-level` A line dedented to a level that was never opened.
+- `R01_05-continuation-not-indented` A continuation line not indented further than the first line of its logical line.
+- `R01_07-unclosed-flat-block` Retired with Flat blocks; the number is not reused.
+- `R01_08-stray-semicolon` A `;` that closes no Inline block (hint: a Block's body on later lines is indented under its header; Flat blocks closed by `;` no longer exist).
+- `R01_09-later-regia-construct` A construct of a system Regia 1.5 leaves out, in a 1.5 build (the message names it and says it is Regia 2.0). Reported by a 1.5 build only; retired in 2.0.
+- `R01_10-keyword-as-name` A name spelled exactly like a keyword (the message says the word is a keyword; hint: change its case or its spelling).
+- `R01_11-clause-without-comma` A clause keyword after the core of a header or Statement with no `,` before it, such as `WHEN e FROM DIRECTOR:` (the message names the clause; hint: `WHEN e, FROM DIRECTOR:`).
+- `R01_12-stray-character` A character Regia doesn't use outside a String or a comment.
+- `R01_13-malformed-string` A String not closed on its line, or an escape other than `\"` and `\\`.
+- `R01_14-indent-opens-no-block` A line indented further than the one before it, which opens no Block.
+- `R01_15-unexpected-text` Text that fits no construct, and that no other check names (the message says what was found and what was expected).
 
 **Warnings**
 
-- `R0106` A Block header with no body. A Block holding only `PASS` has a body.
+- `R01_06-block-without-body` A Block header with no body. A Block holding only `PASS` has a body.
 
 ## Regia 1.5
 
-All of this chapter is in 1.5 (ADR 0025). `R0109` is reported by a 1.5 build only, and is retired in 2.0 (*A word of Regia 2.0 in a 1.5 build*, above).
+All of this chapter is in 1.5 (ADR 0025). `R01_09-later-regia-construct` is reported by a 1.5 build only, and is retired in 2.0 (*A word of Regia 2.0 in a 1.5 build*, above).
 
-Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R0111` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R0107` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`). *Retired spellings*, and the rules that retired spellings keep their error for ever, that retired keywords stay reserved, and that only this spec's own spellings get an error, were decided in the ticket *Retired spellings and their codes* (`.scratch/syntax-review/issues/13-retired-spellings.md`). *Names, Strings and characters*, `R0112` to `R0115`, and how layout errors are recovered from were decided in the ticket *Review: text to tokens* (`.scratch/transpiler/issues/01-text-to-tokens.md`) and are in 1.5.
+Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`). `R01_11-clause-without-comma` was added in the ticket *The comma* (`.scratch/syntax-review/issues/02-the-comma.md`) and is in 1.5. Flat blocks and `R01_07-unclosed-flat-block` were removed in the ticket *`.`, `;` and the Block styles* (`.scratch/syntax-review/issues/03-dot-semicolon-blocks.md`). *Retired spellings*, and the rules that retired spellings keep their error for ever, that retired keywords stay reserved, and that only this spec's own spellings get an error, were decided in the ticket *Retired spellings and their codes* (`.scratch/syntax-review/issues/13-retired-spellings.md`). *Names, Strings and characters*, `R01_12-stray-character`, `R01_13-malformed-string`, `R01_14-indent-opens-no-block`, `R01_15-unexpected-text`, and how layout errors are recovered from were decided in the ticket *Review: text to tokens* (`.scratch/transpiler/issues/01-text-to-tokens.md`) and are in 1.5.

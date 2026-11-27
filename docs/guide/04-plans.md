@@ -57,9 +57,9 @@ An Event is anything that happens to an Agent or a Director and can start a Plan
 
 **Checks**
 
-- A Cue tested in a Context or an `IF` → `R0502`
-- `LEARN` or `FORGET` with a Cue or a Goal, `PURSUE` or `DROP` with a Fact or a Cue → `R0802`
-- `EVENT` to declare a Cue → `R0513` (hint: `CUE`)
+- A Cue tested in a Context or an `IF` → `R05_02-cue-tested-in-condition`
+- `LEARN` or `FORGET` with a Cue or a Goal, `PURSUE` or `DROP` with a Fact or a Cue → `R08_02-wrong-kind-for-action`
+- `EVENT` to declare a Cue → `R05_13-retired-event` (hint: `CUE`)
 
 Spec: chapter 05, *Cues are momentary*, *Events*. For the Basic Actions, chapter 08.
 
@@ -134,11 +134,11 @@ What a Pursuit is, what fails one, and how to write a fallback are in *Goals and
 
 **Checks**
 
-- A Fact Trigger without `LEARNED` or `FORGOTTEN` → `R0503`
-- A kind word that doesn't suit the item (`WHEN served(?dish) LEARNED`, `WHEN have_dinner LEARNED`) → `R0504`
-- `WITH` on `REACHED`, `DROPPED` or `ENDED` → `R1105`
-- `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder or `FROM` → `R1508`
-- `WHEN Guest ?g JOINED:`, in a 1.5 build → `R0109` (*When an Agent leaves*)
+- A Fact Trigger without `LEARNED` or `FORGOTTEN` → `R05_03-fact-trigger-without-kind`
+- A kind word that doesn't suit the item (`WHEN served(?dish) LEARNED`, `WHEN have_dinner LEARNED`) → `R05_04-wrong-trigger-kind`
+- `WITH` on `REACHED`, `DROPPED` or `ENDED` → `R11_05-with-on-wrong-trigger`
+- `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot, or with an item, a Placeholder or `FROM` → `R15_08-misused-assigned-or-removed`
+- `WHEN Guest ?g JOINED:`, in a 1.5 build → `R01_09-later-regia-construct` (*When an Agent leaves*)
 
 Spec: chapter 05, *Trigger kinds*, *How a Pursuit ends*. For `ASSIGNED` and `REMOVED`, chapter 15; for `FAILED WITH`, chapter 11.
 
@@ -183,10 +183,10 @@ The full story of Senders, recipients and delivery is in *Messages*.
 
 **Checks**
 
-- `FROM` on `FORGOTTEN` → `R0505`
-- `BY` on a Trigger that isn't a Goal's ending → `R0506`
-- `FROM GAME`, `FROM ME`, `FROM` with `OR`, `BY` on a Goal's ending, or a quantity after `FROM`, in a 1.5 build → `R0109`
-- `FROM` a Role the Playbook or Plot doesn't declare → `R1502`
+- `FROM` on `FORGOTTEN` → `R05_05-from-on-forgotten`
+- `BY` on a Trigger that isn't a Goal's ending → `R05_06-by-on-wrong-trigger`
+- `FROM GAME`, `FROM ME`, `FROM` with `OR`, `BY` on a Goal's ending, or a quantity after `FROM`, in a 1.5 build → `R01_09-later-regia-construct`
+- `FROM` a Role the Playbook or Plot doesn't declare → `R15_02-undeclared-role`
 
 Spec: chapter 05, *Where it came from: `FROM`*. For Role setups, chapter 16; for Senders in Messages, chapter 07.
 
@@ -218,8 +218,8 @@ The clauses come after, each after a `,`, in any order: `FROM …`, and the Labe
 
 **Checks**
 
-- A clause keyword with no `,` before it → `R0111`
-- `SUITS a AT x AND b AT y` → `R1412` (hint: `,` between the items)
+- A clause keyword with no `,` before it → `R01_11-clause-without-comma`
+- `SUITS a AT x AND b AT y` → `R14_12-retired-and-in-label` (hint: `,` between the items)
 
 Spec: chapter 05, *The shape of a Trigger*. For clauses and the comma, chapter 01; for Labels, chapter 14.
 
@@ -264,10 +264,10 @@ The items are joined with three operators and parentheses:
 
 **Checks**
 
-- `AND` and `OR` mixed at one level → `R0601`
-- A Cue in a Context → `R0502`
-- `RUNNING` in a Playbook → `R1714`; `IN` in a Playbook, or in a Plot with no Phases → `R2014`
-- `?x SENT <cue>`, in a 1.5 build → `R0109`
+- `AND` and `OR` mixed at one level → `R06_01-and-or-without-parentheses`
+- A Cue in a Context → `R05_02-cue-tested-in-condition`
+- `RUNNING` in a Playbook → `R17_14-running-in-playbook`; `IN` in a Playbook, or in a Plot with no Phases → `R20_14-misplaced-in-clause`
+- `?x SENT <cue>`, in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 06, *Two different questions*, *Conditions*. For `PURSUING`, chapter 05; `PLAYS`, chapter 15; `RUNNING`, chapter 17; `IN`, chapter 20; comparisons, chapter 04.
 
@@ -329,11 +329,11 @@ Both are accepted, with no warning. The `GIVEN` chain is worth writing when a ca
 
 **Checks**
 
-- An `ELSE` with no `GIVEN` before it, or a `GIVEN` after the `ELSE` → `R0602`
-- A Statement before, between or after the `GIVEN`s → `R0603`
-- A `GIVEN` that an earlier sibling always catches → `R0605` (warning)
-- `SUITS` on a `GIVEN` or `ELSE` → `R1405`
-- A Placeholder filled and never used → `R0307` (warning), except a Trigger Placeholder some sibling uses
+- An `ELSE` with no `GIVEN` before it, or a `GIVEN` after the `ELSE` → `R06_02-misplaced-else`
+- A Statement before, between or after the `GIVEN`s → `R06_03-statement-outside-given`
+- A `GIVEN` that an earlier sibling always catches → `R06_05-unreachable-given` (warning)
+- `SUITS` on a `GIVEN` or `ELSE` → `R14_05-misplaced-suits`
+- A Placeholder filled and never used → `R03_07-unused-placeholder` (warning), except a Trigger Placeholder some sibling uses
 
 Spec: chapter 06, *Plans under one Trigger*. For Labels on a `GIVEN`, chapter 14; for doc comments, chapter 02.
 
@@ -401,9 +401,9 @@ A full Guest eats the roast. A hungry one falls through to the general Plan, whi
 
 **Checks**
 
-- A Trigger Block an earlier one in the same Playbook always catches → `R1307` (warning)
-- A Goal that no Plan takes → `T1104` (Trace, Failure)
-- A told Cue that no Plan takes → `T0702` (Trace, `unheard`)
+- A Trigger Block an earlier one in the same Playbook always catches → `R13_07-unreachable-trigger-block` (warning)
+- A Goal that no Plan takes → `T11_04-goal-found-no-plan` (Trace, Failure)
+- A told Cue that no Plan takes → `T07_02-cue-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 06, *Plans under one Trigger*; chapter 13, *Candidates*, *Inside a Playbook*. For a Goal no Plan takes, chapter 11.
 
@@ -467,8 +467,8 @@ An `IF` condition fills Placeholders, like a Context. `?who` was filled by the T
 
 **Checks**
 
-- A Placeholder filled in an `IF` condition and used, or filled again, outside its branch → `R0604`
-- `AND` and `OR` mixed, a Cue tested → `R0601`, `R0502`, as in a Context
+- A Placeholder filled in an `IF` condition and used, or filled again, outside its branch → `R06_04-if-placeholder-outside-branch`
+- `AND` and `OR` mixed, a Cue tested → `R06_01-and-or-without-parentheses`, `R05_02-cue-tested-in-condition`, as in a Context
 
 Spec: chapter 06, *`IF` in a Body*, *Placeholders in an `IF`*. For certainly filled, chapter 03.
 
@@ -500,8 +500,8 @@ TO fight, FROM DIRECTOR:
 
 **Checks**
 
-- A waiting `PURSUE g` in `TO g` with the Trigger's own arguments and no `GIVEN` or `IF` around it → `R0806` (warning; hint: `, WITHOUT WAITING`)
-- A recipe written `FROM DIRECTOR` that pursues its own Goal: the second round finds no recipe → `T1104` (Trace, Failure)
+- A waiting `PURSUE g` in `TO g` with the Trigger's own arguments and no `GIVEN` or `IF` around it → `R08_06-endless-self-pursuit` (warning; hint: `, WITHOUT WAITING`)
+- A recipe written `FROM DIRECTOR` that pursues its own Goal: the second round finds no recipe → `T11_04-goal-found-no-plan` (Trace, Failure)
 
 Spec: chapter 06, *Loops*; chapter 08, *Repeating*.
 

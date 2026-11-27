@@ -2,7 +2,7 @@
 
 Regia's `,` had at least six jobs (continuing a line, separating arguments, Multi-definition items and `EXCEPT` lists, starting a Label or Pick, opening an inline Context), and some optional parts of a header took one while others didn't (`WHEN e FROM DIRECTOR, SUITS …:`). We decided that `,` means one thing: **something more follows**, either the next item of a list or a **Clause**. A Clause is an optional part that applies to a whole header or Statement, and it is always written `, KEYWORD …` after the core. So the Sender becomes `WHEN e, FROM DIRECTOR:`. A complement that finishes a single word (`FAILED WITH r`, `SHIFT m BY n`) takes no comma. The parser tells a Clause from a list item by the token after the `,`, so no list item may start with a Clause keyword. Clauses may come in any order, and tools write them in the order their chapter lists them.
 
-In the same ticket we fixed what a keyword is. Keywords are UPPERCASE and case-sensitive, and every keyword is reserved: a name spelled exactly like one is an error (`R0110`), while `count` or `Wait` stays an ordinary name. Without this rule, adding a keyword would silently take a name away from writers. The rule lets later renames add words freely.
+In the same ticket we fixed what a keyword is. Keywords are UPPERCASE and case-sensitive, and every keyword is reserved: a name spelled exactly like one is an error (`R01_10-keyword-as-name`), while `count` or `Wait` stays an ordinary name. Without this rule, adding a keyword would silently take a name away from writers. The rule lets later renames add words freely.
 
 ## Considered options
 

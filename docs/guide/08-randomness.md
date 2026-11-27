@@ -41,11 +41,11 @@ A Random choice is a Statement of a Body: a `RANDOMLY:` Block whose children are
 
 **Checks**
 
-- A `RANDOMLY` with no `OPTION` → `R0901`
-- A Statement other than `OPTION` directly under `RANDOMLY:`, or an `OPTION:` anywhere else → `R0902`
-- A `RANDOMLY` with a single `OPTION` → `R0905` (warning)
-- An Option with no body → `R0106` (warning)
-- The retired headers `EITHER:` and `OR:` → `R0906` (hint: `RANDOMLY:` with one `OPTION:` per Option)
+- A `RANDOMLY` with no `OPTION` → `R09_01-randomly-without-options`
+- A Statement other than `OPTION` directly under `RANDOMLY:`, or an `OPTION:` anywhere else → `R09_02-wrong-randomly-nesting`
+- A `RANDOMLY` with a single `OPTION` → `R09_05-randomly-with-one-option` (warning)
+- An Option with no body → `R01_06-block-without-body` (warning)
+- The retired headers `EITHER:` and `OR:` → `R09_06-retired-either` (hint: `RANDOMLY:` with one `OPTION:` per Option)
 
 Spec: chapter 09, *`RANDOMLY` / `OPTION`*.
 
@@ -79,11 +79,11 @@ Neither entry is a warning, since both can be meant. "None of these, this time" 
 
 **Checks**
 
-- A Weight whose Placeholders aren't certainly filled before the `RANDOMLY` → `R0903`
-- `WEIGHT 30%` → `R1517`
-- A Weight that isn't a Number → `T0901` (Trace, Failure)
-- A negative Weight, counted as 0 → `T0902` (Trace entry)
-- Every Weight is 0 or less, and no Option runs → `T0903` (Trace entry)
+- A Weight whose Placeholders aren't certainly filled before the `RANDOMLY` → `R09_03-maybe-unfilled-weight`
+- `WEIGHT 30%` → `R15_17-misplaced-percent-sign`
+- A Weight that isn't a Number → `T09_01-weight-not-number` (Trace, Failure)
+- A negative Weight, counted as 0 → `T09_02-weight-below-zero` (Trace entry)
+- Every Weight is 0 or less, and no Option runs → `T09_03-all-weights-zero` (Trace entry)
 
 Spec: chapter 09, *Weights*. For Expressions, chapter 04; for `%`, chapter 15.
 
@@ -119,7 +119,7 @@ SIGNAL wagered(?stake)                   # error: the PASS Option leaves ?stake 
 
 **Checks**
 
-- A Placeholder filled in some Options but not all, used after the choice or outside a sibling Option → `R0904`
+- A Placeholder filled in some Options but not all, used after the choice or outside a sibling Option → `R09_04-option-placeholder-outside-option`
 
 Spec: chapter 09, *Placeholders in an Option*. For `IF` branches, chapters 04 and 06.
 
@@ -141,7 +141,7 @@ A Random choice goes wherever a Statement goes. Here the banquet's Director has 
 
 **Checks**
 
-- `RANDOMLY` in a Role setup → `R1602`
+- `RANDOMLY` in a Role setup → `R16_02-wrong-statement-in-setup`
 
 Spec: chapter 09. For setups, chapter 16.
 
@@ -168,7 +168,7 @@ Both duellists hold this recipe and start with the same stamina. Each rolls its 
 
 **Checks**
 
-- A whole roll with no whole number between its bounds, in a Body → `T0403` (Trace, Failure)
+- A whole roll with no whole number between its bounds, in a Body → `T04_03-empty-whole-roll` (Trace, Failure)
 
 Spec: chapter 04, *Random numbers*. For Durations, chapter 12.
 
@@ -197,9 +197,9 @@ A condition with several Matches and no Pick uses one, and the language doesn't 
 
 **Checks**
 
-- `WEIGHT` with `HIGHEST`, `LOWEST` or `RANDOMLY` → `R2601`
-- The retired `, AT RANDOM` → `R2606` (hint: `, RANDOMLY`)
-- Every Match weighs 0 or less → `T2601` (Trace entry)
+- `WEIGHT` with `HIGHEST`, `LOWEST` or `RANDOMLY` → `R26_01-conflicting-pick-clauses`
+- The retired `, AT RANDOM` → `R26_06-retired-at-random` (hint: `, RANDOMLY`)
+- Every Match weighs 0 or less → `T26_01-all-pick-weights-zero` (Trace entry)
 
 Spec: chapter 26. For Weights, chapter 09.
 
@@ -233,9 +233,9 @@ WHEN scandal(ME), FROM peer ?speaker:
 
 **Checks**
 
-- A counted `ASSIGN` target or `MAPPING` in a Role setup → `R1603`
-- A count or share that isn't a Number → `T1501` (Trace, Failure)
-- A count asking for more Agents than are left → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
+- A counted `ASSIGN` target or `MAPPING` in a Role setup → `R16_03-misused-to-in-setup`
+- A count or share that isn't a Number → `T15_01-count-not-number` (Trace, Failure)
+- A count asking for more Agents than are left → `T15_02-count-exceeds-pool` (Trace warning); a negative count → `T15_03-count-below-zero` (Trace warning)
 
 Spec: chapter 15, *Counts and fractions*. For a Subplot's casting, chapter 17.
 
@@ -268,8 +268,8 @@ A Role setup is the same Statements for every Agent of the Role, and its Express
 
 **Checks**
 
-- `RANDOMLY`, `IF` or any Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup → `R1602`
-- A Propensity's value or `RANDOM` bound that isn't a literal, or lies outside its range → `R2107`
+- `RANDOMLY`, `IF` or any Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup → `R16_02-wrong-statement-in-setup`
+- A Propensity's value or `RANDOM` bound that isn't a literal, or lies outside its range → `R21_07-wrong-propensity-value`
 
 Spec: chapter 16. For Propensity values, chapter 21, *Agent kinds*; for Traits and Moods, chapter 14.
 
@@ -300,7 +300,7 @@ Where the seed comes from, first that applies:
 
 **Checks**
 
-- A `SEED` that isn't a whole, non-negative literal → `R2108`
+- A `SEED` that isn't a whole, non-negative literal → `R21_08-wrong-count-or-seed`
 
 Spec: chapter 21, *The seed*. For what the seed covers and behaviour cases, chapter 34; for `--seed`, chapter 23.
 

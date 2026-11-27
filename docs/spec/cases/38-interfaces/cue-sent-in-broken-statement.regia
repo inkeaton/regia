@@ -1,5 +1,5 @@
 #! case: a Cue whose only sender is broken is not reported as never sent
-#! rule: R3807
+#! rule: R38_07-cue-never-sent
 
 GAME CUE insult_heard
 CUE scandal
@@ -7,6 +7,6 @@ ACTION gasp
 
 PLAYBOOK Gossip:
     WHEN insult_heard:
-        TELL EVERYONE ) scandal          #! error R0115
+        TELL EVERYONE ) scandal          #! error R01_15-unexpected-text
     WHEN scandal:
         DO gasp

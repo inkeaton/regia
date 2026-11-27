@@ -16,7 +16,7 @@ PLOT RoyalBanquet:
     ROLE Guard
     DURING PLOT:
         WHEN ENTERED:
-            ASSIGN Keeping_watch TO Guard      # warning R3801: `culprit_seized` has no Plan here
+            ASSIGN Keeping_watch TO Guard      # warning R38_01-unheard-signal: `culprit_seized` has no Plan here
 ```
 
 - There is no `SIGNALS`, `ANSWERS` or `OUTCOMES` line, and no marker on a `CUE` declaration that says which part of the Program sends it. The one marker is `GAME` (chapter 10), which says the game produces it: the Transpiler can't see the game, so that can't be inferred.
@@ -60,7 +60,7 @@ For each Cue the Program declares, the Interface gives its **senders**, worked o
 - **Reason**, when some `FAIL WITH` gives it;
 - **from the game**, when it is declared `GAME CUE` (chapter 10).
 
-A Cue can be in several groups, the game included: a game Cue that Agents also tell is listed as both. A Cue in no group can never fire, and a Trigger on it is a warning (`R3807`, below).
+A Cue can be in several groups, the game included: a game Cue that Agents also tell is listed as both. A Cue in no group can never fire, and a Trigger on it is a warning (`R38_07-cue-never-sent`, below).
 
 ## Checks
 
@@ -84,7 +84,7 @@ A Trigger with no `FROM` is not checked here, since the Cue may come from the ga
 
 ### A Cue nothing sends
 
-`WHEN challanged:` waits for a Cue that isn't `GAME` and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` of the Program sends. It can never fire, and the Transpiler warns on the Trigger (`R3807`), with the hint to declare it `GAME CUE` if the game is meant to send it.
+`WHEN challanged:` waits for a Cue that isn't `GAME` and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` of the Program sends. It can never fire, and the Transpiler warns on the Trigger (`R38_07-cue-never-sent`), with the hint to declare it `GAME CUE` if the game is meant to send it.
 
 ### An `ASK` or `TELL` that no `FROM` admits
 
@@ -92,7 +92,7 @@ A Trigger with no `FROM` is not checked here, since the Cue may come from the ga
 DURING feast:
     WHEN ENTERED:
         ASSIGN Dining TO Guest, MAPPING Servant AS waiter
-        ASSIGN Serving TO Servant, MAPPING Host AS patron      # warning R3803
+        ASSIGN Serving TO Servant, MAPPING Host AS patron      # warning R38_03-unheard-message
 ```
 
 `Dining` writes `ASK waiter TO bring(…)`, and `Serving` answers `TO bring(…), FROM patron`. With `patron` mapped to `Host`, no Guest's request is ever admitted.
@@ -119,7 +119,7 @@ PLAYBOOK Seating:
 
 PLAYBOOK Mingling:
     WHEN tired:
-        PURSUE take_seat           # warning R3805
+        PURSUE take_seat           # warning R38_05-pursue-without-me-recipe
 ```
 
 An Agent's own `PURSUE` is `FROM ME` and never takes the Sender of the Plan it is written in (chapter 05). When the Program holds recipes for `g` and **none admits `ME`** (each has a `FROM`, and `ME` is not among its alternatives), a `PURSUE g` can only fail at once, and the Transpiler warns on it. The hint is `FROM … OR ME`.
@@ -133,22 +133,22 @@ An Agent's own `PURSUE` is `FROM ME` and never takes the Sender of the Plan it i
 
 **Warnings**
 
-- `R3801` A Plot gives a Playbook that sends a Signal the Plot has no Plan for, in any Phase. Absence check (chapter 23).
-- `R3802` `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e`. Absence check (chapter 23).
-- `R3803` A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role. Absence check (chapter 23).
-- `R3804` `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r`. Absence check (chapter 23).
-- `R3805` A `PURSUE g` where no recipe of `g` in the Program admits `ME` (hint: `FROM … OR ME`). Absence check (chapter 23).
-- `R3806` An `ASK … TO g`, or a setup's `PURSUE g`, where every recipe of `g` in the Program is `FROM ME`. Absence check (chapter 23).
-- `R3807` A Cue that isn't `GAME` (chapter 10) and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` in the Program sends, while some Trigger waits for it. Reported on each such Trigger (hint: declare it `GAME CUE` if the game sends it). A local Cue is checked within its Playbook. Absence check (chapter 23).
+- `R38_01-unheard-signal` A Plot gives a Playbook that sends a Signal the Plot has no Plan for, in any Phase. Absence check (chapter 23).
+- `R38_02-cue-never-signalled` `WHEN e` with any `FROM` (a Role or `?who`) in a Plot where no Playbook the Plot gives Signals `e`. Absence check (chapter 23).
+- `R38_03-unheard-message` A Plot's Mappings leave an `ASK` or `TELL` with no receiving Plan whose `FROM` admits the sender's Role. Absence check (chapter 23).
+- `R38_04-reason-never-given` `WHEN g FAILED WITH r` where no recipe of `g`, or of a Goal it waits on, fails with `r`. Absence check (chapter 23).
+- `R38_05-pursue-without-me-recipe` A `PURSUE g` where no recipe of `g` in the Program admits `ME` (hint: `FROM … OR ME`). Absence check (chapter 23).
+- `R38_06-ask-only-me-recipes` An `ASK … TO g`, or a setup's `PURSUE g`, where every recipe of `g` in the Program is `FROM ME`. Absence check (chapter 23).
+- `R38_07-cue-never-sent` A Cue that isn't `GAME` (chapter 10) and that no `TELL`, `SIGNAL`, `END PLOT WITH` or `FAIL WITH` in the Program sends, while some Trigger waits for it. Reported on each such Trigger (hint: declare it `GAME CUE` if the game sends it). A local Cue is checked within its Playbook. Absence check (chapter 23).
 
-An ending the parent never matches is `R1708` (chapter 17). A Goal-ending Trigger in a Plot that never asks the Goal is `R2012` (chapter 20); with `BY` in a Playbook that never asks it, `R0508` (chapter 05).
+An ending the parent never matches is `R17_08-unheard-subplot-ending` (chapter 17). A Goal-ending Trigger in a Plot that never asks the Goal is `R20_12-goal-never-asked` (chapter 20); with `BY` in a Playbook that never asks it, `R05_08-by-for-unasked-goal` (chapter 05).
 
 ## Trace entries
 
 **Unheard** (`info`, chapter 34). They were warnings until the ticket *What the Trace records* (ADR 0037): a Phase that ignores a Signal is often what the writer meant.
 
-- `T3801` A Signal that reached a Director with no Plan for it in the current Phase or in `DURING PLOT`. The entry names the Cue, the sending Agent, the Plot and the Phase.
-- `T3802` A Subplot's own ending that no Plan of the parent heard (no `FINISHED WITH` Plan for its Outcome, no plain `FINISHED` and no `ENDED`), in the current Phase or in `DURING PLOT`. The entry names the Subplot, the Outcome (or says the ending was bare) and the parent's Phase. A `DROPPED` ending with no Plan writes no entry: the parent caused it (chapter 17).
+- `T38_01-signal-found-no-plan` A Signal that reached a Director with no Plan for it in the current Phase or in `DURING PLOT`. The entry names the Cue, the sending Agent, the Plot and the Phase.
+- `T38_02-ending-found-no-plan` A Subplot's own ending that no Plan of the parent heard (no `FINISHED WITH` Plan for its Outcome, no plain `FINISHED` and no `ENDED`), in the current Phase or in `DURING PLOT`. The entry names the Subplot, the Outcome (or says the ending was bare) and the parent's Phase. A `DROPPED` ending with no Plan writes no entry: the parent caused it (chapter 17).
 
 Neither is a Failure. The sender is not told, its Plan goes on, and the Director does nothing. The ending of an asked Goal that finds no Plan writes no entry, at a Director or at an asking Agent (chapters 05, 20).
 
@@ -159,7 +159,7 @@ Neither is a Failure. The sender is not told, its Plan goes on, and the Director
 
 ## Regia 1.5
 
-In 1.5 (ADR 0025), except the rows of the asked Goals whose endings a Playbook or a Plot hears. They are always empty in 1.5, since `BY` and a Plot's Goal endings are later. `R3805` and `R3806` are later too, and never reported. `R3801` to `R3804` and `R3807` are in.
+In 1.5 (ADR 0025), except the rows of the asked Goals whose endings a Playbook or a Plot hears. They are always empty in 1.5, since `BY` and a Plot's Goal endings are later. `R38_05-pursue-without-me-recipe` and `R38_06-ask-only-me-recipes` are later too, and never reported. `R38_01-unheard-signal`, `R38_02-cue-never-signalled`, `R38_03-unheard-message`, `R38_04-reason-never-given` and `R38_07-cue-never-sent` are in.
 
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 

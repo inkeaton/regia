@@ -63,7 +63,7 @@ WHEN door_opened:
 ```
 
 - **`WAIT <Duration>, UNTIL <condition>`** waits until the condition holds, or until the Duration has run out, whichever comes first. **`WAIT UNTIL <condition>`** has no limit.
-- **`, UNTIL` is part of `WAIT`'s own form**, not a trailing clause: chapter 08's `R0805` doesn't apply to it.
+- **`, UNTIL` is part of `WAIT`'s own form**, not a trailing clause: chapter 08's `R08_05-wrong-trailing-clause` doesn't apply to it.
 - **The condition is anything an `IF` can test** in that Block (chapter 06): the Agent's Facts, or in a Director its own Facts, `IN <phase>`, `PLAYS` and `RUNNING`. It is checked when the Body reaches the `WAIT`, and again whenever what it tests changes. If it already holds, the Body carries on at once.
 - **Running out of time is not a failure.** The Body carries on either way, and an `IF` after the `WAIT` tells the two endings apart. `WAIT … UNTIL` fails only as `WAIT` does, on a Duration that isn't a Number.
 - **The condition names no new Values.** Its Placeholders must be certainly filled before the `WAIT`, or be blanks (`?`), because after a timeout nothing would fill them. To use what was found, test it again with `IF` or `GIVEN`.
@@ -98,24 +98,24 @@ DURING reception:
 
 **Errors**
 
-- `R1201` `WAIT` without a unit word, or with a word that isn't `SECOND`, `SECONDS`, `MINUTE` or `MINUTES`.
-- `R1202` A Duration whose Placeholders aren't certainly filled before the `WAIT`.
-- `R1204` A Placeholder in a `WAIT … UNTIL` condition that isn't certainly filled before the `WAIT` and isn't a blank.
-- `R1205` `AFTER` in a Playbook (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`).
+- `R12_01-wrong-duration-unit` `WAIT` without a unit word, or with a word that isn't `SECOND`, `SECONDS`, `MINUTE` or `MINUTES`.
+- `R12_02-maybe-unfilled-duration` A Duration whose Placeholders aren't certainly filled before the `WAIT`.
+- `R12_04-maybe-unfilled-wait-condition` A Placeholder in a `WAIT … UNTIL` condition that isn't certainly filled before the `WAIT` and isn't a blank.
+- `R12_05-after-in-playbook` `AFTER` in a Playbook (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`).
 
 **Warnings**
 
-- `R1203` A negative Number written directly as the Duration (`WAIT -2 SECONDS`).
+- `R12_03-negative-duration` A negative Number written directly as the Duration (`WAIT -2 SECONDS`).
 
 ## Trace entries
 
 **Failures**
 
-- `T1201` A Duration that isn't a Number.
+- `T12_01-duration-not-number` A Duration that isn't a Number.
 
 **Warnings**
 
-- `T1202` A negative Duration, counted as 0.
+- `T12_02-duration-below-zero` A negative Duration, counted as 0.
 
 ## Not in 2.0
 
@@ -135,7 +135,7 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 
 For *The full ASL mapping* and *Supporting multiple Targets* to pick up:
 
-- **Jason:** `WAIT` maps to `regia.wait(D)` and `WAIT … UNTIL` to `regia.wait(Cond, D)`, both on the run's one clock (chapter 39, `39-jason-plan-bodies.md`). A negative Duration is clamped to 0 with `T1202`.
+- **Jason:** `WAIT` maps to `regia.wait(D)` and `WAIT … UNTIL` to `regia.wait(Cond, D)`, both on the run's one clock (chapter 39, `39-jason-plan-bodies.md`). A negative Duration is clamped to 0 with `T12_02-duration-below-zero`.
 - Dropping the intention (`.drop_desire`, chapter 08) during a `regia.wait` removes it, which gives the "just stops" behaviour.
 - **`WAIT … UNTIL`** suspends only its own intention, tests the condition when it is reached and again whenever what it tests changes, never fails on running out of time, and writes a `time` entry saying whether the condition was met or the time ran out (chapter 39).
 - **`AFTER d:`** compiles to a generated Goal of its own, posted right after `ENTERED`'s, whose plan waits `D` with `regia.wait` and then tests the Context and runs the Body. In a Phase its intention is tagged with the Phase like `ENTERED`'s, so leaving the Phase drops it. Two counts that end together run in the order they were posted. See chapter 30, *`AFTER`*.

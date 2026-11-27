@@ -29,10 +29,10 @@ The check reports and writes nothing. On the showcase it reports nothing at all:
 
 **Checks**
 
-- An import path that leads to no file → `R1002`
-- An import cycle → `R1003` (the message names every file in the loop)
-- A `.regia` file importing a `.regin` → `R2101`
-- A `.regin` Entry that reaches no `ROOT` → `R2104`
+- An import path that leads to no file → `R10_02-missing-import-file`
+- An import cycle → `R10_03-import-cycle` (the message names every file in the loop)
+- A `.regia` file importing a `.regin` → `R21_01-import-of-instancing-file`
+- A `.regin` Entry that reaches no `ROOT` → `R21_04-missing-or-wrong-root`
 
 Spec: chapter 23, *Files and imports*, *The command line*. For Programs, chapter 10; for a `.regia` Entry, chapter 21, *The Root Plot*.
 
@@ -41,7 +41,7 @@ Spec: chapter 23, *Files and imports*, *The command line*. For Programs, chapter
 Had `serving.regia` lost its first line, `IMPORT "../vocabulary"`, every shared name in it would be unknown. `regia check banquet.regin` prints, for the first of them:
 
 ```
-error[R1004]: `bring` is not declared
+error[R10_04-name-out-of-scope]: `bring` is not declared
  --> playbooks/serving.regia:8:8
   |
 8 |     TO bring(?dish, ?place), FROM patron ?guest:
@@ -57,7 +57,7 @@ A Diagnostic has the same parts wherever it is shown:
 | Part | Here | What it is |
 |---|---|---|
 | severity | `error` | `error` or `warning`, nothing else |
-| code | `R1004` | the check's stable name (*Diagnostic codes*) |
+| code | `R10_04-name-out-of-scope` | the check's stable name (*Diagnostic codes*) |
 | message | "`bring` is not declared" | one line, free to change between versions |
 | primary span | `serving.regia`, line 8, column 8 | the file and the stretch of text the problem is at |
 | labels | none here | other places that explain it, each with a few words |
@@ -65,7 +65,7 @@ A Diagnostic has the same parts wherever it is shown:
 | fixes | none here | quick fixes: a title and the text edits that apply it |
 
 - Two severities. An error stops the Build; a warning doesn't. What the language does by its own rule, such as a default left out, is a line of a report (*Reports*), never a Diagnostic.
-- The severity is printed beside the code, `warning[R1305]`, and never read from it.
+- The severity is printed beside the code, `warning[R13_05-competition-ordered-by-name]`, and never read from it.
 - Every pass collects Diagnostics and none stops early, so one run reports every problem. A broken line in one file doesn't hide a wrong name in another.
 - The list is sorted by file, then by position, and exact duplicates are removed. One mistake gives one Diagnostic: a check stays silent when what it looks for may be in text the Transpiler couldn't read, such as a broken Statement or a missing import.
 - The command line prints a fix only by its title, as a `help:` line. The Visual Editor offers it as an action we can apply.
@@ -78,30 +78,32 @@ A warning we have read and accept is answered in the source with `#@allow` (*Syn
 
 **Checks**
 
-- `#@allow` naming an error's code → `R0204`
-- `#@allow` naming a code that silences nothing → `R0205` (warning, never itself allowed, reported only when the Program has no errors)
+- `#@allow` naming an error's code → `R02_04-allow-names-error`
+- `#@allow` naming a code without its name, or with the wrong name → `R02_06-allow-misnames-code`
+- `#@allow` naming a code that silences nothing → `R02_05-stale-allow` (warning, never itself allowed, reported only when the Program has no errors)
 
-Spec: chapter 23, *Diagnostics*, *Positions*. For `#@allow`, chapter 02; for `R1004`, chapter 10.
+Spec: chapter 23, *Diagnostics*, *Positions*. For `#@allow`, chapter 02; for `R10_04-name-out-of-scope`, chapter 10.
 
 ## Diagnostic codes
 
-A code is `R`, the two digits of the spec chapter that defines the check, and two digits numbering the check in that chapter's *Transpiler checks* section.
+A code such as `R01_11-clause-without-comma` has three parts: `R`; a number, made of the two digits of the spec chapter that defines the check, `_`, and two digits numbering the check in that chapter's *Transpiler checks* section; and `-` with a Code name of at most four words saying what the mistake is.
 
 | Code | Defined in | Check |
 |---|---|---|
-| `R0111` | 01, Statements and blocks | a clause keyword with no `,` before it |
-| `R1004` | 10, Scoping and imports | a name not declared in the file or anything it reaches |
-| `R1301` | 13, Plan selection | a cycle in one Plot's relations |
-| `R1305` | 13, Plan selection | a competition ordered only by name (warning) |
-| `R3602` | 36, Jason `.jcm` | a `base_port` that isn't a whole number in 1–65535 |
+| `R01_11-clause-without-comma` | 01, Statements and blocks | a clause keyword with no `,` before it |
+| `R10_04-name-out-of-scope` | 10, Scoping and imports | a name not declared in the file or anything it reaches |
+| `R13_01-precedence-cycle` | 13, Plan selection | a cycle in one Plot's relations |
+| `R13_05-competition-ordered-by-name` | 13, Plan selection | a competition ordered only by name (warning) |
+| `R36_02-wrong-base-port` | 36, Jason `.jcm` | a `base_port` that isn't a whole number in 1–65535 |
 
+- The number is the code's identity: `regia test`, `#@allow` and the docs pages match on it. The name is for us to read, and it is unique across all codes. A code is always written whole, and a right number with a wrong name is an error.
 - Inside a chapter, the numbers run errors first, then warnings. A check added later takes the next free number, whatever its severity.
-- A code is never reused. A dropped check keeps its number, marked retired in its chapter: `R0107` went with Flat blocks, `R2111` with missing values. A check that changes severity keeps its number too.
+- A code is never reused, neither its number nor its name. A dropped check keeps its code, marked retired in its chapter's list: `R01_07-unclosed-flat-block` went with Flat blocks, `R21_11-missing-propensity-value` with missing values. A check that changes severity keeps its code too. Names are frozen from the Regia 1.5 release on, like numbers.
 - A check that reports a retired spelling is never dropped. It lives in the chapter that owns the construct, and spec chapter 01 lists them all (*Retired spellings*).
 - Each code has a docs page, and the Visual Editor links each Diagnostic to it.
 - What happens at runtime has `T` codes of the same shape, written into the Trace (*The Trace*).
 
-A code says where its check is defined, and nothing more: `R13` means Plan selection only to someone who knows the spec's table of contents. The shape is kept because codes must stay stable and findable from the spec.
+The number says where a check is defined, so it is found in the spec at once; the name says what went wrong, so a reader doesn't need the spec to understand it.
 
 Spec: chapter 27, *Diagnostic codes*. For codes in a Diagnostic, chapter 23.
 
@@ -132,7 +134,7 @@ flowchart LR
 - The Model is the Program's meaning across files. `ASSIGN Dining` in the `ROLE Guest` setup no longer holds the word `Dining`: it points to the Playbook declared in `dining.regia`, with the Mappings we left out filled in. Every item keeps its origin, its file and range, which is how a Diagnostic finds its way back to our text.
 - The Model is resolved, not desugared. A Role setup stays a Role setup, and only the Target turns it into Messages from the Director. A Diagnostic therefore speaks of what we wrote, never of what it becomes.
 - The Model is rebuilt in full on every change. On broken code it is built as far as it can be, so the Visual Editor's graph and the other Diagnostics stay while we type.
-- One mistake gives one report. A check that says nothing does something (nothing declares `wave`, nothing sends `scandal`) stays silent when what it looks for may be in text that couldn't be read: `ACTION ) wave` is one syntax error, and `DO wave` reports nothing. A file that imports a missing file, directly or not, gets no `R1004` for a file-level name.
+- One mistake gives one report. A check that says nothing does something (nothing declares `wave`, nothing sends `scandal`) stays silent when what it looks for may be in text that couldn't be read: `ACTION ) wave` is one syntax error, and `DO wave` reports nothing. A file that imports a missing file, directly or not, gets no `R10_04-name-out-of-scope` for a file-level name.
 
 Since names are resolved across the Program, a name error can show in a file nobody touched, because an import elsewhere changed.
 
@@ -151,7 +153,7 @@ TARGET jason:
 ```
 
 ```
-error[R3602]: `base_port` must be a whole number from 1 to 65535
+error[R36_02-wrong-base-port]: `base_port` must be a whole number from 1 to 65535
  --> ports.regin:5:15
   |
 5 |     base_port 0
@@ -169,11 +171,11 @@ The core never writes a file. The command line writes the output into the Build 
 
 **Checks**
 
-- `SUITS` on a Target with no Selection function → `R1310` (warning, once per Program)
-- A Label the Target doesn't support → `R1408` (warning, once per Program per Label)
-- For Jason: `base_port` plus the number of starting Agents past 65535 → `R3601`; `base_port` not a whole number in 1–65535 → `R3602`; an individual Agent named `<kind>_<digits>` for a kind of the Build → `R3603`
-- A `TARGET` group for a Target the Transpiler doesn't know → `R2116` (warning, the group is skipped)
-- An unknown key under a known Target, or a value outside its set → `R2113` (warning)
+- `SUITS` on a Target with no Selection function → `R13_10-suits-without-selection-function` (warning, once per Program)
+- A Label the Target doesn't support → `R14_08-unsupported-label` (warning, once per Program per Label)
+- For Jason: `base_port` plus the number of starting Agents past 65535 → `R36_01-last-port-too-high`; `base_port` not a whole number in 1–65535 → `R36_02-wrong-base-port`; an individual Agent named `<kind>_<digits>` for a kind of the Build → `R36_03-kind-numbered-agent-name`
+- A `TARGET` group for a Target the Transpiler doesn't know → `R21_16-unknown-target` (warning, the group is skipped)
+- An unknown key under a known Target, or a value outside its set → `R21_13-unknown-target-setting` (warning)
 
 Spec: chapter 23, *Targets*. For the settings, chapter 21, *Target settings*; for Jason's checks, chapter 36.
 
@@ -270,21 +272,21 @@ WHEN saw_pouring(?who), FROM GAME:
 ```
 
 ```
-error[R0109]: `FROM GAME` is Regia 2.0, and this build is Regia 1.5
+error[R01_09-later-regia-construct]: `FROM GAME` is Regia 2.0, and this build is Regia 1.5
   --> playbooks/keeping_watch.regia:14:29
    |
 14 |     WHEN saw_pouring(?who), FROM GAME:
    |                             ^^^^^^^^^
 ```
 
-The construct gets no other Diagnostic: its own chapter's checks aren't run on it. At runtime, the 1.5 run refuses an Agent the game spawns, with the Trace warning `T1902`. `regia test` runs only the cases whose `#! regia:` line fits its version (*Conformance cases*).
+The construct gets no other Diagnostic: its own chapter's checks aren't run on it. At runtime, the 1.5 run refuses an Agent the game spawns, with the Trace warning `T19_02-join-refused`. `regia test` runs only the cases whose `#! regia:` line fits its version (*Conformance cases*).
 
-> **In 2.0** `R0109` and `T1902` are retired and keep their numbers. A 1.5 Program is valid in 2.0 and does the same thing there, so a 2.0 build needs no 1.5 mode. Spec chapter 01, *A word of Regia 2.0 in a 1.5 build*; chapter 19, *Regia 1.5*; chapter 27, *Regia 1.5*.
+> **In 2.0** `R01_09-later-regia-construct` and `T19_02-join-refused` are retired and keep their numbers. A 1.5 Program is valid in 2.0 and does the same thing there, so a 2.0 build needs no 1.5 mode. Spec chapter 01, *A word of Regia 2.0 in a 1.5 build*; chapter 19, *Regia 1.5*; chapter 27, *Regia 1.5*.
 
 **Checks**
 
-- `FROM GAME`, `FROM ME`, `FROM` with `OR`, `BY` on a Goal's ending, a Goal's ending in a Plot, a Quota Trigger, `SENT` or `JOINED`, in a 1.5 build → `R0109`
-- An Agent spawned during a 1.5 run → `T1902` (Trace warning)
+- `FROM GAME`, `FROM ME`, `FROM` with `OR`, `BY` on a Goal's ending, a Goal's ending in a Plot, a Quota Trigger, `SENT` or `JOINED`, in a 1.5 build → `R01_09-later-regia-construct`
+- An Agent spawned during a 1.5 run → `T19_02-join-refused` (Trace warning)
 
 Spec: chapter 23, *Regia 1.5*. For what 1.5 leaves out, chapter 27, *Regia 1.5*.
 
@@ -305,12 +307,12 @@ Here is a check case of our own, a throwaway: a Guard's Plan for being put on du
 
 ```regia
 #! case: a Fact Trigger needs LEARNED to start a Plan
-#! rule: R0503
+#! rule: R05_03-fact-trigger-without-kind
 
 IMPORT "../vocabulary"
 
 PLAYBOOK Reporting_for_duty:
-    WHEN on_duty, FROM DIRECTOR:      #! error R0503
+    WHEN on_duty, FROM DIRECTOR:      #! error R05_03-fact-trigger-without-kind
         DO salute
 ```
 
@@ -327,11 +329,11 @@ The header comes first, before any code:
 
 A behaviour case's header has three more lines, `seed:`, `exactly` and `game link: none` (*The Trace*).
 
-After code, an annotation expects a Diagnostic whose primary span starts on that line: `#! error R0503`. Several on one line are written one after another, `#! error R1301, warning R1305`. On a line of its own, `#!^` points at the line above. It is for where a trailing comment can't go, such as after a one-line doc comment, whose value runs to the end of its line:
+After code, an annotation expects a Diagnostic whose primary span starts on that line: `#! error R05_03-fact-trigger-without-kind`. Several on one line are written one after another, `#! error R13_01-precedence-cycle, warning R13_05-competition-ordered-by-name`. On a line of its own, `#!^` points at the line above. It is for where a trailing comment can't go, such as after a one-line doc comment, whose value runs to the end of its line:
 
 ```regia
 #@desc: the host's welcome
-#!^ warning R0203
+#!^ warning R02_03-detached-doc-comment
 ```
 
 ### Matching

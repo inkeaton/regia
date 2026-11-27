@@ -77,7 +77,7 @@ The caught Poisoner is led out. Once it is gone, nothing in the Program has to u
 
 **Checks**
 
-- A `TELL` or `ASK` to a Placeholder holding an Agent that has left → `T1901` (Trace warning; the Message is dropped)
+- A `TELL` or `ASK` to a Placeholder holding an Agent that has left → `T19_01-message-after-leaving` (Trace warning; the Message is dropped)
 
 Spec: chapter 19, *Leaving*. For bindings and counted picks, chapter 15; for a called-off Action, chapter 08; for Pursuits that end without an ending, chapter 05.
 
@@ -108,10 +108,10 @@ The banquet moves on when enough Guests are done: every Guest seated in `arrival
 
 **Checks**
 
-- `JOINED`, `LEFT` or `EMPTIED` in a Playbook → `R1901`
-- `LEFT` or `EMPTIED` after something that isn't a Role of this Plot or `CAST` → `R1902`
-- A quantity on them (`WHEN ALL Guest LEFT:`) → `R1904`
-- A Quota Trigger (`FROM ALL Guest`, `BY 3 OF waiter`) in a 1.5 build → `R0109`
+- `JOINED`, `LEFT` or `EMPTIED` in a Playbook → `R19_01-cast-change-in-playbook`
+- `LEFT` or `EMPTIED` after something that isn't a Role of this Plot or `CAST` → `R19_02-wrong-cast-change-subject`
+- A quantity on them (`WHEN ALL Guest LEFT:`) → `R19_04-quantity-on-cast-change`
+- A Quota Trigger (`FROM ALL Guest`, `BY 3 OF waiter`) in a 1.5 build → `R01_09-later-regia-construct`
 
 Spec: chapter 19, *The Director hears about it*. For the hand count, chapter 26, *`COUNT`*; for `IN`, chapter 20; for which Block wins, chapter 13.
 
@@ -181,9 +181,9 @@ DURING PLOT:
 
 **Checks**
 
-- `?who` after `EMPTIED` (`WHEN Guest ?g EMPTIED:`) → `R1903`
-- `EMPTIED` in a Playbook, or after something that isn't a Role of this Plot or `CAST` → `R1901`, `R1902`
-- `END PLOT WITH` something other than one declared Cue → `R1703`
+- `?who` after `EMPTIED` (`WHEN Guest ?g EMPTIED:`) → `R19_03-who-after-emptied`
+- `EMPTIED` in a Playbook, or after something that isn't a Role of this Plot or `CAST` → `R19_01-cast-change-in-playbook`, `R19_02-wrong-cast-change-subject`
+- `END PLOT WITH` something other than one declared Cue → `R17_03-misused-end-plot-with`
 
 Spec: chapter 19, *The Director hears about it*, *An empty Role*. For a Role that starts empty, chapter 17, *Casting*; for empty recipients, chapter 07.
 
@@ -248,7 +248,7 @@ The Staging's ending is what fires `REMOVED` here. The Defender's own `REMOVED` 
 
 **Checks**
 
-- `WHEN opponent EMPTIED:` in a Playbook → `R1901`
+- `WHEN opponent EMPTIED:` in a Playbook → `R19_01-cast-change-in-playbook`
 
 Spec: chapter 19, *What the Agents hear*. For `REMOVED`, chapter 15.
 
@@ -262,8 +262,8 @@ So `JOINED` is not a word of a 1.5 Program, and "later joiners" in the spec don'
 
 **Checks**
 
-- `WHEN Guest ?g JOINED:`, in a 1.5 build → `R0109`
-- A spawn the game reports in a 1.5 run → `T1902` (Trace warning; the Agent joins nothing)
+- `WHEN Guest ?g JOINED:`, in a 1.5 build → `R01_09-later-regia-construct`
+- A spawn the game reports in a 1.5 run → `T19_02-join-refused` (Trace warning; the Agent joins nothing)
 
 Spec: chapter 19, *Regia 1.5*. For kinds and the starting cast, chapter 21.
 
@@ -307,8 +307,8 @@ Every 1.5 Agent comes from the `.regin` file. `AGENT king, PLAYS Host` is the on
 
 ### The Trace
 
-A leave is a `cast` entry, `LEFT <agent>`. A dropped Message is a `message` entry at warning level, `DROPPED`, with `T1901`. A refused spawn is `T1902`. A behaviour case plays a leave with `> leave <name>`. (*The Trace*)
+A leave is a `cast` entry, `LEFT <agent>`. A dropped Message is a `message` entry at warning level, `DROPPED`, with `T19_01-message-after-leaving`. A refused spawn is `T19_02-join-refused`. A behaviour case plays a leave with `> leave <name>`. (*The Trace*)
 
 ### Jason: Directors and Stagings
 
-The game reports a leave once, on the game link, and every Director decides from its own records whether it is concerned. It removes the Agent from its Role records and counted picks, then raises its own `LEFT` and `EMPTIED` events. A send to an Agent that no longer exists is caught and turned into `T1901`. A body whose connection closes has not left: only the game's leave report removes an Agent. (*Jason: Directors and Stagings*)
+The game reports a leave once, on the game link, and every Director decides from its own records whether it is concerned. It removes the Agent from its Role records and counted picks, then raises its own `LEFT` and `EMPTIED` events. A send to an Agent that no longer exists is caught and turned into `T19_01-message-after-leaving`. A body whose connection closes has not left: only the game's leave report removes an Agent. (*Jason: Directors and Stagings*)

@@ -1,11 +1,11 @@
 #! case: the Pick AT RANDOM is a retired spelling of RANDOMLY
-#! rule: R2606
+#! rule: R26_06-retired-at-random
 
 FACT guest(person)
-CUE bored
+GAME CUE bored
 FACT joke
 
 PLAYBOOK Host:
     WHEN bored:
-        GIVEN guest(?g), AT RANDOM:   #! error R2606
+        GIVEN guest(?g), AT RANDOM:   #! error R26_06-retired-at-random
             TELL ?g joke.

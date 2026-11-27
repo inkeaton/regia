@@ -11,7 +11,7 @@ Blocked by: 19
 
 ## Spec
 
-Chapter 01, *When `.` ends a Statement*: STOP when followed by whitespace, a line break, the end of the file, `;` or `#`. Chapter 23: a dotted name is one token. `complain.SIGNAL` is one dotted name here; its `R0102` is the parser's.
+Chapter 01, *When `.` ends a Statement*: STOP when followed by whitespace, a line break, the end of the file, `;` or `#`. Chapter 23: a dotted name is one token. `complain.SIGNAL` is one dotted name here; its `R01_02-keyword-in-dotted-name` is the parser's.
 
 ## Rust
 

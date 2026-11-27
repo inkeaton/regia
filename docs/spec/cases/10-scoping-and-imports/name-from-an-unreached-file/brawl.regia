@@ -1,10 +1,10 @@
 #! case: a name declared in a file this one doesn't reach is not declared
-#! rule: R1004
+#! rule: R10_04-name-out-of-scope
 
-CUE insult_heard(speaker)
+GAME CUE insult_heard(speaker)
 ACTION punch(target)
 
 PLAYBOOK Brawler:
     WHEN insult_heard(?s):
-        GIVEN hungry:                    #! error R1004
+        GIVEN hungry:                    #! error R10_04-name-out-of-scope
             DO punch(?s).

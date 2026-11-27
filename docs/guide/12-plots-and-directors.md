@@ -52,10 +52,10 @@ A `PLOT` Block holds `ROLE` lines with their setups, a `CAST:` setup, `PHASE` li
 
 **Checks**
 
-- A Plot declared twice → `R1006`; two Roles or two Phases of one Plot that differ only in case → `R1007`
-- `GOAL` declared inside a Plot → `R1015` (hint: declare it at file level to `ASK` for it)
-- `CUE` or `ACTION` declared inside a Plot → `R1012`
-- `PHASE` or `DURING` inside a Playbook → `R2010`
+- A Plot declared twice → `R10_06-duplicate-playbook-or-plot`; two Roles or two Phases of one Plot that differ only in case → `R10_07-case-only-name-clash`
+- `GOAL` declared inside a Plot → `R10_15-goal-in-plot` (hint: declare it at file level to `ASK` for it)
+- `CUE` or `ACTION` declared inside a Plot → `R10_12-misplaced-action-or-cue`
+- `PHASE` or `DURING` inside a Playbook → `R20_10-phase-in-playbook`
 
 Spec: chapter 20, *What a Director is*. For names and local declarations, chapter 10.
 
@@ -91,9 +91,9 @@ Who plays a Role is never written in the Plot. For the Root Plot it comes from I
 
 **Checks**
 
-- A Role name used as a Value → `R0303` (hint: `FROM Role ?x`)
-- A Role the Plot doesn't declare, anywhere a Role is written → `R1502`
-- A Root Plot Role that no kind and no individual Agent plays → `R2110` (warning)
+- A Role name used as a Value → `R03_03-role-as-value` (hint: `FROM Role ?x`)
+- A Role the Plot doesn't declare, anywhere a Role is written → `R15_02-undeclared-role`
+- A Root Plot Role that no kind and no individual Agent plays → `R21_10-root-role-never-played` (warning)
 
 Spec: chapter 15, *Roles are addresses*, chapter 20. For who plays the Root Plot's Roles, chapter 21.
 
@@ -174,15 +174,15 @@ A setup's Giving counts as a Giving to the Role, and `REMOVE` reaches it: `REMOV
 
 **Checks**
 
-- A Block on a Playbook's `ROLE` → `R1601`
-- A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup → `R1602`
-- `TO`, a count, or a counted `MAPPING` on a setup's `ASSIGN` → `R1603`
-- A Placeholder other than the Plot's parameters → `R1604`; `ME` → `R0309`
-- A setup in `DURING PLOT`, a second setup for one Role or for `CAST` in one place, or `ROLE <name>` with no Block inside a `DURING` → `R1606`
-- A Phase setup for a Role the Plot doesn't declare → `R1607`
-- The retired `ROLE r STARTS WITH:` or `CAST STARTS WITH:` → `R1608` (hint: `ROLE r:`, `CAST:`)
-- A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it → `R1605` (warning)
-- A setup Statement that can't be carried out, skipped → `T1601` (Trace warning)
+- A Block on a Playbook's `ROLE` → `R16_01-block-on-playbook-role`
+- A Statement other than `ASSIGN`, `LEARN` or `PURSUE` in a setup → `R16_02-wrong-statement-in-setup`
+- `TO`, a count, or a counted `MAPPING` on a setup's `ASSIGN` → `R16_03-misused-to-in-setup`
+- A Placeholder other than the Plot's parameters → `R16_04-placeholder-in-setup`; `ME` → `R03_09-me-in-plot`
+- A setup in `DURING PLOT`, a second setup for one Role or for `CAST` in one place, or `ROLE <name>` with no Block inside a `DURING` → `R16_06-misused-setup`
+- A Phase setup for a Role the Plot doesn't declare → `R16_07-setup-for-undeclared-role`
+- The retired `ROLE r STARTS WITH:` or `CAST STARTS WITH:` → `R16_08-retired-starts-with` (hint: `ROLE r:`, `CAST:`)
+- A `PURSUE` above the `ASSIGN` that gives the only Playbook with a Plan for it → `R16_05-pursue-before-assign` (warning)
+- A setup Statement that can't be carried out, skipped → `T16_01-skipped-setup-statement` (Trace warning)
 
 Spec: chapter 16. For the Mappings on a setup's `ASSIGN`, chapter 15.
 
@@ -219,10 +219,10 @@ The four `PHASE` lines say none of this. Each arrow is an `ENTER` in some Body, 
 
 **Checks**
 
-- A Plot with Phases and no `INITIAL`, or several → `R2007` (quick fix: mark one)
-- `DURING p`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare → `R2008` ("did you mean")
-- Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks → `R2009`
-- A Phase that can never be entered → `R2011` (warning)
+- A Plot with Phases and no `INITIAL`, or several → `R20_07-missing-or-repeated-initial` (quick fix: mark one)
+- `DURING p`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare → `R20_08-undeclared-phase` ("did you mean")
+- Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks → `R20_09-repeated-during-block`
+- A Phase that can never be entered → `R20_11-unreachable-phase` (warning)
 
 Spec: chapter 20, *Declaring Phases*. For the Phase map, chapter 25.
 
@@ -315,13 +315,13 @@ The initial Phase is current before any setup runs. A Guest with no seat laid fa
 
 **Checks**
 
-- `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan → `R2003`
-- A Statement after `ENTER` in the same branch → `R2004`
-- `ENTER` in a Plot with no Phases → `R2008`
-- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook, or a Subplot's `FINISHED`, `DROPPED` or `ENDED` → `R2005`
-- `AFTER` in a Playbook → `R1205` (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`)
-- The retired `TRANSITION TO p` → `R2016` (hint: `ENTER p`)
-- An `AFTER` Duration that isn't a Number → `T1201` (Trace, Failure); a negative one, counted as 0 → `T1202` (Trace warning)
+- `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan → `R20_03-wrong-statement-in-exited`
+- A Statement after `ENTER` in the same branch → `R20_04-statement-after-enter`
+- `ENTER` in a Plot with no Phases → `R20_08-undeclared-phase`
+- `WHEN ENTERED:` or `WHEN EXITED:` in a Playbook, or a Subplot's `FINISHED`, `DROPPED` or `ENDED` → `R20_05-director-trigger-in-playbook`
+- `AFTER` in a Playbook → `R12_05-after-in-playbook` (hint: `WAIT`, or `WHEN ASSIGNED: WAIT …`)
+- The retired `TRANSITION TO p` → `R20_16-retired-transition-to` (hint: `ENTER p`)
+- An `AFTER` Duration that isn't a Number → `T12_01-duration-not-number` (Trace, Failure); a negative one, counted as 0 → `T12_02-duration-below-zero` (Trace warning)
 
 Spec: chapter 20, *Entering and leaving Phases*. For `AFTER`, chapter 12; for setups at Phase entry, chapter 16.
 
@@ -374,11 +374,11 @@ A Subplot can tell an ending by its parent from one of its own. `EXITED, BY PARE
 
 **Checks**
 
-- `IN <phase>` in a Playbook, or in a Plot with no Phases → `R2014`
-- A `DURING PLOT` Plan always shadowed by a Phase's → `R1307` (warning)
-- `BY PARENT` on a Trigger other than `EXITED`, or `BY` with anything but `PARENT` on `EXITED` → `R0506`
-- `WHEN EXITED BY PARENT:` with no `,` → `R0111`
-- `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot → `R2015` (warning)
+- `IN <phase>` in a Playbook, or in a Plot with no Phases → `R20_14-misplaced-in-clause`
+- A `DURING PLOT` Plan always shadowed by a Phase's → `R13_07-unreachable-trigger-block` (warning)
+- `BY PARENT` on a Trigger other than `EXITED`, or `BY` with anything but `PARENT` on `EXITED` → `R05_06-by-on-wrong-trigger`
+- `WHEN EXITED BY PARENT:` with no `,` → `R01_11-clause-without-comma`
+- `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot → `R20_15-ignored-exited-by-parent` (warning)
 
 Spec: chapter 20, *What a Director knows about its own Staging*, *`EXITED, BY PARENT`*. For which Block wins, chapter 13.
 
@@ -432,13 +432,13 @@ The Director wants to know when every Guest has sat down. It can't see their Goa
 
 **Checks**
 
-- `TO g:` or `FROM DIRECTOR` in a Director → `R2002`
-- `PURSUE`, `DROP g` or `SIGNAL` in a Director → `R2001`
-- A Label on a Director's Plan, or `SHIFT` in its Body → `R1406`
-- `ME` in a Plot → `R0309`
-- `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot → `R1508`
-- `FROM GAME`, a quantity after `FROM` or `BY`, or a Goal's ending in a Plot, in a 1.5 build → `R0109`
-- A Signal with no Plan in the current Phase or `DURING PLOT` → `T3801` (Trace, `unheard`)
+- `TO g:` or `FROM DIRECTOR` in a Director → `R20_02-playbook-trigger-in-director`
+- `PURSUE`, `DROP g` or `SIGNAL` in a Director → `R20_01-playbook-statement-in-director`
+- A Label on a Director's Plan, or `SHIFT` in its Body → `R14_06-label-in-director`
+- `ME` in a Plot → `R03_09-me-in-plot`
+- `WHEN ASSIGNED:` or `WHEN REMOVED:` in a Plot → `R15_08-misused-assigned-or-removed`
+- `FROM GAME`, a quantity after `FROM` or `BY`, or a Goal's ending in a Plot, in a 1.5 build → `R01_09-later-regia-construct`
+- A Signal with no Plan in the current Phase or `DURING PLOT` → `T38_01-signal-found-no-plan` (Trace, `unheard`)
 
 Spec: chapter 20, *What a Director is*, *What a Director perceives*. For local Facts, chapter 10; for Quotas, chapter 18.
 
@@ -491,10 +491,10 @@ WHEN Poisoning FINISHED WITH poisoner_caught(?culprit):
 
 **Checks**
 
-- `Role DO …` or `WORLD DO …` → `R2006`
-- A Director Statement in a Playbook → `R1507`
-- A recipient, `ASSIGN` target or `MAPPING` Placeholder not certainly filled → `R0304`, `R0305`
-- A Giving or Mapping that reaches an Agent who has left → `T2001` (Trace warning); a Message → `T1901` (Trace warning)
+- `Role DO …` or `WORLD DO …` → `R20_06-do-with-subject`
+- A Director Statement in a Playbook → `R15_07-director-statement-in-playbook`
+- A recipient, `ASSIGN` target or `MAPPING` Placeholder not certainly filled → `R03_04-unfilled-placeholder`, `R03_05-maybe-unfilled-placeholder`
+- A Giving or Mapping that reaches an Agent who has left → `T20_01-giving-after-leaving` (Trace warning); a Message → `T19_01-message-after-leaving` (Trace warning)
 
 Spec: chapter 20, *How a Director directs Agents*, *Directing one Agent*, *Actions*. For Messages, chapter 07; for Givings, chapter 15.
 
@@ -509,7 +509,7 @@ A Director's Plan can fail like an Agent's: a Custom Action the game refuses, ar
 
 **Checks**
 
-- A Director Plan that failed → `T2002` (Trace warning, after the entry of its cause)
+- A Director Plan that failed → `T20_02-director-plan-failed` (Trace warning, after the entry of its cause)
 
 Spec: chapter 20, *Failure*. For what fails a Plan, chapter 11.
 
@@ -537,8 +537,8 @@ When the last Guest has left the hall, or the Host has, the banquet ends. `END P
 
 **Checks**
 
-- A Statement after `END PLOT` in the same branch → `R1702`
-- `END PLOT WITH` in a Plot never started as a Subplot → `R1705` (warning: `WITH` is ignored)
+- A Statement after `END PLOT` in the same branch → `R17_02-statement-after-end-plot`
+- `END PLOT WITH` in a Plot never started as a Subplot → `R17_05-ignored-end-plot-with` (warning: `WITH` is ignored)
 
 Spec: chapter 17, *Ending*, chapter 20, *What `ENTER` does*.
 
@@ -561,10 +561,10 @@ A Program has exactly one Root Plot. It is the only Plot that starts by itself, 
 
 **Checks**
 
-- A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot that is started as a Subplot → `R2104`
-- A Root Plot with parameters → `R2114`
-- A `PLAYS` Role that isn't a Role of the Root Plot → `R2105`
-- A Plot the Root Plot never reaches → `R2112` (warning)
+- A `.regin` Entry that reaches no `ROOT`, or a `ROOT` naming a Plot that is started as a Subplot → `R21_04-missing-or-wrong-root`
+- A Root Plot with parameters → `R21_14-root-plot-with-parameters`
+- A `PLAYS` Role that isn't a Role of the Root Plot → `R21_05-plays-non-root-role`
+- A Plot the Root Plot never reaches → `R21_12-plot-never-reached` (warning)
 
 Spec: chapter 21, *The Root Plot*. For Entry files, chapter 23.
 

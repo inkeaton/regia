@@ -18,5 +18,5 @@ The Interface (ADR 0015) already works out who in the Program sends each Event. 
 - The dot means "not the game" in every Target, so another Target can read a dotted Action as its own code (a Python function, say).
 - `AS` on a Fact or Event that isn't `GAME` is an error.
 - A game message for an item not declared `GAME`, or not used by the receiver, is dropped with a Trace warning.
-- New checks: `R3807` (an Event nothing sends) and `R0807` (a Plan changing a game Fact). `R2801` is gone.
+- New checks: `R38_07-cue-never-sent` (an Event nothing sends) and `R08_07-edit-of-game-fact` (a Plan changing a game Fact). `R28_01-external-name-not-atom` is gone.
 - A Program written before this declares no `GAME` items, so every game Event's Trigger warns until the declarations are marked.

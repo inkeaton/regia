@@ -47,7 +47,7 @@ DURING PLOT:
 
 - `IN <phase>` is written wherever a condition goes: a Context, an `IF`, under `NOT`, joined with `AND` and `OR`. A Phase is not a Value, so there is no `IN ?p`, and it has no Matches to pick or count beyond 1 or 0.
 - In a Phase's own Plans, `IN` of that Phase always holds: a Plan of a Phase is stopped when the Phase is left. It is meant for `DURING PLOT` Plans, which run in every Phase.
-- `IN` naming a Phase the Plot doesn't declare is `R2008`. `IN` in a Playbook, or in a Plot that declares no Phases, is an error (`R2014`).
+- `IN` naming a Phase the Plot doesn't declare is `R20_08-undeclared-phase`. `IN` in a Playbook, or in a Plot that declares no Phases, is an error (`R20_14-misplaced-in-clause`).
 - `ENTER` naming the current Phase still re-enters it (below). Whether that is wanted is the writer's to say, with `IN`.
 - **Where a transition goes, and where it came from, has no condition and no Trigger.** What belongs to "leaving `feast` for `farewell`" is written in the Plan that runs `ENTER farewell`, before it. That Plan is the transition, and the Phase map draws it as the edge (chapter 25). An `ENTERED` Plan that must know where the Plot came from reads a Fact that Plan learned.
 
@@ -87,15 +87,15 @@ DURING seating:
 ```
 
 - **Only Pursuits whose Sender is this Staging's Director**: its `ASK … TO g`, and the `PURSUE g` of its Role setups (chapter 16). A Goal the Agent gave itself, or that another Agent or another Director asked, is not reported, even under the same name.
-- **`BY` names the Agent whose Pursuit it was**: `BY Guest`, `BY ?who`, `BY Guest ?who`, and the Quota forms (chapter 18). The Role is checked when the ending arrives, in this Staging. It is the clause an asking Agent uses (chapter 05). `FROM` on a Goal's ending means who asked, which here is always this Director, so in a Plot it is an error with a hint to write `BY` (`R2013`).
+- **`BY` names the Agent whose Pursuit it was**: `BY Guest`, `BY ?who`, `BY Guest ?who`, and the Quota forms (chapter 18). The Role is checked when the ending arrives, in this Staging. It is the clause an asking Agent uses (chapter 05). `FROM` on a Goal's ending means who asked, which here is always this Director, so in a Plot it is an error with a hint to write `BY` (`R20_13-from-on-goal-ending`).
 - **One report per Pursuit.** A Goal asked twice is reported twice. A recipe that repeats (chapter 08) is reported for its first round only: later rounds have no Sender.
 - The specific Trigger fires first, then `ENDED`, as at the Agent. The Agent's own ending Plans and the Director's are independent; neither waits for the other.
 - They are heard like any Director Trigger: the current Phase's Plan, else the `DURING PLOT` Plan (chapter 13).
-- **An ending with no Plan is silent.** Most asked Goals are not listened to, so there is no `unheard` entry like a Signal's `T3801`. The Agent's own `goal` entry is in the Trace either way (chapter 34).
+- **An ending with no Plan is silent.** Most asked Goals are not listened to, so there is no `unheard` entry like a Signal's `T38_01-signal-found-no-plan`. The Agent's own `goal` entry is in the Trace either way (chapter 34).
 - **A Failure's Reason is reported**: `WHEN take_seat FAILED WITH no_chair, BY Guest ?g:`, tried in written order with the plain `FAILED` Plans of the same Block (chapter 11). The cause of a Failure with no Reason is in the Trace only.
 - **An Agent that leaves the Program reports nothing** for the Pursuits it had. `WHEN Guest LEFT` says it left (chapter 19), and a Quota is checked again against the smaller Role.
 - An ending that arrives after the Staging has ended reaches nobody.
-- A Goal-ending Trigger on a Goal this Plot never asks can never fire, and is an error (`R2012`).
+- A Goal-ending Trigger on a Goal this Plot never asks can never fire, and is an error (`R20_12-goal-never-asked`).
 - The Agent still decides how: the Director hears that `take_seat` ended, never which recipe ran or what the Agent knows.
 
 An asking **Agent** hears the same, with the same clause (chapters 05, 07).
@@ -162,7 +162,7 @@ PLOT RoyalBanquet:
 Decided in the ticket *Phase declaration checks* (`.scratch/regia-2/issues/44-phase-declaration-checks.md`).
 
 - A Plot that declares Phases marks **exactly one** `INITIAL`, even when it has only one Phase. The Staging starts in it. Declaration order is free (chapter 10), so there is no default "first Phase".
-- **A Plot may declare no Phases.** It has only Role setups and `DURING PLOT` Plans, which is enough for a small Subplot that gives a Playbook and ends on a Signal. It behaves as if it had one Phase that is never left: `DURING PLOT`'s `ENTERED` fires when the Staging starts, and `EXITED` when it ends. With no Phase to name, any `ENTER` in it is an error (`R2008`).
+- **A Plot may declare no Phases.** It has only Role setups and `DURING PLOT` Plans, which is enough for a small Subplot that gives a Playbook and ends on a Signal. It behaves as if it had one Phase that is never left: `DURING PLOT`'s `ENTERED` fires when the Staging starts, and `EXITED` when it ends. With no Phase to name, any `ENTER` in it is an error (`R20_08-undeclared-phase`).
 - **One Block per Phase.** Each declared Phase has at most one `DURING` Block, and the Plot at most one `DURING PLOT`, so a Phase's Plans are all in one place.
 - A Phase with no `DURING` Block is fine: a quiet Phase, moved on by `DURING PLOT` Plans. So is a Phase that nothing leaves: it can be the last act, ended by `END PLOT` or by the parent.
 - `PHASE` and `DURING` belong to Plots only.
@@ -204,8 +204,8 @@ DURING fighting:
 
 - `EXITED, BY PARENT` matches when the Staging is ending because of its parent: the parent's `DROP SUBPLOT`, an `UNTIL EXITED` when the parent leaves that Phase, or the parent itself ending. It is written in a Phase Block, where it matches when the Staging ends from above while in that Phase, and in `DURING PLOT`.
 - **The specific Trigger fires first, then plain `EXITED`**, both to completion, as for a Subplot's endings (chapter 17) and a Goal's (chapter 05). What every exit does goes in plain `EXITED`, once.
-- In a Plot never started as a Subplot it can't fire, and is a warning (`R2015`), as `END PLOT WITH` is (chapter 17). It is a warning and not an error because a Plot doesn't say whether it is the Root (chapter 21).
-- `BY PARENT` is a clause, written after a `,` like the `BY` of a Goal's ending (chapter 05), and with the same sense: who did it. It goes only on `EXITED` (`R0506`). `WHEN EXITED BY PARENT:` without the `,` is `R0111` (chapter 01), whose hint adds it. `PARENT` is chapter 13's word for the Plot that started this one.
+- In a Plot never started as a Subplot it can't fire, and is a warning (`R20_15-ignored-exited-by-parent`), as `END PLOT WITH` is (chapter 17). It is a warning and not an error because a Plot doesn't say whether it is the Root (chapter 21).
+- `BY PARENT` is a clause, written after a `,` like the `BY` of a Goal's ending (chapter 05), and with the same sense: who did it. It goes only on `EXITED` (`R05_06-by-on-wrong-trigger`). `WHEN EXITED BY PARENT:` without the `,` is `R01_11-clause-without-comma` (chapter 01), whose hint adds it. `PARENT` is chapter 13's word for the Plot that started this one.
 
 ### What starting a Staging does
 
@@ -222,7 +222,7 @@ When the Plot leaves a Phase, every Plan of that Phase's Block still running (fo
 
 ### What `ENTER` does
 
-`ENTER p` makes `p` the current Phase. It names the Phase it enters and fires that Phase's `WHEN ENTERED`, as `LEARN` fires `LEARNED`. Moving from one Phase to another is still called a **transition**, and the Phase map draws each as an edge (chapter 25). `ENTER` replaced `TRANSITION TO`, which is an error (`R2016`): `TO` introduces a Goal (chapter 01).
+`ENTER p` makes `p` the current Phase. It names the Phase it enters and fires that Phase's `WHEN ENTERED`, as `LEARN` fires `LEARNED`. Moving from one Phase to another is still called a **transition**, and the Phase map draws each as an edge (chapter 25). `ENTER` replaced `TRANSITION TO`, which is an error (`R20_16-retired-transition-to`): `TO` introduces a Goal (chapter 01).
 
 `ENTER feast`:
 
@@ -252,36 +252,36 @@ A Director's Plan can fail like an Agent's (chapter 11): a Custom Action the gam
 
 **Errors**
 
-- `R2001` `PURSUE`, `DROP` or `SIGNAL` in a Director.
-- `R2002` `TO g:` or `FROM DIRECTOR` in a Director.
-- `R2003` `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan.
-- `R2004` A Statement after `ENTER` in the same branch.
-- `R2005` `ENTERED` or `EXITED`, or a Subplot's `FINISHED`, `DROPPED` or `ENDED`, in a Playbook (Director Trigger kinds only; a Goal's `ENDED` is legal there).
-- `R2006` `Role DO …` or `WORLD DO …` (not part of the language).
-- `R2007` A Plot that declares Phases with no `INITIAL` Phase, or with several (a quick fix marks one `INITIAL`).
-- `R2008` `DURING p:`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare, or any `ENTER` in a Plot that declares no Phases (with a "did you mean" hint when a declared name is close).
-- `R2009` Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks.
-- `R2010` `PHASE` or `DURING` inside a `PLAYBOOK`.
-- `R2012` `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot that never asks `g`: no `ASK … TO g` and no setup `PURSUE g`. Absence check (chapter 23).
-- `R2013` `FROM` on a Goal's ending in a Plot (hint: `BY`).
-- `R2014` `IN <phase>` in a Playbook, or in a Plot that declares no Phases.
-- `R2016` The retired `TRANSITION TO p` (hint: `ENTER p`).
+- `R20_01-playbook-statement-in-director` `PURSUE`, `DROP` or `SIGNAL` in a Director.
+- `R20_02-playbook-trigger-in-director` `TO g:` or `FROM DIRECTOR` in a Director.
+- `R20_03-wrong-statement-in-exited` `WAIT`, `ENTER` or `END PLOT` in an `EXITED` Plan.
+- `R20_04-statement-after-enter` A Statement after `ENTER` in the same branch.
+- `R20_05-director-trigger-in-playbook` `ENTERED` or `EXITED`, or a Subplot's `FINISHED`, `DROPPED` or `ENDED`, in a Playbook (Director Trigger kinds only; a Goal's `ENDED` is legal there).
+- `R20_06-do-with-subject` `Role DO …` or `WORLD DO …` (not part of the language).
+- `R20_07-missing-or-repeated-initial` A Plot that declares Phases with no `INITIAL` Phase, or with several (a quick fix marks one `INITIAL`).
+- `R20_08-undeclared-phase` `DURING p:`, `ENTER p` or `IN p` naming a Phase the Plot doesn't declare, or any `ENTER` in a Plot that declares no Phases (with a "did you mean" hint when a declared name is close).
+- `R20_09-repeated-during-block` Two `DURING` Blocks for one Phase, or two `DURING PLOT` Blocks.
+- `R20_10-phase-in-playbook` `PHASE` or `DURING` inside a `PLAYBOOK`.
+- `R20_12-goal-never-asked` `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot that never asks `g`: no `ASK … TO g` and no setup `PURSUE g`. Absence check (chapter 23).
+- `R20_13-from-on-goal-ending` `FROM` on a Goal's ending in a Plot (hint: `BY`).
+- `R20_14-misplaced-in-clause` `IN <phase>` in a Playbook, or in a Plot that declares no Phases.
+- `R20_16-retired-transition-to` The retired `TRANSITION TO p` (hint: `ENTER p`).
 
 **Warnings**
 
-- `R2011` A Phase that can never be entered: it isn't `INITIAL`, and no `ENTER` in the Plot names it. Absence check (chapter 23).
-- `R2015` `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot. Absence check (chapter 23).
+- `R20_11-unreachable-phase` A Phase that can never be entered: it isn't `INITIAL`, and no `ENTER` in the Plot names it. Absence check (chapter 23).
+- `R20_15-ignored-exited-by-parent` `WHEN EXITED, BY PARENT` in a Plot never started as a Subplot. Absence check (chapter 23).
 
-A `GOAL` declared inside a Plot is `R1015` (chapter 10). `ME` in a Plot is `R0309` (chapter 03). A Signal the Plot gives the Playbook for and never handles, and a `FROM <Role>` Plan no Signal can reach, are `R3801` and `R3802` (chapter 38). A Label on a Director's Plan is `R1406`; `JOINED`, `LEFT` and `EMPTIED` in a Playbook are `R1901`; an unfilled Placeholder in `ASSIGN`, `MAPPING` or a recipient is `R0304`/`R0305`.
+A `GOAL` declared inside a Plot is `R10_15-goal-in-plot` (chapter 10). `ME` in a Plot is `R03_09-me-in-plot` (chapter 03). A Signal the Plot gives the Playbook for and never handles, and a `FROM <Role>` Plan no Signal can reach, are `R38_01-unheard-signal` and `R38_02-cue-never-signalled` (chapter 38). A Label on a Director's Plan is `R14_06-label-in-director`; `JOINED`, `LEFT` and `EMPTIED` in a Playbook are `R19_01-cast-change-in-playbook`; an unfilled Placeholder in `ASSIGN`, `MAPPING` or a recipient is `R03_04-unfilled-placeholder`/`R03_05-maybe-unfilled-placeholder`.
 
 ## Trace entries
 
 **Warnings**
 
-- `T2001` A Giving or a Mapping that reaches an Agent who has left, dropped.
-- `T2002` A Director Plan that failed: it stops, and the Phase and the Staging are untouched. It follows the failure entry of its cause.
+- `T20_01-giving-after-leaving` A Giving or a Mapping that reaches an Agent who has left, dropped.
+- `T20_02-director-plan-failed` A Director Plan that failed: it stops, and the Phase and the Staging are untouched. It follows the failure entry of its cause.
 
-A Message to an Agent who has left is `T1901`. A Signal or a Subplot's ending that finds no Plan is an `unheard` entry, `T3801`/`T3802` (chapter 38).
+A Message to an Agent who has left is `T19_01-message-after-leaving`. A Signal or a Subplot's ending that finds no Plan is an `unheard` entry, `T38_01-signal-found-no-plan`/`T38_02-ending-found-no-plan` (chapter 38).
 
 ## Reserved words
 
@@ -298,11 +298,11 @@ Every keyword is listed in chapter 01, *Reserved words* (`01-statements-and-bloc
 
 ## Regia 1.5
 
-In 1.5 (ADR 0025), except *Hearing how an asked Goal ended*: a Director hears no ending of a Goal it asked. `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot, with or without `BY`, is `R0109` in a 1.5 build (chapter 01), and `R2012` and `R2013` are never reported. A Subplot's endings are chapter 17's and stay. A Director that must know a Goal ended is told by a Signal the recipe sends.
+In 1.5 (ADR 0025), except *Hearing how an asked Goal ended*: a Director hears no ending of a Goal it asked. `WHEN g REACHED`, `DROPPED`, `FAILED` or `ENDED` in a Plot, with or without `BY`, is `R01_09-later-regia-construct` in a 1.5 build (chapter 01), and `R20_12-goal-never-asked` and `R20_13-from-on-goal-ending` are never reported. A Subplot's endings are chapter 17's and stay. A Director that must know a Goal ended is told by a Signal the recipe sends.
 
 Also later: `FROM GAME` in the Trigger table, `JOINED`, and the Quota counts that a Phase starts and clears.
 
-`ENTER`, which replaced `TRANSITION TO`, and `R2016` were decided in the ticket *`TO` and `FROM` outside Triggers* (`.scratch/syntax-review/issues/05-to-and-from.md`).
+`ENTER`, which replaced `TRANSITION TO`, and `R20_16-retired-transition-to` were decided in the ticket *`TO` and `FROM` outside Triggers* (`.scratch/syntax-review/issues/05-to-and-from.md`).
 Decided in the ticket *The Regia 1.5 cut* (`.scratch/regia-revision/issues/22-the-1-5-cut.md`).
 
 ## Handed off

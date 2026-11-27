@@ -1,10 +1,10 @@
 #! case: EITHER and OR headers are the retired spelling of a Random choice
-#! rule: R0906
+#! rule: R09_06-retired-either
 
-CUE bored
+GAME CUE bored
 ACTION wave, yawn
 
 PLAYBOOK Idler:
     WHEN bored:
-        EITHER: DO wave.                 #! error R0906
-        OR: DO yawn.                     #! error R0906
+        EITHER: DO wave.                 #! error R09_06-retired-either
+        OR: DO yawn.                     #! error R09_06-retired-either

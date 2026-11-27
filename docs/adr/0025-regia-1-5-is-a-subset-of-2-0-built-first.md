@@ -13,8 +13,8 @@
 ## Consequences
 
 - The revision still decides every cause for 2.0, and records for each whether it is in 1.5.
-- Nothing in 1.5 may need a system that is later. The last revision ticket checked this. The one gap was the game spawning an Agent, which belongs to joining: a 1.5 run refuses it (`T1902`).
-- A 1.5 build parses all of 2.0 and reports a construct of a later system as `R0109`, "Regia 2.0". There is no 1.5 mode in a 2.0 build.
+- Nothing in 1.5 may need a system that is later. The last revision ticket checked this. The one gap was the game spawning an Agent, which belongs to joining: a 1.5 run refuses it (`T19_02-join-refused`).
+- A 1.5 build parses all of 2.0 and reports a construct of a later system as `R01_09-later-regia-construct`, "Regia 2.0". There is no 1.5 mode in a 2.0 build.
 - Some 2.0 decisions are undone in 1.5 for now: a done-Signal is written by hand where 2.0 hears the ending, and "every Guest has done it" is counted with the Director's own Facts and `PLAYS`.
 - Without joiners, a Staging's cast is fixed at start and can only shrink, so the rules about what a joiner gets don't apply in 1.5.
 - Programs written for 1.5 should stay valid in 2.0. A later system adds meaning; it doesn't change what a 1.5 Program does.

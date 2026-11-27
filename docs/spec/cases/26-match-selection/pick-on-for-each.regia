@@ -1,10 +1,10 @@
 #! case: FOR EACH uses every Match, so a Pick on it is an error
-#! rule: R2603
+#! rule: R26_03-misplaced-pick
 
 FACT hates(person)
-CUE party_over
+GAME CUE party_over
 
 PLAYBOOK Guest:
     WHEN party_over:
-        FOR EACH hates(?x), RANDOMLY:   #! error R2603
+        FOR EACH hates(?x), RANDOMLY:   #! error R26_03-misplaced-pick
             FORGET hates(?x).

@@ -1,9 +1,9 @@
 #! case: a Placeholder used only in a broken Statement is not reported as unused
-#! rule: R0307
+#! rule: R03_07-unused-placeholder
 
 GAME CUE insult_heard(speaker)
 ACTION glare_at(target)
 
 PLAYBOOK Guest:
     WHEN insult_heard(?who):
-        DO ) glare_at(?who)              #! error R0115
+        DO ) glare_at(?who)              #! error R01_15-unexpected-text

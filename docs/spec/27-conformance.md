@@ -15,11 +15,19 @@ The `.trace` format, the script of a run and how a Trace is matched are in chapt
 
 ## Diagnostic codes
 
-Every error and warning a language chapter defines has a stable **Diagnostic code**: `R`, the chapter's two digits, then two digits numbering the check within the chapter. Chapter 13's first error is `R1301`. The `code` field of a Diagnostic (chapter 23) carries it, and each code has a docs page.
+Every error and warning a language chapter defines has a stable **Diagnostic code**, such as `R01_11-clause-without-comma`. It has three parts:
 
-Numbers run in order through a chapter's section, errors first, then warnings; a check added later takes the next free number, whatever its severity. Codes are never reused. A check that is dropped keeps its number, marked retired in its chapter. A check that changes severity keeps its number too, so the severity is printed beside a code and never read from it. A check that reports a retired spelling is never dropped: it lives in the chapter that owns the construct, and chapter 01 lists them all (*Retired spellings*).
+- `R`, for a check the Transpiler makes. A Trace code, written at run time, has the same shape with `T` (chapter 34).
+- The **number**: the defining chapter's two digits, `_`, then two digits numbering the check within the chapter. `R01_11` is chapter 01's eleventh check.
+- `-` and the **Code name**: at most four lowercase words joined by `-`, in the glossary's terms and without articles. It says what the mistake is (`clause-without-comma`), not the rule it breaks or how to fix it.
 
-This shape is kept for 2.0 because codes must be stable and findable from the spec. It isn't readable or memorable: `R13` means Plan selection only to someone who knows the spec's table of contents. A better shape is deferred past 2.0, and will have to map every code already given.
+A code is one token, matching `[RT]\d{2}_\d{2}-[a-z0-9-]+`, and it is always written whole: in check lists, prose and cases, in `#@allow` (chapter 02), and when the Transpiler prints it (`error[R01_11-clause-without-comma]`, chapter 23). The `code` field of a Diagnostic (chapter 23) carries it, and each code has a docs page named after it.
+
+**The number is the identity.** Tools match a code on its number: the Conformance runner, `#@allow`, and the docs pages. The name is for people. A Code name is unique across all Diagnostic and Trace codes, so it points at one code on its own. A right number with a wrong name is a mistake wherever it is written: in a case (*Matching*, below) and in `#@allow` (`R02_06-allow-misnames-code`, chapter 02).
+
+Numbers run in order through a chapter's section, errors first, then warnings; a check added later takes the next free number, whatever its severity. Codes are never reused, neither the number nor the name. A check that is dropped keeps its code, marked retired in its chapter. A check that changes severity keeps its code too, so the severity is printed beside a code and never read from it. A check that reports a retired spelling is never dropped: it lives in the chapter that owns the construct, and chapter 01 lists them all (*Retired spellings*).
+
+A name never carries the code's status. A retired code, or one only Regia 1.5 gives (`R01_09-later-regia-construct`), has an ordinary name, and its chapter states the status, which can change while the code stays. Code names may be corrected until the Regia 1.5 release, and are frozen after it, like numbers.
 
 Every language chapter lists its checks in a `## Transpiler checks` section, grouped as **Errors** and **Warnings**, each with its code:
 
@@ -28,14 +36,16 @@ Every language chapter lists its checks in a `## Transpiler checks` section, gro
 
 **Errors**
 
-- `R1301` A cycle in one Plot's relations (the message prints the cycle).
+- `R13_01-precedence-cycle` A cycle in one Plot's relations (the message prints the cycle).
 
 **Warnings**
 
-- `R1305` A competition ordered only by name.
+- `R13_05-competition-ordered-by-name` A competition ordered only by name.
 ```
 
-A chapter may still explain a check in its prose; the section is where the check is listed and numbered.
+A chapter may still explain a check in its prose; the section is where the check is listed, numbered and named. It is the only place that gives a code its name, so every code the chapter has ever given has a line there, a retired one included: `` - `R13_04-mixed-suits-trigger-blocks` Retired (ADR 0033): … `` says what took its place.
+
+Codes are written one at a time, never as a range. A set that makes up a whole list is named in words ("chapter 18's checks"); any other set is listed code by code.
 
 ## Case files
 
@@ -69,13 +79,13 @@ A case states what it expects in **annotations**: comments starting with `#!`. T
 
 ```
 #! case: two Playbooks ordered over each other form a cycle
-#! rule: R1301
+#! rule: R13_01-precedence-cycle
 ```
 
 - `case:` says in one line what the case shows.
 - `rule:` names the chapter and the section, or the check's code, that the case exercises. A case may name several rules, one line each.
 - `ok` (`#! ok`) marks an accepting case: the Program has no Diagnostics at all.
-- `regia:` (`#! regia: 2.0`) marks a case that needs a system Regia 1.5 leaves out, so a 1.5 runner skips it. `#! regia: 1.5` marks a case that shows a 1.5 refusal (`R0109`, `T1902`), so a 2.0 runner skips it. A case without the line runs on both (*Regia 1.5*, below).
+- `regia:` (`#! regia: 2.0`) marks a case that needs a system Regia 1.5 leaves out, so a 1.5 runner skips it. `#! regia: 1.5` marks a case that shows a 1.5 refusal (`R01_09-later-regia-construct`, `T19_02-join-refused`), so a 2.0 runner skips it. A case without the line runs on both (*Regia 1.5*, below).
 - Cases are matched as with `--all-warnings`: a warning silenced by `#@allow` (chapter 02) is still annotated, so a case can show what an allow covers.
 
 **Expected Diagnostics.** An annotation after code expects a Diagnostic whose primary span starts on that line:
@@ -83,21 +93,23 @@ A case states what it expects in **annotations**: comments starting with `#!`. T
 ```
     PRECEDENCE:
         Brawling OVER Drunkard
-        Drunkard OVER Brawling       #! error R1301
+        Drunkard OVER Brawling       #! error R13_01-precedence-cycle
 ```
 
 On a line of its own, `#!^` points at the line above. Use it where a trailing comment can't go, such as after a single-line doc comment, whose value runs to the end of the line:
 
 ```
 #@desc: the host's welcome
-#!^ warning R0203
+#!^ warning R02_03-detached-doc-comment
 ```
 
 (The codes in these examples are the real ones: chapters 02 and 13.)
 
-Several Diagnostics on one line are written one after another: `#! error R1301, warning R1305`.
+Several Diagnostics on one line are written one after another: `#! error R13_01-precedence-cycle, warning R13_05-competition-ordered-by-name`.
 
-**Matching.** A check case passes when the Transpiler reports exactly the annotated Diagnostics: same severity, same code, primary span starting on the same line. A Diagnostic with no annotation, or an annotation with no Diagnostic, fails the case. Message wording, labels, hints and quick fixes aren't checked, so they can improve without breaking cases. In a folder case, each annotation sits in the file the Diagnostic lands in. A folder case with several Programs matches the union of their Diagnostics, exact duplicates removed (chapter 23, *The Workspace*).
+**Codes in annotations.** `#! error`, `#! warning` and `rule:` write the whole code, and the runner reads its number. A code written without its Code name, or with a name that isn't its number's, is a **case error**: the case itself is wrong, so the runner reports it, matches nothing in it, and the case fails.
+
+**Matching.** A check case passes when the Transpiler reports exactly the annotated Diagnostics: same severity, same code number, primary span starting on the same line. A Diagnostic with no annotation, or an annotation with no Diagnostic, fails the case. Message wording, labels, hints and quick fixes aren't checked, so they can improve without breaking cases. In a folder case, each annotation sits in the file the Diagnostic lands in. A folder case with several Programs matches the union of their Diagnostics, exact duplicates removed (chapter 23, *The Workspace*).
 
 ## Coverage
 
@@ -112,13 +124,13 @@ The spec itself carries **one exemplar case per language chapter**, to show the 
 
 ## Regia 1.5
 
-Regia 1.5 is the subset of 2.0 that is built first (ADR 0025). Every chapter of the spec ends in a `## Regia 1.5` section, which says whether all of the chapter is in 1.5 or lists what is left out. A 1.5 build reports `R0109` for a construct of a later system (chapter 01), and a 1.5 run refuses a spawn with `T1902` (chapter 19). Both codes are retired in 2.0.
+Regia 1.5 is the subset of 2.0 that is built first (ADR 0025). Every chapter of the spec ends in a `## Regia 1.5` section, which says whether all of the chapter is in 1.5 or lists what is left out. A 1.5 build reports `R01_09-later-regia-construct` for a construct of a later system (chapter 01), and a 1.5 run refuses a spawn with `T19_02-join-refused` (chapter 19). Both codes are retired in 2.0.
 
 What 1.5 leaves out, and where each chapter says so:
 
 | Left out | Chapters |
 | --- | --- |
-| `FROM GAME`, `FROM ME`, `FROM` with `OR` | 03, 05, 07, 10, 20, 25, 30; `R3805` and `R3806` in 38 |
+| `FROM GAME`, `FROM ME`, `FROM` with `OR` | 03, 05, 07, 10, 20, 25, 30; `R38_05-pursue-without-me-recipe` and `R38_06-ask-only-me-recipes` in 38 |
 | `BY`, and hearing how an asked Goal ended, a Reason included | 05, 07, 11, 15, 20, 38 |
 | Quota Triggers and `SENT` | all of 18; 05, 15, 16, 19, 20, 25, 28, 29, 30, 33, 34, 35, 36 |
 | Joining: `JOINED`, spawning, Givings and setups that reach a joiner | 15, 16, 17, 19, 21, 28, 29, 30, 33, 34, 36 |

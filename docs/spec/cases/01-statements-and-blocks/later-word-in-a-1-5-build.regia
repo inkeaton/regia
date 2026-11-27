@@ -1,10 +1,10 @@
 #! case: a 1.5 build names a construct of a later system as Regia 2.0, and checks it no further
-#! rule: R0109
+#! rule: R01_09-later-regia-construct
 #! regia: 1.5
 
-CUE insult_heard(speaker)
+GAME CUE insult_heard(speaker)
 ACTION complain
 
 PLAYBOOK Guest:
-    WHEN insult_heard(?s), FROM GAME:     #! error R0109
+    WHEN insult_heard(?), FROM GAME:     #! error R01_09-later-regia-construct
         DO complain.

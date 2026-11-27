@@ -77,7 +77,7 @@ Each author orders only what they can see:
 - **A Plot orders its direct Subplots against itself and against each other.** It names a Subplot by its Plot name (it writes that name in `START SUBPLOT` anyway) and itself as `SELF`. It never names a Subplot's Playbooks.
 - **`SELF` is always a Plot's own Playbooks and its Director's own Plans**, never its Subplots, in a parent and in a Subplot alike. When a Subplot writes `PARENT OVER SELF`, its whole subtree moves with it, because of the next rule, not because `SELF` means more there.
 - **A Subplot counts together with everything it starts.** When RoyalBanquet says `HonorDuel OVER SELF`, every Playbook given by HonorDuel or by any Plot HonorDuel starts is ranked above RoyalBanquet's own. How HonorDuel and its own Subplots compare is HonorDuel's business. Nobody ever names a grandchild.
-- **A Subplot may refer to the Plot that started it only as `PARENT`**, since a reusable Subplot can't know its name. If parent and Subplot contradict each other, **the parent wins**, and the Transpiler warns about the dropped relation (`R1311`): something the Subplot's author wrote has no effect. A `PARENT` relation is a statement about the Subplot's own Plans ("on `scandal`, I come after whoever started me"), which its author can see. Under a parent with no Plans for that item it orders nothing. `PARENT` is the parent's `SELF`, so a Subplot can place itself against its parent and never against its siblings: that order is the parent's business.
+- **A Subplot may refer to the Plot that started it only as `PARENT`**, since a reusable Subplot can't know its name. If parent and Subplot contradict each other, **the parent wins**, and the Transpiler warns about the dropped relation (`R13_11-overridden-subplot-relation`): something the Subplot's author wrote has no effect. A `PARENT` relation is a statement about the Subplot's own Plans ("on `scandal`, I come after whoever started me"), which its author can see. Under a parent with no Plans for that item it orders nothing. `PARENT` is the parent's `SELF`, so a Subplot can place itself against its parent and never against its siblings: that order is the parent's business.
 - **There are no independent Plots.** Every Plot is the Root Plot or a Subplot below it (chapter 21), so every two Plots have a common ancestor that orders them.
 
 The result is a hierarchy: first the order between Plots (and their Subplots), then the order of Playbooks inside the winning Plot.
@@ -97,7 +97,7 @@ With nothing declared:
 
 - **A Subplot beats its parent**: it is the more specific part of the story. Since every story hangs under the Root Plot, "the story beats everyday behaviour" needs no declaration.
 - **A Phase beats `DURING PLOT`** for the same reason: it is the more specific state.
-- **A default gives way to what is written.** The written relations of a Plot, its Subplots' `PARENT` relations included, are placed first. Each default is then added only if it doesn't contradict what the written relations already imply, directly or through a chain. A default is never part of a cycle: in `RoyalBanquet`, `PARENT OVER SELF ON scandal` in `HonorDuel` and `HonorDuel OVER Poisoning` already put the banquet above `Poisoning` on `scandal`, so the default `Poisoning OVER SELF` is left out for that item, and the conflict report says so. Nothing written is ignored, so it is a line of the report, not a Diagnostic. A cycle made only of written relations is still an error (`R1301`). Why: ADR 0032.
+- **A default gives way to what is written.** The written relations of a Plot, its Subplots' `PARENT` relations included, are placed first. Each default is then added only if it doesn't contradict what the written relations already imply, directly or through a chain. A default is never part of a cycle: in `RoyalBanquet`, `PARENT OVER SELF ON scandal` in `HonorDuel` and `HonorDuel OVER Poisoning` already put the banquet above `Poisoning` on `scandal`, so the default `Poisoning OVER SELF` is left out for that item, and the conflict report says so. Nothing written is ignored, so it is a line of the report, not a Diagnostic. A cycle made only of written relations is still an error (`R13_01-precedence-cycle`). Why: ADR 0032.
 - **A Playbook given by two Plots** is still one Playbook with one set of Trigger Blocks. Against other Playbooks it ranks at the **best** of its positions.
 - **Name order** is the Playbook's or Plot's name, alphabetically, wherever the relations leave a free choice: the members of a Plot are placed one at a time, and when several could come next, the alphabetically first goes. Comparing unordered pairs by name one at a time isn't used, since it can form a cycle with the relations (chapter 32). It is deliberately arbitrary, and the warning names the pair and suggests the relation to add. A rename can therefore change behaviour. This is kept: every order a rename can't change (file order, text order across files, load order) is just as invisible and changes when files are reorganised, an error would demand relations for pairs that never meet (ADR 0008), and a random pick would make runs irreproducible. A rename in the Visual Editor that flips an unordered pair should say so (left to the ticket *The Visual Editor*, `.scratch/regia-revision/issues/18-visual-editor.md`).
 
@@ -190,21 +190,21 @@ Instancing orders nothing. A Program has exactly one Root Plot and Instancing ne
 
 **Errors**
 
-- `R1301` A cycle in one Plot's written relations, its Subplots' `PARENT` relations included (the message prints the cycle). Defaults are never part of one.
-- `R1302` `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
-- `R1303` A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot. Its *never* parts are an absence check (chapter 23).
-- `R1304` Retired (ADR 0033): Trigger Blocks with and without `SUITS` may be mixed.
+- `R13_01-precedence-cycle` A cycle in one Plot's written relations, its Subplots' `PARENT` relations included (the message prints the cycle). Defaults are never part of one.
+- `R13_02-misused-ties` `TIES` between Playbooks already ordered by `OVER`, or `TIES` on anything but Playbooks.
+- `R13_03-relation-to-absent-item` A relation naming a Playbook the Plot never gives out, a Plot it never starts, a Phase it doesn't have, or `PARENT` in a Plot that is never started as a Subplot. Its *never* parts are an absence check (chapter 23).
+- `R13_04-mixed-suits-trigger-blocks` Retired (ADR 0033): Trigger Blocks with and without `SUITS` may be mixed.
 
 **Warnings**
 
-- `R1305` A competition ordered only by name.
-- `R1306` A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes). Absence check (chapter 23).
-- `R1307` A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
-- `R1308` `TIES` with no `SUITS` to choose by.
-- `R1309` Retired (ADR 0033): an unlabelled candidate in a mixed `TIES` pool is neutral.
-- `R1310` `SUITS` on a Target without a Selection function (once per Program).
-- `R1311` A Subplot's relation dropped because its parent says the opposite. (It was a note; there are no notes any more, chapter 23.)
-- `R1312` Retired: a default left out is a line of the conflict report.
+- `R13_05-competition-ordered-by-name` A competition ordered only by name.
+- `R13_06-relation-without-shared-trigger` A relation that never matters, because its two sides share no Trigger (catches typos and stale relations after a Playbook changes). Absence check (chapter 23).
+- `R13_07-unreachable-trigger-block` A Trigger Block that can never run (inside a Playbook, or a `DURING PLOT` Plan fully shadowed by a Phase's).
+- `R13_08-ties-without-suits` `TIES` with no `SUITS` to choose by.
+- `R13_09-unlabelled-ties-candidate` Retired (ADR 0033): an unlabelled candidate in a mixed `TIES` pool is neutral.
+- `R13_10-suits-without-selection-function` `SUITS` on a Target without a Selection function (once per Program).
+- `R13_11-overridden-subplot-relation` A Subplot's relation dropped because its parent says the opposite. (It was a note; there are no notes any more, chapter 23.)
+- `R13_12-default-left-out` Retired: a default left out is a line of the conflict report.
 
 **Conflict report.** `regia explain <entry> precedence` (chapter 23) lists, per Role and Trigger, the competing Trigger Blocks in the order they rank and why (relation, default, default left out, Selection function, or name). A Trigger Block that always applies (an `ELSE`, or no Context) is marked as a full stop, and the candidates below it as unreachable:
 

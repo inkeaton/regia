@@ -48,6 +48,8 @@ Charted with the user on 2026-11-25.
 - [Review: how we test](issues/06-how-we-test.md): a test kind per pass, `insta` snapshots, dumps as core functions; the case runner in `regia-cli`'s library reads `docs/spec/cases/` in place; an exact-path pending list where a passing listed case fails; `ok` cases need no guard (chapter 23, *Tests*).
 - [Cut M1 into tickets](issues/07-cut-m1.md): tickets 14–34 in the Rust Book's order, ch 4 to 8; the move into `regia-core` sits mid-milestone (after ch 6); new lexer codes write their case first, which runs from M3.
 - [The first crate](issues/08-first-crate.md): `regia-cli` is a workspace member whose `[[bin]]` `regia` points at `src/main.rs`; an integration test runs it via `CARGO_BIN_EXE_regia`.
+- [Drill: variables, functions, control flow](issues/09-common-concepts-drill.md): ch. 3 drill done; byte offsets against characters met early, ahead of the lexer.
+- [Sweep cases for unsent Cues](issues/12-sweep-unsent-cues.md): 26 cases declare their Cue `GAME CUE`; 3 unused or never-used Placeholders and 2 undeclared setup Facts fixed too; whether `R0901` replaces `R0106` is left open.
 - [Readable generated ASL](issues/13-readable-generated-asl.md): Jason first (ADR 0050). Recurring mechanics are rules or Infrastructure plans in `agent.asl`; a `regia.*` action exists only for one of four reasons (chapter 28); 8 actions retired for `.intend`, `.random`, `.create_agent`, `.signal` and new rules/plans; labels unchanged; `-!g` stays written out; the ticket holds `courtesy` and `serving` by hand, the reference for M7.
 
 Settled while charting:

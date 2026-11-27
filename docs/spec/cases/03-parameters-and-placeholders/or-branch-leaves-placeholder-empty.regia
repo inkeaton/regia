@@ -1,11 +1,11 @@
 #! case: a Placeholder filled in only one branch of an OR can't be used in the Body
-#! rule: R0305
+#! rule: R03_05-maybe-unfilled-placeholder
 
 FACT hates(person), is_drunk
-CUE insult_heard
+GAME CUE insult_heard
 ACTION glare_at(target)
 
 PLAYBOOK Guest:
     WHEN insult_heard:
         GIVEN hates(?x) OR is_drunk:
-            DO glare_at(?x).             #! error R0305
+            DO glare_at(?x).             #! error R03_05-maybe-unfilled-placeholder

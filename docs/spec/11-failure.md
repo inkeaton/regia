@@ -97,7 +97,7 @@ WHEN bring(?dish) FAILED:                    # every other Failure of bring
 - **Only `FAIL WITH` gives a Reason.** A Failure from any other cause in the table above (a refused Action, arithmetic, no applicable `TO` Plan, a plain `FAIL`) has none. Those causes are in the Trace and are not words of the language.
 - **The Reason travels unchanged** up the chain of waiting Plans: every Goal that fails because of it fails with the same Reason, and so does the report to whoever asked (chapters 05, 07, 20). A Goal in the chain can't replace or drop it in 2.0.
 - **`WHEN g FAILED WITH <event>:`** matches a Failure with that Reason, filling Placeholders as any Trigger does (chapter 03). `WITH` comes straight after `FAILED`, before `FROM` or `BY` (chapter 05).
-- **One Trigger, first match wins.** The `WHEN g FAILED` Plans of one Playbook, with and without `WITH`, share a Trigger and are tried in written order; the first that matches runs, as for the `FINISHED` Plans of a Subplot's ending, whose plain `FINISHED` works the same way (chapter 17). A plain `FAILED` matches every Failure, with a Reason or without. Written above a `WITH` Plan it shadows it, with a warning (`R1106`).
+- **One Trigger, first match wins.** The `WHEN g FAILED` Plans of one Playbook, with and without `WITH`, share a Trigger and are tried in written order; the first that matches runs, as for the `FINISHED` Plans of a Subplot's ending, whose plain `FINISHED` works the same way (chapter 17). A plain `FAILED` matches every Failure, with a Reason or without. Written above a `WITH` Plan it shadows it, with a warning (`R11_06-shadowed-failed-with`).
 - **No catch-all for Reasons.** There is no `WITH ?why`: a Reason is a Cue, not a Value (chapter 03). Plain `FAILED` is the catch-all.
 - `WITH` goes only on `FAILED`. On `REACHED`, `DROPPED` and `ENDED` it is an error; a Plan that cleans up under `ENDED` and needs the Reason records it from its `FAILED WITH` Plan, which runs first.
 - **In a `WHEN` Plan**, `FAIL WITH` is allowed. Nobody hears a `WHEN` Plan fail, so the Reason only reaches the Trace.
@@ -146,7 +146,7 @@ WHEN have_dinner FAILED:
         PURSUE have_dinner, WITHOUT WAITING
 ```
 
-Without the `IF`, a Goal that fails every time is pursued again for as long as the Program runs. A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments, with no `GIVEN` or `IF` around the `PURSUE`, gets a warning (`R1103`). There is no limit at runtime.
+Without the `IF`, a Goal that fails every time is pursued again for as long as the Program runs. A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments, with no `GIVEN` or `IF` around the `PURSUE`, gets a warning (`R11_03-endless-failure-retry`). There is no limit at runtime.
 
 ## Every Pursuit that ends fires its Triggers
 
@@ -174,15 +174,15 @@ The language fixes **what** a trace can explain, and chapter 34 fixes its entrie
 
 **Errors**
 
-- `R1104` `FAIL WITH` something other than one declared Cue, or with unfilled arguments.
-- `R1105` `WITH` on `REACHED`, `DROPPED` or `ENDED` after a Goal's name.
+- `R11_04-misused-fail-with` `FAIL WITH` something other than one declared Cue, or with unfilled arguments.
+- `R11_05-with-on-wrong-trigger` `WITH` on `REACHED`, `DROPPED` or `ENDED` after a Goal's name.
 
 **Warnings**
 
-- `R1101` A Goal that is pursued, asked or declared, but has no `TO` Plan anywhere in the Program. It would always fail.
-- `R1102` Statements after `FAIL` in the same Block, which can never run.
-- `R1103` A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments and no `GIVEN` or `IF` around the `PURSUE`: it retries without end.
-- `R1106` A plain `WHEN g FAILED` Plan written above a `WHEN g FAILED WITH …` Plan it also matches, which can then never run.
+- `R11_01-goal-without-plan` A Goal that is pursued, asked or declared, but has no `TO` Plan anywhere in the Program. It would always fail.
+- `R11_02-statement-after-fail` Statements after `FAIL` in the same Block, which can never run.
+- `R11_03-endless-failure-retry` A `WHEN g FAILED` Plan that pursues `g` with the Trigger's own arguments and no `GIVEN` or `IF` around the `PURSUE`: it retries without end.
+- `R11_06-shadowed-failed-with` A plain `WHEN g FAILED` Plan written above a `WHEN g FAILED WITH …` Plan it also matches, which can then never run.
 
 There is no warning for a `TO` Plan with `GIVEN`s and no `ELSE`. Failing when no Context holds is often intended, and a warning there would fire on most recipes.
 
@@ -190,12 +190,12 @@ There is no warning for a `TO` Plan with `GIVEN`s and no `ELSE`. Failing when no
 
 **Failures**
 
-- `T1101` A Custom Action that the game refuses, or reports as failed while the `DO` waits.
-- `T1102` `PURSUE g` waiting on a Goal that fails.
-- `T1103` `FAIL`, with its Reason when `FAIL WITH` gave one.
-- `T1104` A Goal with no applicable `TO` Plan.
+- `T11_01-failed-custom-action` A Custom Action that the game refuses, or reports as failed while the `DO` waits.
+- `T11_02-pursued-goal-failed` `PURSUE g` waiting on a Goal that fails.
+- `T11_03-explicit-fail` `FAIL`, with its Reason when `FAIL WITH` gave one.
+- `T11_04-goal-found-no-plan` A Goal with no applicable `TO` Plan.
 
-The other causes in the table above have their codes in their own chapters: `T0401`, `T0402`, `T0701`, `T0801`, `T0901`, `T1201`.
+The other causes in the table above have their codes in their own chapters: `T04_01-operand-not-number`, `T04_02-division-by-zero`, `T07_01-recipient-not-agent`, `T08_01-update-of-unknown-fact`, `T09_01-weight-not-number`, `T12_01-duration-not-number`.
 
 ## Reserved words
 
@@ -214,7 +214,7 @@ The Jason mapping is chapter 40 (`40-jason-goal-life.md`); the Statements are in
 
 ## Regia 1.5
 
-In 1.5 (ADR 0025), except what reaches the asker: nobody hears `FAILED` for a Goal it asked, and a Reason travels only up the Agent's own chain of waiting Plans. `FAIL WITH`, `FAILED WITH`, `R1104` to `R1106` and the Trace entries are in.
+In 1.5 (ADR 0025), except what reaches the asker: nobody hears `FAILED` for a Goal it asked, and a Reason travels only up the Agent's own chain of waiting Plans. `FAIL WITH`, `FAILED WITH`, `R11_04-misused-fail-with`, `R11_05-with-on-wrong-trigger`, `R11_06-shadowed-failed-with` and the Trace entries are in.
 
 For the ASL mapping, `FAIL WITH r` carries `r` to the generated `-!g` plans of the chain, and to no report (chapter 40).
 
