@@ -199,7 +199,7 @@ Jason handles one plan per event, but chapter 18 needs both the plain Trigger an
 
 | | Director | Agent |
 | --- | --- | --- |
-| Active | `regia_phase(Ph)` and `regia_quota_in(Cue, Quantity, Role, phase(Ph))` or `… plot)` | some `regia_given(Owner, …)` |
+| Active | `regia_phase(Ph)` and `regia_quota_in(Cue, Quantity, Role, phase(Ph))` or `… plot)` | `regia_is_given(Owner)` |
 | Members of `Role` | `regia_cast(Me, Role, A)` | the union, over every `regia_given(Owner, …)`, of the `Role` bindings (chapter 29), **minus the Agent itself** |
 
 An Agent never receives its own Messages, since recipients exclude the sender (chapter 29). So it is left out of its own denominators. Otherwise an Agent that is its own `neighbour` could never meet `ALL` (chapter 18).

@@ -124,7 +124,7 @@ Neither is a warning: both can be meant.
 
 ## ASL mapping notes
 
-The Jason translation is chapter 39 (`39-jason-plan-bodies.md`): an `if`/`elif` chain on running sums, rolled once from `regia.random`, with generated variables named as chapter 39 says. What any AgentSpeak Target must keep: one roll from the seeded source (chapter 35), constant weights folded, a negative weight clamped with `T0902`, and an all-zero total logged with `T0903`.
+The Jason translation is chapter 39 (`39-jason-plan-bodies.md`): the Infrastructure plan `regia_choose`, which rolls once with `.random`, then an `if`/`elif` chain on the chosen Option's number, with generated variables named as chapter 39 says. What any AgentSpeak Target must keep: one roll from the seeded source (chapter 35), constant weights folded, a negative weight clamped with `T0902`, and an all-zero total logged with `T0903`.
 
 - **Targets without a native `if`** (not Jason): lowered like an `IF` chain (chapter 06). The Body computes the weights and the roll, then posts `!regia_randomly__N(R, W1, W2, …, captured Placeholders)`. There is one plan per Option, with contexts on running sums (`R < W1`, `R >= W1 & R < W1 + W2`, …), plus a generated plan for the all-zero case that logs the warning and succeeds.
 - A name made in only some Options is never seen by a later Statement, so no renaming is needed (as for `IF`). On Targets without a native `if`, a name made in every Option is passed back from the generated Option plans like one made in every branch of an `IF` chain (chapter 06).

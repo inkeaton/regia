@@ -402,7 +402,7 @@ Most entries aren't written by generated ASL at all. The internal actions and th
 | `action` | `regia.act` when it sends; the reply intake of `RegiaAgent` and `DirectorAgent`; the game link for a detached Director's Actions and when it is lost |
 | `message` | `regia.send`, which every send goes through |
 | `plan` | `selectOption` of both agent classes, when they choose the option; the walker, `regia.stop_playbook` and `regia.pass_failure` for one stopped or failed |
-| `goal` | `regia.pursue`, `RegiaAgent.socAcc`, `regia.reached`, `regia.goal_failed`, the drop walker |
+| `goal` | `regia.trace` for a `PURSUE`, `RegiaAgent.socAcc`, `regia_reach`, `regia.goal_failed`, the drop walker |
 | `fact` | `regia.trace` after each `LEARN`, `FORGET` and `UPDATE`; the plan that takes in a told Fact; the Java intake of a game Fact; `regia_begin`, for a Director's starting game Facts |
 | `phase`, `staging`, `cast` | the Infrastructure plans that do these things |
 | `giving` | the receiving Agent's `regia_give`, `regia_restore`, take steps and `regia_set_aside` |
@@ -444,7 +444,7 @@ Jason reports where things happen in ASL. The Trace speaks in `.regia` locations
                                           "9": "playbooks/courtesy.regia:12:13" } },
   "names": { "regia_director__royalBanquet": "director:RoyalBanquet",
              "regia_local__courtesy__greeting": "greeting" },
-  "plans": { "regia_plan__1": { "owner": "Courtesy", "trigger": "TO take_seat, FROM DIRECTOR",
+  "plans": { "regia_plan__courtesy__1": { "owner": "Courtesy", "trigger": "TO take_seat, FROM DIRECTOR",
                                 "given": "seat(?place)", "at": "playbooks/courtesy.regia:10:9",
                                 "vars": { "Place": "?place" } } }
 }
@@ -498,31 +498,31 @@ regia run banquet.regin --seed 4127 --console warnings
 `regia run` builds, then starts the MAS from the Build's `.jcm`:
 
 - The class path is the `regia-jason` jar the command line carries, then every jar in the Project's `lib/`. Nobody writes a class path.
-- The seed is `--seed`, else the Build's `SEED`, else one the run picks. It is given to `regia-jason`'s one random source as the system property `regia.seed`, and the `run` entry records it: `RUN STARTED banquet.regin SEED 4127`.
+- The seed is `--seed`, else the Build's `SEED`, else one the run picks. It is given to `regia-jason` as the system property `regia.seed`, from which each agent seeds its own generator (*Random draws*, below), and the `run` entry records it: `RUN STARTED banquet.regin SEED 4127`.
 - The console level goes in as `regia.trace_console`.
 - The game connects as it always does: each body to its port, the link to `base_port`.
 
-### One random source
+### Random draws
 
-Every draw the language makes goes through `regia-jason`'s one random source, seeded with the run's seed, so a run with the same seed draws the same way:
+Jason gives every agent one random generator, shared by `.random` and `math.random`. When an agent starts, `regia.RegiaAgent` or `regia.DirectorAgent` seeds it from the run's seed and the agent's name. So a run with the same seed draws the same way, and one agent's draws don't depend on how the others are scheduled.
 
-| Internal action | Gives |
+| What draws | How |
 |---|---|
-| `regia.random(T, R)` | a real number from 0 up to, not including, `T` |
-| `regia.random(A, B, whole, R)` | a whole roll from `A` to `B`, bounds in either order, rounded inward; fails when there is no whole number between them |
-| `regia.random(A, B, decimal, R)` | a decimal roll from `A` to `B` |
-| `regia.weighted_pick(L, M)` | a weighted Pick's Match |
-| `regia.pick(count(N) \| share(S), Pool, Picked)` | the Agents of every `n OF` and `n% OF` |
+| a Random choice | the Infrastructure plan `regia_choose`, with `.random` |
+| `RANDOM a TO b` | the rule `regia_roll(A, B, whole \| decimal, R)`, built on `math.random` |
+| a `RANDOMLY` Pick | the rule `regia_random_match`, with `.random` on the Matches |
+| a weighted Pick | `regia.weighted_pick(L, M)`, which takes the agent's generator from Java |
+| every `n OF` and `n% OF` | the Infrastructure plan `regia_draw`, with `.random` |
 
 - The Transpiler picks `whole` or `decimal` from how the bounds are written. A failed whole roll in a Body is `T0403`.
-- `regia.RegiaAgent` draws `RANDOM` Propensity values from it too (*Jason: the Build*, *Drawing `RANDOM`*).
-- Generated code never uses Jason's `.random` or `math.random`, which `regia-jason` can't seed. VEsNA-Pro's own choices might; if one turns out to matter, it is a gap the Target's development closes.
+- `regia.RegiaAgent` draws `RANDOM` Propensity values from the same generator (*Jason: the Build*, *Drawing `RANDOM`*).
+- Generated code never uses `.shuffle`, which draws from a source the seed doesn't reach. VEsNA-Pro's own choices use their own source; if one turns out to matter, it is a gap the Target's development closes.
 
 **Checks**
 
 - A whole roll with no whole number between its bounds, in a Body → `T0403` (Trace, Failure)
 
-Spec: chapter 35, *Starting a run*, *Test mode* (*One source per run*). For the seed, chapter 21.
+Spec: chapter 35, *Starting a run*, *Random draws*. For the seed, chapter 21; for why it is per agent, ADR 0050.
 
 ## Test mode
 
@@ -539,7 +539,7 @@ java -cp regia-jason.jar:lib/*:… regia.testing.RunCase build/cases/no_seat/no_
 `regia test` runs each behaviour case through `RunCase`, a class of `regia-jason`'s `regia.testing` package, with the Project's `lib/` jars on the class path as `regia run` has them. A dotted Action runs the Project's Java for real in a case too. The case itself, the Guest with no seat, is in *The Trace*, *Behaviour cases*.
 
 1. `RunCase` starts `ScriptedGame`, a WebSocket server on every address and port the `.jcm` gives. It speaks the game's envelope and types, and tells its connections apart by port, never by `sender`: the port of the `.jcm`'s `regia.GameLink` line is the link's, every other port is the body of the Agent the `.jcm` gives it. Under `#! game link: none` it doesn't serve the link's port, so the link writes `T2802` at start.
-2. It starts the MAS from the Build's `.jcm`, in the same JVM, with Jason's synchronous execution control, so agents step in lockstep reasoning cycles, and with the case's seed in the one random source. The bodies and the link connect to `ScriptedGame` as they would to the game.
+2. It starts the MAS from the Build's `.jcm`, in the same JVM, with Jason's synchronous execution control, so agents step in lockstep reasoning cycles, and with the case's seed, from which each agent seeds its generator. The bodies and the link connect to `ScriptedGame` as they would to the game.
 3. For each `>` step, it waits for the run to settle, plays the step through `ScriptedGame`, and writes a `script` entry.
 4. After the last step, once the run has settled, it writes `RUN ENDED`, stops the MAS and exits. The Trace file is its only output.
 

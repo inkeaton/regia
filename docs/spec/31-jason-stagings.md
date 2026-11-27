@@ -19,10 +19,16 @@ A Staging is identified by **its Director's Jason agent name**. Nothing else nam
 ### Director names
 
 - The **Root Director** is declared in the `.jcm` as `regia_director__<plot>`, for example `regia_director__royalBanquet` (chapter 36).
-- A **Subplot Director** is created at runtime by `regia.start_staging(Plot, Name)`, a `regia-jason` internal action. It calls Jason's `createAgent` with the base name `regia_director__<plot>` (`regia_director__honorDuel`), the source `directors/<Plot>.asl` and `agentClass("regia.DirectorAgent")`, starts the agent, and unifies `Name` with the name Jason actually gave it. Jason makes a clashing name unique by adding a number, so two duels get two names.
+- A **Subplot Director** is created at runtime with Jason's own **`.create_agent`** (ADR 0050), whose first argument is a variable named after the base name `regia_director__<plot>`:
+
+  ```
+  .create_agent(Regia_director__honorDuel, "directors/HonorDuel.asl", [agentClass("regia.DirectorAgent")])
+  ```
+
+  Jason names the agent from the variable (`regia_director__honorDuel`), makes a clashing name unique by adding a number (`regia_director__honorDuel_1`), so two duels get two names, and binds the variable to the name it gave (research note of *Readable generated ASL*, *Agents*). That it does the same on JaCaMo 1.3.1, whose runtime services aren't in `references/`, is to be confirmed when `regia-jason` is written. If it doesn't, a `regia.start_staging(Plot, Name)` internal action does it instead (chapter 28, reason 4).
 - Names exist to be unique and readable in the mind inspector. The Infrastructure never parses them.
 - Because Generated names start with `regia_`, Agent names the game reports must not (checked where joins are reported, chapter 33).
-- Rejected: 1.0's names built from the clock's milliseconds, which can clash, and a wrapper is needed anyway because `.create_agent` returns the name only through an unbound first argument and can't set the agent class otherwise.
+- Rejected: 1.0's names built from the clock's milliseconds, which can clash. An earlier version of this chapter wrapped `.create_agent` in Java, believing it couldn't set the agent class. It can, with `agentClass(…)` (`stdlib/create_agent.java`).
 
 ## A Director's records
 
@@ -44,7 +50,7 @@ A Staging is identified by **its Director's Jason agent name**. Nothing else nam
 
 1. **Work out the arguments**: the list `Args` of the Plot's arguments in parameter order, `[Offender]` for `royal_banquet.regia:92`. They are filled (`R1710`). A Plot without parameters has `[]`.
 2. **Resolve the cast** (chapter 17): a whole-Role Mapping takes everyone in the parent's `regia_cast(Me, Role, _)` **now**; a counted pick picks at random, no Agent twice in one Statement (chapter 15). A Role with `EXCEPT` is read through `regia_reach` (chapter 30), so `MAPPING Guest EXCEPT ?offended, ?offender AS Spectator` leaves both duellists out of the snapshot. The result is a list `[cast(challenger, alice), cast(spectator, bob), …]`.
-3. **Create the child** with `regia.start_staging(honorDuel, Child)`.
+3. **Create the child** with `.create_agent(Regia_director__honorDuel, "directors/HonorDuel.asl", [agentClass("regia.DirectorAgent")])`, and call the bound name `Child`.
 4. **Record it**: `+regia_child(Child, honorDuel, Args, Until)`. `Until` is `phase(feast)` for `START SUBPLOT …, UNTIL EXITED` in a `DURING feast` Plan, and `staging` otherwise, as for `regia_give` (chapter 29). Leaving the Phase ends the child (chapter 30, *`ENTER`*, step 3).
 5. **Send the start**: `.send(Child, achieve, regia_start([cast(…), …], Prefix, Args))`, where `Prefix` is the parent's `regia_rank_prefix` plus HonorDuel's level under this Plot (chapter 32).
 
@@ -241,7 +247,7 @@ Rows added to chapter 28's table, and one retired:
 
 ## `regia-jason` additions
 
-- Internal action `regia.start_staging(Plot, Name)`.
+- None: a Subplot Director is created with `.create_agent` (*Director names*, above).
 
 ## Trace entries
 

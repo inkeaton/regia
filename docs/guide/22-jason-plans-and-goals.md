@@ -1,20 +1,20 @@
 # Jason: Plans and Goals
 
-A Guest is asked to take its seat. In Regia that is one `TO take_seat` Plan of four lines. In the Build it is one ASL plan with a guard in front, a test for who asked, a Context, four Statements turned into Jason, and a last call that tells the Infrastructure the Goal was reached. This chapter goes through how the Jason Target writes a Plan's Contexts and Statements, and then how it runs a Pursuit from the request to its ending.
+A Guest is asked to take its seat. In Regia that is one `TO take_seat` Plan of four lines. In the Build it is one ASL plan with a guard in front, a test for who asked, a Context, its Statements turned into Jason, and a last step that tells the Infrastructure the Goal was reached. The plan stays plain Jason: what recurs from plan to plan is a named rule or Infrastructure plan in `regia/agent.asl`, and a `regia.*` internal action appears only where Jason can't do the job. This chapter goes through how the Jason Target writes a Plan's Contexts and Statements, and then how it runs a Pursuit from the request to its ending.
 
 | We write | The ASL gets |
 |---|---|
 | a Placeholder, `?place` | a Jason variable, `Place` |
 | a Context, a `GIVEN` chain | one plan per `GIVEN`, each with its own context |
-| `IF`, `FOR EACH`, `RANDOMLY` | Jason's own `if` and `for`, and a roll from `regia.random` |
-| a Pick, `COUNT` | a `.setof` over the Matches |
-| `LEARN`, `FORGET`, `UPDATE` | `+f` and `.abolish(f)`, each guarded |
+| `IF`, `FOR EACH`, `RANDOMLY` | Jason's own `if` and `for`, and the Infrastructure plan `regia_choose` |
+| a Pick, `COUNT` | a rule over the Matches, or a `.setof` |
+| `LEARN`, `FORGET`, `UPDATE` | `+f`, `.abolish(f)` and `!regia_update` |
 | `WAIT` | `regia.wait` |
-| `TELL`, `ASK`, `SIGNAL` | `regia.send` |
-| `PURSUE`, `DROP`, `FAIL`, `PURSUING` | `!g` and `!!g`, `regia.drop`, `.fail`, `regia.pursuing` |
+| `TELL`, `ASK`, `SIGNAL` | the rule `regia_audience`, then `regia.send` |
+| `PURSUE`, `DROP`, `FAIL`, `PURSUING` | `!g` and `!!g`, `regia.drop`, `.fail`, `.intend` |
 | `WHEN g REACHED` … `ENDED` | plans for four generated goals, `regia_reached` … `regia_ended` |
 
-No Transpiler exists yet, so every line of ASL below was put together by hand from the spec. The numbers in plan labels (`@regia_plan__1`) and generated variables (`Regia_pool__1`) are the Transpiler's own and mean nothing here. What is around a Body, the Givings guard and the rank annotation, is in *Jason: Givings and Precedence*; the file a plan lands in is in *Jason: the Build*; what `regia.act` sends to the game is in *Jason: the game and the Trace*.
+No Transpiler exists yet, so every line of ASL below was put together by hand from the spec. Plan labels are `regia_plan__<owner>__<n>`, numbered per Playbook or Plot in source order. The numbers here, and those of generated variables (`Regia_to__1`), are the Transpiler's own and mean nothing. What is around a Body, the Givings guard and the rank annotation, is in *Jason: Givings and Precedence*; the file a plan lands in is in *Jason: the Build*; what `regia.act` sends to the game is in *Jason: the game and the Trace*.
 
 ## A Plan in ASL
 
@@ -29,26 +29,24 @@ TO take_seat, FROM DIRECTOR:
 ```
 
 ```asl
-@regia_plan__1[regia_rank(courtesy, to(take_seat), 0)]
+@regia_plan__courtesy__1[regia_rank(courtesy, to(take_seat), 0)]
 +!take_seat[source(Regia_sender), regia_pursuit(Regia_pursuit)]
-    : regia_given(courtesy, _, _, _, _, _)
-      & regia_holds(courtesy, Regia_sender, _, _, _, _)
+    : regia_is_given(courtesy)
+      & regia_from_director(courtesy, Regia_sender)
       & seat(Place)
    <- regia.act("walk_to", walk_to(Place));
       regia.act("sit_down", sit_down);
-      .my_name(Regia_me);
-      .setof(Regia_to__1, regia_plays(courtesy, host, Regia_to__1) & Regia_to__1 \== Regia_me, Regia_pool__1);
-      for (.member(Regia_to__1, Regia_pool__1)) { regia.send(Regia_to__1, signal, regia_local__courtesy__greeting) };
-      regia.reached(take_seat, Regia_sender, Regia_pursuit).
+      ?regia_audience(courtesy, host, Regia_to__1); regia.send(Regia_to__1, signal, regia_local__courtesy__greeting);
+      !regia_reach(take_seat, Regia_sender, Regia_pursuit).
 ```
 
 Read from the top:
 
 - The label carries the rank, which `selectOption` reads (*Jason: Givings and Precedence*).
 - The trigger binds the Sender, Jason's own `source`, and the Pursuit's `Id` (*A Pursuit's identity*, below).
-- The context starts with the Givings guard: some Giving of `Courtesy` exists. Then the `FROM DIRECTOR` test on the Sender, then our Context.
-- Each Statement becomes one or a few Jason instructions, in order. `DO` is `regia.act`. `TELL host` collects the Role's Agents but the sender, and sends to each one.
-- A recipe ends with `regia.reached`, which raises the `REACHED` and `ENDED` endings (*`REACHED`*, below).
+- The context starts with the Givings guard, the rule `regia_is_given`: some Giving of `Courtesy` exists. Then the `FROM DIRECTOR` test on the Sender, the rule `regia_from_director`, then our Context.
+- Each Statement becomes one Jason step, in order, or a test goal and the one action it feeds. `DO` is `regia.act`. `TELL host` reads the rule `regia_audience`, the Role's Agents but the sender, and sends to the whole list.
+- A recipe ends with `!regia_reach`, which raises the `REACHED` and `ENDED` endings (*`REACHED`*, below).
 
 There is no `ELSE`, so there is no second plan. A Guest with no `seat` has no applicable plan for `+!take_seat`, and that is how `take_seat` fails at once (*No applicable `TO` Plan*, below).
 
@@ -57,7 +55,7 @@ There is no `ELSE`, so there is no second plan. A Guest with no `seat` has no ap
 A Placeholder becomes a Jason variable with its first letter uppercased and nothing else changed: `?place` → `Place`, `?the_dish` → `The_dish`.
 
 - A blank, `?` or `?_name`, becomes Jason's anonymous `_`, which never joins another. A variable such as `_who` is never written, because Jason would join two of them in one clause.
-- A variable the Transpiler makes up, for a weight, a total, a roll, a list, is a Generated name with its first letter uppercased: `Regia_total`, `Regia_roll`, `Regia_pool__1`. Our Placeholders can't start with `regia_` or contain `__`, so the two never meet.
+- A variable the Transpiler makes up, for a chosen Option, a list, a Pursuit's `Id`, is a Generated name with its first letter uppercased: `Regia_option__1`, `Regia_to__1`, `Regia_pursuit__1`. Our Placeholders can't start with `regia_` or contain `__`, so the two never meet.
 - Two Placeholders of one Plan can't differ only in case, so the mapping is one-to-one.
 - A Placeholder is filled once per run of a Plan, and a Jason variable, once bound, stays bound for the rest of the plan. So nothing is renamed and nothing is copied.
 
@@ -66,7 +64,7 @@ A Placeholder becomes a Jason variable with its first letter uppercased and noth
 - Two names, Placeholders included, that differ only in case → `R1007`
 - A Placeholder starting with `regia_` or containing `__` → `R1008`
 
-Spec: chapter 39, *Placeholders and variables*. For the guard, chapter 29; for the rank, chapter 32; for `regia.act`, chapter 37.
+Spec: chapter 39, *Placeholders and variables*. For the guard, chapter 29; for the rank, chapter 32; for `regia.act`, chapter 37; for when a `regia.*` action is allowed, chapter 28, *Generated ASL is readable*.
 
 ## Contexts and `GIVEN`
 
@@ -81,17 +79,17 @@ WHEN scandal(?victim), FROM peer ?speaker:
 ```
 
 ```asl
-@regia_plan__5[regia_rank(nobleSocializing, when(scandal), 1)]
+@regia_plan__nobleSocializing__5[regia_rank(nobleSocializing, when(scandal), 1)]
 +scandal(Victim)[source(Speaker)]
-    : regia_given(nobleSocializing, _, _, _, _, _)
-      & regia_plays(nobleSocializing, peer, Speaker)
+    : regia_is_given(nobleSocializing)
+      & regia_from_role(nobleSocializing, peer, Speaker)
       & grudge(Victim, _)
    <- regia.act("snigger", snigger).
 
-@regia_plan__6[regia_rank(nobleSocializing, when(scandal), 1), effects([sympathy(-0.1)])]
+@regia_plan__nobleSocializing__6[regia_rank(nobleSocializing, when(scandal), 1), effects([sympathy(-0.1)])]
 +scandal(Victim)[source(Speaker)]
-    : regia_given(nobleSocializing, _, _, _, _, _)
-      & regia_plays(nobleSocializing, peer, Speaker)
+    : regia_is_given(nobleSocializing)
+      & regia_from_role(nobleSocializing, peer, Speaker)
       & grudge(Speaker, _) & not grudge(Victim, _)
    <- regia.act("roll_eyes", roll_eyes).
 ```
@@ -120,14 +118,13 @@ TO resent(?who):
 
 ```asl
 +!resent(Who)[source(Regia_sender), regia_pursuit(Regia_pursuit)]
-    : regia_given(nobleSocializing, _, _, _, _, _)
+    : regia_is_given(nobleSocializing)
    <- if (grudge(Who, Size)) {
-          /* UPDATE: grudge(Who, Size) must be known, else T0801 */
-          .abolish(grudge(Who, Size)); +grudge(Who, Size + 1)
+          !regia_update(grudge(Who, Size), grudge(Who, Size + 1))
       } else {
-          if (not grudge(Who, 1)) { +grudge(Who, 1) }
+          +grudge(Who, 1)
       };
-      regia.reached(resent(Who), Regia_sender, Regia_pursuit).
+      !regia_reach(resent(Who), Regia_sender, Regia_pursuit).
 ```
 
 A Body `IF` chain is Jason's own `if (…) { … } elif (…) { … } else { … }`.
@@ -155,38 +152,30 @@ WHEN idle:
 ```
 
 ```asl
-+idle[source(_)] : regia_given(nobleSocializing, _, _, _, _, _)
++idle[source(_)] : regia_is_given(nobleSocializing)
    <- .setof(m(Foe, Regia_b__1), grudge(Foe, Regia_b__1) & regia_plays(nobleSocializing, peer, Foe), Regia_list__1);
       .length(Regia_list__1, Grudges);
-      Regia_weight__3 = Grudges;
-      if (Regia_weight__3 < 0) { regia.trace(warning, warning, "T0902", [what(option(3))]) };
-      Regia_weight__3c = math.max(0, Regia_weight__3);
-      Regia_total = 3 + 2 + Regia_weight__3c + 5;
-      if (Regia_total > 0) {
-          regia.random(Regia_total, Regia_roll);
-          if (Regia_roll < 3) { regia.act("chat", chat) }
-          elif (Regia_roll < 3 + 2) {
-              regia.act("sip_wine", sip_wine);
-              regia.random(1, 100, whole, Regia_roll__2);
-              if (Regia_roll__2 <= 30) { regia.act("laugh", laugh) }
-          }
-          elif (Regia_roll < 3 + 2 + Regia_weight__3c) {
-              regia.pursue(vent, Regia_pursuit__1); !vent[regia_pursuit(Regia_pursuit__1)]
-          }
-          else { true }
-      } else {
-          regia.trace(warning, warning, "T0903", [])
-      }.
+      !regia_choose([3, 2, Grudges, 5], Regia_option__1);
+      if (Regia_option__1 == 1) { regia.act("chat", chat) }
+      elif (Regia_option__1 == 2) {
+          regia.act("sip_wine", sip_wine);
+          ?regia_roll(1, 100, whole, Regia_roll__1);
+          if (Regia_roll__1 <= 30) { regia.act("laugh", laugh) }
+      }
+      elif (Regia_option__1 == 3) {
+          regia.trace(goal, info, "", [goal(vent), event(pursued)], Regia_pursuit__1); !vent[regia_pursuit(Regia_pursuit__1)]
+      }
+      elif (Regia_option__1 == 4) { true }.
 ```
 
-A Random choice stays inside the Body. Each Weight is worked out, one roll is made, and an `if`/`elif` chain on the running sums picks the Option.
+A Random choice is one step to choose, then Jason's own `if`/`elif` chain on the chosen Option's number.
 
-- The roll is `regia.random(Total, Roll)`: a real number from 0 up to, but not including, the total, drawn from the run's one seeded source. Generated code never calls Jason's `.random` or `math.random`, which `regia-jason` can't seed.
-- A constant Weight is folded in as it is, with no clamp and no Trace code. `?grudges` isn't constant, so its value is clamped to 0 with `T0902` when it is negative, though a `COUNT` never is: the Transpiler doesn't look that closely.
-- When every Weight is 0 the chain is skipped with `T0903`, and no Option runs.
+- `regia_choose(Weights, N)` is an Infrastructure plan of `regia/agent.asl`. It works out the Weights, clamps a negative one to 0 with `T0902`, rolls once with Jason's `.random`, and binds `N` to the chosen Option, from 1. A subgoal hands its bindings back, so `Regia_option__1` is bound when the chain runs.
+- When every Weight is 0, `N` is 0 with `T0903`, and no Option runs.
+- The roll comes from the Agent's own generator, which `regia-jason` seeds from the run's seed when the Agent starts. Generated code never uses `.shuffle`, which that seed doesn't reach.
 - An Option of only `PASS` is `true`.
-- `RANDOM(1, 100)` is `regia.random(1, 100, whole, R)`. `whole` or `decimal` comes from how the bounds are written.
-- A Weight that isn't a Number makes Jason's arithmetic fail, which fails the Plan.
+- `RANDOM(1, 100)` is the rule `regia_roll(1, 100, whole, R)`, read with a test goal. `whole` or `decimal` comes from how the bounds are written.
+- A Weight that isn't a Number makes the arithmetic in `regia_choose` fail, which fails the Plan.
 - A Placeholder filled in every Option stays bound after the chain. One filled in only some is never read by a later Statement. `LET ?x BE e` is `X = e`, and `?a != ?b` is `A \== B`.
 - The Jason Target never writes `regia_randomly__N`.
 
@@ -197,7 +186,7 @@ A Random choice stays inside the Body. Each Weight is worked out, one roll is ma
 - Every Weight 0 or less, and no Option runs → `T0903` (Trace entry)
 - A whole roll with no whole number between its bounds → `T0403` (Trace, Failure)
 
-Spec: chapter 39, *Random choice*. For `regia.random`, chapter 35, *Test mode*; for Weights, chapter 09.
+Spec: chapter 39, *Random choice*. For the seeded generator, chapter 35, *Random draws*; for Weights, chapter 09.
 
 ## Picks
 
@@ -212,40 +201,38 @@ WHEN idle:
 ```
 
 ```asl
-@regia_plan__1[regia_rank(scheming, when(idle), 0)]
+@regia_plan__scheming__1[regia_rank(scheming, when(idle), 0)]
 +idle[source(_)]
-    : regia_given(scheming, _, _, _, _, _)
+    : regia_is_given(scheming)
       & not regia_local__scheming__poured
-      & .setof(m(Mark, Size), grudge(Mark, Size) & .number(Size), Regia_matches__1)
-      & .setof(Size, .member(m(_, Size), Regia_matches__1), Regia_values__1)
-      & .min(Regia_values__1, Size)
-      & .member(m(Mark, Size), Regia_matches__1)
+      & regia_lowest(m(Mark, Size), Size, grudge(Mark, Size))
    <- regia.act("pour_poison", pour_poison(Mark));    // WITHOUT WAITING
-      if (not regia_local__scheming__poured) { +regia_local__scheming__poured };
+      +regia_local__scheming__poured;
       regia.act("slip_away", slip_away).
 ```
 
-A plain condition is left as it is, and Jason takes its first unifier. A Pick collects the distinct Matches first, with `.setof`, which leaves its template unbound and so fills nothing until the last line.
+A plain condition is left as it is, and Jason takes its first unifier. A Pick is a rule of `regia/agent.asl` that collects the distinct Matches first, with `.setof`, and fills the Placeholders only with the Match it picks.
 
 | We write | The context |
 |---|---|
 | no Pick | the condition, unchanged |
-| `LOWEST ?p`, `HIGHEST ?p` | `.setof` the Matches, keep those where `.number(P)`, take the `.min` or `.max` of the values, then a Match with that value (`.member`) |
-| `RANDOMLY` | `.setof` the Matches, then pick one by index with `regia.random` |
-| `HIGHEST ?p, RANDOMLY` | the tied Matches, then pick by index |
+| `LOWEST ?p`, `HIGHEST ?p` | `regia_lowest(T, P, F)`, `regia_highest(T, P, F)`: `.setof` the Matches, keep those where `.number(P)`, take the `.min` or `.max` of the values, then a Match with that value |
+| `RANDOMLY` | `regia_random_match(T, F)`: `.setof` the Matches, then pick one with `.random` |
+| `HIGHEST ?p, RANDOMLY` | `regia_highest_random`: the tied Matches, then pick one with `.random` |
 | `WEIGHT e` | `.setof` the Matches with their Weight, `m(…, W)`, then `regia.weighted_pick` |
 
 A random Pick, as `RANDOMLY` writes it:
 
 ```asl
-+bored : .setof(m(G), guest(G), Regia_matches__1) & .length(Regia_matches__1, Regia_count__1) & Regia_count__1 > 0
-         & regia.random(Regia_count__1, Regia_roll) & .nth(math.floor(Regia_roll), Regia_matches__1, m(G)) <- …
+regia_random_match(T, F) :- .setof(T, F, L) & .random(L, T).    // in regia/agent.asl
+
++bored : regia_random_match(m(G), guest(G)) <- …
 ```
 
 - Every blank in these templates is a fresh generated variable, so Matches are told apart by every blank.
 - `.setof`, not `.findall`, so the same Match reached through both sides of an `OR` counts once.
-- Jason takes internal actions in contexts and in `if` conditions alike, so `IF …, RANDOMLY` is written the same way.
-- `regia.weighted_pick` clamps negative Weights to 0. When they sum to 0 it writes `T2601` and fails, so the context doesn't hold. On a `GIVEN`, a Weight that isn't a Number is left out by a `.number(W)` test; on a Body `IF` it is kept, and the arithmetic fails the Plan.
+- Jason takes rules in contexts and in `if` conditions alike, so `IF …, RANDOMLY` is written the same way. With no Match, `.random` has nothing to pick and the context doesn't hold.
+- `regia.weighted_pick` stays an internal action, because it writes the Trace from inside a context and a rule never does. It clamps negative Weights to 0. When they sum to 0 it writes `T2601` and fails, so the context doesn't hold. On a `GIVEN`, a Weight that isn't a Number is left out by a `.number(W)` test; on a Body `IF` it is kept, and the arithmetic fails the Plan.
 - A Pick builds a list each time it is checked, linear in the matching Facts. A plain condition doesn't.
 
 `poured` is local to `Scheming`, so it is `regia_local__scheming__poured`. With the poison poured, the context fails and Jason looks at the other Playbooks' plans for `+idle`: the Poisoner goes back to small talk.
@@ -267,16 +254,19 @@ FOR EACH on_plate(?dish):
 ```
 
 ```asl
-.setof(m(Dish), on_plate(Dish), Regia_each__1);
-for (.member(m(Dish), Regia_each__1)) {
+for (regia_each(m(Dish), on_plate(Dish))) {
     regia.act("eat", eat(Dish));
-    if (on_plate(Dish)) { .abolish(on_plate(Dish)) }
+    .abolish(on_plate(Dish))
 }
 ```
 
-A snapshot of the Matches into a list, then Jason's `for` over it.
+Jason's `for` over the rule `regia_each` of `regia/agent.asl`, which takes a snapshot of the Matches:
 
-- The snapshot is needed. Jason's `for` works out its solutions lazily, so a `for` straight over `on_plate(Dish)` would see the Block's own `FORGET` and lose rounds.
+```asl
+regia_each(T, F) :- .setof(T, F, L) & .member(T, L).
+```
+
+- The snapshot is needed. Jason's `for` works out its solutions lazily, so a `for` straight over `on_plate(Dish)` would see the Block's own `FORGET` and lose rounds. In `regia_each`, `.setof` runs once, at the first round, and the later rounds walk the list it built.
 - Jason undoes every binding made in the body between rounds, and again after the loop. That is the Regia rule: a Placeholder filled inside the Block lasts one round, and no later Statement sees it.
 - A failure inside the Block fails the `for`, and with it the Plan.
 - A `WAIT`, a waiting `PURSUE` or a `DO` inside the Block suspends the intention in the middle of the loop. The loop goes on when it resumes.
@@ -306,17 +296,17 @@ Spec: chapter 39, *Contexts and `GIVEN`*, *Picks, `FOR EACH` and `COUNT`*.
 
 | We write | The ASL |
 |---|---|
-| `LEARN f` | `+f`, guarded by `not f` |
-| `FORGET f` | `.abolish(f)`, guarded by `f` |
-| `UPDATE f TO f2` | a test that `f` is known, then `.abolish(f); +f2`; nothing when `f` equals `f2` |
+| `LEARN f` | `+f` |
+| `FORGET f` | `.abolish(f)` |
+| `UPDATE f TO f2` | `!regia_update(f, f2)`: a test that `f` is known, then `.abolish(f); +f2`; nothing when `f` equals `f2` |
 | `PRINT(a, b)` | `.print(a, " ", b)` |
 | `PASS` | `true`, or nothing when the Body has other Statements |
 
-`LEARN poured` in `Scheming` is `if (not regia_local__scheming__poured) { +regia_local__scheming__poured }`, and `FORGET on_plate(?dish)` in `Dining` is `if (on_plate(Dish)) { .abolish(on_plate(Dish)) }`.
+`LEARN poured` in `Scheming` is `+regia_local__scheming__poured`, and `FORGET on_plate(?dish)` in `Dining` is `.abolish(on_plate(Dish))`. Neither needs a guard.
 
-- `LEARN` of a Fact already known raises no event, so no `LEARNED` Plan runs. A Fact held only because someone told it, or the game reported it, is known too.
-- `FORGET` is `.abolish`, never a plain `-f`. A plain `-f` takes away only the `source(self)` annotation, and a Fact told by others or reported by the game would stay. `.abolish` takes the belief with every source and raises one `-f` event, so `FORGOTTEN` fires once.
-- `UPDATE` is not `-+`, which matches any arguments. When `f` isn't known it writes `T0801` itself and fails with `regia_because(Seq)`, pointing at that entry, so nobody writes a second cause (*The cause entry*, below).
+- `LEARN` of a Fact already known raises no event, so no `LEARNED` Plan runs: `regia.RegiaAgent.brf` sees to it (*A told Fact*, below). A Fact held only because someone told it, or the game reported it, is known too.
+- `FORGET` is `.abolish`, never a plain `-f`. A plain `-f` takes away only the `source(self)` annotation, and a Fact told by others or reported by the game would stay. `.abolish` takes the belief with every source and raises one `-f` event, so `FORGOTTEN` fires once. When the Fact isn't known it takes nothing and raises nothing.
+- `UPDATE` is an Infrastructure plan, because it tests, writes the Trace and may fail. It is not `-+`, which matches any arguments. When `f` isn't known it writes `T0801` itself and fails with `regia_because(Seq)`, pointing at that entry, so nobody writes a second cause (*The cause entry*, below).
 
 **Checks**
 
@@ -349,16 +339,15 @@ if (not on_plate(_)) { .fail(regia_fail, regia_reason(no_food)) }
 - The condition is tested once at the call: if it holds already, the Body goes on at once. After that it is tested on every new event the Agent gets, which is Jason's own `.wait` mechanism. Every belief added or removed raises an event, even with no plan for it, so a change to a Fact, to `regia_phase` (`IN`) or to `regia_cast` (`PLAYS`) tests it again. It is not tested every cycle.
 - Running out of time never fails. Jason's `.wait(Cond, T)` fails with `wait_timeout`; `regia.wait` always succeeds, and the `IF` after it tells the two endings apart.
 - Nothing is bound after the wait. The condition fills no Placeholder, so its only unbound variables are `_`.
-- The time is measured on the run's clock, which stops while the game is paused (*Jason: the Build*, *The clock*).
+- The time is measured on the run's clock, which stops while the game is paused (*Jason: the Build*, *The clock*). That clock is why `WAIT` is an internal action at all.
 - `regia.wait` writes the `time` entry when the wait ends, `WAIT UNTIL on_plate(?) TIMED OUT` or `… MET`, with how long it waited.
 
-A Duration that isn't constant is worked out first. `WAIT RANDOM(1, 3) SECONDS` in `Duelling`'s `TO strike`:
+A Duration that isn't constant is worked out first, and `regia.wait` clamps a negative one to 0 with `T1202`. `WAIT RANDOM(1, 3) SECONDS` in `Duelling`'s `TO strike`:
 
 ```asl
-regia.random(1, 3, whole, Regia_roll__1);
+?regia_roll(1, 3, whole, Regia_roll__1);
 Regia_wait__1 = Regia_roll__1 * 1000;
-if (Regia_wait__1 < 0) { regia.trace(warning, warning, "T1202", […]) };
-regia.wait(math.max(0, Regia_wait__1))
+regia.wait(Regia_wait__1)
 ```
 
 **Checks**
@@ -380,12 +369,8 @@ FOR EACH craves(?dish):
 ```
 
 ```asl
-.setof(m(Dish), craves(Dish), Regia_each__1);
-for (.member(m(Dish), Regia_each__1)) {
-    .my_name(Regia_me);
-    .setof(Regia_to__1, regia_plays(dining, waiter, Regia_to__1) & Regia_to__1 \== Regia_me, Regia_pool__1);
-    regia.pick(count(1), Regia_pool__1, Regia_picked__1);
-    for (.member(Regia_to__1, Regia_picked__1)) { regia.send(Regia_to__1, achieve, bring(Dish, Place)) }
+for (regia_each(m(Dish), craves(Dish))) {
+    !regia_draw(dining, waiter, count(1), Regia_to__1); regia.send(Regia_to__1, achieve, bring(Dish, Place))
 }
 ```
 
@@ -394,16 +379,18 @@ for (.member(m(Dish), Regia_each__1)) {
 | `TELL ?x f`, a Fact | `regia.send(X, tell, f)` |
 | `TELL ?x c`, a Cue, local or not | `regia.send(X, signal, c)` |
 | `ASK ?x TO g` | `regia.send(X, achieve, g)` |
-| `TELL r …`, `ASK r TO …` | the same, to each Agent of the Role but the sender |
-| `TELL 50% OF r …`, `ASK 1 OF r TO …` | the same, to each Agent `regia.pick` draws |
+| `TELL r …`, `ASK r TO …` | `?regia_audience(p, r, L)`, then the same with the list `L`: each Agent of the Role but the sender |
+| `TELL 50% OF r …`, `ASK 1 OF r TO …` | `!regia_draw(p, r, share(50), L)`, then the same with `L` |
 | `TELL EVERYONE …`, `ASK EVERYONE TO …` | `.broadcast(achieve, regia_everyone(Ilf, Content))`, `Ilf` being `tell`, `signal` or `achieve` |
-| `SIGNAL c` | `regia.send(D, signal, c)` for each distinct Director `D` in `regia_holds(p, D, …)` |
+| `SIGNAL c` | `?regia_directors(p, L); regia.send(L, signal, c)`, `L` being each distinct Director in `regia_holds(p, D, …)` |
 
 - A Cue travels as Jason's `signal` message. The receiver gets the event `+c[source(S), signal]` and no belief, so every telling fires and nothing is left to test. A plan for `+c` is relevant to a `signal` event, in Jason 3.2.1 and 3.3.4 alike.
 - A game Cue arrives as the same kind of event, from `percept`. So `WHEN insulted:` hears both, and only `FROM` tells them apart.
 - A local Cue goes under its Generated name: `regia_local__courtesy__greeting`.
 - A `SIGNAL` is the same message as a told Cue, to other recipients.
-- `regia.pick` draws each time the Statement runs, from the run's one seeded source, uniformly and without replacement. A share rounds up against the pool, the sender already left out. Asking for more than the pool holds writes `T1502` and sends to what there is. A count that isn't a Number fails the Plan.
+- `regia.send` takes one receiver or a list. It stays an internal action because Jason's own `.send` fails the sender's plan on a receiver that has left, and stops there in a list. `regia.send` writes `T1901` for that one and goes on.
+- `regia_audience` and `regia_directors` are rules of `regia/agent.asl`, read when the Statement runs. An empty Role gives `[]`, and nothing is sent.
+- `regia_draw` is an Infrastructure plan, since it writes the Trace. It draws each time the Statement runs, with `.random` from the Agent's seeded generator, uniformly and without replacement. A share rounds up against the pool, the sender already left out. Asking for more than the pool holds writes `T1502` and sends to what there is. A count that isn't a Number fails the Plan.
 
 The Cue is not a plain `tell`: the belief would stay until a Plan removed it, and the same Cue told again meanwhile would raise nothing. Nor is it a generated achieve-goal per Cue, which a Cue no Plan takes would turn into a Goal Failure.
 
@@ -413,7 +400,7 @@ The Cue is not a plain `tell`: the belief would stay until a Plan removed it, an
 - A count asking for more Agents than the pool has → `T1502` (Trace warning); a negative count → `T1503` (Trace warning)
 - A `TELL` or `ASK` to an Agent that has left → `T1901` (Trace warning)
 
-Spec: chapter 39, *Sending*. For the Role's union, chapter 29; for `regia.pick`, chapter 35; for `regia.send`, chapter 33.
+Spec: chapter 39, *Sending*. For the Role's union, chapter 29; for the seeded generator, chapter 35; for `regia.send`, chapter 33.
 
 ### Who sent it
 
@@ -424,9 +411,9 @@ WHEN greeting, FROM ?who:
 ```
 
 ```asl
-@regia_plan__3[regia_rank(courtesy, when(regia_local__courtesy__greeting), 0)]
+@regia_plan__courtesy__4[regia_rank(courtesy, when(regia_local__courtesy__greeting), 0)]
 +regia_local__courtesy__greeting[source(Who)]
-    : regia_given(courtesy, _, _, _, _, _) & Who \== percept & Who \== self
+    : regia_is_given(courtesy) & regia_from_agent(Who)
    <- regia.act("bow_to", bow_to(Who)).
 ```
 
@@ -435,11 +422,11 @@ A Trigger's Sender is the trigger's `source(S)`: the sending Agent's or Director
 | Trigger | The plan |
 |---|---|
 | no `FROM` | `+c[source(_)]`: no test, so the game is heard too |
-| `FROM ?who` | `+c[source(Who)] : … & Who \== percept & Who \== self` |
-| `FROM r`, `FROM r ?who` | `regia_plays(p, r, S)` on the Sender |
-| `FROM DIRECTOR` | `regia_holds(p, S, _, _, _, _)`: a Director giving this Playbook, or one that gave it before a take still closing |
+| `FROM ?who` | `+c[source(Who)] : … & regia_from_agent(Who)`, which is `Who \== percept & Who \== self` |
+| `FROM r`, `FROM r ?who` | `regia_from_role(p, r, S)`, which is `regia_plays(p, r, S)`: a cast holds only Agents' names, so no test for `percept` or `self` is needed |
+| `FROM DIRECTOR` | `regia_from_director(p, S)`, which is `regia_holds(p, S, _, _, _, _)`: a Director giving this Playbook, or one that gave it before a take still closing |
 
-The same tests serve `LEARNED, FROM …` on a told Fact and `TO g, FROM …` on a request.
+The three are rules of `regia/agent.asl`. The same tests serve `LEARNED, FROM …` on a told Fact and `TO g, FROM …` on a request.
 
 Spec: chapter 39, *Who sent it*. For `regia_holds` and `regia_plays`, chapter 29.
 
@@ -477,7 +464,7 @@ WHEN scandal(ME), FROM peer ?speaker:
 
 ```asl
 +scandal(Regia_me__1)[source(Speaker)]
-    : regia_given(nobleSocializing, _, _, _, _, _) & .my_name(Regia_me__1) & regia_plays(nobleSocializing, peer, Speaker)
+    : regia_is_given(nobleSocializing) & .my_name(Regia_me__1) & regia_from_role(nobleSocializing, peer, Speaker)
    <- …
 ```
 
@@ -521,28 +508,29 @@ TO fetch(?dish):
 ```
 
 ```asl
-@regia_plan__4[regia_rank(serving, to(fetch), 0)]
-+!fetch(Dish)[source(Regia_sender), regia_pursuit(Regia_pursuit)] : regia_given(serving, _, _, _, _, _)
+@regia_plan__serving__2[regia_rank(serving, to(fetch), 0)]
++!fetch(Dish)[source(Regia_sender), regia_pursuit(Regia_pursuit)] : regia_is_given(serving)
    <- regia.act("walk_to", walk_to(kitchen));
       if (not in_stock(Dish)) { .fail(regia_fail, regia_reason(sold_out(Dish))) };
       regia.act("pick_up", pick_up(Dish));
-      regia.reached(fetch(Dish), Regia_sender, Regia_pursuit).
+      !regia_reach(fetch(Dish), Regia_sender, Regia_pursuit).
 ```
 
 | We write | The ASL |
 |---|---|
-| `PURSUE g` | `regia.pursue(g, Regia_pursuit__N); !g[regia_pursuit(Regia_pursuit__N)]` |
-| `PURSUE g, WITHOUT WAITING` | `regia.pursue(g, Regia_pursuit__N); !!g[regia_pursuit(Regia_pursuit__N)]` |
+| `PURSUE g` | `regia.trace(goal, info, "", [goal(g), event(pursued)], Regia_pursuit__N); !g[regia_pursuit(Regia_pursuit__N)]` |
+| `PURSUE g, WITHOUT WAITING` | `regia.trace(goal, info, "", [goal(g), event(pursued)], Regia_pursuit__N); !!g[regia_pursuit(Regia_pursuit__N)]` |
 | `DROP g` | `regia.drop(g)` |
 | `FAIL` | `.fail(regia_fail)` |
 | `FAIL WITH r` | `.fail(regia_fail, regia_reason(r))` |
-| `PURSUING g`, in a `TO g` Plan | `regia.pursuing(g, Regia_pursuit)`, the trigger's own `Id` |
-| `PURSUING g`, anywhere else | `regia.pursuing(g, none)` |
+| `PURSUING g`, in a `TO g` Plan | `.intend(g[regia_pursuit(Regia_id__N)]) & Regia_id__N \== Regia_pursuit`, leaving out the trigger's own `Id` |
+| `PURSUING g`, anywhere else | `.intend(g)` |
 
-- Every recipe, each `GIVEN` and `ELSE` of a `TO` Plan, binds the Sender and the `Id` in its trigger and ends with `regia.reached`. A `TO g, FROM …` Plan writes its own Sender variable or test in place of `Regia_sender`.
+- Every recipe, each `GIVEN` and `ELSE` of a `TO` Plan, binds the Sender and the `Id` in its trigger and ends with `!regia_reach`. A `TO g, FROM …` Plan writes its own Sender variable or test in place of `Regia_sender`.
 - `!g` adds `source(self)` itself. The `Id` variable is one per `PURSUE` Statement.
-- The Statements write no Trace entry. `FAIL`'s `T1103` is written by whoever catches the failure, so it is written once.
-- `NOT PURSUING g` is `not regia.pursuing(…)`.
+- `PURSUE` writes its `PURSUED` entry with `regia.trace`, whose last argument binds the entry's `seq`, the Pursuit's `Id`.
+- The other Statements write no Trace entry. `FAIL`'s `T1103` is written by whoever catches the failure, so it is written once.
+- `NOT PURSUING g` is `not .intend(…)`.
 - An ending Plan is a plan for a generated goal (*The ending goals*, below).
 
 **Checks**
@@ -557,9 +545,9 @@ Every Pursuit carries `regia_pursuit(Id)` on its `+!g` event. `Id` is the `seq` 
 
 | The request | Stamped by |
 |---|---|
-| the Agent's own `PURSUE g` or `PURSUE g, WITHOUT WAITING` | `regia.pursue(G, Id)`, then `!g[regia_pursuit(Id)]` or `!!g[…]` |
+| the Agent's own `PURSUE g` or `PURSUE g, WITHOUT WAITING` | `regia.trace(…, Id)`, then `!g[regia_pursuit(Id)]` or `!!g[…]` |
 | an `ASK` from an Agent or a Director, a Role setup's `PURSUE` | `regia.RegiaAgent.socAcc`, which adds the annotation to the `achieve` message before Jason posts it |
-| a Director's `ASK EVERYONE` | the Infrastructure plan that unwraps `regia_everyone(achieve, G)`, with `regia.pursue(G, S, Id)` and `!!G[source(S), regia_pursuit(Id)]` |
+| a Director's `ASK EVERYONE` | the Infrastructure plan that unwraps `regia_everyone(achieve, G)`, with `regia.trace(…, Id)` and `!!G[source(S), regia_pursuit(Id)]` |
 
 `take_seat` is asked by the Director, in `RoyalBanquet`'s Guest setup, so it arrives as an `achieve` message and `socAcc` stamps it.
 
@@ -581,14 +569,14 @@ WHEN bring(?dish, ?) FAILED, FROM patron ?guest:
 ```
 
 ```asl
-@regia_plan__9[regia_rank(serving, failed(bring), 0)]
+@regia_plan__serving__3[regia_rank(serving, failed(bring), 0)]
 +!regia_failed(bring(Dish, _), Guest, sold_out(Dish), _, _)
-    : regia_given(serving, _, _, _, _, _) & regia_plays(serving, patron, Guest) & Guest \== percept & Guest \== self
+    : regia_is_given(serving) & regia_from_role(serving, patron, Guest)
    <- regia.send(Guest, signal, sold_out(Dish)).
 
-@regia_plan__10[regia_rank(serving, failed(bring), 1)]
+@regia_plan__serving__4[regia_rank(serving, failed(bring), 1)]
 +!regia_failed(bring(Dish, _), Guest, _, _, _)
-    : regia_given(serving, _, _, _, _, _) & regia_plays(serving, patron, Guest) & Guest \== percept & Guest \== self
+    : regia_is_given(serving) & regia_from_role(serving, patron, Guest)
    <- regia.act("bow_to", bow_to(Guest)).
 ```
 
@@ -620,12 +608,12 @@ Spec: chapter 40, *The ending goals*. For the Items, chapter 32; for the closing
 WHEN have_dinner REACHED: LEARN sated
 ```
 
-Every recipe plan ends with `regia.reached(G, Sender, Id)`, which:
+Every recipe plan ends with `!regia_reach(G, Sender, Id)`, an Infrastructure plan of `agent.asl`, which:
 
 1. writes `GOAL … REACHED`, `of` the `Id`;
 2. starts a new intention, `!!regia_endings([regia_reached(G, Sender, Id, none), regia_ended(G, Sender, Id, none)])`, which runs the two endings in turn.
 
-Then the recipe's plan finishes, and the Body waiting on the Goal goes on at once. By the time `LEARN sated` runs, the Body that pursued `have_dinner` has already moved on. Nothing spreads from a reach, so there is no order between levels to keep. `regia_endings` is an Infrastructure plan of `agent.asl`.
+Then the recipe's plan finishes, and the Body waiting on the Goal goes on at once, one reasoning cycle later than an internal action would allow. The `REACHED` entry still points at the recipe: an entry written from an Infrastructure plan takes the place of the Statement below it. By the time `LEARN sated` runs, the Body that pursued `have_dinner` has already moved on. Nothing spreads from a reach, so there is no order between levels to keep. `regia_endings` is an Infrastructure plan of `agent.asl`.
 
 Spec: chapter 40, *`REACHED`*.
 
@@ -645,7 +633,9 @@ The Transpiler writes one `-!g` plan for every Goal a recipe, a `PURSUE` or an `
 
 1. `regia.goal_failed` reads the plan's own event and binds the Sender, the `Id`, the Reason (`none` if there is none) and the `seq` of the chain's first entry. It writes the cause entry, if the event doesn't point at one already, and the Pursuit's `GOAL … FAILED` entry at level `error`, `because:` that first entry.
 2. The ending Plans run in the failing intention, `FAILED` then `ENDED`. Every Body above has already stopped. Running them here, before the failure is passed on, is what fires the chain innermost first, each level complete before the next: `fetch FAILED`, `fetch ENDED`, `bring FAILED`, `bring ENDED`.
-3. `regia.pass_failure` looks at the frame below the failed `+!g`:
+3. `regia.pass_failure` looks at the frame below the failed `+!g`. It is an internal action because a plain `.fail` can't do this: over a `WHEN` Plan, Jason would log a warning and drop the intention.
+
+   It looks for:
    - a goal, a waiting recipe or a waiting ending Plan: it fails, with `regia_reason(R)` and `regia_because(B)`, and Jason posts the next `-!` below;
    - a `WHEN` Plan or an Infrastructure plan, which has no `-!`: it writes that Plan's `PLAN … FAILED` entry and removes the intention quietly, with no "Could not finish intention" from Jason;
    - nothing, because the Pursuit was the bottom of its intention (`!!g`, an `achieve` message): it succeeds, and the intention ends.
@@ -661,9 +651,11 @@ sequenceDiagram
     J->>F: -!fetch(roast)[regia_reason(…)]
     Note over F: T1103, GOAL fetch(roast) FAILED<br/>regia_failed (no-op), regia_ended (no-op)<br/>pass_failure fails again
     J->>B: -!bring(roast, seat_3)[regia_reason(…), regia_because(…)]
-    Note over B: GOAL bring FAILED, no new cause<br/>regia_failed: @regia_plan__9 tells sold_out<br/>regia_ended
+    Note over B: GOAL bring FAILED, no new cause<br/>regia_failed: @regia_plan__serving__3 tells sold_out<br/>regia_ended
     Note over B: bottom of the achieve intention: it ends
 ```
+
+The four steps are written into every `-!g`, never moved into one shared plan. Jason skips the failed `g` only for a failure inside the `-!g` plan's own frame, so a shared plan that failed would post the same `-!g` again, with no end. That is also why the `-!regia_<kind>` catchers matter: without them, a failing ending plan would post the `-!g` again too.
 
 The Reason rides along: Jason adds every `.fail` argument to the `-!g` event, `regia.goal_failed` reads `regia_reason`, and `regia.pass_failure` passes it on unchanged. So every Goal of the chain fails with `sold_out(roast)`, and `bring`'s `FAILED WITH sold_out(?dish)` matches at `Pos` 0. Only `FAIL WITH` sets a Reason.
 
@@ -737,15 +729,15 @@ WHEN idle:
 ```
 
 ```asl
-+idle[source(_)] : regia_given(serving, _, _, _, _, _) & not regia.pursuing(bring(_, _), none)
++idle[source(_)] : regia_is_given(serving) & not .intend(bring(_, _))
    <- regia.act("walk_to", walk_to(kitchen)).
 ```
 
-`regia.pursuing(G, Except)` holds once for each Pursuit of a Goal unifying with `G` that has a recipe running: a `+!g` frame on any intention, running, suspended or waiting, whose `regia_pursuit` isn't `Except`. Like any condition it can fill Placeholders, one unifier per Pursuit.
+`PURSUING` is Jason's own `.intend`. It holds once for each Pursuit of a Goal unifying with `G` that has a recipe running: a `+!g` frame on any intention, running, waiting in `regia.wait` or waiting on a `DO`. Like any condition it can fill Placeholders, one unifier per Pursuit.
 
-- In the Context and Body of a `TO g` Plan, `Except` is the trigger's own `Regia_pursuit`, so the Plan's own Pursuit never counts.
-- Everywhere else it is `none`, as in `Dining`'s `NOT PURSUING have_dinner`.
-- It isn't Jason's `.intend`. In a context, `.intention(…, current)` names the last cycle's intention, so it can't leave out the one being chosen. The `Id` in the trigger is exact in a context and a Body alike.
+- In the Context and Body of a `TO g` Plan, the Plan's own Pursuit is left out by its `Id`: `.intend(g[regia_pursuit(Regia_id__1)]) & Regia_id__1 \== Regia_pursuit`. The `Id` in the trigger is exact in a context and a Body alike.
+- Everywhere else it is a plain `.intend(g)`, as in `Dining`'s `NOT PURSUING have_dinner`.
+- `.intend` skips an intention flagged as suspended. So `regia.act` and `regia.wait` suspend the way Jason's `.wait` does, and never set that flag.
 
 Spec: chapter 40, *`PURSUING`*.
 
@@ -753,17 +745,21 @@ Spec: chapter 40, *`PURSUING`*.
 
 | Ending | Raised by | Runs on | Then |
 |---|---|---|---|
-| reached | `regia.reached`, at the end of the recipe | a new intention: `REACHED`, `ENDED` | the waiting Body goes on at once |
+| reached | `!regia_reach`, at the end of the recipe | a new intention: `REACHED`, `ENDED` | the waiting Body goes on at once |
 | failed | the generated `-!g` | the failing intention: `FAILED`, `ENDED` | `regia.pass_failure` fails the level below, or ends the intention |
 | dropped | `regia.drop` | one new intention per one removed: `DROPPED`, `ENDED` for each level, innermost first | nothing: the levels have stopped |
 | dropped by a take | `regia.stop_playbook` | the take's closing intention: `DROPPED`, `ENDED` for each level, then `REMOVED` | the closing ends |
 
 What `regia-jason` adds for this chapter:
 
-- `regia.wait(D)`, `regia.wait(Cond)`, `regia.wait(Cond, D)`;
-- `regia.pursue`, `regia.reached`, `regia.goal_failed`, `regia.pass_failure`, `regia.drop`, `regia.pursuing`;
+- `regia.wait(D)`, `regia.wait(Cond)`, `regia.wait(Cond, D)`, for the run's clock;
+- `regia.send`, which never fails its sender;
+- `regia.weighted_pick`, which writes the Trace from a context;
+- `regia.goal_failed`, `regia.pass_failure`, `regia.drop`, which read or reshape the intention;
 - in `regia.RegiaAgent`: `brf` for told Facts, `socAcc` for the stamp, the hook for a failing `WHEN` Plan, and `selectOption` leaving out `regia_noop` and `regia_unheard` options unless alone;
-- in `agent.asl`: `regia_endings`, the four `regia_noop` plans and the four `-!regia_<kind>` catchers.
+- in `agent.asl`: the rules `regia_is_given`, `regia_given_or_closing`, `regia_from_agent`, `regia_from_role`, `regia_from_director`, `regia_audience`, `regia_directors`, `regia_random_match`, `regia_highest`, `regia_lowest`, `regia_each`, `regia_roll`; the Infrastructure plans `regia_choose`, `regia_draw`, `regia_update`, `regia_reach`, `regia_endings`; the four `regia_noop` plans and the four `-!regia_<kind>` catchers.
+
+Everything else is Jason's own: `.intend` for `PURSUING`, `.random` for every draw, `.abolish` for `FORGET`, `for` and `if`.
 
 Spec: chapter 40, *Order and intentions, in one table*, *`regia-jason` additions*. Chapter 39, *`regia-jason` additions*.
 
@@ -775,15 +771,15 @@ The order the language promises, innermost first and each level complete, comes 
 
 ### Jason: Givings and Precedence
 
-Every plan here starts with `regia_given(p, …)` and carries `regia_rank(p, Item, Pos)`. The generated `-!g` plans and `unheard.asl` carry neither: they belong to no Playbook. A `GIVEN` chain's plans share one `Pos`, and ending Plans compete on their own Items. (*Jason: Givings and Precedence*)
+Every plan here starts with `regia_is_given(p)` and carries `regia_rank(p, Item, Pos)`. The generated `-!g` plans and `unheard.asl` carry neither: they belong to no Playbook. A `GIVEN` chain's plans share one `Pos`, and ending Plans compete on their own Items. (*Jason: Givings and Precedence*)
 
 ### Matching
 
-A Pick, a `FOR EACH` and a `COUNT` each build a list with `.setof`, so they cost time in proportion to the matching Facts every time they are checked. A plain condition costs a unification. (*Matching*)
+A Pick, a `FOR EACH` and a `COUNT` each build a list with `.setof`, in a rule or in the plan, so they cost time in proportion to the matching Facts every time they are checked. A plain condition costs a unification. (*Matching*)
 
 ### Randomness
 
-Every draw, a Random choice, a `RANDOM`, a random Pick, `n OF` and `n% OF`, comes from the one seeded source behind `regia.random`, `regia.weighted_pick` and `regia.pick`, so two runs with the same seed draw the same values. (*Randomness*)
+Every draw, a Random choice, a `RANDOM`, a random Pick, `n OF` and `n% OF`, comes from the Agent's own Jason generator, which `regia-jason` seeds from the run's seed when the Agent starts, so two runs with the same seed draw the same values. (*Randomness*)
 
 ### Jason: the game and the Trace
 

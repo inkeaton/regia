@@ -409,7 +409,7 @@ Spec: chapter 36, *The top-level file of an Agent*. For the Role files, chapter 
 
 A noble's `bravery AT RANDOM(0.2, 0.8)` is drawn when the agent is created, never by the Transpiler. The `.jcm` carries the roll as it is, `bravery(random(0.2, 0.8))`, and `regia.RegiaAgent` replaces each `random(a, b)` with a decimal drawn from [a, b] before it hands the `temper` to VEsNA-Pro, which reads only numbers.
 
-- The draw comes from `regia-jason`'s one random source, seeded with the run's seed, so a run with the same seed draws the same values for the six nobles.
+- The draw comes from the agent's own Jason generator, which `regia-jason` seeds from the run's seed and the agent's name, so a run with the same seed draws the same values for the six nobles.
 - Each Agent with a `temper` writes one `cast` entry with the values it starts with, drawn or not: `TEMPER noble_1 bravery 0.47 …` (*The Trace*).
 
 Spec: chapter 36, *Drawing `RANDOM`*. For the seed, chapter 35.

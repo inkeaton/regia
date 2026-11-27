@@ -12,7 +12,7 @@ A knight sits at the banquet holding `Keeping_watch` three times over: from its 
 | `PRECEDENCE` | levels worked out at build time, a `Rank` on each Giving, an annotation on each plan |
 | which plan runs | `selectOption` in `regia.RegiaAgent` and `regia.DirectorAgent` |
 
-No Transpiler exists yet, so every line of ASL below was put together by hand from the spec. Plan label numbers (`@regia_plan__1`) mean nothing. How a Plan's Body becomes ASL is in *Jason: Plans and Goals*; the Role files and their includes are in *Jason: the Build*; what a Director does with Phases and Stagings is in *Jason: Directors and Stagings*.
+No Transpiler exists yet, so every line of ASL below was put together by hand from the spec. Plan labels are `regia_plan__<owner>__<n>`, and their numbers mean nothing here. How a Plan's Body becomes ASL is in *Jason: Plans and Goals*; the Role files and their includes are in *Jason: the Build*; what a Director does with Phases and Stagings is in *Jason: Directors and Stagings*.
 
 ## Plans are compiled in
 
@@ -43,21 +43,21 @@ WHEN scandal(?), FROM ?speaker:
 ```
 
 ```asl
-@regia_plan__2[regia_rank(keeping_watch, when(scandal), 0)]
+@regia_plan__keeping_watch__2[regia_rank(keeping_watch, when(scandal), 0)]
 +scandal(_)[source(Speaker)]
-    : regia_given(keeping_watch, _, _, _, _, _)
-      & Speaker \== percept & Speaker \== self
+    : regia_is_given(keeping_watch)
+      & regia_from_agent(Speaker)
       & on_duty & (not seat(_) | not hungry)
    <- regia.act("watch", watch(Speaker)).
 ```
 
-Every plan generated from a Playbook starts its context with a test that the Playbook is given. It comes first, so our Context is never evaluated for a Playbook the Agent doesn't hold. A servant's files hold this plan too, since `Keeping_watch` reaches every Role, and for a servant who never won a duel the test fails at once.
+Every plan generated from a Playbook starts its context with a test that the Playbook is given, the rule `regia_is_given(p)` of `regia/agent.asl`, which holds when some `regia_given(p, …)` belief exists. It comes first, so our Context is never evaluated for a Playbook the Agent doesn't hold. A servant's files hold this plan too, since `Keeping_watch` reaches every Role, and for a servant who never won a duel the test fails at once.
 
 The guard covers our Plans, their ending Plans and the plans of the Playbook's Local Goals. Three kinds of plan are guarded differently:
 
 | Plan | Its guard |
 |---|---|
-| `WHEN g DROPPED`, `WHEN g ENDED` in P | `( regia_given(p, …) \| regia_closing(Closing, p, …) )`: given, or the drops of a closing of P |
+| `WHEN g DROPPED`, `WHEN g ENDED` in P | `regia_given_or_closing(p, Closing)`: given, or the drops of a closing of P |
 | `WHEN REMOVED` in P | none: only a closing of P raises `regia_removed(p)` |
 | the generated `-!g` of a Goal | none: it lives in `goals.asl`, belongs to no Playbook, and a `-!g` whose context fails would drop the whole intention |
 
@@ -67,14 +67,16 @@ WHEN have_dinner ENDED: SIGNAL finished_eating
 ```
 
 ```asl
-@regia_plan__11[regia_rank(dining, ended(have_dinner), 0)]
+regia_is_given(P) :- regia_given(P, _, _, _, _, _).                                    // in regia/agent.asl
+regia_given_or_closing(P, C) :- regia_is_given(P) | regia_closing(C, P, _, _, _, _, _).
+
+@regia_plan__dining__11[regia_rank(dining, ended(have_dinner), 0)]
 +!regia_ended(have_dinner, _, _, Regia_closing)
-    : ( regia_given(dining, _, _, _, _, _) | regia_closing(Regia_closing, dining, _, _, _, _, _) )
-   <- .setof(Regia_dir__1, regia_holds(dining, Regia_dir__1, _, _, _, _), Regia_dirs__1);
-      for (.member(Regia_dir__1, Regia_dirs__1)) { regia.send(Regia_dir__1, signal, finished_eating) }.
+    : regia_given_or_closing(dining, Regia_closing)
+   <- ?regia_directors(dining, Regia_to__1); regia.send(Regia_to__1, signal, finished_eating).
 ```
 
-`Regia_closing` is the ending goal's last argument: `none` for an ordinary ending, the closing's id for an ending a take hands to its closing. A `regia_closing` belief never has `none` as its id, so the second half of the guard admits exactly the drops of a closing of `Dining`, and nothing else.
+`Regia_closing` is the ending goal's last argument: `none` for an ordinary ending, the closing's id for an ending a take hands to its closing. A `regia_closing` belief never has `none` as its id, so the second half of `regia_given_or_closing` admits exactly the drops of a closing of `Dining`, and nothing else.
 
 Spec: chapter 29, *The guard*. For the ending goals, chapter 40.
 
@@ -294,13 +296,13 @@ the binding is `bind(peer, live(guest, [role(guard)]))`, and with `EXCEPT Guard,
 
 | We write, in Playbook P | The Infrastructure reads |
 |---|---|
-| any Plan of P runs | the guard: some `regia_given(p, …)` |
-| `SIGNAL c` | `regia_holds(p, D, …)`: one send to each distinct Director |
-| `TELL host f` | `.setof(A, regia_plays(p, host, A) & A \== Me, L)`, then one `regia.send` each |
-| `TELL 2 OF host f`, `ASK 50% OF host TO g` | the same pool, drawn by `regia.pick` each time the Statement runs |
+| any Plan of P runs | the guard, `regia_is_given(p)` |
+| `SIGNAL c` | `regia_directors(p, L)`, each distinct Director in `regia_holds(p, D, …)`, then one `regia.send` to the list |
+| `TELL host f` | `regia_audience(p, host, L)`, the Role's union without the Agent itself, then one `regia.send` to the list |
+| `TELL 2 OF host f`, `ASK 50% OF host TO g` | the same pool, drawn by the Infrastructure plan `regia_draw` each time the Statement runs |
 | `?x PLAYS host`, `ME PLAYS host` | `regia_plays(p, host, X)`, the Agent itself left in |
-| `FROM host` | `regia_plays(p, host, S)` on the Sender |
-| `FROM DIRECTOR` | `regia_holds(p, S, _, _, _, _)` on the Sender |
+| `FROM host` | `regia_from_role(p, host, S)`, which is `regia_plays(p, host, S)`, on the Sender |
+| `FROM DIRECTOR` | `regia_from_director(p, S)`, which is `regia_holds(p, S, _, _, _, _)`, on the Sender |
 | precedence | `Rank` from `regia_holds`, the best per item (*`selectOption` in Agents*, below) |
 
 > **In 2.0** a Quota Trigger over `host` in P counts against `regia_plays(p, host, _)`, and P starts counting as soon as it is given. Spec chapter 18 and chapter 33, *Quota counts*. A 1.5 Build has no Quota Triggers.
@@ -319,14 +321,13 @@ WHEN ASSIGNED:
 ```
 
 ```asl
-@regia_plan__1[regia_rank(dining, assigned, 0)]
+@regia_plan__dining__1[regia_rank(dining, assigned, 0)]
 +!regia_assigned(dining)
-    : regia_given(dining, _, _, _, _, _)
+    : regia_is_given(dining)
    <- if (hungry) {
-          regia.pursue(have_dinner, Regia_pursuit__1); !!have_dinner[regia_pursuit(Regia_pursuit__1)]
+          regia.trace(goal, info, "", [goal(have_dinner), event(pursued)], Regia_pursuit__1); !!have_dinner[regia_pursuit(Regia_pursuit__1)]
       } else {
-          .setof(Regia_dir__1, regia_holds(dining, Regia_dir__1, _, _, _, _), Regia_dirs__1);
-          for (.member(Regia_dir__1, Regia_dirs__1)) { regia.send(Regia_dir__1, signal, finished_eating) }
+          ?regia_directors(dining, Regia_to__1); regia.send(Regia_to__1, signal, finished_eating)
       }.
 ```
 
@@ -444,11 +445,10 @@ WHEN REMOVED:
 ```
 
 ```asl
-@regia_plan__14[regia_rank(duelling, removed, 0)]
+@regia_plan__duelling__14[regia_rank(duelling, removed, 0)]
 +!regia_removed(duelling)
-   <- .setof(m(Left), regia_local__duelling__stamina(Left), Regia_each__1);
-      for (.member(m(Left), Regia_each__1)) {
-          if (regia_local__duelling__stamina(Left)) { .abolish(regia_local__duelling__stamina(Left)) }
+   <- for (regia_each(m(Left), regia_local__duelling__stamina(Left))) {
+          .abolish(regia_local__duelling__stamina(Left))
       }.
 ```
 
@@ -605,9 +605,9 @@ WHEN insulted, FROM peer ?_who, SUITS sympathy AT 0.7, SHIFTS aggressiveness BY 
 ```
 
 ```asl
-@regia_plan__6[regia_rank(nobleSocializing, when(insulted), 0), temper([aggressiveness(0.8), bravery(0.8)])]
-@regia_plan__7[regia_rank(nobleSocializing, when(insulted), 0), temper([sympathy(-0.5)]), effects([aggressiveness(0.3)])]
-@regia_plan__8[regia_rank(nobleSocializing, when(insulted), 0), temper([sympathy(0.7)]), effects([aggressiveness(-0.1)])]
+@regia_plan__nobleSocializing__6[regia_rank(nobleSocializing, when(insulted), 0), temper([aggressiveness(0.8), bravery(0.8)])]
+@regia_plan__nobleSocializing__7[regia_rank(nobleSocializing, when(insulted), 0), temper([sympathy(-0.5)]), effects([aggressiveness(0.3)])]
+@regia_plan__nobleSocializing__8[regia_rank(nobleSocializing, when(insulted), 0), temper([sympathy(0.7)]), effects([aggressiveness(-0.1)])]
 ```
 
 Every plan compiled from a Playbook's Trigger Block carries `regia_rank(Playbook, Item, Pos)` in its label, the fixed part of its rank:
@@ -681,7 +681,7 @@ WHEN culprit_seized(?):              # any Guard's report: sound the alarm
 A Director's competing plans all come from one Plot, and each has one fixed item, so its rank is resolved at build time:
 
 ```asl
-@regia_plan__31[regia_rank(1, 0)]
+@regia_plan__royalBanquet__31[regia_rank(1, 0)]
 +culprit_seized(_)[source(_)] : regia_phase(_)
    <- regia.act("ring_bell", ring_bell).
 ```

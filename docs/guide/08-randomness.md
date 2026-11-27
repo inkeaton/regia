@@ -340,4 +340,4 @@ The `run` entry holds the seed. Which Option ran isn't written as an entry of it
 
 ### Jason: Plans and Goals
 
-A Random choice stays inside the Plan's body as an `if`/`elif` chain on running sums of the Weights, rolled once from `regia.random`, the internal action every generated draw calls. Jason's own `.random` is never used, since `regia-jason` can't seed it. (*Jason: Plans and Goals*)
+A Random choice stays inside the Plan's body: one step, `!regia_choose`, rolls once with Jason's `.random` and hands back the chosen Option, then an `if`/`elif` chain runs it. `regia-jason` seeds each Agent's generator from the run's seed, so every draw can be repeated. (*Jason: Plans and Goals*)

@@ -46,7 +46,7 @@ regia.act("walk_to", walk_to(P))
 
 The first argument is the External name, the second the Action under its Regia name, so the Trace and the mind inspector show Regia's name.
 
-`regia.act` is an internal action in `regia-jason`. It sends `regia_action` through the agent's body (`VesnaAgent.perform`, which is public), and then **suspends the intention** until the reply it needs arrives, the same way `.wait` suspends. Other intentions keep running in the meantime: a waiting `DO` holds back only the rest of its own Body.
+`regia.act` is an internal action in `regia-jason`. It sends `regia_action` through the agent's body (`VesnaAgent.perform`, which is public), and then **suspends the intention** until the reply it needs arrives, the same way `.wait` suspends: in Jason's pending intentions, never through `ConcurrentInternalAction` or `.suspend`, whose suspended flag would hide a waiting Pursuit from `.intend` (`PURSUING`, chapter 40). It is an internal action because it leaves the agent through its body or the game link (chapter 28, reason 1). Other intentions keep running in the meantime: a waiting `DO` holds back only the rest of its own Body.
 
 ```json
 {"sender": "guard_1", "receiver": "body", "type": "regia_action",

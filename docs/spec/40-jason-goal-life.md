@@ -19,9 +19,9 @@ The annotation is stamped where the request enters the Agent:
 
 | Request | Stamped by |
 | --- | --- |
-| The Agent's own `PURSUE g` or `PURSUE g, WITHOUT WAITING` | `regia.pursue(G, Id)`, then `!g[regia_pursuit(Id)]` or `!!g[regia_pursuit(Id)]` (chapter 39) |
+| The Agent's own `PURSUE g` or `PURSUE g, WITHOUT WAITING` | `regia.trace(goal, info, "", [goal(G), event(pursued)], Id)`, which binds `Id` to the entry's `seq`, then `!g[regia_pursuit(Id)]` or `!!g[regia_pursuit(Id)]` (chapter 39) |
 | An `ASK` from an Agent, a Director's `ASK`, a Role setup's `PURSUE` (an `achieve` message) | `regia.RegiaAgent.socAcc`, which adds the annotation to the message's content before Jason posts it |
-| A Director's `ASK EVERYONE` (`regia_everyone(achieve, G)`, chapter 30) | the Infrastructure plan that unwraps it, with `regia.pursue(G, S, Id)` and `!!G[source(S), regia_pursuit(Id)]` |
+| A Director's `ASK EVERYONE` (`regia_everyone(achieve, G)`, chapter 30) | the Infrastructure plan that unwraps it, with `regia.trace(goal, info, "", [goal(G), event(pursued), sender(S)], Id)` and `!!G[source(S), regia_pursuit(Id)]` |
 
 - **The Sender is Jason's own `source(S)`**: the asking Agent's or Director's name, or `self` for the Agent's own `PURSUE`. Nothing else is stored. The `PURSUED` entry records it (no Sender for `self`).
 - `-!g` keeps every annotation of `+!g` (research note, question 4), so the generated `-!g` plan reads the Sender and the `Id` from its own event.
@@ -39,7 +39,7 @@ The designer's ending Plans compile to plans for four generated goals, one per k
 | `WHEN g ENDED` | `+!regia_ended(G, Sender, Id, Closing)` |
 
 - `G` is the Goal with its arguments, as the Trigger's pattern writes it. `Reason` is the Reason Cue, or `none` when the Failure has none.
-- `Closing` is `none`, except on the `DROPPED` and `ENDED` endings a Playbook's take hands to its closing, which carry the closing's id (chapter 29, *The closing*). It lets a closing Playbook's own `DROPPED` and `ENDED` plans pass their guard for those endings and no others. `regia.reached`, the generated `-!g` and `regia.drop` always pass `none`; `REACHED` and `FAILED` carry it only so that the four kinds have one shape.
+- `Closing` is `none`, except on the `DROPPED` and `ENDED` endings a Playbook's take hands to its closing, which carry the closing's id (chapter 29, *The closing*). It lets a closing Playbook's own `DROPPED` and `ENDED` plans pass their guard for those endings and no others. `regia_reach`, the generated `-!g` and `regia.drop` always pass `none`; `REACHED` and `FAILED` carry it only so that the four kinds have one shape.
 - **`FROM`** is tested on the `Sender` argument, with the same tests as a Trigger's `source(S)` (chapter 39, *Who sent it*). A plain `FAILED` writes `_` for the Reason.
 - Each plan carries chapter 32's annotation with the Items **`reached(g)`, `dropped(g)`, `failed(g)` and `ended(g)`**, and the Givings guard of chapter 29, like any Playbook plan. The `DROPPED` and `ENDED` plans' guard also admits a closing of their Playbook named by `Closing` (chapter 29, *The guard*).
 - **First match wins** among a Playbook's `FAILED` Plans (chapter 11) with no extra code. `FAILED WITH r` and the plain `FAILED` below it share the Item `failed(g)`, at `Pos` 0 and 1, and chapter 32's step 3 keeps the lowest `Pos` among the applicable ones. When the Reason doesn't match, only the plain one is applicable.
@@ -49,25 +49,25 @@ The designer's ending Plans compile to plans for four generated goals, one per k
 From `serving.regia:21` and `:23`:
 
 ```
-@regia_plan__serving__9[regia_rank(serving, failed(bring), 0)]
+@regia_plan__serving__3[regia_rank(serving, failed(bring), 0)]
 +!regia_failed(bring(Dish, _), Guest, sold_out(Dish), _, _)
-    : regia_given(serving, _, _, _, _, _) & <Guest in patron> & Guest \== percept & Guest \== self
+    : regia_is_given(serving) & regia_from_role(serving, patron, Guest)
    <- regia.send(Guest, signal, sold_out(Dish)).
 
-@regia_plan__serving__10[regia_rank(serving, failed(bring), 1)]
+@regia_plan__serving__4[regia_rank(serving, failed(bring), 1)]
 +!regia_failed(bring(Dish, _), Guest, _, _, _)
-    : regia_given(serving, _, _, _, _, _) & <Guest in patron> & Guest \== percept & Guest \== self
+    : regia_is_given(serving) & regia_from_role(serving, patron, Guest)
    <- regia.act("bow_to", bow_to(Guest)).
 ```
 
 ## `REACHED`
 
-Every recipe plan (every `TO g` Plan, each `GIVEN` and `ELSE` of it) ends with **`regia.reached(G, Sender, Id)`**. It:
+Every recipe plan (every `TO g` Plan, each `GIVEN` and `ELSE` of it) ends with **`!regia_reach(G, Sender, Id)`**, an Infrastructure plan of `agent.asl`. It:
 
 1. writes `GOAL … REACHED` (`of: Id`);
 2. starts **a new intention**, `!!regia_endings([regia_reached(G, Sender, Id, none), regia_ended(G, Sender, Id, none)])`, which runs the two in order.
 
-Then the recipe's plan finishes, and the waiting Body carries on **at once**, as chapter 05 says: by the time a `REACHED` Plan runs, the Body has already carried on. Nothing spreads from a reach, so there is no order between levels to keep.
+Then the recipe's plan finishes, and the waiting Body carries on **at once**, as chapter 05 says (one reasoning cycle later than an internal action would allow, which no reader can see): by the time a `REACHED` Plan runs, the Body has already carried on. Nothing spreads from a reach, so there is no order between levels to keep.
 
 `regia_endings` is an Infrastructure plan of `agent.asl`, which runs each listed goal as a subgoal in turn.
 
@@ -95,6 +95,14 @@ From `serving.regia:15`:
    - **a `WHEN` Plan or an Infrastructure plan**, which has no `-!`: it writes that Plan's `PLAN … FAILED` `plan` entry, at level `error`, `because:` the first, and removes the intention quietly, so Jason prints no "Could not finish intention".
    - **nothing**: the failed Pursuit was the bottom of its intention (`!!g`, an `achieve` message). It succeeds, and the intention ends. Nothing waits on it, so the rescue Jason makes of a finished `-!g` changes nothing.
 
+### Why `-!g` is written out
+
+The four steps stay in each `-!g` plan, not in one shared Infrastructure plan. Jason posts a failure for the first frame from the top that has a relevant `-!` plan, and only a failure inside the `-!g` plan's own frame skips the failed `+!g` (research note of *Readable generated ASL*, *Failure walk*). A shared plan that failed would reach the `-!g` frame again and post the same `-!g`, with no end. So the step that fails, `regia.pass_failure`, has to be in the `-!g` plan itself.
+
+The same walk is why the four **`-!regia_<kind>` catchers** of `agent.asl` are load-bearing: a failing `FAILED` or `ENDED` plan, run as a subgoal of the `-!g`, would otherwise reach the `-!g` frame and post it again. The catchers are found first.
+
+`regia.pass_failure` can't be a plain `.fail` either. Over a `WHEN` Plan, a `.fail` leaves Jason with no failure event to post: it logs a warning and drops the intention. With the `+!g` at the bottom of its intention, a `.fail` probably posts the `-!g` again (research note of *Readable generated ASL*, *Failure walk*).
+
 ### No applicable `TO` Plan
 
 A Pursuit no recipe takes (`T1104`): Jason finds no applicable `+!g` plan, sees the relevant `-!g` plan and posts `-!g[error(no_applicable), …]` (`generateGoalDeletionFromEvent`). That is the same generated plan, so the Pursuit fires `FAILED` and `ENDED` and passes the failure on like any other. Its `PURSUED` entry was written when the request was stamped, before any recipe was tried. From `courtesy.regia:9`: a Guest with no `seat` asked to `take_seat` writes `T1104`, `GOAL take_seat FAILED`, runs `WHEN take_seat FAILED` and `WHEN take_seat ENDED`, and the `achieve` intention ends.
@@ -103,7 +111,7 @@ A Pursuit no recipe takes (`T1104`): Jason finds no applicable `+!g` plan, sees 
 
 - **`FAIL`** maps to `.fail(regia_fail)`, and **`FAIL WITH r`** to `.fail(regia_fail, regia_reason(r))` (chapter 39).
 - Jason adds every `.fail` argument to the `-!g` event it posts. `regia.goal_failed` reads `regia_reason(R)`, and `regia.pass_failure` passes it on unchanged, so every Goal of the chain fails with the same Reason (chapter 11). Only `FAIL WITH` sets it.
-- From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T1103` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__serving__9` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
+- From `serving.regia:18`: `fetch(roast)` fails with `sold_out(roast)`. `-!fetch` writes `T1103` with `reason: sold_out(roast)` and `GOAL fetch(roast) FAILED`, finds no `FAILED` Plan of `fetch` (the `regia_noop` runs), and fails again. Jason skips `fetch` and posts `-!bring(roast, …)[regia_reason(sold_out(roast)), regia_because(57), …]`. Its `regia_failed` matches `@regia_plan__serving__3` at `Pos` 0, so the Servant tells the Guest `sold_out(roast)` and doesn't bow. Then `regia_ended`, and `bring` was the bottom of the `achieve` intention, which ends.
 
 ### The cause entry
 
@@ -140,19 +148,19 @@ A `WHEN` Plan that fails with no Goal under it (`T0401` in `WHEN insulted`, or a
 
 ## `PURSUING`
 
-`PURSUING g` maps to **`regia.pursuing(G, Except)`** (chapter 39). It holds for each Pursuit of a Goal unifying with `G` that has a recipe running: a `+!g` frame on any intention, running, suspended or waiting, whose `regia_pursuit` isn't `Except`. Like any condition it can fill Placeholders, one unifier per Pursuit found.
+`PURSUING g` maps to Jason's **`.intend`** (chapter 39). It holds for each Pursuit of a Goal unifying with `G` that has a recipe running: a `+!g` frame on any intention, running, suspended or waiting. Like any condition it can fill Placeholders, one unifier per Pursuit found, since `.intend` backtracks over every frame of every intention (research note of *Readable generated ASL*, *`.intend`*).
 
-- In the Context and the Body of a `TO g` Plan, `Except` is the trigger's own `Regia_pursuit`, so the Plan's own Pursuit never counts (chapter 05).
-- Everywhere else, `Except` is `none`.
-- **Why not `.intend`.** In a Context, `.intention(Me, _, _, current)` names last cycle's intention (research note, question 5), so it can't leave out the one being chosen. The `Id` is in the trigger, so it is exact in a Context and in a Body alike.
+- In the Context and the Body of a `TO g` Plan, the Plan's own Pursuit is left out by its `Id`: `.intend(g[regia_pursuit(Regia_id__1)]) & Regia_id__1 \== Regia_pursuit`, so it never counts (chapter 05). The `Id` is in the trigger, so this is exact in a Context and in a Body alike. Testing the current intention instead wouldn't be: in a Context, `.intention(Me, _, _, current)` names last cycle's intention (research note, question 5).
+- Everywhere else it is `.intend(g)`.
+- `.intend` skips intentions flagged suspended, which only `.suspend` and `ConcurrentInternalAction` set. So `regia.wait` and `regia.act` suspend their intention the way Jason's `.wait` does, never through either (chapter 37), and a Pursuit waiting on a `DO` is still found.
 
-From `dining.regia:17`: `NOT PURSUING have_dinner` in `WHEN hungry LEARNED` is `not regia.pursuing(have_dinner, none)`.
+From `dining.regia:17`: `NOT PURSUING have_dinner` in `WHEN hungry LEARNED` is `not .intend(have_dinner)`.
 
 ## Order and intentions, in one table
 
 | Ending | Raised by | Runs on | Then |
 | --- | --- | --- | --- |
-| reached | `regia.reached` at the end of the recipe | a new intention: `REACHED`, `ENDED` | the waiting Body carries on at once |
+| reached | `!regia_reach` at the end of the recipe | a new intention: `REACHED`, `ENDED` | the waiting Body carries on at once |
 | failed | the generated `-!g` | the failing intention: `FAILED`, `ENDED` | `regia.pass_failure` fails the level below, or ends the intention |
 | dropped | `regia.drop` | one new intention per one removed: `DROPPED`, `ENDED` for each level, innermost first | nothing: the levels are already stopped |
 | dropped by a take | `regia.stop_playbook` | the take's one closing intention: `DROPPED`, `ENDED` for each level, intention after intention, then `REMOVED` (chapter 29) | the closing ends |
@@ -163,13 +171,11 @@ No beliefs are added. A Pursuit's identity and Sender live only in its trigger's
 
 ## `regia-jason` additions
 
-- `regia.pursue(G, Id)` and `regia.pursue(G, S, Id)`: write `GOAL … PURSUED` and bind `Id` to its `seq`.
 - `regia.RegiaAgent.socAcc`: stamps `regia_pursuit(Id)` on an incoming `achieve`, after writing its `PURSUED` entry with the message's sender.
-- `regia.reached(G, S, Id)`, `regia.goal_failed(S, Id, R, B)`, `regia.pass_failure(R, B)`.
-- `regia.drop(G)`, with the walker shared with `regia.stop_playbook`.
-- `regia.pursuing(G, Except)`, which can give several unifiers.
+- `regia.goal_failed(S, Id, R, B)` (reason 1: it writes the cause entry and the `FAILED` entry, and covers a missing stamp) and `regia.pass_failure(R, B)` (reason 3: plain `.fail` can't end the intention quietly, *Why `-!g` is written out*).
+- `regia.drop(G)`, with the walker shared with `regia.stop_playbook` (reason 3).
 - The hook in `regia.RegiaAgent` that writes the cause entry of a `WHEN` Plan failing on its own.
-- In `agent.asl`: `regia_endings`, the four `regia_noop` plans and the four `-!regia_<kind>` catchers.
+- In `agent.asl`: `regia_reach`, `regia_endings`, the four `regia_noop` plans and the four `-!regia_<kind>` catchers.
 - `selectOption`'s step 0 also leaves out a `regia_noop` option unless it is the only one (chapter 32).
 
 ## Regia 1.5

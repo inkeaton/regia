@@ -1,8 +1,8 @@
 # Drill: variables, functions, control flow
 
 Type: exercise
-Status: open
-Assignee:
+Status: in progress
+Assignee: Edoardo Vassallo
 Blocked by: 08
 
 ## Goal

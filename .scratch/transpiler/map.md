@@ -48,6 +48,7 @@ Charted with the user on 2026-11-25.
 - [Review: how we test](issues/06-how-we-test.md): a test kind per pass, `insta` snapshots, dumps as core functions; the case runner in `regia-cli`'s library reads `docs/spec/cases/` in place; an exact-path pending list where a passing listed case fails; `ok` cases need no guard (chapter 23, *Tests*).
 - [Cut M1 into tickets](issues/07-cut-m1.md): tickets 14–34 in the Rust Book's order, ch 4 to 8; the move into `regia-core` sits mid-milestone (after ch 6); new lexer codes write their case first, which runs from M3.
 - [The first crate](issues/08-first-crate.md): `regia-cli` is a workspace member whose `[[bin]]` `regia` points at `src/main.rs`; an integration test runs it via `CARGO_BIN_EXE_regia`.
+- [Readable generated ASL](issues/13-readable-generated-asl.md): Jason first (ADR 0050). Recurring mechanics are rules or Infrastructure plans in `agent.asl`; a `regia.*` action exists only for one of four reasons (chapter 28); 8 actions retired for `.intend`, `.random`, `.create_agent`, `.signal` and new rules/plans; labels unchanged; `-!g` stays written out; the ticket holds `courtesy` and `serving` by hand, the reference for M7.
 
 Settled while charting:
 
@@ -59,10 +60,11 @@ Settled while charting:
 - M4: the construct families the parser is cut into.
 - M5–M6: the order of the chapters, and placing each of about 230 checks by the rule of *Where a check lives* (chapter 23).
 - M6: how Conformance cases are written to reach chapter 27's coverage, and who writes them.
-- M7: what stands in for Infrastructure ASL that isn't written, once *Readable generated ASL* has named it.
+- M7: what stands in for Infrastructure ASL that isn't written. *Readable generated ASL* named every rule and Infrastructure plan generated code calls (chapters 28, 39, 40), so emit snapshots can be judged without them; whether `regia-core` ships a stub `agent.asl` is open.
 - M9: the performance budget (chapter 22 gives an example, not a number).
 
 ## Out of scope
 
 - `regia-jason`, the Infrastructure ASL, `run` and behaviour cases: a later effort, since none can be tested alone.
 - `edit` and `regia-wasm`: the Visual Editor's effort.
+- Creating joiners with `.create_agent` in place of `regia.spawn_agent` (chapter 33): joining is later than 1.5. Raised in [Readable generated ASL](issues/13-readable-generated-asl.md).

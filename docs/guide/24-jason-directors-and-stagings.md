@@ -11,12 +11,12 @@ The banquet runs on one Director agent. When a noble insults a hothead over dinn
 | `AFTER 20 SECONDS` | a generated Goal `regia_after(phase(betting), 1)` posted on entering the Phase |
 | a setup Block | a plan of `regia_setup(Scope, Role, A)` |
 | a whole-Role `ASSIGN` in a Plan | a `regia_give` to each Agent of the Role, and a `regia_standing` record |
-| `START SUBPLOT` | `regia.start_staging`, a `regia_child` record, a `regia_start` message |
+| `START SUBPLOT` | Jason's `.create_agent`, a `regia_child` record, a `regia_start` message |
 | `END PLOT`, `DROP SUBPLOT`, the parent ending | one ending walk: children first, then the Givings, then the parent is told |
 | `WHEN HonorDuel(?) FINISHED …` | a plan of `regia_subplot_finished(honorDuel, …)` |
 | an Agent leaving | `regia_leave` from the game link to every Director, and a leave walk on each |
 
-No Transpiler exists yet, so every line of ASL below was put together by hand from the spec. Plan label numbers (`@regia_plan__3`) mean nothing, and neither does `regia_setup_line__1`: the spec doesn't name a setup line's subgoal. How a Plan's Body becomes ASL is in *Jason: Plans and Goals*; Givings, the Agent's side of giving and taking away, and ranks are in *Jason: Givings and Precedence*; the Director files and the Root's starting cast are in *Jason: the Build*; the messages on the game link are in *Jason: the game and the Trace*.
+No Transpiler exists yet, so every line of ASL below was put together by hand from the spec. Plan labels are `regia_plan__<Plot>__<n>`, and their numbers mean nothing, and neither does `regia_setup_line__1`: the spec doesn't name a setup line's subgoal. How a Plan's Body becomes ASL is in *Jason: Plans and Goals*; Givings, the Agent's side of giving and taking away, and ranks are in *Jason: Givings and Precedence*; the Director files and the Root's starting cast are in *Jason: the Build*; the messages on the game link are in *Jason: the game and the Trace*.
 
 ## The Director's agent class
 
@@ -46,7 +46,7 @@ Every Staging is a Jason agent of its own, running its Plot's Director file. Two
 - A Staging is identified by its Director's Jason agent name, and by nothing else.
 - Agents learn that name from a message's `source`, never from its arguments, so it can't be forged or go stale. The Giving record's `Director` column, the cast copy's key, where a `SIGNAL` goes and what `FROM DIRECTOR` matches are all that one name (*Jason: Givings and Precedence*).
 - The Root Director is declared in the `.jcm` as `regia_director__royalBanquet`.
-- A Subplot's Director is created at runtime by `regia.start_staging(honorDuel, Name)`. It calls Jason's `createAgent` with the base name `regia_director__honorDuel`, the file `directors/HonorDuel.asl` and the class `regia.DirectorAgent`, starts the agent, and binds `Name` to the name Jason gave it. Jason makes a clashing name unique, so a second duel gets a name of its own.
+- A Subplot's Director is created at runtime with Jason's own `.create_agent(Regia_director__honorDuel, "directors/HonorDuel.asl", [agentClass("regia.DirectorAgent")])`. Jason names the agent after the variable, `regia_director__honorDuel`, makes a clashing name unique by adding a number, so a second duel gets a name of its own, and binds the variable to the name it gave. That JaCaMo does the same is still to be confirmed when `regia-jason` is written.
 - Names are there to be unique and readable in the mind inspector. The Infrastructure never parses them, and the Trace calls a Director `director:HonorDuel` (*The Trace*).
 
 A Director keeps these records about itself:
@@ -79,7 +79,7 @@ WHEN poison_drunk:                   # a game Cue, straight to the Director
 // directors/Poisoning.asl, initial beliefs
 regia_hears(poisoning, poison_drunk, 0).
 
-@regia_plan__2[regia_rank(1, 0)]
+@regia_plan__poisoning__2[regia_rank(1, 0)]
 +poison_drunk[source(_)] : regia_phase(_)
    <- !regia_end_plot(poison_taken, self).
 ```
@@ -135,11 +135,11 @@ DURING arrival:
 ```
 
 ```asl
-@regia_plan__1[regia_phase(arrival), regia_rank(0, 0)]
+@regia_plan__royalBanquet__1[regia_phase(arrival), regia_rank(0, 0)]
 +!regia_entered(phase(arrival)) : regia_phase(arrival)
    <- regia.act("open_doors", open_doors).
 
-@regia_plan__2[regia_phase(arrival), regia_rank(0, 0)]
+@regia_plan__royalBanquet__2[regia_phase(arrival), regia_rank(0, 0)]
 +took_seat[source(G)] : regia_phase(arrival) & regia_cast(_, guest, G)
    <- if (not seated(G)) { +seated(G) };
       if (.count(seated(_), Regia_n__1)
@@ -148,7 +148,7 @@ DURING arrival:
           !regia_enter(reception)
       }.
 
-@regia_plan__3[regia_phase(arrival), regia_rank(0, 1)]
+@regia_plan__royalBanquet__3[regia_phase(arrival), regia_rank(0, 1)]
 +took_seat[source(S)] : regia_phase(arrival) & regia_cast(_, host, S)
    <- regia.act("play_music", play_music).
 ```
@@ -328,7 +328,7 @@ regia_plays(R, A)    :- R \== cast & .my_name(Me) & regia_cast(Me, R, A).
 - `?x PLAYS Guest` in a Director's Context or `IF` is `regia_plays(guest, X)`.
 - `COUNT(? PLAYS Guest)` is a `.setof` and its `.length`, never `.count`. A knight plays `Guest` and `Guard`, and under `CAST` it would be counted twice.
 - It reads the cast as it is now. A Guest who has left is already gone from `regia_cast` when the `LEFT` Plan runs, so the recount there sees the smaller hall.
-- A counted pick, `MAPPING 1 OF Guest AS Poisoner`, draws from the same Agents with `regia.pick`.
+- A counted pick, `MAPPING 1 OF Guest AS Poisoner`, draws from the same Agents with `regia/director.asl`'s `regia_draw`.
 
 ### A Role with `EXCEPT`
 
@@ -406,7 +406,7 @@ Starting Agents are never reported as joins. Starting is not joining.
 
 1. Work out the arguments, in parameter order: `[Offender]`.
 2. Resolve the cast. A whole-Role Mapping takes everyone in the parent's `regia_cast` now. A counted pick draws at random, no Agent twice in one Statement. A Role with `EXCEPT` is read through `regia_reach`. `MAPPING ?offended AS Challenger` keeps the Agent only if it is in the parent's cast now (*One Agent*, below). The result is a list, `[cast(challenger, noble_4), cast(defender, hothead_1), cast(spectator, percival), …]`.
-3. Create the child: `regia.start_staging(honorDuel, Child)`.
+3. Create the child with `.create_agent`, as above, and call the name it binds `Child`.
 4. Record it: `+regia_child(Child, honorDuel, [hothead_1], staging)`. `Until` is `phase(feast)` for `START SUBPLOT …, UNTIL EXITED` in a `DURING feast` Plan, as `Poisoning`'s is.
 5. Send the start: `regia_start(Cast, Prefix, [hothead_1])`, where `Prefix` is the parent's `regia_rank_prefix` plus the duel's level in its Staging table, `[lv(0, [when(scandal)-1])]` (*Jason: Givings and Precedence*).
 
@@ -497,7 +497,7 @@ ROLE Guard:
       regia.send(A, achieve, take_seat).
 
 +!regia_setup_line__1(A)
-   <- regia.random(5, 20, whole, Regia_roll__1);
+   <- ?regia_roll(5, 20, whole, Regia_roll__1);
       regia.send(A, tell, purse(Regia_roll__1)).
 -!regia_setup_line__1(_)
    <- regia.trace(warning, warning, "T1601", […]).
@@ -546,7 +546,7 @@ DURING reception:
 ```
 
 ```asl
-@regia_plan__5[regia_phase(reception), regia_rank(0, 0)]
+@regia_plan__royalBanquet__5[regia_phase(reception), regia_rank(0, 0)]
 +!regia_entered(phase(reception)) : regia_phase(reception) & regia_rank_prefix(Regia_prefix)
    <- .concat(Regia_prefix, [lv(2, [when(scandal)-0]), lv(4, [when(insulted)-1])], Regia_rank__1);
       // keep it standing: regia_standing(Seq, nobleSocializing, guest, [], staging, Regia_rank__1, Bindings)
@@ -641,7 +641,7 @@ WHEN wagered(?stake), FROM Spectator ?who:
 ```
 
 ```asl
-@regia_plan__7[regia_phase(betting), regia_rank(0, 0)]
+@regia_plan__honorDuel__7[regia_phase(betting), regia_rank(0, 0)]
 +wagered(Stake)[source(Who)] : regia_phase(betting) & regia_cast(_, spectator, Who)
    <- if (not wager(Who, Stake)) { +wager(Who, Stake) }.
 ```
@@ -688,7 +688,7 @@ DURING fighting:
 ```
 
 ```asl
-@regia_plan__9[regia_phase(fighting), regia_rank(0, 0)]
+@regia_plan__honorDuel__9[regia_phase(fighting), regia_rank(0, 0)]
 +!regia_entered(phase(fighting)) : regia_phase(fighting)
    <- .my_name(Regia_me);
       .setof(Regia_to__1, regia_cast(Regia_me, challenger, Regia_to__1), Regia_pool__1);
@@ -856,7 +856,7 @@ WHEN HonorDuel(?) ENDED:             # however the duel ended
 ```
 
 ```asl
-@regia_plan__21[regia_rank(1, 0)]
+@regia_plan__royalBanquet__21[regia_rank(1, 0)]
 +!regia_subplot_finished(honorDuel, [_], duel_settled(Winner), Heard) : regia_phase(_)
    <- Heard = heard;
       .my_name(Regia_me);
@@ -871,7 +871,7 @@ WHEN HonorDuel(?) ENDED:             # however the duel ended
       };
       regia.send(Winner, tell, on_duty).
 
-@regia_plan__22[regia_rank(1, 0)]
+@regia_plan__royalBanquet__22[regia_rank(1, 0)]
 +!regia_subplot_ended(honorDuel, [_], Heard) : regia_phase(_)
    <- Heard = heard;
       regia.act("play_music", play_music).
@@ -926,7 +926,7 @@ WHEN Spectator ?who LEFT:
 ```
 
 ```asl
-@regia_plan__15[regia_rank(1, 0)]
+@regia_plan__honorDuel__15[regia_rank(1, 0)]
 +!regia_role_left(spectator, Who) : regia_phase(_)
    <- .setof(m(Stake), wager(Who, Stake), Regia_each__1);
       for (.member(m(Stake), Regia_each__1)) {
@@ -1036,7 +1036,7 @@ The messages between Directors, and from a Director to its cast:
 | `achieve regia_end_staging` | Director → each cast Agent | take away every Giving and the cast copy of this Staging |
 | `achieve regia_cast_left(A)` | Director → each remaining cast Agent | drop A from the cast copy and the fixed bindings |
 
-`regia-jason` adds for this chapter: the class `regia.DirectorAgent`, its message intake for the game link, detaching in its stop hook, and the internal actions `regia.attach`, `regia.stop_hearing`, `regia.stop_phase`, `regia.end_body`, `regia.deliver`, `regia.start_staging` and `regia.send`.
+`regia-jason` adds for this chapter: the class `regia.DirectorAgent`, its message intake for the game link, detaching in its stop hook, and the internal actions `regia.attach` and `regia.stop_hearing` (the game link), `regia.stop_phase` and `regia.end_body` (they reshape intentions), and `regia.send`. Creating a Subplot's Director and unwrapping `EVERYONE` are plain Jason: `.create_agent`, and three plans of `regia/agent.asl` built on `+F[source(S)]` and `.signal`.
 
 Spec: chapter 30, *Infrastructure state*, *`regia-jason` additions*; chapter 31, *Infrastructure state*, *Messages*; chapter 33, *Infrastructure state*, *Messages*.
 

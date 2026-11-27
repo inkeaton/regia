@@ -50,19 +50,30 @@ Playbook files are written exactly as in a Build with a Root Plot.
 
 ### Generated ASL is readable
 
-A generated plan reads like the designer's Plan. Its context is the Givings guard, the Sender test and the designer's Context, in that order, each a named rule or the designer's own formula. Each Statement is one body step. Mechanics that recur from plan to plan are named Infrastructure, kept in the shared files, not written out in every plan. This was 1.0's idea (its `!signal_directors`), and 2.0 keeps the named part out of the generated files.
+A generated plan reads like the designer's Plan. Its context is the Givings guard, the Sender test and the designer's Context, in that order, each a named rule or the designer's own formula. Each Statement is one body step, or a test goal and the one action it feeds (`?regia_audience(…); regia.send(…)`). Mechanics that recur from plan to plan are named Infrastructure, kept in the shared files, not written out in every plan. This was 1.0's idea (its `!signal_directors`), and 2.0 keeps the named part out of the generated files.
 
-Each recurring mechanic takes one of three forms:
+**Jason first** (ADR 0050). Generated and Infrastructure ASL use Jason's language and its stdlib (`.send`, `.setof`, `.intend`, `.random`, `.create_agent`, `for`, `if`). A Regia element that compiles to more than one step or conjunct is named by an ASL mechanism first. A `regia.*` internal action exists only when ASL can't do the job, for one of four reasons:
+
+1. **It leaves the agent with semantics the stdlib lacks**: the game link, a VEsNA body, the Trace file, the Java class of a dotted Action, and a send that never fails its sender (`regia.send`: Jason's `.send` fails the plan on a receiver that has left).
+2. **It needs the run's clock**, which stops while the game is paused (`regia.wait`).
+3. **It reshapes intentions beyond the stdlib**: removing frames or whole intentions with their endings and their waiting `DO`s, or quietly (`regia.drop`, `regia.stop_playbook`, `regia.stop_phase`, `regia.end_body`, `regia.pass_failure`).
+4. **It hooks the reasoning cycle**: `selectOption`, `brf`, `socAcc` and the failure hook, which are overrides in the agent class, never calls in ASL.
+
+Each `regia.*` action the Jason chapters name states its reason where it is defined. The Jason facts behind these choices are in the research note of the ticket *Readable generated ASL* (`.scratch/transpiler/research/13-jason-native-facts.md`).
+
+Each named mechanic takes one of three forms:
 
 | Form | When | Examples |
 | --- | --- | --- |
-| A **rule** in `agent.asl` or `director.asl` | a test in a context | `regia_holds`, `regia_plays` (chapter 29) |
-| An **internal action** of `regia-jason` | one atomic step, or a step that reads the intention | `regia.send`, `regia.pick`, `regia.reached` |
-| An **Infrastructure plan** | several steps that may wait or fail | `regia_close` (chapter 29), `regia_endings` (chapter 40) |
+| A **rule** in `agent.asl` or `director.asl` | a test in a context, or a collection a step reads | `regia_is_given`, `regia_from_director`, `regia_plays` (chapter 29), `regia_audience` (chapter 39) |
+| An **Infrastructure plan** | several steps, or steps that wait, fail or write the Trace | `regia_reach`, `regia_endings` (chapter 40), `regia_choose`, `regia_update` (chapter 39), `regia_close` (chapter 29) |
+| An **internal action** of `regia-jason` | only for one of the four reasons above | `regia.act`, `regia.send`, `regia.trace`, `regia.wait` |
 
-A rule costs nothing at run time. An Infrastructure plan is a subgoal: it takes reasoning cycles, goes through `selectOption`, and adds a frame to the intention, which matters to what reads the intention (chapter 40). An internal action is plumbing: game and Regia information stays in the game and in the Agents' beliefs, never in its Java state.
+A rule costs nothing at run time. An Infrastructure plan is a subgoal: it takes at least one more reasoning cycle, goes through `selectOption`, and adds a frame to the intention, which matters to what reads the intention (chapter 40). It hands its bindings back to the step that posted it, so `!regia_choose(Ws, N)` binds `N`. A rule never writes the Trace, since backtracking could run it twice. An internal action is plumbing: game and Regia information stays in the game and in the Agents' beliefs, never in its Java state.
 
-Which patterns of chapters 29–40 are named, and how, is the ticket *Readable generated ASL* (`.scratch/transpiler/issues/13-readable-generated-asl.md`).
+Plan labels stay `regia_plan__<owner>__<n>` (*Generated names*, below): the rank annotation right after the label already names the plan's Item (chapter 32).
+
+The rules and Infrastructure plans each chapter adds are listed in its *`regia-jason` additions* or *Infrastructure* section.
 
 ## The Java library
 

@@ -161,7 +161,7 @@ A blank in a Basic Action, whose message suggests `FOR EACH`, is chapter 08's `R
 
 ## ASL mapping notes
 
-The Jason translation of Picks, `FOR EACH` and `COUNT` is chapter 39 (`39-jason-plan-bodies.md`): `.setof` into a list, picks by index from `regia.random` or `regia.weighted_pick`, and `FOR EACH` as a `.setof` snapshot followed by Jason's `for`. What any AgentSpeak Target must keep:
+The Jason translation of Picks, `FOR EACH` and `COUNT` is chapter 39 (`39-jason-plan-bodies.md`): `.setof` into a list in rules of `regia/agent.asl`, picks with `.random` or `regia.weighted_pick`, and `FOR EACH` as Jason's `for` over the snapshot rule `regia_each`. What any AgentSpeak Target must keep:
 
 - Every `?` becomes a fresh variable, so that Matches are told apart by every blank, and the distinct Matches are collected (duplicates from both branches of an `OR` removed).
 - Every random draw comes from the seeded source (chapter 35).

@@ -107,7 +107,7 @@ A Block with no `AFTER` has no line. The plan, from `honor_duel.regia:37`:
 
 `ENTER x` calls `!regia_enter(x)`, an `[atomic]` plan in `regia/director.asl`. It follows chapter 20's six steps, plus a last one that ends the Body:
 
-1. **Stop the old Phase's Plans.** `regia.stop_phase(Old)`, a `regia-jason` internal action like `regia.stop_playbook` (chapter 29), drops every intention running a plan annotated `regia_phase(Old)`. It drops them silently: Directors have no Goals, so nothing fires and nothing is traced. It **skips the intention running the `ENTER`**, which ends at step 7. It also drops the Phase's **queued entry events**, `+!regia_entered(phase(Old))` and `+!regia_after(phase(Old), _)`, the way `.drop_desire` removes queued events. An `ENTERED` Plan that transitions at once would otherwise leave its Phase's `AFTER` events queued, and on a re-entry they would find `regia_phase(Old)` true again and start a second count. The Phase's queued Trigger events (Signals, Cues, `LEFT`) are left in the queue, so the new Phase hears them.
+1. **Stop the old Phase's Plans.** `regia.stop_phase(Old)`, a `regia-jason` internal action sharing `regia.stop_playbook`'s walker (chapter 29), drops every intention running a plan annotated `regia_phase(Old)`. It is Java because no stdlib action finds intentions by plan annotation (`.drop_intention` matches goals) and because it calls off their waiting `DO`s on the game link (chapter 28, reasons 3 and 1). It drops them silently: Directors have no Goals, so nothing fires and nothing is traced. It **skips the intention running the `ENTER`**, which ends at step 7. It also drops the Phase's **queued entry events**, `+!regia_entered(phase(Old))` and `+!regia_after(phase(Old), _)`, the way `.drop_desire` removes queued events. An `ENTERED` Plan that transitions at once would otherwise leave its Phase's `AFTER` events queued, and on a re-entry they would find `regia_phase(Old)` true again and start a second count. The Phase's queued Trigger events (Signals, Cues, `LEFT`) are left in the queue, so the new Phase hears them.
 2. **Run `EXITED` to completion**, as the subgoal `!regia_exited(phase(Old))`, inside the atomic plan. If it fails, a `-!regia_exited` plan writes the Trace entry (chapter 20) and the transition carries on: a Director Statement never fails. A `DO` in it waits for the game's reply, and the transition with it (*A `DO` in `EXITED`*, below).
 3. **Take away what was given for the old Phase.**
    - Send `regia_take_phase(Old)` to every cast Agent (chapter 29), and remove every `regia_standing(_, _, _, _, phase(Old), _, _)`. A re-entered Phase's Givings are taken here and given again by its setups at step 5, so the Agents hear `REMOVED` and then `ASSIGNED` (chapter 15).
@@ -115,7 +115,7 @@ A Block with no `AFTER` has no line. The plan, from `honor_duel.regia:37`:
 4. **Change the Phase.** Replace `regia_phase(Old)` with `regia_phase(x)`, and write the `phase` Trace entry (chapter 34).
 5. **Run the new Phase's setups**: `!regia_run_setups(phase(x))` (*Setups*, below), inside the atomic plan. Every setup Giving is in place before any of the Phase's Plans starts.
 6. **Post the entry Plans**: `!!regia_entered(phase(x))`, then `!!regia_after(phase(x), N)` for each `N` of `regia_afters(phase(x), L)`. They start after the atomic plan, as ordinary intentions of the new Phase: they may `WAIT`, and they are stopped if the Phase is left.
-7. **End the Body.** `regia.end_body` drops, silently, the frames of the Plan that ran the `ENTER`, with everything above them on its intention. `ENTER` ends its Body (chapter 20) even inside an `IF` branch with Statements after the `IF`, and in a `DURING PLOT` Plan too. For a Trigger's Plan that is the whole intention. For a Plan run as a subgoal of Infrastructure, such as a Subplot's `FINISHED WITH` Plan under `regia_subplot_endings` (chapter 31), the Infrastructure frame below carries on, so a plain `ENDED` Plan still runs after a specific one that transitioned. `END PLOT` ends its Body the same way.
+7. **End the Body.** `regia.end_body` drops, silently, the frames of the Plan that ran the `ENTER`, with everything above them on its intention. It is Java (chapter 28, reason 3): `.succeed_goal(g)` would end every intention holding a matching `+!g`, not this frame, so two Subplots of one Plot ending together could cut each other's Plans. `ENTER` ends its Body (chapter 20) even inside an `IF` branch with Statements after the `IF`, and in a `DURING PLOT` Plan too. For a Trigger's Plan that is the whole intention. For a Plan run as a subgoal of Infrastructure, such as a Subplot's `FINISHED WITH` Plan under `regia_subplot_endings` (chapter 31), the Infrastructure frame below carries on, so a plain `ENDED` Plan still runs after a specific one that transitioned. `END PLOT` ends its Body the same way.
 
 Quota counts aren't cleared in 1.5 (*Regia 1.5*, below). When they are, `!regia_quota_clear(Old)` (chapter 33) runs at step 4, before the Phase changes.
 
@@ -264,7 +264,7 @@ regia_plays(R, A)    :- R \== cast & .my_name(Me) & regia_cast(Me, R, A).
 - `?x PLAYS Guest` in a Director's Context or `IF` is `regia_plays(guest, X)`.
 - `COUNT(? PLAYS Guest)` is `.setof(A, regia_plays(guest, A), L) & .length(L, N)`, never `.count`: under `CAST` a knight, who plays `Guest` and `Guard`, would be counted twice (`royal_banquet.regia:62`).
 - It reads the cast as it is now: a leaver is already gone from `regia_cast` when the `LEFT` Plan runs (chapter 33), so the recount at `royal_banquet.regia:115` sees the smaller hall.
-- A counted pick (`MAPPING 1 OF Guest AS Poisoner`) draws from the same Agents, with `regia.pick` (chapter 39).
+- A counted pick (`MAPPING 1 OF Guest AS Poisoner`) draws from the same Agents, with `regia/director.asl`'s `regia_draw` over `regia_reach` (chapter 39).
 
 ### A Role with `EXCEPT`
 
@@ -320,7 +320,15 @@ For each Cue some Agent can Signal to this Plot, the Director file has one catch
 
 `TELL EVERYONE f`, `TELL EVERYONE c` and `ASK EVERYONE TO g`, from an Agent or a Director, are one `.broadcast(achieve, regia_everyone(tell, f))`, `.broadcast(achieve, regia_everyone(signal, c))` or `.broadcast(achieve, regia_everyone(achieve, g))`.
 
-- `regia/agent.asl` unwraps it with `regia.deliver(Ilf, Content, Sender)`, a `regia-jason` internal action that puts the inner message in the Agent's mailbox as if `Sender` had sent it directly. `FROM` still sees the real Sender.
+- `regia/agent.asl` unwraps it with three plans in plain Jason, one per kind, so `FROM` still sees the real Sender:
+
+  ```
+  +!regia_everyone(tell, F)[source(S)]    <- +F[source(S)].
+  +!regia_everyone(signal, C)[source(S)]  <- .add_annot(C, source(S), Regia_cue); .signal({+Regia_cue}, type_signal).
+  +!regia_everyone(achieve, G)[source(S)] <- regia.trace(goal, info, "", [goal(G), event(pursued), sender(S)], Id); !!G[source(S), regia_pursuit(Id)].
+  ```
+
+  A told Fact goes through `regia.RegiaAgent.brf` like any other (chapter 39). `.signal` with `type_signal` raises the same `+c[source(S), signal]` event a told Cue does, keeping the given source (research note of *Readable generated ASL*, *Sending*), so a Cue no Plan takes still falls to `unheard.asl`. The `achieve` plan stamps the Pursuit as chapter 40 says.
 - `regia/director.asl` ignores it, so `EVERYONE` reaches every Agent and no Director (chapter 07).
 - `.broadcast` never sends to the sender itself, which is chapter 07's "except the sender".
 - Nothing has to know every Agent in the game.
@@ -352,7 +360,7 @@ Rows filled in or added in chapter 28's table:
 - The `regia_cue` and `regia_fact` message types.
 - `regia.DirectorAgent`'s message intake for the game link: `regia_cue`, `regia_fact`, `regia_state_result` and `regia_action_result`, sharing its code with `regia.RegiaAgent`'s `myHandleMsg`.
 - Detaching from the link in `regia.DirectorAgent`'s stop hook.
-- Internal actions: `regia.attach`, `regia.stop_hearing`, `regia.stop_phase`, `regia.end_body`, `regia.deliver`. `regia.perceive` and `regia.add_percepts` are gone, with the `regia_percept` message.
+- Internal actions: `regia.attach` and `regia.stop_hearing` (reason 1: the game link), `regia.stop_phase` and `regia.end_body` (reason 3). `regia.deliver` is gone: `EVERYONE` is unwrapped in plain Jason. `regia.perceive` and `regia.add_percepts` are gone, with the `regia_percept` message.
 
 
 ## Trace entries

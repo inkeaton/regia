@@ -20,14 +20,17 @@ Each Role file lists the Playbooks it includes as initial beliefs, `regia_playbo
 
 ## The guard
 
-Every plan generated from Playbook P starts its context with a test that P is given:
+Every plan generated from Playbook P starts its context with a test that P is given, the rule `regia_is_given` of `regia/agent.asl`:
 
 ```
-+!greet(G) : regia_given(nobleSocializing, _, _, _, _, _) & <designer's Context> <- …
+regia_is_given(P) :- regia_given(P, _, _, _, _, _).
+regia_given_or_closing(P, C) :- regia_is_given(P) | regia_closing(C, P, _, _, _, _, _).
+
++!greet(G) : regia_is_given(nobleSocializing) & <designer's Context> <- …
 ```
 
 - It covers **every** plan of P: the designer's Plans, its ending Plans and the plans of P's Local Goals. Nothing a designer wrote in a Playbook that isn't given can run.
-- **Two exceptions, both for closing** (*Taking a Playbook away*, below). P's `DROPPED` and `ENDED` plans are guarded by `( regia_given(p, _, _, _, _, _) | regia_closing(Closing, p, _, _, _, _, _) )`, where `Closing` is the ending goal's own argument (chapter 40): they also run for the drops of a closing of P, and for nothing else. P's `REMOVED` plans have no Givings guard, since only a closing posts `regia_removed`.
+- **Two exceptions, both for closing** (*Taking a Playbook away*, below). P's `DROPPED` and `ENDED` plans are guarded by `regia_given_or_closing(p, Closing)`, where `Closing` is the ending goal's own argument (chapter 40): they also run for the drops of a closing of P, and for nothing else. P's `REMOVED` plans have no Givings guard, since only a closing posts `regia_removed`.
 - **The generated `-!g` plans are not guarded** (chapter 40). They live in `goals.asl`, one per Goal, not in a Playbook, and a `-!g` whose context is false would drop the whole intention, waiting Plans of still-given Playbooks included.
 - It comes first, so the designer's Context isn't evaluated for a Playbook that isn't given.
 - Selection (chapter 13) still happens in `selectOption`. It reads the same beliefs for the rank, so the guard and the rank never disagree about what is given.
@@ -156,7 +159,7 @@ regia_holds(P, D, T, R, B, U) :- regia_given(P, D, T, R, B, U).
 regia_holds(P, D, T, R, B, U) :- regia_closing(_, P, D, T, R, B, U).
 ```
 
-Outside a closing the two are the same. A closing Plan therefore speaks through the Givings as they were just before the taking (chapter 15). If P is given back while closing, P's Plans read both, old and new, until the closing ends. Only the guard reads `regia_given` directly.
+Outside a closing the two are the same. A closing Plan therefore speaks through the Givings as they were just before the taking (chapter 15). If P is given back while closing, P's Plans read both, old and new, until the closing ends. Only the guard's rules read `regia_given` directly.
 
 ### Who plays a Playbook Role
 
@@ -189,13 +192,13 @@ A whole-Role binding always carries a list: `live(Role, Except)`, which is `[]` 
 
 | Language | What the Infrastructure does |
 | --- | --- |
-| A Plan of P runs | the guard: some `regia_given(p, …)` exists |
-| `SIGNAL e` in P | sends `e` as a `signal` message to every distinct `Director` in `regia_holds(p, Director, …)` (chapters 07, 30 and 39) |
-| `TELL host f` in P | `.setof(A, regia_plays(p, host, A) & A \== Me, L)`, with `Me` the Agent's name, then one `regia.send` each. A Fact goes as `tell`, a Cue as `signal` (chapter 39) |
-| `TELL 2 OF host f`, `ASK 50% OF host TO g` in P | the same pool, drawn by `regia.pick` each time the Statement runs (chapter 39) |
+| A Plan of P runs | the guard: `regia_is_given(p)` |
+| `SIGNAL e` in P | `?regia_directors(p, L)`, every distinct Director in `regia_holds(p, Director, …)`, then `regia.send(L, signal, e)` (chapters 07, 30 and 39) |
+| `TELL host f` in P | `?regia_audience(p, host, L)`, the Role's union without the Agent itself, then `regia.send(L, tell, f)`. A Cue goes as `signal` (chapter 39) |
+| `TELL 2 OF host f`, `ASK 50% OF host TO g` in P | the same pool, drawn by the Infrastructure plan `!regia_draw` each time the Statement runs (chapter 39) |
 | `?x PLAYS host`, `ME PLAYS host` in P | `regia_plays(p, host, X)`, the Agent itself left in (chapter 39) |
-| `WHEN …, FROM host` in P | `regia_plays(p, host, S)` for the Sender, the trigger's `source(S)`, tested in the plan's context |
-| `WHEN …, FROM DIRECTOR` in P | `regia_holds(p, S, _, _, _, _)` for the Sender `S` (chapter 39) |
+| `WHEN …, FROM host` in P | `regia_from_role(p, host, S)` for the Sender, the trigger's `source(S)`, tested in the plan's context (chapter 39) |
+| `WHEN …, FROM DIRECTOR` in P | `regia_from_director(p, S)`, which is `regia_holds(p, S, _, _, _, _)` (chapter 39) |
 | A Quota Trigger over `host` in P | counts against `regia_plays(p, host, _)` (chapter 18) |
 | Precedence | `selectOption` reads `Rank` from `regia_holds` for each candidate's Playbook and takes the best for the candidate's item (chapter 32) |
 

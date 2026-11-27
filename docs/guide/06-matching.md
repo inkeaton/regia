@@ -330,4 +330,4 @@ A count of `? PLAYS Guest` drops as soon as a Guest leaves, but Facts the Direct
 
 ### Jason: Plans and Goals
 
-A Pick, a `FOR EACH` and a `COUNT` each collect the distinct Matches into a list with `.setof`, so they cost time linear in the matching Facts every time they are checked. A plain condition doesn't. Random Picks draw from `regia.random` and `regia.weighted_pick`, and `FOR EACH` is Jason's `for` over the snapshot. (*Jason: Plans and Goals*)
+A Pick, a `FOR EACH` and a `COUNT` each collect the distinct Matches into a list with `.setof`, so they cost time linear in the matching Facts every time they are checked. A plain condition doesn't. Random Picks draw with Jason's `.random` and `regia.weighted_pick`, and `FOR EACH` is Jason's `for` over the snapshot rule `regia_each`. (*Jason: Plans and Goals*)

@@ -198,7 +198,7 @@ For *The full ASL mapping* to pick up:
 
 - `LEARN`, `FORGET`, `UPDATE`, `PRINT` and `PASS` in Jason: chapter 39 (`39-jason-plan-bodies.md`). Any Target must raise no event when `LEARN` or `FORGET` changes nothing, so `LEARNED`/`FORGOTTEN` Plans don't run.
 - `PURSUE g` maps to `!g`, and `PURSUE g, WITHOUT WAITING` to `!!g`. Nothing is joined: a second `!g` is a second Pursuit. Any Target must give each Pursuit an identity its endings and the Trace can carry. In Jason, the `regia_pursuit(Id)` annotation (chapters 39 and 40).
-- `PURSUING g` in a `TO g` Plan must leave out the Plan's own Pursuit. In Jason, `regia.pursuing(G, Except)` (chapter 40).
+- `PURSUING g` in a `TO g` Plan must leave out the Plan's own Pursuit. In Jason, `.intend` with the Plan's own Pursuit `Id` left out (chapter 40).
 - `DROP g` must stop every level of chapter 08's steps and raise `DROPPED` and `ENDED` for each, innermost first. A waiting Body whose Goal is dropped stops with no failure. In Jason, `regia.drop(G)`, whose walker `regia.stop_playbook` shares (chapter 40).
 
 ## Regia 1.5
